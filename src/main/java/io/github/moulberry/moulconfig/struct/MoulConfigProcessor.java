@@ -43,6 +43,11 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         }
     }
 
+    public T getConfigObject() {
+        return configBaseObject;
+    }
+
+
     @Override
     public void endCategory() {
     }

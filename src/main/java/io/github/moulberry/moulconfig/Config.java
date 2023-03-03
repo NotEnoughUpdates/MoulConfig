@@ -19,6 +19,18 @@
 
 package io.github.moulberry.moulconfig;
 
-public class Config {
-	public void executeRunnable(int runnableId) {}
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class Config {
+    public void executeRunnable(int runnableId) {
+    }
+
+    public List<Social> getSocials() {
+        return new ArrayList<>();
+    }
+
+    public String getTitle() {
+        return "Config GUI";
+    }
 }

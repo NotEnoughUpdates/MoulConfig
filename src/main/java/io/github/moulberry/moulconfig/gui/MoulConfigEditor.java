@@ -69,7 +69,6 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         selectedCategory = category;
         optionsScroll.setValue(0);
     }
-
     public void search() {
         //TODO
     }
@@ -132,7 +131,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
         TextRenderUtils.drawStringCenteredScaledMaxWidth(
-            "NotEnoughUpdates by " + EnumChatFormatting.DARK_PURPLE + "Moulberry", // TODO
+            processedConfig.getConfigObject().getTitle(),
             fr,
             x + xSize / 2,
             y + 15,
@@ -377,19 +376,19 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             0xff303030
         );
 
-        //  TODO socials
-        /*for (int socialIndex = 0; socialIndex < socialsIco.length; socialIndex++) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(socialsIco[socialIndex]);
+        List<Social> socials = processedConfig.getConfigObject().getSocials();
+        for (int socialIndex = 0; socialIndex < socials.size(); socialIndex ++ ) {
+            Social social = socials.get(socialIndex);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(social.getIcon());
             GlStateManager.color(1, 1, 1, 1);
             int socialLeft = x + xSize - 23 - 18 * socialIndex;
             RenderUtils.drawTexturedRect(socialLeft, y + 7, 16, 16, GL11.GL_LINEAR);
 
             if (mouseX >= socialLeft && mouseX <= socialLeft + 16 &&
                 mouseY >= y + 6 && mouseY <= y + 23) {
-                tooltipToDisplay = Lists.newArrayList(
-                    EnumChatFormatting.YELLOW + "Go to: " + EnumChatFormatting.RESET + socialsLink[socialIndex]);
+                tooltipToDisplay = social.getTooltip();
             }
-        }*/
+        }
 
         GlScissorStack.clear();
 
@@ -572,17 +571,16 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 }
             }
 
-            // TODO socials
-/*
-            for (int socialIndex = 0; socialIndex < socialsLink.length; socialIndex++) {
+            List<Social> socials = processedConfig.getConfigObject().getSocials();
+            for (int socialIndex = 0; socialIndex < socials.size(); socialIndex++) {
                 int socialLeft = x + xSize - 23 - 18 * socialIndex;
 
                 if (mouseX >= socialLeft && mouseX <= socialLeft + 16 &&
                     mouseY >= y + 6 && mouseY <= y + 23) {
-                    Utils.openUrl(socialsLink[socialIndex]);
+                    socials.get(socialIndex).onClick();
                     return true;
                 }
-            }*/
+            }
         }
 
         int optionY = -optionsScroll.getValue();
