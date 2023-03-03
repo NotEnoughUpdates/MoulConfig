@@ -21,7 +21,7 @@ package io.github.moulberry.moulconfig.gui;
 
 import io.github.moulberry.moulconfig.RenderUtils;
 import io.github.moulberry.moulconfig.TextRenderUtils;
-import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -30,61 +30,59 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class GuiOptionEditorDropdown extends GuiOptionEditor {
-	private final String[] values;
-	private final boolean useOrdinal;
-	private int selected;
-	private boolean open = false;
+    private final String[] values;
+    private final boolean useOrdinal;
+    private boolean open = false;
 
-	public GuiOptionEditorDropdown(
-		ConfigProcessor.ProcessedOption option,
-		String[] values,
-		int selected,
-		boolean useOrdinal
-	) {
-		super(option);
-		if (selected >= values.length) selected = values.length;
-		this.values = values;
-		this.selected = selected;
-		this.useOrdinal = useOrdinal;
-	}
+    public GuiOptionEditorDropdown(
+        ProcessedOption option,
+        String[] values,
+        boolean useOrdinal
+    ) {
+        super(option);
+        this.values = values;
+        this.useOrdinal = useOrdinal;
+    }
 
-	@Override
-	public void render(int x, int y, int width) {
-		super.render(x, y, width);
-		if (!open) {
-			int height = getHeight();
+    @Override
+    public void render(int x, int y, int width) {
+        super.render(x, y, width);
+        if (!open) {
+            int height = getHeight();
 
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-			int dropdownWidth = Math.min(width / 3 - 10, 80);
-			int left = x + width / 6 - dropdownWidth / 2;
-			int top = y + height - 7 - 14;
+            FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+            int dropdownWidth = Math.min(width / 3 - 10, 80);
+            int left = x + width / 6 - dropdownWidth / 2;
+            int top = y + height - 7 - 14;
+            int selected = (int) option.get();
+            if (selected >= values.length) selected = values.length;
+            String selectedString = " - Select - ";
+            if (selected >= 0 && selected < values.length) {
+                selectedString = values[selected];
+            }
 
-			String selectedString = " - Select - ";
-			if (selected >= 0 && selected < values.length) {
-				selectedString = values[selected];
-			}
+            RenderUtils.drawFloatingRectDark(left, top, dropdownWidth, 14, false);
+            TextRenderUtils.drawStringScaled(
+                "▼",
+                fr,
+                left + dropdownWidth - 10,
+                y + height - 7 - 15,
+                false,
+                0xffa0a0a0,
+                2
+            );
 
-			RenderUtils.drawFloatingRectDark(left, top, dropdownWidth, 14, false);
-			TextRenderUtils.drawStringScaled(
-				"▼",
-				fr,
-				left + dropdownWidth - 10,
-				y + height - 7 - 15,
-				false,
-				0xffa0a0a0,
-				2
-			);
-
-			TextRenderUtils.drawStringScaledMaxWidth(selectedString, fr, left + 3, top + 3, false,
-				dropdownWidth - 16, 0xffa0a0a0
-			);
-		}
+            TextRenderUtils.drawStringScaledMaxWidth(selectedString, fr, left + 3, top + 3, false,
+                dropdownWidth - 16, 0xffa0a0a0
+            );
+        }
 	}
 
 	@Override
 	public void renderOverlay(int x, int y, int width) {
 		if (open) {
-			String selectedString = " - Select - ";
+            int selected = (int) option.get();
+            String selectedString = " - Select - ";
 			if (selected >= 0 && selected < values.length) {
 				selectedString = values[selected];
 			}
@@ -177,7 +175,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 					int dropdownY = 13;
 					for (int ordinal = 0; ordinal < values.length; ordinal++) {
 						if (mouseY >= top + 3 + dropdownY && mouseY <= top + 3 + dropdownY + 12) {
-							selected = ordinal;
+							int selected = ordinal;
 							if (useOrdinal) {
 								option.set(selected);
 							} else {

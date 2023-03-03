@@ -21,6 +21,7 @@ package io.github.moulberry.moulconfig.gui;
 
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 
 public class GuiOptionEditorBoolean extends GuiOptionEditor {
 
@@ -29,7 +30,7 @@ public class GuiOptionEditorBoolean extends GuiOptionEditor {
     private final int runnableId;
 
     public GuiOptionEditorBoolean(
-        ConfigProcessor.ProcessedOption option,
+        ProcessedOption option,
         int runnableId,
         Config config
     ) {
@@ -62,7 +63,7 @@ public class GuiOptionEditorBoolean extends GuiOptionEditor {
         return false;
     }
 
-    private void onUpdate(ConfigProcessor.ProcessedOption option, boolean value) {
+    private void onUpdate(ProcessedOption option, boolean value) {
         if (option.set(value)) {
             config.executeRunnable(runnableId);
         }

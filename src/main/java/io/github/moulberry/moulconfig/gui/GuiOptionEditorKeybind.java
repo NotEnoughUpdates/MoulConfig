@@ -23,7 +23,7 @@ import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.KeybindHelper;
 import io.github.moulberry.moulconfig.RenderUtils;
 import io.github.moulberry.moulconfig.TextRenderUtils;
-import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -36,13 +36,11 @@ import java.util.function.Supplier;
 public class GuiOptionEditorKeybind extends GuiOptionEditor {
     private static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
 
-    private final Supplier<Integer> keyCode;
     private final int defaultKeyCode;
     private boolean editingKeycode;
 
-    public GuiOptionEditorKeybind(ConfigProcessor.ProcessedOption option, Supplier<Integer> keyCode, int defaultKeyCode) {
+    public GuiOptionEditorKeybind(ProcessedOption option, int defaultKeyCode) {
         super(option);
-        this.keyCode = keyCode;
         this.defaultKeyCode = defaultKeyCode;
     }
 
@@ -56,7 +54,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
         Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
         RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
 
-        String keyName = KeybindHelper.getKeyName(keyCode.get());
+        String keyName = KeybindHelper.getKeyName((int) option.get());
         String text = editingKeycode ? "> " + keyName + " <" : keyName;
         TextRenderUtils.drawStringCenteredScaledMaxWidth(text,
             Minecraft.getMinecraft().fontRendererObj,

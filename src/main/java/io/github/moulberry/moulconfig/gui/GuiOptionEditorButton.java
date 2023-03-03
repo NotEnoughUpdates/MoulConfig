@@ -23,7 +23,7 @@ import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.RenderUtils;
 import io.github.moulberry.moulconfig.TextRenderUtils;
-import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
@@ -34,11 +34,11 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
 	private final Config config;
 
 	public GuiOptionEditorButton(
-		ConfigProcessor.ProcessedOption option,
-		int runnableId,
-		String buttonText,
-		Config config
-	) {
+        ProcessedOption option,
+        int runnableId,
+        String buttonText,
+        Config config
+    ) {
 		super(option);
 		this.runnableId = runnableId;
 		this.config = config;

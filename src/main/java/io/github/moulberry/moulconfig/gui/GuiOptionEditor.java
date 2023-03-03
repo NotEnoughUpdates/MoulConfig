@@ -21,18 +21,18 @@ package io.github.moulberry.moulconfig.gui;
 
 import io.github.moulberry.moulconfig.RenderUtils;
 import io.github.moulberry.moulconfig.TextRenderUtils;
-import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
 public abstract class GuiOptionEditor {
-	protected final ConfigProcessor.ProcessedOption option;
-	private static final int HEIGHT = 45;
+    private static final int HEIGHT = 45;
+    protected final ProcessedOption option;
 
-	public GuiOptionEditor(ConfigProcessor.ProcessedOption option) {
-		this.option = option;
-	}
+    public GuiOptionEditor(ProcessedOption option) {
+        this.option = option;
+    }
 
 	public void render(int x, int y, int width) {
 		int height = getHeight();

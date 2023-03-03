@@ -20,6 +20,7 @@
 package io.github.moulberry.moulconfig.gui;
 
 import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -27,7 +28,7 @@ import org.lwjgl.input.Mouse;
 public class GuiOptionEditorText extends GuiOptionEditor {
 	private final GuiElementTextField textField;
 
-	public GuiOptionEditorText(ConfigProcessor.ProcessedOption option) {
+	public GuiOptionEditorText(ProcessedOption option) {
 		super(option);
 
 		textField = new GuiElementTextField((String) option.get(), 0);
@@ -49,6 +50,7 @@ public class GuiOptionEditorText extends GuiOptionEditor {
 		}
 
 		textField.setSize(fullWidth, 16);
+        textField.setText((String) option.get());
 
 		textField.render(textFieldX, y + height - 7 - 14);
 	}

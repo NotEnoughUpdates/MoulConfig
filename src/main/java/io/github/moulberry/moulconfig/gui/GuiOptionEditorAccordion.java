@@ -22,6 +22,7 @@ package io.github.moulberry.moulconfig.gui;
 import io.github.moulberry.moulconfig.RenderUtils;
 import io.github.moulberry.moulconfig.TextRenderUtils;
 import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -34,7 +35,7 @@ public class GuiOptionEditorAccordion extends GuiOptionEditor {
 	private final int accordionId;
 	private boolean accordionToggled;
 
-	public GuiOptionEditorAccordion(ConfigProcessor.ProcessedOption option, int accordionId) {
+	public GuiOptionEditorAccordion(ProcessedOption option, int accordionId) {
 		super(option);
 		this.accordionToggled = (boolean) option.get();
 		this.accordionId = accordionId;

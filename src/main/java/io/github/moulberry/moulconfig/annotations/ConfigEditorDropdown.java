@@ -28,6 +28,4 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ConfigEditorDropdown {
 	String[] values();
-
-	int initialIndex() default 0;
 }

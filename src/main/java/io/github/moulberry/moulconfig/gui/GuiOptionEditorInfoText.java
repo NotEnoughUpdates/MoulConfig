@@ -20,14 +20,14 @@
 package io.github.moulberry.moulconfig.gui;
 
 import io.github.moulberry.moulconfig.TextRenderUtils;
-import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 
 public class GuiOptionEditorInfoText extends GuiOptionEditor {
     private String buttonText;
 
-    public GuiOptionEditorInfoText(ConfigProcessor.ProcessedOption option, String buttonText) {
+    public GuiOptionEditorInfoText(ProcessedOption option, String buttonText) {
         super(option);
 
         this.buttonText = buttonText;

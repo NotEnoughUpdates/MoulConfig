@@ -18,7 +18,7 @@ package io.github.moulberry.moulconfig.gui;/*
  */
 
 
-import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -27,7 +27,7 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
     private final GuiElementSlider slider;
     private final GuiElementTextField textField;
 
-    public GuiOptionEditorSlider(ConfigProcessor.ProcessedOption option, float minValue, float maxValue, float minStep) {
+    public GuiOptionEditorSlider(ProcessedOption option, float minValue, float maxValue, float minStep) {
         super(option);
         if (minStep < 0) minStep = 0.01f;
 

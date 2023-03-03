@@ -22,28 +22,26 @@ package io.github.moulberry.moulconfig.gui;
 import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.RenderUtils;
-import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
 
 public class GuiOptionEditorColour extends GuiOptionEditor {
-	private String chromaColour;
 	private GuiElementColour colourElement = null;
 
-	public GuiOptionEditorColour(ConfigProcessor.ProcessedOption option) {
-		super(option);
+    public GuiOptionEditorColour(ProcessedOption option) {
+        super(option);
 
-		this.chromaColour = (String) option.get();
-	}
+    }
 
 	@Override
 	public void render(int x, int y, int width) {
 		super.render(x, y, width);
 		int height = getHeight();
 
-		int argb = ChromaColour.specialToChromaRGB(chromaColour);
-		int r = (argb >> 16) & 0xFF;
+        int argb = ChromaColour.specialToChromaRGB((String) option.get());
+        int r = (argb >> 16) & 0xFF;
 		int g = (argb >> 8) & 0xFF;
 		int b = argb & 0xFF;
 		GlStateManager.color(r / 255f, g / 255f, b / 255f, 1);
@@ -70,10 +68,7 @@ public class GuiOptionEditorColour extends GuiOptionEditor {
 		if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0 &&
 			mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
 			mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
-			colourElement = new GuiElementColour(mouseX, mouseY, (String) option.get(), (val) -> {
-				option.set(val);
-				chromaColour = val;
-			}, () -> colourElement = null);
+			colourElement = new GuiElementColour(mouseX, mouseY, (String) option.get(), option::set, () -> colourElement = null);
 		}
 
 		return false;

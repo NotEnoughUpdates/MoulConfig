@@ -1,6 +1,8 @@
 package io.github.moulberry.moulconfig.test;
 
-import net.minecraft.client.Minecraft;
+import io.github.moulberry.moulconfig.struct.BuiltinMoulConfigGuis;
+import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.MoulConfigProcessor;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
@@ -19,9 +21,12 @@ public class MoulConfigTest {
         // TODO
     }
 
-
+    public static TestConfig testConfig = new TestConfig();
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        MoulConfigProcessor<TestConfig> testConfigMoulConfigProcessor = new MoulConfigProcessor<>(testConfig);
+        BuiltinMoulConfigGuis.addProcessors(testConfigMoulConfigProcessor);
+        ConfigProcessor.processConfig(testConfig.getClass(), testConfigMoulConfigProcessor);
         ClientCommandHandler.instance.registerCommand(new CommandBase() {
             @Override
             public String getCommandName() {

@@ -23,7 +23,7 @@ import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.LerpUtils;
 import io.github.moulberry.moulconfig.RenderUtils;
 import io.github.moulberry.moulconfig.TextRenderUtils;
-import io.github.moulberry.moulconfig.struct.ConfigProcessor;
+import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -54,13 +54,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 	private boolean dropdownOpen = false;
 
 	public GuiOptionEditorDraggableList(
-		ConfigProcessor.ProcessedOption option,
-		String[] exampleText,
-		boolean disableDeleting
-	) {
+        ProcessedOption option,
+        String[] exampleText,
+        boolean enableDeleting
+    ) {
 		super(option);
 
-		this.enableDeleting = disableDeleting;
+		this.enableDeleting = enableDeleting;
 		this.exampleText = exampleText;
 		this.activeText = (List<Integer>) option.get();
 	}
