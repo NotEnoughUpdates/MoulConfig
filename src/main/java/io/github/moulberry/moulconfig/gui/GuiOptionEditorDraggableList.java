@@ -30,7 +30,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -38,8 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
-	private static final ResourceLocation DELETE = new ResourceLocation("notenoughupdates:core/delete.png");
-
 	private final String[] exampleText;
 	private final boolean enableDeleting;
 	private final List<Integer> activeText;
@@ -102,7 +99,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 		}
 
 		if (enableDeleting) {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(DELETE);
+			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.DELETE);
 			RenderUtils.drawTexturedRect(x + width / 6 + 27, y + 45 - 7 - 13, 11, 14, GL11.GL_NEAREST);
 		}
 

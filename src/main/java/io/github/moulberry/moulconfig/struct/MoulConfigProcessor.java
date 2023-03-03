@@ -96,4 +96,8 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         }
         return null;
     }
+
+    public LinkedHashMap<String, ProcessedCategory> getAllCategories() {
+        return this.categories;
+    }
 }

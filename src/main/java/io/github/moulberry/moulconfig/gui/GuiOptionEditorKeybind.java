@@ -26,16 +26,11 @@ import io.github.moulberry.moulconfig.TextRenderUtils;
 import io.github.moulberry.moulconfig.struct.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import java.util.function.Supplier;
-
 public class GuiOptionEditorKeybind extends GuiOptionEditor {
-    private static final ResourceLocation RESET = new ResourceLocation("notenoughupdates:itemcustomize/reset.png");
-
     private final int defaultKeyCode;
     private boolean editingKeycode;
 
@@ -62,7 +57,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
             false, 40, 0xFF303030
         );
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(RESET);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.RESET);
         GlStateManager.color(1, 1, 1, 1);
         RenderUtils.drawTexturedRect(x + width / 6 - 24 + 48 + 3, y + height - 7 - 14 + 3, 10, 11, GL11.GL_NEAREST);
     }

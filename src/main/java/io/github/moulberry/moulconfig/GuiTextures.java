@@ -8,7 +8,10 @@ public class GuiTextures {
         TOGGLE_OFF, TOGGLE_ONE, TOGGLE_TWO, TOGGLE_THREE, TOGGLE_ON, TOGGLE_BAR,
         SLIDER_OFF_CAP, SLIDER_OFF_NOTCH, SLIDER_OFF_SEGMENT,
         SLIDER_ON_CAP, SLIDER_ON_NOTCH, SLIDER_ON_SEGMENT,
-        SLIDER_BUTTON;
+        SLIDER_BUTTON,
+        COLOUR_SELECTOR_DOT, COLOUR_SELECTOR_BAR, COLOUR_SELECTOR_BAR_ALPHA, COLOUR_SELECTOR_CHROMA,
+        COLOUR_PICKER_INTERNAL, COLOUR_PICKER_INTERNAL_VALUE, COLOUR_PICKER_INTERNAL_OPACITY,
+        SEARCH;
 
     private static ResourceLocation root;
 
@@ -39,6 +42,14 @@ public class GuiTextures {
         SLIDER_ON_NOTCH = r("slider/slider_on_notch.png");
         SLIDER_ON_SEGMENT = r("slider/slider_on_segment.png");
         SLIDER_BUTTON = r("slider/slider_button.png");
+        COLOUR_SELECTOR_DOT = r("colour_selector_dot.png");
+        COLOUR_SELECTOR_BAR = r("colour_selector_bar.png");
+        COLOUR_SELECTOR_BAR_ALPHA = r("colour_selector_bar_alpha.png");
+        COLOUR_SELECTOR_CHROMA = r("colour_selector_chroma.png");
+        COLOUR_PICKER_INTERNAL = r("internal/colourpicker");
+        COLOUR_PICKER_INTERNAL_VALUE = r("internal/colourpicker_value");
+        COLOUR_PICKER_INTERNAL_OPACITY = r("internal/colourpicker_opacity");
+        SEARCH = r("search.png");
     }
 
 
