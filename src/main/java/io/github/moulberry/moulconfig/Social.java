@@ -44,7 +44,7 @@ public abstract class Social {
         public void onClick() {
             try {
                 Desktop.getDesktop().browse(url);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 ChatComponentText text = new ChatComponentText("Click here to open " + name);
                 text.setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.toString())));
                 Minecraft.getMinecraft().thePlayer.addChatMessage(text);
