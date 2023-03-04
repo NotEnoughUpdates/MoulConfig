@@ -83,7 +83,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
             option.name(), option.desc(),
             option.subcategoryId(),
             field,
-            currentCategoryObject,
+            currentCategory, currentCategoryObject,
             configBaseObject
         );
     }

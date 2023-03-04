@@ -10,15 +10,17 @@ public class ProcessedOption {
     public final String desc;
     public final int subcategoryId;
     public final Field field;
+    public final ProcessedCategory category;
     private final Object container;
     public GuiOptionEditor editor;
     public int accordionId = -1;
     public Config config;
 
-    public ProcessedOption(String name, String desc, int subcategoryId, Field field, Object container, Config config) {
+    public ProcessedOption(String name, String desc, int subcategoryId, Field field, ProcessedCategory category, Object container, Config config) {
         this.name = name;
         this.desc = desc;
         this.subcategoryId = subcategoryId;
+        this.category = category;
         this.config = config;
         this.field = field;
         this.container = container;

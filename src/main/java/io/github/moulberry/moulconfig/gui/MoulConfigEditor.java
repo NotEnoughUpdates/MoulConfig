@@ -19,7 +19,6 @@
 
 package io.github.moulberry.moulconfig.gui;
 
-import com.google.common.collect.Lists;
 import io.github.moulberry.moulconfig.*;
 import io.github.moulberry.moulconfig.struct.MoulConfigProcessor;
 import io.github.moulberry.moulconfig.struct.ProcessedCategory;
@@ -30,12 +29,12 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class MoulConfigEditor<T extends Config> extends GuiElement {
@@ -51,14 +50,24 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     private int lastMouseX = 0;
     private int keyboardScrollXCutoff = 0;
 
+    private LinkedHashMap<String, ProcessedCategory> currentlyVisibleCategories;
+    private Set<ProcessedOption> currentlyVisibleOptions;
+
+    private List<ProcessedOption> allOptions = new ArrayList<>();
 
     public MoulConfigEditor(MoulConfigProcessor<T> processedConfig) {
         this.openedMillis = System.currentTimeMillis();
         this.processedConfig = processedConfig;
+        for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
+            allOptions.addAll(category.options.values());
+        }
+        search();
     }
 
     private LinkedHashMap<String, ProcessedOption> getOptionsInCategory(ProcessedCategory cat) {
-        return cat.options;
+        LinkedHashMap<String, ProcessedOption> options = new LinkedHashMap<>(cat.options);
+        options.entrySet().removeIf(it -> !currentlyVisibleOptions.contains(it.getValue()));
+        return options;
     }
 
     public String getSelectedCategory() {
@@ -70,11 +79,41 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         optionsScroll.setValue(0);
     }
     public void search() {
-        //TODO
+        String toSearch = searchField.getText().trim();
+        Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
+        LinkedHashMap<String, ProcessedCategory> matchingCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
+        if (!toSearch.isEmpty()) {
+            for (String word : toSearch.split(" +")) {
+                matchingOptions.removeIf(it -> !it.name.toLowerCase().contains(word.toLowerCase()));
+            }
+            List<ProcessedOption> accordions = new ArrayList<>();
+            List<ProcessedOption> toProcessForAccordions = new ArrayList<>(matchingOptions);
+            do {
+                for (ProcessedOption matchingOption : toProcessForAccordions) {
+                    if (matchingOption.accordionId >= 0) {
+                        for (ProcessedOption value : matchingOption.category.options.values()) {
+                            if (value.editor instanceof GuiOptionEditorAccordion) {
+                                if (((GuiOptionEditorAccordion) value.editor).getAccordionId() == matchingOption.accordionId) {
+                                    accordions.add(value);
+                                }
+                            }
+                        }
+                    }
+                }
+                toProcessForAccordions.clear();
+                toProcessForAccordions.addAll(accordions);
+                matchingOptions.addAll(accordions);
+                accordions.clear();
+            } while (!toProcessForAccordions.isEmpty());
+            Set<ProcessedCategory> visibleCategories = matchingOptions.stream().map(it -> it.category).collect(Collectors.toSet());
+            matchingCategories.entrySet().removeIf(stringProcessedCategoryEntry -> !visibleCategories.contains(stringProcessedCategoryEntry.getValue()));
+        }
+        currentlyVisibleCategories = matchingCategories;
+        currentlyVisibleOptions = matchingOptions;
     }
 
     public LinkedHashMap<String, ProcessedCategory> getCurrentlyVisibleCategories() {
-        return processedConfig.getAllCategories();
+        return currentlyVisibleCategories;
     }
 
     public void render() {
