@@ -1,12 +1,22 @@
 package io.github.moulberry.moulconfig.test;
 
 import io.github.moulberry.moulconfig.annotations.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.ChatComponentText;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
 public class TestCategory {
+    @ConfigEditorButton(buttonText = "RUN!")
+    @ConfigOption(name = "Button using runnable", desc = "Click to run")
+    public Runnable doRun = () -> Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Hehehe"));
+    @ConfigEditorButton(buttonText = "RUN!", runnableId = 10)
+    @ConfigOption(name = "Button using runnableId", desc = "Click to run")
+    public boolean whatEver;
+
+
     @ConfigOption(name = "Text Test", desc = "Text Editor Test")
     @ConfigEditorText
     public String text = "Text";

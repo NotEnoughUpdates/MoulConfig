@@ -32,6 +32,7 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
 	private final int runnableId;
 	private String buttonText;
 	private final Config config;
+    private boolean isUsingRunnable;
 
 	public GuiOptionEditorButton(
         ProcessedOption option,
@@ -39,13 +40,14 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
         String buttonText,
         Config config
     ) {
-		super(option);
-		this.runnableId = runnableId;
-		this.config = config;
+        super(option);
+        this.runnableId = runnableId;
+        this.config = config;
 
-		this.buttonText = buttonText;
-		if (this.buttonText != null && this.buttonText.isEmpty()) this.buttonText = null;
-	}
+        this.buttonText = buttonText;
+        this.isUsingRunnable = option.getType() == Runnable.class;
+        if (this.buttonText != null && this.buttonText.isEmpty()) this.buttonText = null;
+    }
 
 	@Override
 	public void render(int x, int y, int width) {
@@ -71,9 +73,13 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
 			int height = getHeight();
 			if (mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
 				mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
-				config.executeRunnable(runnableId);
-				return true;
-			}
+                if (isUsingRunnable) {
+                    ((Runnable) option.get()).run();
+                } else {
+                    config.executeRunnable(runnableId);
+                }
+                return true;
+            }
 		}
 
 		return false;
