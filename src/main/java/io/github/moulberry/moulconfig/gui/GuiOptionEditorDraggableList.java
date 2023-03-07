@@ -69,9 +69,6 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             this.enumSet = (EnumSet<?>) option.get();
             this.enumType = (Class<? extends Enum<?>>) ((ParameterizedType) option.getType()).getActualTypeArguments()[0];
             this.activeText = new ArrayList<>();
-            for (Enum<?> enumElement : enumSet) {
-                activeText.add(enumElement.ordinal());
-            }
             this.enumConstants = enumType.getEnumConstants();
             this.exampleText = new String[enumConstants.length];
             for (int i = 0; i < enumConstants.length; i++) {
@@ -83,15 +80,22 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         }
     }
 
+    private void syncEnumSetToActive() {
+        if (enumSet == null) return;
+        activeText.clear();
+        for (Enum<?> anEnum : enumSet) {
+            activeText.add(anEnum.ordinal());
+        }
+    }
+
     private <T extends Enum<T>> void syncActiveToEnumSet() {
+        if (enumSet == null) return;
         EnumSet<T> enumSet = (EnumSet<T>) this.enumSet;
         T[] enumConstants = (T[]) this.enumConstants;
-        if (enumSet != null) {
-            enumSet.clear();
-            for (int ordinal : activeText) {
-                if (0 <= ordinal && ordinal < enumConstants.length) {
-                    enumSet.add(enumConstants[ordinal]);
-                }
+        enumSet.clear();
+        for (int ordinal : activeText) {
+            if (0 <= ordinal && ordinal < enumConstants.length) {
+                enumSet.add(enumConstants[ordinal]);
             }
         }
     }
@@ -111,8 +115,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
     @Override
 	public void render(int x, int y, int width) {
-		super.render(x, y, width);
-
+        super.render(x, y, width);
+        syncEnumSetToActive();
 		int height = getHeight();
 
 		GlStateManager.color(1, 1, 1, 1);
@@ -172,8 +176,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
 	@Override
 	public void renderOverlay(int x, int y, int width) {
-		super.renderOverlay(x, y, width);
-
+        super.renderOverlay(x, y, width);
+        syncEnumSetToActive();
 		if (dropdownOpen) {
 			List<Integer> remaining = new ArrayList<>();
 			for (int i = 0; i < exampleText.length; i++) {
@@ -260,6 +264,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
 	@Override
 	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+        syncEnumSetToActive();
 		if (!Mouse.getEventButtonState() && !dropdownOpen &&
 			dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
