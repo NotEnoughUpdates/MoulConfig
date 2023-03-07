@@ -80,7 +80,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         }
     }
 
-    private void syncEnumSetToActive() {
+    private void loadChanges() {
         if (enumSet == null) return;
         activeText.clear();
         for (Enum<?> anEnum : enumSet) {
@@ -88,7 +88,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         }
     }
 
-    private <T extends Enum<T>> void syncActiveToEnumSet() {
+    private <T extends Enum<T>> void saveChanges() {
         if (enumSet == null) return;
         EnumSet<T> enumSet = (EnumSet<T>) this.enumSet;
         T[] enumConstants = (T[]) this.enumConstants;
@@ -98,6 +98,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 enumSet.add(enumConstants[ordinal]);
             }
         }
+        option.explicitNotifyChange();
     }
 
 
@@ -116,7 +117,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     @Override
 	public void render(int x, int y, int width) {
         super.render(x, y, width);
-        syncEnumSetToActive();
+        loadChanges();
 		int height = getHeight();
 
 		GlStateManager.color(1, 1, 1, 1);
@@ -177,7 +178,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 	@Override
 	public void renderOverlay(int x, int y, int width) {
         super.renderOverlay(x, y, width);
-        syncEnumSetToActive();
+        loadChanges();
 		if (dropdownOpen) {
 			List<Integer> remaining = new ArrayList<>();
 			for (int i = 0; i < exampleText.length; i++) {
@@ -264,14 +265,14 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
 	@Override
 	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        syncEnumSetToActive();
+        loadChanges();
 		if (!Mouse.getEventButtonState() && !dropdownOpen &&
 			dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
 			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
 			if (enableDeleting) {
                 activeText.remove(dragStartIndex);
-                syncActiveToEnumSet();
+                saveChanges();
 			}
 			currentDragging = -1;
 			dragStartIndex = -1;
@@ -312,7 +313,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 					for (int strIndex : remaining) {
 						if (mouseY < top + dropdownY + 12) {
                             activeText.add(0, strIndex);
-                            syncActiveToEnumSet();
+                            saveChanges();
                             if (remaining.size() == 1) dropdownOpen = false;
                             return true;
                         }
@@ -360,7 +361,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 				if (dragOffsetY + mouseY + 4 < y + 50 + yOff + 10) {
 					activeText.remove(dragStartIndex);
                     activeText.add(i, currentDragging);
-                    syncActiveToEnumSet();
+                    saveChanges();
                     dragStartIndex = i;
 					break;
 				}

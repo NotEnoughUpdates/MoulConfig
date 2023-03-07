@@ -70,4 +70,14 @@ public class ProcessedOption {
             return false;
         }
     }
+
+    public void explicitNotifyChange() {
+        if (isProperty) {
+            try {
+                ((Property) field.get(container)).notifyObservers();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

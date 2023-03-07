@@ -17,6 +17,10 @@ public class Property<T> extends BaseObservable<T> {
         return value;
     }
 
+    public void notifyObservers() {
+        notifyObservers(value, value);
+    }
+
     public void set(T newValue) {
         T oldValue = this.value;
         this.value = newValue;
