@@ -47,7 +47,22 @@ public class TestCategory {
 
     @ConfigOption(name = "Drag List 2", desc = "Using EnumSet")
     @ConfigEditorDraggableList()
-    public EnumSet<TestEnum> draggableEnum = EnumSet.noneOf(TestEnum.class);
+    public EnumSet<TestEnum> draggableEnum = EnumSet.of(TestEnum.C);
+
+    @ConfigOption(name = "Drop Down", desc = "Using integer")
+    @ConfigEditorDropdown(
+        values = {"A", "B", "C"}
+    )
+    public int dropDownUsingIntegers = 0;
+    @ConfigOption(name = "Drop Down", desc = "Using strings")
+    @ConfigEditorDropdown(
+        values = {"A", "B", "C"}
+    )
+    public String dropDownUisngStrings = "A";
+
+    @ConfigOption(name = "Drop Down", desc = "Using enums")
+    @ConfigEditorDropdown()
+    public TestEnum dropDownUsingEnum = TestEnum.A;
 
     enum TestEnum {
         A, B, C, D, E;

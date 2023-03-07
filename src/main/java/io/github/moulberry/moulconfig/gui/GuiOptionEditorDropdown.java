@@ -29,19 +29,31 @@ import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Arrays;
+
 public class GuiOptionEditorDropdown extends GuiOptionEditor {
-    private final String[] values;
-    private final boolean useOrdinal;
+    private String[] values;
+    private boolean useOrdinal;
     private boolean open = false;
+    private Enum<?>[] constants;
 
     public GuiOptionEditorDropdown(
         ProcessedOption option,
-        String[] values,
-        boolean useOrdinal
+        String[] values
     ) {
         super(option);
-        this.values = values;
-        this.useOrdinal = useOrdinal;
+        Class<?> clazz = (Class<?>) option.getType();
+        if (Enum.class.isAssignableFrom(clazz)) {
+            constants = (Enum<?>[]) (clazz).getEnumConstants();
+            this.values = new String[constants.length];
+            for (int i = 0; i < constants.length; i++) {
+                this.values[i] = constants[i].toString();
+            }
+        } else {
+            this.values = values;
+            assert values.length > 0;
+        }
+        this.useOrdinal = clazz == int.class || clazz == Integer.class;
     }
 
     @Override
@@ -54,7 +66,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
             int dropdownWidth = Math.min(width / 3 - 10, 80);
             int left = x + width / 6 - dropdownWidth / 2;
             int top = y + height - 7 - 14;
-            int selected = (int) option.get();
+            int selected = getSelectedIndex();
             if (selected >= values.length) selected = values.length;
             String selectedString = " - Select - ";
             if (selected >= 0 && selected < values.length) {
@@ -76,18 +88,30 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
                 dropdownWidth - 16, 0xffa0a0a0
             );
         }
-	}
+    }
 
-	@Override
-	public void renderOverlay(int x, int y, int width) {
-		if (open) {
-            int selected = (int) option.get();
+    private int getSelectedIndex() {
+        Object selectedObject = option.get();
+        if (selectedObject == null) return -1;
+        if (useOrdinal) {
+            return (int) selectedObject;
+        } else if (constants != null) {
+            return ((Enum) selectedObject).ordinal();
+        } else {
+            return Arrays.asList(values).indexOf(selectedObject);
+        }
+    }
+
+    @Override
+    public void renderOverlay(int x, int y, int width) {
+        if (open) {
+            int selected = getSelectedIndex();
             String selectedString = " - Select - ";
-			if (selected >= 0 && selected < values.length) {
-				selectedString = values[selected];
-			}
+            if (selected >= 0 && selected < values.length) {
+                selectedString = values[selected];
+            }
 
-			int height = getHeight();
+            int height = getHeight();
 
 			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 			int dropdownWidth = Math.min(width / 3 - 10, 80);
@@ -175,14 +199,16 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 					int dropdownY = 13;
 					for (int ordinal = 0; ordinal < values.length; ordinal++) {
 						if (mouseY >= top + 3 + dropdownY && mouseY <= top + 3 + dropdownY + 12) {
-							int selected = ordinal;
-							if (useOrdinal) {
-								option.set(selected);
-							} else {
-								option.set(values[selected]);
-							}
-							return true;
-						}
+                            int selected = ordinal;
+                            if (constants != null) {
+                                option.set(constants[selected]);
+                            } else if (useOrdinal) {
+                                option.set(selected);
+                            } else {
+                                option.set(values[selected]);
+                            }
+                            return true;
+                        }
 						dropdownY += 12;
 					}
 				}

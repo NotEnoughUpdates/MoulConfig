@@ -16,7 +16,7 @@ public class BuiltinMoulConfigGuis {
         processor.registerConfigEditor(ConfigEditorAccordion.class, (processedOption, accordion) ->
             new GuiOptionEditorAccordion(processedOption, accordion.id()));
         processor.registerConfigEditor(ConfigEditorDropdown.class, (processedOption, configEditorDropdown) ->
-            new GuiOptionEditorDropdown(processedOption, configEditorDropdown.values(), processedOption.field.getType() == String.class));
+            new GuiOptionEditorDropdown(processedOption, configEditorDropdown.values()));
         processor.registerConfigEditor(ConfigEditorDraggableList.class, (processedOption, configEditorDraggableList) ->
             new GuiOptionEditorDraggableList(processedOption, configEditorDraggableList.exampleText(), configEditorDraggableList.allowDeleting()));
         processor.registerConfigEditor(ConfigEditorColour.class, (processedOption, configEditorColour) ->
