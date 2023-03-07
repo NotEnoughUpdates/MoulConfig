@@ -33,48 +33,83 @@ import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
-	private final String[] exampleText;
-	private final boolean enableDeleting;
-	private final List<Integer> activeText;
-	private int currentDragging = -1;
-	private int dragStartIndex = -1;
+    private Enum<?>[] enumConstants;
+    private String[] exampleText;
+    private boolean enableDeleting;
+    private List<Integer> activeText;
+    private int currentDragging = -1;
+    private int dragStartIndex = -1;
 
-	private long trashHoverTime = -1;
+    private long trashHoverTime = -1;
 
-	private int dragOffsetX = -1;
-	private int dragOffsetY = -1;
+    private int dragOffsetX = -1;
+    private int dragOffsetY = -1;
+    private boolean isEnumSet;
+    private boolean dropdownOpen = false;
+    private EnumSet<?> enumSet;
+    private Class<? extends Enum<?>> enumType;
 
-	private boolean dropdownOpen = false;
-
-	public GuiOptionEditorDraggableList(
+    public GuiOptionEditorDraggableList(
         ProcessedOption option,
         String[] exampleText,
         boolean enableDeleting
     ) {
-		super(option);
+        super(option);
 
-		this.enableDeleting = enableDeleting;
-		this.exampleText = exampleText;
-		this.activeText = (List<Integer>) option.get();
-	}
+        this.enableDeleting = enableDeleting;
+        Object obj = option.get();
+        this.isEnumSet = obj instanceof EnumSet<?>;
+        if (isEnumSet) {
+            this.enumSet = (EnumSet<?>) option.get();
+            this.enumType = (Class<? extends Enum<?>>) ((ParameterizedType) option.getType()).getActualTypeArguments()[0];
+            this.activeText = new ArrayList<>();
+            for (Enum<?> enumElement : enumSet) {
+                activeText.add(enumElement.ordinal());
+            }
+            this.enumConstants = enumType.getEnumConstants();
+            this.exampleText = new String[enumConstants.length];
+            for (int i = 0; i < enumConstants.length; i++) {
+                this.exampleText[i] = enumConstants[i].toString();
+            }
+        } else {
+            this.exampleText = exampleText;
+            this.activeText = (List<Integer>) option.get();
+        }
+    }
 
-	@Override
-	public int getHeight() {
-		int height = super.getHeight() + 13;
+    private <T extends Enum<T>> void syncActiveToEnumSet() {
+        EnumSet<T> enumSet = (EnumSet<T>) this.enumSet;
+        T[] enumConstants = (T[]) this.enumConstants;
+        if (enumSet != null) {
+            enumSet.clear();
+            for (int ordinal : activeText) {
+                if (0 <= ordinal && ordinal < enumConstants.length) {
+                    enumSet.add(enumConstants[ordinal]);
+                }
+            }
+        }
+    }
 
-		for (int strIndex : activeText) {
-			String str = exampleText[strIndex];
-			height += 10 * str.split("\n").length;
-		}
 
-		return height;
-	}
+    @Override
+    public int getHeight() {
+        int height = super.getHeight() + 13;
 
-	@Override
+        for (int strIndex : activeText) {
+            String str = exampleText[strIndex];
+            height += 10 * str.split("\n").length;
+        }
+
+        return height;
+    }
+
+    @Override
 	public void render(int x, int y, int width) {
 		super.render(x, y, width);
 
@@ -123,7 +158,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 					);
 				}
 				Minecraft.getMinecraft().fontRendererObj.drawString(
-					"\u2261",
+					"≡",
 					x + 10,
 					y + 50 + yOff + ySize / 2 - 4,
 					0xffffff,
@@ -230,7 +265,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
 			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
 			if (enableDeleting) {
-				activeText.remove(dragStartIndex);
+                activeText.remove(dragStartIndex);
+                syncActiveToEnumSet();
 			}
 			currentDragging = -1;
 			dragStartIndex = -1;
@@ -270,10 +306,11 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 					int dropdownY = -1;
 					for (int strIndex : remaining) {
 						if (mouseY < top + dropdownY + 12) {
-							activeText.add(0, strIndex);
-							if (remaining.size() == 1) dropdownOpen = false;
-							return true;
-						}
+                            activeText.add(0, strIndex);
+                            syncActiveToEnumSet();
+                            if (remaining.size() == 1) dropdownOpen = false;
+                            return true;
+                        }
 
 						dropdownY += 12;
 					}
@@ -317,9 +354,9 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			for (int strIndex : activeText) {
 				if (dragOffsetY + mouseY + 4 < y + 50 + yOff + 10) {
 					activeText.remove(dragStartIndex);
-					activeText.add(i, currentDragging);
-
-					dragStartIndex = i;
+                    activeText.add(i, currentDragging);
+                    syncActiveToEnumSet();
+                    dragStartIndex = i;
 					break;
 				}
 				yOff += 10 * exampleText[strIndex].split("\n").length;

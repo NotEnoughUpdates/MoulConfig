@@ -4,6 +4,7 @@ import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 
 public class ProcessedOption {
     public final String name;
@@ -32,6 +33,10 @@ public class ProcessedOption {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public Type getType() {
+        return field.getGenericType();
     }
 
     public boolean set(Object value) {

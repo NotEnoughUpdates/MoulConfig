@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorDraggableList {
-	String[] exampleText();
+	String[] exampleText() default {};
 
 	boolean allowDeleting() default true;
 }
