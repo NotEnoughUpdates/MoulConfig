@@ -38,6 +38,9 @@ public class MoulConfigTest {
         MoulConfigProcessor<TestConfig> testConfigMoulConfigProcessor = new MoulConfigProcessor<>(testConfig);
         BuiltinMoulConfigGuis.addProcessors(testConfigMoulConfigProcessor);
         ConfigProcessor.processConfig(testConfig.getClass(), testConfigMoulConfigProcessor);
+        testConfig.testCategory.text2.whenChanged((oldValue, newValue) ->
+            Minecraft.getMinecraft().thePlayer.addChatMessage(
+                new ChatComponentText("Just changed text2 from " + oldValue + " to " + newValue)));
         ClientCommandHandler.instance.registerCommand(new CommandBase() {
             @Override
             public String getCommandName() {

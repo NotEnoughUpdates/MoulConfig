@@ -2,8 +2,10 @@ package io.github.moulberry.moulconfig.struct;
 
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
+import io.github.moulberry.moulconfig.observer.Property;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class ProcessedOption {
@@ -15,6 +17,7 @@ public class ProcessedOption {
     private final Object container;
     public GuiOptionEditor editor;
     public int accordionId = -1;
+    public boolean isProperty;
     public Config config;
 
     public ProcessedOption(String name, String desc, int subcategoryId, Field field, ProcessedCategory category, Object container, Config config) {
@@ -25,26 +28,41 @@ public class ProcessedOption {
         this.config = config;
         this.field = field;
         this.container = container;
+        this.isProperty = field.getType() == Property.class;
     }
 
     public Object get() {
         try {
-            return field.get(container);
+            Object obj = field.get(container);
+            if (isProperty) {
+                return ((Property) obj).get();
+            } else {
+                return obj;
+            }
         } catch (Exception e) {
             return null;
         }
     }
 
     public Type getType() {
+        if (isProperty) {
+            return ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+        }
         return field.getGenericType();
     }
 
     public boolean set(Object value) {
         try {
-            if (field.getType() == int.class && value instanceof Number) {
-                field.set(container, ((Number) value).intValue());
+            Object toSet;
+            if (getType() == int.class && value instanceof Number) {
+                toSet = ((Number) value).intValue();
             } else {
-                field.set(container, value);
+                toSet = value;
+            }
+            if (isProperty) {
+                ((Property) field.get(container)).set(toSet);
+            } else {
+                field.set(container, toSet);
             }
             return true;
         } catch (Exception e) {
