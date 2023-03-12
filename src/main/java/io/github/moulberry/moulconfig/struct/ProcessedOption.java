@@ -60,7 +60,7 @@ public class ProcessedOption {
                 toSet = value;
             }
             if (isProperty) {
-                ((Property) field.get(container)).set(toSet);
+                ((Property<Object>) field.get(container)).set(toSet);
             } else {
                 field.set(container, toSet);
             }
@@ -74,7 +74,7 @@ public class ProcessedOption {
     public void explicitNotifyChange() {
         if (isProperty) {
             try {
-                ((Property) field.get(container)).notifyObservers();
+                ((Property<?>) field.get(container)).notifyObservers();
             } catch (Exception e) {
                 e.printStackTrace();
             }
