@@ -1,53 +1,55 @@
 plugins {
     idea
     java
-    id("gg.essential.loom") version "0.10.0.+"
-    id("dev.architectury.architectury-pack200") version "0.1.3"
-    id("io.github.juuxel.loom-quiltflower") version "1.7.2"
+    id("xyz.wagyourtail.unimined") version "0.4.1"
 }
 
 group = "io.github.moulberry"
 version = "1.0.0"
 
-// Toolchains:
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
-}
-
-// Minecraft configuration:
-loom {
-    launchConfigs {
-        "client" {
+minecraft {
+    forge {
+        it.mcpChannel = "stable"
+        it.mcpVersion = "22-1.8.9"
+        it.setDevFallbackNamespace("intermediary")
+    }
+    mcRemapper.tinyRemapperConf = {
+        it.ignoreFieldDesc(true)
+        it.ignoreConflicts(true)
+    }
+    launches.apply {
+        setConfig("client") {
+            this.args.add(0, "--tweakClass")
+            this.args.add(1, "net.minecraftforge.fml.common.launcher.FMLTweaker")
         }
     }
-    forge {
-        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven("https://repo.nea.moe/releases")
+}
+
+dependencies {
+    minecraft("net.minecraft:minecraft:1.8.9")
+    mappings("moe.nea.mcp:mcp-yarn:1.8.9")
+    "forge"("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 sourceSets.main {
     output.setResourcesDir(file("$buildDir/classes/java/main"))
 }
 
-// Dependencies:
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    minecraft("com.mojang:minecraft:1.8.9")
-    mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
-    forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
-}
-
-// Tasks:
-
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
-
-val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar")
-
-tasks.assemble.get().dependsOn(tasks.remapJar)
-
+project.afterEvaluate {
+    tasks.named("runClient", JavaExec::class) {
+        this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+    }
+}
