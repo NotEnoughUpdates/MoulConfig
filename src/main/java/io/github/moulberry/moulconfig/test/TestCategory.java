@@ -86,5 +86,22 @@ public class TestCategory {
         }
     }
 
+    @Accordion
+    @ConfigOption(name = "Test Accordion", desc = "With class")
+    public TestAccordion testAccordion = new TestAccordion();
+
+    public static class TestAccordion {
+
+        @ConfigOption(name = "Sub ACcordion", desc = "Hehehe")
+        @Accordion
+        public SubAccordion subAccordion = new SubAccordion();
+    }
+
+    public static class SubAccordion {
+        @ConfigOption(name = "Test Value", desc = "AAAA")
+        @ConfigEditorButton
+        public Runnable runValue = () -> Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Hehehe"));
+    }
+
 
 }

@@ -33,11 +33,10 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiOptionEditorAccordion extends GuiOptionEditor {
 	private final int accordionId;
-	private boolean accordionToggled;
+	private boolean accordionToggled = false;
 
 	public GuiOptionEditorAccordion(ProcessedOption option, int accordionId) {
 		super(option);
-		this.accordionToggled = (boolean) option.get();
 		this.accordionId = accordionId;
 	}
 

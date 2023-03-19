@@ -2,9 +2,9 @@ package io.github.moulberry.moulconfig.struct;
 
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.annotations.Category;
-import io.github.moulberry.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
+import io.github.moulberry.moulconfig.gui.GuiOptionEditorAccordion;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -53,9 +53,11 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     }
 
     @Override
-    public void beginAccordion(Field field, ConfigOption option, ConfigEditorAccordion accordion) {
-        emitOption(field, option);
-        this.accordion.push(accordion.id());
+    public void beginAccordion(Field field, ConfigOption option, int id) {
+        ProcessedOption processedOption = createProcessedOption(field, option);
+        processedOption.editor = new GuiOptionEditorAccordion(processedOption, id);
+        currentCategory.options.add(processedOption);
+        this.accordion.push(id);
     }
 
     @Override
@@ -72,20 +74,21 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
             return;
         }
         processedOption.editor = optionGui;
-        if (!accordion.isEmpty()) {
-            processedOption.accordionId = accordion.peek();
-        }
-        currentCategory.options.put(field.getName(), processedOption);
+        currentCategory.options.add(processedOption);
     }
 
     protected ProcessedOption createProcessedOption(Field field, ConfigOption option) {
-        return new ProcessedOption(
+        ProcessedOption processedOption = new ProcessedOption(
             option.name(), option.desc(),
             option.subcategoryId(),
             field,
             currentCategory, currentCategoryObject,
             configBaseObject
         );
+        if (!accordion.isEmpty()) {
+            processedOption.accordionId = accordion.peek();
+        }
+        return processedOption;
     }
 
     protected GuiOptionEditor createOptionGui(ProcessedOption processedOption, Field field, ConfigOption option) {

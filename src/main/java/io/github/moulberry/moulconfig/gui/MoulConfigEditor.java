@@ -59,14 +59,14 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         this.openedMillis = System.currentTimeMillis();
         this.processedConfig = processedConfig;
         for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
-            allOptions.addAll(category.options.values());
+            allOptions.addAll(category.options);
         }
         search();
     }
 
-    private LinkedHashMap<String, ProcessedOption> getOptionsInCategory(ProcessedCategory cat) {
-        LinkedHashMap<String, ProcessedOption> options = new LinkedHashMap<>(cat.options);
-        options.entrySet().removeIf(it -> !currentlyVisibleOptions.contains(it.getValue()));
+    private List<ProcessedOption> getOptionsInCategory(ProcessedCategory cat) {
+        List<ProcessedOption> options = new ArrayList<>(cat.options);
+        options.removeIf(it -> !currentlyVisibleOptions.contains(it));
         return options;
     }
 
@@ -91,7 +91,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             do {
                 for (ProcessedOption matchingOption : toProcessForAccordions) {
                     if (matchingOption.accordionId >= 0) {
-                        for (ProcessedOption value : matchingOption.category.options.values()) {
+                        for (ProcessedOption value : matchingOption.category.options) {
                             if (value.editor instanceof GuiOptionEditorAccordion) {
                                 if (((GuiOptionEditorAccordion) value.editor).getAccordionId() == matchingOption.accordionId) {
                                     accordions.add(value);
@@ -303,7 +303,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             int optionWidthDefault = innerRight - innerLeft - 20;
             GlStateManager.enableDepth();
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ProcessedOption option : getOptionsInCategory(cat).values()) {
+            for (ProcessedOption option : getOptionsInCategory(cat)) {
                 int optionWidth = optionWidthDefault;
                 if (option.accordionId >= 0) {
                     if (!activeAccordions.containsKey(option.accordionId)) {
@@ -351,7 +351,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             GlStateManager.translate(0, 0, 10);
             GlStateManager.enableDepth();
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ProcessedOption option : getOptionsInCategory(cat).values()) {
+            for (ProcessedOption option : getOptionsInCategory(cat)) {
                 int optionWidth = optionWidthDefault;
                 if (option.accordionId >= 0) {
                     if (!activeAccordions.containsKey(option.accordionId)) {
@@ -554,7 +554,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
                     ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                     HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-                    for (ProcessedOption option : getOptionsInCategory(cat).values()) {
+                    for (ProcessedOption option : getOptionsInCategory(cat)) {
                         if (option.accordionId >= 0) {
                             if (!activeAccordions.containsKey(option.accordionId)) {
                                 continue;
@@ -628,7 +628,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             int optionWidthDefault = innerRight - innerLeft - 20;
             ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ProcessedOption option : getOptionsInCategory(cat).values()) {
+            for (ProcessedOption option : getOptionsInCategory(cat)) {
                 int optionWidth = optionWidthDefault;
                 if (option.accordionId >= 0) {
                     if (!activeAccordions.containsKey(option.accordionId)) {
@@ -673,7 +673,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 int optionWidthDefault = innerRight - innerLeft - 20;
                 ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                 HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-                for (ProcessedOption option : getOptionsInCategory(cat).values()) {
+                for (ProcessedOption option : getOptionsInCategory(cat)) {
                     int optionWidth = optionWidthDefault;
                     if (option.accordionId >= 0) {
                         if (!activeAccordions.containsKey(option.accordionId)) {
@@ -745,7 +745,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
             ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ProcessedOption option : getOptionsInCategory(cat).values()) {
+            for (ProcessedOption option : getOptionsInCategory(cat)) {
                 if (option.accordionId >= 0) {
                     if (!activeAccordions.containsKey(option.accordionId)) {
                         continue;

@@ -19,7 +19,7 @@ public interface ConfigStructureReader {
 
     void endCategory();
 
-    void beginAccordion(Field field, ConfigOption option, ConfigEditorAccordion accordion);
+    void beginAccordion(Field field, ConfigOption option, int id);
 
     void endAccordion();
     void emitOption(Field field, ConfigOption option);

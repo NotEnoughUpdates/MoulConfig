@@ -34,6 +34,8 @@ public class ConfigProcessor {
         ConfigEditorButton.class
     );
 
+    static int nextAnnotation = 0;
+
     private static void processCategory(Class<?> categoryClass, ConfigStructureReader reader) {
         Stack<Integer> accordionStack = new Stack<>();
         Set<Integer> usedAccordionIds = new HashSet<>();
@@ -45,6 +47,19 @@ public class ConfigProcessor {
                 && nonStoredConfigOptions.stream().noneMatch(field::isAnnotationPresent)) {
                 new Error("Warning: non transient @ConfigOption without @Expose in " + categoryClass + " on field " + field).printStackTrace();
             }
+
+            Accordion accordionClassAnnotation = field.getAnnotation(Accordion.class);
+            if (accordionClassAnnotation != null) {
+                if (!usedAccordionIds.isEmpty()) {
+                    new Error("Warning: Cannot mix @CnofigEditorAccordion and @ConfigAccordionId with @Accordion in class " + categoryClass).printStackTrace();
+                }
+                reader.beginAccordion(field, optionAnnotation, ++nextAnnotation);
+                processCategory(field.getType(), reader);
+                reader.endAccordion();
+                continue;
+            }
+
+
             ConfigAccordionId parentAccordion = field.getAnnotation(ConfigAccordionId.class);
             if (parentAccordion == null) {
                 while (!accordionStack.isEmpty()) {
@@ -67,7 +82,7 @@ public class ConfigProcessor {
                 }
                 usedAccordionIds.add(selfAccordion.id());
                 accordionStack.push(selfAccordion.id());
-                reader.beginAccordion(field, optionAnnotation, selfAccordion);
+                reader.beginAccordion(field, optionAnnotation, selfAccordion.id());
             } else {
                 reader.emitOption(field, optionAnnotation);
             }
