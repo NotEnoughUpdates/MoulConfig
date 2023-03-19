@@ -79,7 +79,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         }
     }
 
-    private <T extends Enum<T>> void saveChanges() {
+    private void saveChanges() {
         option.explicitNotifyChange();
     }
 
