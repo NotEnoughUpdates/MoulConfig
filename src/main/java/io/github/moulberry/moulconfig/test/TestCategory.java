@@ -60,7 +60,7 @@ public class TestCategory {
 
     @ConfigOption(name = "Drag List 2", desc = "Using EnumSet")
     @ConfigEditorDraggableList()
-    public EnumSet<TestEnum> draggableEnum = EnumSet.of(TestEnum.C);
+    public List<TestEnum> draggableEnum = new ArrayList<>();
 
     @ConfigOption(name = "Drop Down", desc = "Using integer")
     @ConfigEditorDropdown(

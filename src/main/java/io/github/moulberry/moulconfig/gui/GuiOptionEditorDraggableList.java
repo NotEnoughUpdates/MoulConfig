@@ -34,26 +34,25 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
-    private Enum<?>[] enumConstants;
-    private String[] exampleText;
+    private Map<Object, String> exampleText = new HashMap<>();
     private boolean enableDeleting;
-    private List<Integer> activeText;
-    private int currentDragging = -1;
+    private List<Object> activeText;
+    private Object currentDragging = null;
     private int dragStartIndex = -1;
 
     private long trashHoverTime = -1;
 
     private int dragOffsetX = -1;
     private int dragOffsetY = -1;
-    private boolean isEnumSet;
     private boolean dropdownOpen = false;
-    private EnumSet<?> enumSet;
-    private Class<? extends Enum<?>> enumType;
+    private Enum<?>[] enumConstants;
 
     public GuiOptionEditorDraggableList(
         ProcessedOption option,
@@ -63,51 +62,33 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         super(option);
 
         this.enableDeleting = enableDeleting;
-        Object obj = option.get();
-        this.isEnumSet = obj instanceof EnumSet<?>;
-        if (isEnumSet) {
-            this.enumSet = (EnumSet<?>) option.get();
-            this.enumType = (Class<? extends Enum<?>>) ((ParameterizedType) option.getType()).getActualTypeArguments()[0];
-            this.activeText = new ArrayList<>();
-            this.enumConstants = enumType.getEnumConstants();
-            this.exampleText = new String[enumConstants.length];
+        this.activeText = (List) option.get();
+
+        Type elementType = ((ParameterizedType) option.getType()).getActualTypeArguments()[0];
+
+        if (Enum.class.isAssignableFrom((Class<?>) elementType)) {
+            Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) ((ParameterizedType) option.getType()).getActualTypeArguments()[0];
+            enumConstants = enumType.getEnumConstants();
             for (int i = 0; i < enumConstants.length; i++) {
-                this.exampleText[i] = enumConstants[i].toString();
+                this.exampleText.put(i, enumConstants[i].toString());
             }
         } else {
-            this.exampleText = exampleText;
-            this.activeText = (List<Integer>) option.get();
-        }
-    }
-
-    private void loadChanges() {
-        if (enumSet == null) return;
-        activeText.clear();
-        for (Enum<?> anEnum : enumSet) {
-            activeText.add(anEnum.ordinal());
+            for (int i = 0; i < exampleText.length; i++) {
+                this.exampleText.put(i, exampleText[i]);
+            }
         }
     }
 
     private <T extends Enum<T>> void saveChanges() {
-        if (enumSet == null) return;
-        EnumSet<T> enumSet = (EnumSet<T>) this.enumSet;
-        T[] enumConstants = (T[]) this.enumConstants;
-        enumSet.clear();
-        for (int ordinal : activeText) {
-            if (0 <= ordinal && ordinal < enumConstants.length) {
-                enumSet.add(enumConstants[ordinal]);
-            }
-        }
         option.explicitNotifyChange();
     }
-
 
     @Override
     public int getHeight() {
         int height = super.getHeight() + 13;
 
-        for (int strIndex : activeText) {
-            String str = exampleText[strIndex];
+        for (Object object : activeText) {
+            String str = exampleText.get(object);
             height += 10 * str.split("\n").length;
         }
 
@@ -117,7 +98,6 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     @Override
 	public void render(int x, int y, int width) {
         super.render(x, y, width);
-        loadChanges();
 		int height = getHeight();
 
 		GlStateManager.color(1, 1, 1, 1);
@@ -138,28 +118,28 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			GlStateManager.color(1, greenBlue, greenBlue, 1);
 		}
 
-		if (enableDeleting) {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.DELETE);
-			RenderUtils.drawTexturedRect(x + width / 6 + 27, y + 45 - 7 - 13, 11, 14, GL11.GL_NEAREST);
-		}
+        if (enableDeleting) {
+            Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.DELETE);
+            RenderUtils.drawTexturedRect(x + width / 6 + 27, y + 45 - 7 - 13, 11, 14, GL11.GL_NEAREST);
+        }
 
-		Gui.drawRect(x + 5, y + 45, x + width - 5, y + height - 5, 0xffdddddd);
-		Gui.drawRect(x + 6, y + 46, x + width - 6, y + height - 6, 0xff000000);
+        Gui.drawRect(x + 5, y + 45, x + width - 5, y + height - 5, 0xffdddddd);
+        Gui.drawRect(x + 6, y + 46, x + width - 6, y + height - 6, 0xff000000);
 
-		int i = 0;
-		int yOff = 0;
-		for (int strIndex : activeText) {
-			String str = exampleText[strIndex];
+        int i = 0;
+        int yOff = 0;
+        for (Object indexObject : activeText) {
+            String str = exampleText.get(indexObject);
 
-			String[] multilines = str.split("\n");
+            String[] multilines = str.split("\n");
 
-			int ySize = multilines.length * 10;
+            int ySize = multilines.length * 10;
 
-			if (i++ != dragStartIndex) {
-				for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
-					String line = multilines[multilineIndex];
-					TextRenderUtils.drawStringScaledMaxWidth(line + EnumChatFormatting.RESET, Minecraft.getMinecraft().fontRendererObj,
-						x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
+            if (i++ != dragStartIndex) {
+                for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
+                    String line = multilines[multilineIndex];
+                    TextRenderUtils.drawStringScaledMaxWidth(line + EnumChatFormatting.RESET, Minecraft.getMinecraft().fontRendererObj,
+                        x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
 					);
 				}
 				Minecraft.getMinecraft().fontRendererObj.drawString(
@@ -178,12 +158,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 	@Override
 	public void renderOverlay(int x, int y, int width) {
         super.renderOverlay(x, y, width);
-        loadChanges();
 		if (dropdownOpen) {
-			List<Integer> remaining = new ArrayList<>();
-			for (int i = 0; i < exampleText.length; i++) {
-				remaining.add(i);
-			}
+            List<Object> remaining = new ArrayList<>(exampleText.keySet());
 			remaining.removeAll(activeText);
 
 			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
@@ -208,8 +184,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			Gui.drawRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
 
 			int dropdownY = -1;
-			for (int strIndex : remaining) {
-				String str = exampleText[strIndex];
+			for (Object indexObject : remaining) {
+				String str = exampleText.get(indexObject);
 				if (str.isEmpty()) {
 					str = "<NONE>";
 				}
@@ -218,7 +194,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 				);
 				dropdownY += 12;
 			}
-		} else if (currentDragging >= 0) {
+		} else if (currentDragging != null) {
 			int opacity = 0x80;
 			long currentTime = System.currentTimeMillis();
 			if (trashHoverTime < 0) {
@@ -236,7 +212,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			int mouseY = scaledResolution.getScaledHeight() -
 				Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
 
-			String str = exampleText[currentDragging];
+			String str = exampleText.get(currentDragging);
 
 			String[] multilines = str.split("\n");
 
@@ -265,7 +241,6 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
 	@Override
 	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        loadChanges();
 		if (!Mouse.getEventButtonState() && !dropdownOpen &&
 			dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
@@ -274,16 +249,16 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 activeText.remove(dragStartIndex);
                 saveChanges();
 			}
-			currentDragging = -1;
+			currentDragging = null;
 			dragStartIndex = -1;
 			return false;
 		}
 
 		if (!Mouse.isButtonDown(0) || dropdownOpen) {
-			currentDragging = -1;
+			currentDragging = null;
 			dragStartIndex = -1;
 			if (trashHoverTime > 0 && enableDeleting) trashHoverTime = -System.currentTimeMillis();
-		} else if (currentDragging >= 0 &&
+		} else if (currentDragging != null &&
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
 			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
 			if (trashHoverTime < 0 && enableDeleting) trashHoverTime = System.currentTimeMillis();
@@ -295,10 +270,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			int height = getHeight();
 
 			if (dropdownOpen) {
-				List<Integer> remaining = new ArrayList<>();
-				for (int i = 0; i < exampleText.length; i++) {
-					remaining.add(i);
-				}
+				List<Object> remaining = new ArrayList<>(exampleText.keySet());
 				remaining.removeAll(activeText);
 
 				int dropdownWidth = Math.min(width / 2 - 10, 150);
@@ -310,9 +282,9 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 				if (mouseX > left && mouseX < left + dropdownWidth &&
 					mouseY > top && mouseY < top + dropdownHeight) {
 					int dropdownY = -1;
-					for (int strIndex : remaining) {
+					for (Object objectIndex : remaining) {
 						if (mouseY < top + dropdownY + 12) {
-                            activeText.add(0, strIndex);
+                            activeText.add(0, objectIndex);
                             saveChanges();
                             if (remaining.size() == 1) dropdownOpen = false;
                             return true;
@@ -326,7 +298,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 				return true;
 			}
 
-			if (activeText.size() < exampleText.length &&
+			if (activeText.size() < exampleText.size() &&
 				mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
 				mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
 				dropdownOpen = !dropdownOpen;
@@ -340,13 +312,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 				mouseY > y + 45 && mouseY < y + height - 6) {
 				int yOff = 0;
 				int i = 0;
-				for (int strIndex : activeText) {
-					int ySize = 10 * exampleText[strIndex].split("\n").length;
+				for (Object objectIndex: activeText) {
+                    int ySize = 10 * exampleText.get(objectIndex).split("\n").length;
 					if (mouseY < y + 50 + yOff + ySize) {
 						dragOffsetX = x + 10 - mouseX;
 						dragOffsetY = y + 50 + yOff - mouseY;
 
-						currentDragging = strIndex;
+						currentDragging = objectIndex;
 						dragStartIndex = i;
 						break;
 					}
@@ -354,10 +326,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 					i++;
 				}
 			}
-		} else if (Mouse.getEventButton() == -1 && currentDragging >= 0) {
+		} else if (Mouse.getEventButton() == -1 && currentDragging != null) {
 			int yOff = 0;
 			int i = 0;
-			for (int strIndex : activeText) {
+			for (Object objectIndex : activeText) {
 				if (dragOffsetY + mouseY + 4 < y + 50 + yOff + 10) {
 					activeText.remove(dragStartIndex);
                     activeText.add(i, currentDragging);
@@ -365,7 +337,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                     dragStartIndex = i;
 					break;
 				}
-				yOff += 10 * exampleText[strIndex].split("\n").length;
+				yOff += 10 * exampleText.get(objectIndex).split("\n").length;
 				i++;
 			}
 		}
