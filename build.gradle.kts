@@ -63,3 +63,35 @@ license {
     skipExistingHeaders(true)
 }
 
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifact(tasks.remapJar) {
+                classifier = ""
+            }
+            artifact(tasks.jar) {
+                classifier = "named"
+            }
+            pom {
+                licenses {
+                    license {
+                        name.set("LGPL-3.0 or later")
+                        url.set("https://github.com/NotEnoughUpdates/NotEnoughUpdates/blob/HEAD/COPYING.LESSER")
+                    }
+                }
+                developers {
+                    developer {
+                        name.set("NotEnoughUpdates contributors")
+                    }
+                    developer {
+                        name.set("Linnea Gräf")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/NotEnoughUpdates/MoulConfig")
+                }
+            }
+        }
+    }
+}
