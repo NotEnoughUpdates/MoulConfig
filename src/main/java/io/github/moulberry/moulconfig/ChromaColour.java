@@ -17,6 +17,7 @@
  * along with MoulConfig. If not, see <https://www.gnu.org/licenses/>.
  *
  */
+
 package io.github.moulberry.moulconfig;
 
 import java.awt.*;

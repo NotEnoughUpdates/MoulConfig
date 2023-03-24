@@ -1,7 +1,8 @@
 plugins {
     idea
     java
-    id("xyz.wagyourtail.unimined") version "0.4.1"
+    `maven-publish`
+    id("xyz.wagyourtail.unimined") version "0.4.9"
     id("org.cadixdev.licenser") version "0.6.1"
 }
 
@@ -18,11 +19,10 @@ minecraft {
         it.ignoreFieldDesc(true)
         it.ignoreConflicts(true)
     }
-    launches.apply {
-        setConfig("client") {
-            this.args.add(0, "--tweakClass")
-            this.args.add(1, "net.minecraftforge.fml.common.launcher.FMLTweaker")
-        }
+    launcher.config("client") {
+        this.args.add(0, "--tweakClass")
+        this.args.add(1, "net.minecraftforge.fml.common.launcher.FMLTweaker")
+
     }
 }
 
