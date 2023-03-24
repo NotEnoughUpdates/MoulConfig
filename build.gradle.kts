@@ -2,6 +2,7 @@ plugins {
     idea
     java
     id("xyz.wagyourtail.unimined") version "0.4.1"
+    id("org.cadixdev.licenser") version "0.6.1"
 }
 
 group = "io.github.moulberry"
@@ -53,3 +54,13 @@ project.afterEvaluate {
         this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     }
 }
+
+license {
+    header(project.file("HEADER.txt"))
+    properties {
+        set("name", "Linnea Gräf")
+        set("year", 2023)
+    }
+    skipExistingHeaders(true)
+}
+

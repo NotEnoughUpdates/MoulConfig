@@ -19,10 +19,15 @@
 
 package io.github.moulberry.moulconfig.gui;
 
-import io.github.moulberry.moulconfig.*;
-import io.github.moulberry.moulconfig.struct.MoulConfigProcessor;
-import io.github.moulberry.moulconfig.struct.ProcessedCategory;
-import io.github.moulberry.moulconfig.struct.ProcessedOption;
+import io.github.moulberry.moulconfig.Config;
+import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.Social;
+import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorAccordion;
+import io.github.moulberry.moulconfig.gui.elements.GuiElementTextField;
+import io.github.moulberry.moulconfig.internal.*;
+import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
+import io.github.moulberry.moulconfig.processor.ProcessedCategory;
+import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;

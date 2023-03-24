@@ -1,4 +1,4 @@
-package io.github.moulberry.moulconfig.struct;
+package io.github.moulberry.moulconfig.processor;
 
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;

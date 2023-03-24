@@ -1,4 +1,4 @@
-package io.github.moulberry.moulconfig.gui;/*
+package io.github.moulberry.moulconfig.gui.elements;/*
  * Copyright (C) 2022 NotEnoughUpdates contributors
  *
  * This file is part of NotEnoughUpdates.
@@ -19,8 +19,9 @@ package io.github.moulberry.moulconfig.gui;/*
 
 
 import io.github.moulberry.moulconfig.GuiTextures;
-import io.github.moulberry.moulconfig.LerpUtils;
-import io.github.moulberry.moulconfig.RenderUtils;
+import io.github.moulberry.moulconfig.gui.GuiElement;
+import io.github.moulberry.moulconfig.internal.LerpUtils;
+import io.github.moulberry.moulconfig.internal.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;

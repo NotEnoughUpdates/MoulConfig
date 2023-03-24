@@ -17,10 +17,11 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.moulconfig.gui;
+package io.github.moulberry.moulconfig.gui.elements;
 
 import io.github.moulberry.moulconfig.GuiTextures;
-import io.github.moulberry.moulconfig.RenderUtils;
+import io.github.moulberry.moulconfig.gui.GuiElement;
+import io.github.moulberry.moulconfig.internal.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;

@@ -17,11 +17,11 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.moulconfig.gui;
+package io.github.moulberry.moulconfig.gui.elements;
 
-import io.github.moulberry.moulconfig.GlScissorStack;
-import io.github.moulberry.moulconfig.StringUtils;
-import io.github.moulberry.moulconfig.TextRenderUtils;
+import io.github.moulberry.moulconfig.internal.GlScissorStack;
+import io.github.moulberry.moulconfig.internal.StringUtils;
+import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;

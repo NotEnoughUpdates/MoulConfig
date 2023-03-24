@@ -1,7 +1,7 @@
-package io.github.moulberry.moulconfig.struct;
+package io.github.moulberry.moulconfig.processor;
 
 import io.github.moulberry.moulconfig.annotations.*;
-import io.github.moulberry.moulconfig.gui.*;
+import io.github.moulberry.moulconfig.gui.editors.*;
 
 public class BuiltinMoulConfigGuis {
     public static void addProcessors(MoulConfigProcessor<?> processor) {

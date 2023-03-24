@@ -1,5 +1,7 @@
-package io.github.moulberry.moulconfig;
+package io.github.moulberry.moulconfig.internal;
 
+import io.github.moulberry.moulconfig.internal.RenderUtils;
+import io.github.moulberry.moulconfig.internal.StringUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;

@@ -1,4 +1,4 @@
-package io.github.moulberry.moulconfig.struct;
+package io.github.moulberry.moulconfig.processor;
 
 import java.util.ArrayList;
 import java.util.List;

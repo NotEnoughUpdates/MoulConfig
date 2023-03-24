@@ -17,7 +17,7 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.moulconfig;
+package io.github.moulberry.moulconfig.internal;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;

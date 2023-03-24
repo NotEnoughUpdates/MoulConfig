@@ -17,7 +17,7 @@
  * along with NotEnoughUpdates. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.moulberry.moulconfig.struct;
+package io.github.moulberry.moulconfig.processor;
 
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.Config;
@@ -28,7 +28,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-public class ConfigProcessor {
+public class ConfigProcessorDriver {
     private static final List<Class<? extends Annotation>> nonStoredConfigOptions = Arrays.asList(
         ConfigEditorAccordion.class, ConfigEditorInfoText.class,
         ConfigEditorButton.class
@@ -36,10 +36,17 @@ public class ConfigProcessor {
 
     static int nextAnnotation = 0;
 
-    private static void processCategory(Class<?> categoryClass, ConfigStructureReader reader) {
+    private static List<Field> getAllFields(Class<?> type) {
+        if (type == null) return new ArrayList<>();
+        List<Field> fields = getAllFields(type.getSuperclass());
+        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+        return fields;
+    }
+
+    public static void processCategory(Object categoryObject, Class<?> categoryClass, ConfigStructureReader reader) {
         Stack<Integer> accordionStack = new Stack<>();
         Set<Integer> usedAccordionIds = new HashSet<>();
-        for (Field field : categoryClass.getDeclaredFields()) {
+        for (Field field : getAllFields(categoryClass)) {
             ConfigOption optionAnnotation = field.getAnnotation(ConfigOption.class);
             if (optionAnnotation == null) continue;
             if (field.getAnnotation(Expose.class) == null
@@ -48,13 +55,23 @@ public class ConfigProcessor {
                 new Error("Warning: non transient @ConfigOption without @Expose in " + categoryClass + " on field " + field).printStackTrace();
             }
 
+            ConfigOverlay annotation = field.getAnnotation(ConfigOverlay.class);
+            if (annotation != null) {
+                reader.emitGuiOverlay(categoryObject, field, optionAnnotation);
+                if (!annotation.displayInline()) continue;
+            }
+
             Accordion accordionClassAnnotation = field.getAnnotation(Accordion.class);
             if (accordionClassAnnotation != null) {
                 if (!usedAccordionIds.isEmpty()) {
-                    new Error("Warning: Cannot mix @CnofigEditorAccordion and @ConfigAccordionId with @Accordion in class " + categoryClass).printStackTrace();
+                    new Error("Warning: Cannot mix @ConfigEditorAccordion and @ConfigAccordionId with @Accordion in class " + categoryClass).printStackTrace();
                 }
-                reader.beginAccordion(field, optionAnnotation, ++nextAnnotation);
-                processCategory(field.getType(), reader);
+                reader.beginAccordion(categoryObject, field, optionAnnotation, ++nextAnnotation);
+                try {
+                    processCategory(field.get(categoryObject), field.getType(), reader);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
                 reader.endAccordion();
                 continue;
             }
@@ -82,17 +99,17 @@ public class ConfigProcessor {
                 }
                 usedAccordionIds.add(selfAccordion.id());
                 accordionStack.push(selfAccordion.id());
-                reader.beginAccordion(field, optionAnnotation, selfAccordion.id());
+                reader.beginAccordion(categoryObject, field, optionAnnotation, selfAccordion.id());
             } else {
-                reader.emitOption(field, optionAnnotation);
+                reader.emitOption(categoryObject, field, optionAnnotation);
             }
         }
 
     }
 
-    public static void processConfig(Class<? extends Config> configClass, ConfigStructureReader reader) {
-        reader.beginConfig(configClass);
-        for (Field categoryField : configClass.getDeclaredFields()) {
+    public static void processConfig(Class<? extends Config> configClass, Config configObject, ConfigStructureReader reader) {
+        reader.beginConfig(configClass, configObject);
+        for (Field categoryField : getAllFields(configClass)) {
             Category categoryAnnotation = categoryField.getAnnotation(Category.class);
 
             if (categoryAnnotation == null) continue;
@@ -103,8 +120,12 @@ public class ConfigProcessor {
                 new Error("Warning: @Category on non public field " + categoryField + " in " + configClass).printStackTrace();
                 continue;
             }
-            reader.beginCategory(categoryField, categoryAnnotation);
-            processCategory(categoryField.getType(), reader);
+            reader.beginCategory(configObject, categoryField, categoryAnnotation.name(), categoryAnnotation.desc());
+            try {
+                processCategory(categoryField.get(configObject), categoryField.getType(), reader);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
             reader.endCategory();
         }
         reader.endConfig();

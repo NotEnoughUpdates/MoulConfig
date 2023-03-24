@@ -1,4 +1,4 @@
-package io.github.moulberry.moulconfig;
+package io.github.moulberry.moulconfig.internal;
 
 public class LerpUtils {
 	public static float clampZeroOne(float f) {

@@ -19,9 +19,9 @@
 
 package io.github.moulberry.moulconfig.gui;
 
-import io.github.moulberry.moulconfig.RenderUtils;
-import io.github.moulberry.moulconfig.TextRenderUtils;
-import io.github.moulberry.moulconfig.struct.ProcessedOption;
+import io.github.moulberry.moulconfig.internal.RenderUtils;
+import io.github.moulberry.moulconfig.internal.TextRenderUtils;
+import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;

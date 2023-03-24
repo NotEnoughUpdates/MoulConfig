@@ -1,15 +1,28 @@
 package io.github.moulberry.moulconfig.test;
 
+import io.github.moulberry.moulconfig.Overlay;
 import io.github.moulberry.moulconfig.annotations.*;
 import io.github.moulberry.moulconfig.observer.Property;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 public class TestCategory {
+
+    @Accordion
+    @ConfigOverlay
+    @ConfigOption(name = "Overlay", desc = "Overlayering")
+    public TestOverlay testOverlay = new TestOverlay();
+
+    public static class TestOverlay extends Overlay {
+        @Override
+        public String getName() {
+            return "Test overlay";
+        }
+    }
+
     @ConfigEditorButton(buttonText = "RUN!")
     @ConfigOption(name = "Button using runnable", desc = "Click to run")
     public Runnable doRun = () -> Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Hehehe"));
@@ -30,26 +43,26 @@ public class TestCategory {
     @ConfigEditorBoolean
     public boolean bool = true;
     @ConfigOption(name = "Accordion", desc = "First accordion")
-    @ConfigEditorAccordion(id = 0)
+    @ConfigEditorAccordion(id = 1000)
     public boolean accordionOne = false;
 
     @ConfigOption(name = "Accordion", desc = "First accordion")
-    @ConfigEditorAccordion(id = 1)
-    @ConfigAccordionId(id = 0)
+    @ConfigEditorAccordion(id = 1001)
+    @ConfigAccordionId(id = 1000)
     public boolean accordionInner = false;
 
     @ConfigOption(name = "Color Picker", desc = "Color Picker test")
     @ConfigEditorColour
-    @ConfigAccordionId(id = 1)
+    @ConfigAccordionId(id = 1001)
     public String colour = "0:0:0:0:0";
 
     @ConfigOption(name = "Number", desc = "Slider test")
     @ConfigEditorSlider(minValue = 0, maxValue = 10, minStep = 1)
-    @ConfigAccordionId(id = 0)
+    @ConfigAccordionId(id = 1000)
     public int slider = 0;
 
     @ConfigOption(name = "Accordion", desc = "First accordion")
-    @ConfigEditorAccordion(id = 2)
+    @ConfigEditorAccordion(id = 1002)
     public boolean accordionTwo = false;
 
     @ConfigOption(name = "Drag List", desc = "Using integers")

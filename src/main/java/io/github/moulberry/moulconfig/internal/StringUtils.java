@@ -1,4 +1,4 @@
-package io.github.moulberry.moulconfig;
+package io.github.moulberry.moulconfig.internal;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumChatFormatting;
