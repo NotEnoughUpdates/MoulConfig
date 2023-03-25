@@ -20,8 +20,11 @@
 
 package io.github.moulberry.moulconfig.observer;
 
+import com.google.gson.annotations.Expose;
+
 public class Property<T> extends BaseObservable<T> {
 
+    @Expose
     T value;
 
     private Property(T value) {
