@@ -55,6 +55,10 @@ project.afterEvaluate {
     }
 }
 
+tasks.jar{
+    exclude("io/github/moulberry/moulconfig/test/*")
+}
+
 license {
     header(project.file("HEADER.txt"))
     properties {
