@@ -84,6 +84,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         selectedCategory = category;
         optionsScroll.setValue(0);
     }
+
+    public void search(String searchText) {
+        searchField.setText(searchText);
+        search();
+    }
+
     public void search() {
         String toSearch = searchField.getText().trim();
         Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
