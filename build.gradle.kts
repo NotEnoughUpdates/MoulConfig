@@ -20,6 +20,7 @@ minecraft {
         it.ignoreConflicts(true)
     }
     launcher.config("client") {
+        this.jvmArgs.add("-Dmoulconfig.testmod=true")
         this.args.add(0, "--tweakClass")
         this.args.add(1, "net.minecraftforge.fml.common.launcher.FMLTweaker")
 
@@ -53,10 +54,6 @@ project.afterEvaluate {
     tasks.named("runClient", JavaExec::class) {
         this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     }
-}
-
-tasks.jar{
-    exclude("io/github/moulberry/moulconfig/test/*")
 }
 
 license {

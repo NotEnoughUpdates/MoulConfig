@@ -44,7 +44,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
 
-@Mod(modid = "moulconfig")
+@Mod(modid = "moulconfig", name = "MoulConfig")
 public class MoulConfigTest {
 
     GuiScreen screenToOpen = null;
@@ -85,6 +85,7 @@ public class MoulConfigTest {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        if (!Boolean.getBoolean("moulconfig.testmod")) return;
         MinecraftForge.EVENT_BUS.register(MoulConfigTest.this);
         MoulConfigProcessor<TestConfig> testConfigMoulConfigProcessor = new MoulConfigProcessor<>(testConfig);
         BuiltinMoulConfigGuis.addProcessors(testConfigMoulConfigProcessor);
