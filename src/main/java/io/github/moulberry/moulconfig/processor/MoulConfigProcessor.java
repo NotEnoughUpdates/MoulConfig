@@ -67,6 +67,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     @Override
     public void endCategory() {
+        accordion.clear();
     }
 
     @Override

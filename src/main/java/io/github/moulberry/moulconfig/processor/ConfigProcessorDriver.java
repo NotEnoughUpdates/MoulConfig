@@ -105,7 +105,10 @@ public class ConfigProcessorDriver {
                 reader.emitOption(categoryObject, field, optionAnnotation);
             }
         }
-
+        while (!accordionStack.isEmpty()) {
+            reader.endAccordion();
+            accordionStack.pop();
+        }
     }
 
     public static void processConfig(Class<? extends Config> configClass, Config configObject, ConfigStructureReader reader) {
