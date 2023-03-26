@@ -67,7 +67,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
             allOptions.addAll(category.options);
         }
-        search();
+        updateSearchResults();
     }
 
     private List<ProcessedOption> getOptionsInCategory(ProcessedCategory cat) {
@@ -87,10 +87,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
     public void search(String searchText) {
         searchField.setText(searchText);
-        search();
+        updateSearchResults();
     }
 
-    public void search() {
+    public void updateSearchResults() {
         String toSearch = searchField.getText().trim();
         Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
         LinkedHashMap<String, ProcessedCategory> matchingCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
@@ -105,7 +105,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     if (matchingOption.accordionId >= 0) {
                         for (ProcessedOption value : matchingOption.category.options) {
                             if (value.editor instanceof GuiOptionEditorAccordion) {
-                                if (((GuiOptionEditorAccordion) value.editor).getAccordionId() == matchingOption.accordionId) {
+                                if (value != matchingOption && ((GuiOptionEditorAccordion) value.editor).getAccordionId() == matchingOption.accordionId) {
                                     accordions.add(value);
                                 }
                             }
@@ -516,7 +516,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     String old = searchField.getText();
                     searchField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
 
-                    if (!searchField.getText().equals(old)) search();
+                    if (!searchField.getText().equals(old)) updateSearchResults();
                 }
             }
         }
@@ -750,7 +750,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 innerWidth / 2 - 20
             ));
 
-            if (!searchField.getText().equals(old)) search();
+            if (!searchField.getText().equals(old)) updateSearchResults();
         }
 
         if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
