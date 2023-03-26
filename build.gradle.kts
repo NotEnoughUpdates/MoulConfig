@@ -64,12 +64,20 @@ license {
     skipExistingHeaders(true)
 }
 
+val noTestJar by tasks.creating(Jar::class) {
+    from(zipTree(tasks.remapJar.map { it.archiveFile }))
+    archiveClassifier.set("notest")
+    exclude("io/github/moulberry/moulconfig/test/*")
+}
 
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifact(tasks.remapJar) {
+            artifact(noTestJar) {
                 classifier = ""
+            }
+            artifact(tasks.remapJar) {
+                classifier = "test"
             }
             artifact(tasks.jar) {
                 classifier = "named"
