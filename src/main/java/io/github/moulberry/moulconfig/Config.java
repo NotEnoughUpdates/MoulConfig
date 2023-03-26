@@ -34,4 +34,11 @@ public abstract class Config {
     public String getTitle() {
         return "Config GUI";
     }
+
+    public void saveNow() {
+    }
+
+    public boolean shouldAutoFocusSearchbar() {
+        return false;
+    }
 }

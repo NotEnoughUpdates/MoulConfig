@@ -45,6 +45,11 @@ public class TestConfig extends Config {
     }
 
     @Override
+    public boolean shouldAutoFocusSearchbar() {
+        return true;
+    }
+
+    @Override
     public String getTitle() {
         return "§bMoulConfig §aTest §eConfig";
     }

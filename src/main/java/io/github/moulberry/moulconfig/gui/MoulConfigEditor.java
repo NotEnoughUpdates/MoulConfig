@@ -737,22 +737,6 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int innerPadding = 20 / adjScaleFactor;
         int innerWidth = xSize - 154 - innerPadding * 2;
 
-        if (Keyboard.getEventKeyState()) {
-            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F)) {
-                searchField.setFocus(!searchField.getFocus());
-                return true;
-            }
-
-            String old = searchField.getText();
-            searchField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-            searchField.setText(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(
-                searchField.getText(),
-                innerWidth / 2 - 20
-            ));
-
-            if (!searchField.getText().equals(old)) updateSearchResults();
-        }
-
         if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
             getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
             ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
@@ -784,6 +768,26 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
+        if (Keyboard.getEventKeyState()) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F)) {
+                searchField.setFocus(!searchField.getFocus());
+                return true;
+            }
+
+            if (processedConfig.getConfigObject().shouldAutoFocusSearchbar()) {
+                searchField.setFocus(true);
+            }
+
+            String old = searchField.getText();
+            searchField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+            searchField.setText(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(
+                searchField.getText(),
+                innerWidth / 2 - 20
+            ));
+
+            if (!searchField.getText().equals(old)) updateSearchResults();
+        }
+
         return true;
     }
 
@@ -799,9 +803,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             if (target.getTarget() >= 0) {
                 target.setTarget(target.getTarget() - 5);
             }
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) { // TODO save somehow also dont close on keybind edit
-           // NotEnoughUpdates.INSTANCE.saveConfig();
+        } else if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
+            processedConfig.getConfigObject().saveNow();
         }
     }
 }
