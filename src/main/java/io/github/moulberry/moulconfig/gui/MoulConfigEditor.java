@@ -90,38 +90,73 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         updateSearchResults();
     }
 
-    public void updateSearchResults() {
-        String toSearch = searchField.getText().trim();
-        Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
-        LinkedHashMap<String, ProcessedCategory> matchingCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
-        if (!toSearch.isEmpty()) {
-            for (String word : toSearch.split(" +")) {
-                matchingOptions.removeIf(it -> !it.name.toLowerCase().contains(word.toLowerCase()));
-            }
-            List<ProcessedOption> accordions = new ArrayList<>();
-            List<ProcessedOption> toProcessForAccordions = new ArrayList<>(matchingOptions);
-            do {
-                for (ProcessedOption matchingOption : toProcessForAccordions) {
-                    if (matchingOption.accordionId >= 0) {
-                        for (ProcessedOption value : matchingOption.category.options) {
-                            if (value.editor instanceof GuiOptionEditorAccordion) {
-                                if (value != matchingOption && ((GuiOptionEditorAccordion) value.editor).getAccordionId() == matchingOption.accordionId) {
-                                    accordions.add(value);
-                                }
-                            }
-                        }
+
+    private void propagateSearchinessForAccordions(Set<ProcessedOption> options, Set<ProcessedOption> lastRound, boolean upwards) {
+        if (lastRound.isEmpty()) return;
+        options.addAll(lastRound);
+        Set<ProcessedOption> nextRound = new HashSet<>();
+
+        for (ProcessedOption option : lastRound) {
+            if (option.accordionId >= 0 && upwards) {
+                for (ProcessedOption accordion : option.category.options) {
+                    if (accordion == option) continue;
+                    if (!(accordion.editor instanceof GuiOptionEditorAccordion)) continue;
+                    if (((GuiOptionEditorAccordion) accordion.editor).getAccordionId() == option.accordionId) {
+                        nextRound.add(accordion);
                     }
                 }
-                toProcessForAccordions.clear();
-                toProcessForAccordions.addAll(accordions);
-                matchingOptions.addAll(accordions);
-                accordions.clear();
-            } while (!toProcessForAccordions.isEmpty());
-            Set<ProcessedCategory> visibleCategories = matchingOptions.stream().map(it -> it.category).collect(Collectors.toSet());
-            matchingCategories.entrySet().removeIf(stringProcessedCategoryEntry -> !visibleCategories.contains(stringProcessedCategoryEntry.getValue()));
+            }
+            if (option.editor instanceof GuiOptionEditorAccordion && !upwards) {
+                int parentId = ((GuiOptionEditorAccordion) option.editor).getAccordionId();
+                for (ProcessedOption potentialChild : option.category.options) {
+                    if (potentialChild.accordionId == parentId) {
+                        nextRound.add(potentialChild);
+                    }
+                }
+            }
         }
-        currentlyVisibleCategories = matchingCategories;
-        currentlyVisibleOptions = matchingOptions;
+
+        nextRound.removeAll(options);
+
+        propagateSearchinessForAccordions(options, nextRound, upwards);
+    }
+
+    public void updateSearchResults() {
+        String toSearch = searchField.getText().trim().toLowerCase(Locale.ROOT);
+        if (!toSearch.isEmpty()) {
+            Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
+            for (String word : toSearch.split(" +")) {
+                matchingOptions.removeIf(it -> !it.editor.fulfillsSearch(word));
+            }
+
+            LinkedHashMap<String, ProcessedCategory> directlyMatchedCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
+            if (!processedConfig.getConfigObject().shouldSearchCategoryNames()) directlyMatchedCategories.clear();
+            for (String word : toSearch.split(" +")) {
+                directlyMatchedCategories.entrySet().removeIf(it -> !(it.getValue().name.toLowerCase(Locale.ROOT).contains(word) || it.getValue().desc.toLowerCase(Locale.ROOT).contains(word)));
+            }
+
+            Set<ProcessedOption> matchingOptionsAndDependencies = new HashSet<>();
+
+            // No search propagation needed if category is matched.
+            // Add them directly to the final visible option set.
+            for (ProcessedCategory directCategory : directlyMatchedCategories.values()) {
+                matchingOptionsAndDependencies.addAll(directCategory.options);
+                directCategory.options.forEach(matchingOptions::remove);
+            }
+
+            propagateSearchinessForAccordions(matchingOptionsAndDependencies, matchingOptions, true);
+            propagateSearchinessForAccordions(matchingOptionsAndDependencies, matchingOptions, false);
+
+            currentlyVisibleOptions = matchingOptionsAndDependencies;
+
+            Set<ProcessedCategory> visibleCategories = matchingOptionsAndDependencies.stream().map(it -> it.category).collect(Collectors.toSet());
+            LinkedHashMap<String, ProcessedCategory> matchingCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
+            matchingCategories.entrySet().removeIf(stringProcessedCategoryEntry -> !visibleCategories.contains(stringProcessedCategoryEntry.getValue()));
+            currentlyVisibleCategories = matchingCategories;
+        } else {
+            currentlyVisibleCategories = processedConfig.getAllCategories();
+            currentlyVisibleOptions = new HashSet<>(allOptions);
+        }
     }
 
     public LinkedHashMap<String, ProcessedCategory> getCurrentlyVisibleCategories() {

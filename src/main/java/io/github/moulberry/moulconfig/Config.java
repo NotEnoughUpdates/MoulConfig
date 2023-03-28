@@ -41,4 +41,8 @@ public abstract class Config {
     public boolean shouldAutoFocusSearchbar() {
         return false;
     }
+
+    public boolean shouldSearchCategoryNames() {
+        return true;
+    }
 }

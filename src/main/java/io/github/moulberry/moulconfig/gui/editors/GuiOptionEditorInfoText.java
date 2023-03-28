@@ -26,6 +26,8 @@ import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 
+import java.util.Locale;
+
 public class GuiOptionEditorInfoText extends GuiOptionEditor {
     private String buttonText;
 
@@ -50,6 +52,11 @@ public class GuiOptionEditorInfoText extends GuiOptionEditor {
                 false, 44, 0xFF303030
             );
         }
+    }
+
+    @Override
+    public boolean fulfillsSearch(String word) {
+        return super.fulfillsSearch(word) || buttonText.toLowerCase(Locale.ROOT).contains(word);
     }
 
     @Override

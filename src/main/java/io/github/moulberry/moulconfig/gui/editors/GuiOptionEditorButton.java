@@ -30,6 +30,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
 
+import java.util.Locale;
+
 public class GuiOptionEditorButton extends GuiOptionEditor {
 	private final int runnableId;
 	private String buttonText;
@@ -48,7 +50,7 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
 
         this.buttonText = buttonText;
         this.isUsingRunnable = option.getType() == Runnable.class;
-        if (this.buttonText != null && this.buttonText.isEmpty()) this.buttonText = null;
+        if (this.buttonText == null) this.buttonText = "";
     }
 
 	@Override
@@ -61,20 +63,18 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
 		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
 
-		if (buttonText != null) {
-			TextRenderUtils.drawStringCenteredScaledMaxWidth(buttonText, Minecraft.getMinecraft().fontRendererObj,
-				x + width / 6, y + height - 7 - 6,
-				false, 44, 0xFF303030
-			);
-		}
+        TextRenderUtils.drawStringCenteredScaledMaxWidth(buttonText, Minecraft.getMinecraft().fontRendererObj,
+            x + width / 6, y + height - 7 - 6,
+            false, 44, 0xFF303030
+        );
 	}
 
 	@Override
 	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
 		if (Mouse.getEventButtonState()) {
-			int height = getHeight();
-			if (mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-				mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
+            int height = getHeight();
+            if (mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
+                mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
                 if (isUsingRunnable) {
                     ((Runnable) option.get()).run();
                 } else {
@@ -82,13 +82,18 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
                 }
                 return true;
             }
-		}
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public boolean keyboardInput() {
-		return false;
-	}
+    @Override
+    public boolean fulfillsSearch(String word) {
+        return super.fulfillsSearch(word) || buttonText.toLowerCase(Locale.ROOT).contains(word);
+    }
+
+    @Override
+    public boolean keyboardInput() {
+        return false;
+    }
 }

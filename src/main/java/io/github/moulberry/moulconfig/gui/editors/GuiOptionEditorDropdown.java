@@ -32,12 +32,14 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 public class GuiOptionEditorDropdown extends GuiOptionEditor {
     private String[] values;
     private boolean useOrdinal;
     private boolean open = false;
     private Enum<?>[] constants;
+    private String valuesForSearch;
 
     public GuiOptionEditorDropdown(
         ProcessedOption option,
@@ -221,7 +223,15 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 		return false;
 	}
 
-	@Override
+    @Override
+    public boolean fulfillsSearch(String word) {
+        if (valuesForSearch == null) {
+            valuesForSearch = String.join("", values).toLowerCase(Locale.ROOT);
+        }
+        return super.fulfillsSearch(word) || valuesForSearch.contains(word);
+    }
+
+    @Override
 	public boolean keyboardInput() {
 		return false;
 	}

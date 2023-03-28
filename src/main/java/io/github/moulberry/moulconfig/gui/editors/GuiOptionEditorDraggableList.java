@@ -37,10 +37,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private Map<Object, String> exampleText = new HashMap<>();
@@ -55,6 +53,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private int dragOffsetY = -1;
     private boolean dropdownOpen = false;
     private Enum<?>[] enumConstants;
+    private String exampleTextConcat;
 
     public GuiOptionEditorDraggableList(
         ProcessedOption option,
@@ -337,18 +336,26 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                     activeText.add(i, currentDragging);
                     saveChanges();
                     dragStartIndex = i;
-					break;
-				}
-				yOff += 10 * exampleText.get(objectIndex).split("\n").length;
-				i++;
-			}
-		}
+                    break;
+                }
+                yOff += 10 * exampleText.get(objectIndex).split("\n").length;
+                i++;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public boolean keyboardInput() {
-		return false;
-	}
+    @Override
+    public boolean fulfillsSearch(String word) {
+        if (exampleTextConcat == null) {
+            exampleTextConcat = String.join("", exampleText.values()).toLowerCase(Locale.ROOT);
+        }
+        return super.fulfillsSearch(word) || exampleTextConcat.contains(word);
+    }
+
+    @Override
+    public boolean keyboardInput() {
+        return false;
+    }
 }
