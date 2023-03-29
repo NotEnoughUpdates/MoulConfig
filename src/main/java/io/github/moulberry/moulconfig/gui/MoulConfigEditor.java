@@ -222,7 +222,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             x + xSize / 2,
             y + 15,
             false,
-            200,
+            xSize - processedConfig.getConfigObject().getSocials().size() * 18 * 2 - 25,
             0xa0a0a0
         );
 
