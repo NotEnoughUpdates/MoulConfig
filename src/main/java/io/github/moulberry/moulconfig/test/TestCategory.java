@@ -93,7 +93,7 @@ public class TestCategory {
     public List<Integer> thingy = new ArrayList<>();
 
     @ConfigOption(name = "Drag List 2", desc = "Using EnumSet")
-    @ConfigEditorDraggableList()
+    @ConfigEditorDraggableList(requireNonEmpty = true)
     public List<TestEnum> draggableEnum = new ArrayList<>();
 
     @ConfigOption(name = "Drop Down", desc = "Using integer")

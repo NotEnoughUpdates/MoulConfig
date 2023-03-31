@@ -38,12 +38,12 @@ import org.lwjgl.opengl.GL11;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private Map<Object, String> exampleText = new HashMap<>();
     private boolean enableDeleting;
     private List<Object> activeText;
+    private final boolean requireNonEmpty;
     private Object currentDragging = null;
     private int dragStartIndex = -1;
 
@@ -60,10 +60,20 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         String[] exampleText,
         boolean enableDeleting
     ) {
+        this(option, exampleText, enableDeleting, false);
+    }
+
+    public GuiOptionEditorDraggableList(
+        ProcessedOption option,
+        String[] exampleText,
+        boolean enableDeleting,
+        boolean requireNonEmpty
+    ) {
         super(option);
 
         this.enableDeleting = enableDeleting;
         this.activeText = (List) option.get();
+        this.requireNonEmpty = requireNonEmpty;
 
         Type elementType = ((ParameterizedType) option.getType()).getActualTypeArguments()[0];
 
@@ -96,6 +106,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         return height;
     }
 
+    public boolean canDeleteRightNow() {
+        return enableDeleting && (activeText.size() > 1 || !requireNonEmpty);
+    }
+
     @Override
 	public void render(int x, int y, int width) {
         super.render(x, y, width);
@@ -119,7 +133,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			GlStateManager.color(1, greenBlue, greenBlue, 1);
 		}
 
-        if (enableDeleting) {
+        if (canDeleteRightNow()) {
             Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.DELETE);
             RenderUtils.drawTexturedRect(x + width / 6 + 27, y + 45 - 7 - 13, 11, 14, GL11.GL_NEAREST);
         }
@@ -246,7 +260,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 			dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
 			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
-			if (enableDeleting) {
+			if (canDeleteRightNow()) {
                 activeText.remove(dragStartIndex);
                 saveChanges();
 			}
@@ -258,13 +272,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 		if (!Mouse.isButtonDown(0) || dropdownOpen) {
 			currentDragging = null;
 			dragStartIndex = -1;
-			if (trashHoverTime > 0 && enableDeleting) trashHoverTime = -System.currentTimeMillis();
+			if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
 		} else if (currentDragging != null &&
 			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
 			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
-			if (trashHoverTime < 0 && enableDeleting) trashHoverTime = System.currentTimeMillis();
+			if (trashHoverTime < 0 && canDeleteRightNow()) trashHoverTime = System.currentTimeMillis();
 		} else {
-			if (trashHoverTime > 0 && enableDeleting) trashHoverTime = -System.currentTimeMillis();
+			if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
 		}
 
 		if (Mouse.getEventButtonState()) {

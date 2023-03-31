@@ -30,5 +30,7 @@ import java.lang.annotation.Target;
 public @interface ConfigEditorDraggableList {
 	String[] exampleText() default {};
 
+    boolean requireNonEmpty() default false;
+
 	boolean allowDeleting() default true;
 }
