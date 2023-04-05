@@ -55,6 +55,9 @@ dependencies {
     minecraft("net.minecraft:minecraft:1.8.9")
     mappings("moe.nea.mcp:mcp-yarn:1.8.9")
     "forge"("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+
+    annotationProcessor("org.projectlombok:lombok:1.18.26")
+    compileOnly("org.projectlombok:lombok:1.18.26")
 }
 
 java {

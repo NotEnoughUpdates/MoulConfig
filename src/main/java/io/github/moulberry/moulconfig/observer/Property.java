@@ -22,7 +22,7 @@ package io.github.moulberry.moulconfig.observer;
 
 import com.google.gson.annotations.Expose;
 
-public class Property<T> extends BaseObservable<T> {
+public class Property<T> extends BaseObservable<T> implements GetSetter<T> {
 
     @Expose
     T value;
@@ -44,6 +44,7 @@ public class Property<T> extends BaseObservable<T> {
         notifyObservers(value, value);
     }
 
+    @Override
     public void set(T newValue) {
         T oldValue = this.value;
         this.value = newValue;

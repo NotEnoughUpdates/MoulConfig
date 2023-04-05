@@ -21,10 +21,10 @@
 /**/
 package io.github.moulberry.moulconfig.test;
 
-import io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper;
-import io.github.moulberry.moulconfig.gui.MoulConfigEditor;
-import io.github.moulberry.moulconfig.gui.MoulGuiOverlayEditor;
+import io.github.moulberry.moulconfig.gui.*;
+import io.github.moulberry.moulconfig.gui.elements.*;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
+import io.github.moulberry.moulconfig.observer.Property;
 import io.github.moulberry.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.moulberry.moulconfig.processor.ConfigProcessorDriver;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
@@ -114,6 +114,15 @@ public class MoulConfigTest {
                 sender.addChatMessage(new ChatComponentText("Mouling"));
                 if (args.length > 0 && "gui".equals(args[0])) {
                     screenToOpen = new MoulGuiOverlayEditor(testConfigMoulConfigProcessor);
+                } else if (args.length > 0 && "testgui".equals(args[0])) {
+                    screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(
+                        new GuiElementCenter(new GuiElementPanel(
+                            new GuiElementColumn(
+                                new GuiElementText("Label", 80),
+                                new GuiColumnRow(new GuiElementSwitch(Property.of(false), 100), new GuiElementText("Some property"))
+                            )
+                        ))
+                    ));
                 } else {
                     screenToOpen = new GuiScreenElementWrapper(new MoulConfigEditor<>(testConfigMoulConfigProcessor));
                 }
