@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream
+
 plugins {
     idea
     java
@@ -6,8 +8,24 @@ plugins {
     id("org.cadixdev.licenser") version "0.6.1"
 }
 
-group = "io.github.moulberry"
-version = "1.0.0"
+group = "org.notenoughupdates.moulconfig"
+
+fun cmd(vararg args: String): String? {
+    val output = ByteArrayOutputStream()
+    val r = exec {
+        this.commandLine(args.toList())
+        this.isIgnoreExitValue = true
+        this.standardOutput = output
+        this.errorOutput = ByteArrayOutputStream()
+    }
+    return if (r.exitValue == 0) output.toByteArray().decodeToString().trim()
+    else null
+}
+
+val tag = cmd("git", "describe", "--tags", "HEAD")
+val hash = cmd("git", "rev-parse", "--short", "HEAD")!!
+val isSnapshot = tag == null
+version = tag ?: hash
 
 minecraft {
     forge {
@@ -68,6 +86,7 @@ val noTestJar by tasks.creating(Jar::class) {
     from(zipTree(tasks.remapJar.map { it.archiveFile }))
     archiveClassifier.set("notest")
     exclude("io/github/moulberry/moulconfig/test/*")
+    exclude("mcmod.info")
 }
 
 publishing {
@@ -99,6 +118,18 @@ publishing {
                 }
                 scm {
                     url.set("https://github.com/NotEnoughUpdates/MoulConfig")
+                }
+            }
+        }
+    }
+    repositories {
+        if (project.hasProperty("moulconfigPassword")) {
+            maven {
+                url = uri("https://maven.notenoughupdates.org/releases")
+                name = "moulconfig"
+                credentials(PasswordCredentials::class)
+                authentication {
+                    create<BasicAuthentication>("basic")
                 }
             }
         }
