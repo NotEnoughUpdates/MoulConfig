@@ -35,7 +35,7 @@ public class ConfigProcessorDriver {
         ConfigEditorButton.class
     );
 
-    static int nextAnnotation = 0;
+    static int nextAnnotation = 1000000000;
 
     private static List<Field> getAllFields(Class<?> type) {
         if (type == null) return new ArrayList<>();
