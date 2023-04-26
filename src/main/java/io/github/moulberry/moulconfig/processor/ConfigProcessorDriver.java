@@ -62,22 +62,6 @@ public class ConfigProcessorDriver {
                 if (!annotation.displayInline()) continue;
             }
 
-            Accordion accordionClassAnnotation = field.getAnnotation(Accordion.class);
-            if (accordionClassAnnotation != null) {
-                if (!usedAccordionIds.isEmpty()) {
-                    new Error("Warning: Cannot mix @ConfigEditorAccordion and @ConfigAccordionId with @Accordion in class " + categoryClass).printStackTrace();
-                }
-                reader.beginAccordion(categoryObject, field, optionAnnotation, ++nextAnnotation);
-                try {
-                    processCategory(field.get(categoryObject), field.getType(), reader);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                reader.endAccordion();
-                continue;
-            }
-
-
             ConfigAccordionId parentAccordion = field.getAnnotation(ConfigAccordionId.class);
             if (parentAccordion == null) {
                 while (!accordionStack.isEmpty()) {
@@ -93,6 +77,23 @@ public class ConfigProcessorDriver {
                     new Error("Warning: invalid @ConfigAccordionId in " + categoryClass + " on field " + field).printStackTrace();
                 }
             }
+
+
+            Accordion accordionClassAnnotation = field.getAnnotation(Accordion.class);
+            if (accordionClassAnnotation != null) {
+                if (!usedAccordionIds.isEmpty()) {
+                    new Error("Warning: Cannot mix @ConfigEditorAccordion and @ConfigAccordionId with @Accordion in class " + categoryClass).printStackTrace();
+                }
+                reader.beginAccordion(categoryObject, field, optionAnnotation, ++nextAnnotation);
+                try {
+                    processCategory(field.get(categoryObject), field.getType(), reader);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                reader.endAccordion();
+                continue;
+            }
+
             ConfigEditorAccordion selfAccordion = field.getAnnotation(ConfigEditorAccordion.class);
             if (selfAccordion != null) {
                 if (usedAccordionIds.contains(selfAccordion.id())) {

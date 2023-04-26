@@ -82,6 +82,15 @@ public class TestCategory {
     @ConfigAccordionId(id = 1000)
     public int slider = 0;
 
+    @Accordion
+    @ConfigOption(name = "Hehe",desc = "hoho")
+    public TestAcc testAcc = new TestAcc();
+    public static class TestAcc{
+        @ConfigOption(name = "a", desc = "b")
+        @ConfigEditorColour
+        public String colour = "0:0:0:0:0";
+    }
+
     @ConfigOption(name = "Accordion", desc = "First accordion")
     @ConfigEditorAccordion(id = 1002)
     public boolean accordionTwo = false;
