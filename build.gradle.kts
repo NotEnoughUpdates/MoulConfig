@@ -1,3 +1,4 @@
+import xyz.wagyourtail.unimined.api.sourceSet
 import java.io.ByteArrayOutputStream
 
 plugins {
@@ -6,6 +7,7 @@ plugins {
     `maven-publish`
     id("xyz.wagyourtail.unimined") version "0.4.9"
     id("org.cadixdev.licenser") version "0.6.1"
+    id("org.jetbrains.dokka") version "1.8.10"
 }
 
 group = "org.notenoughupdates.moulconfig"
@@ -71,6 +73,16 @@ sourceSets.main {
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
+
+tasks.dokkaHtml {
+    dokkaSourceSets{
+        create("main") {
+            sourceRoots.from(sourceSet.main.get().allSource)
+            classpath.from(tasks.compileJava.get().classpath)
+        }
+    }
+}
+
 project.afterEvaluate {
     tasks.named("runClient", JavaExec::class) {
         this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))

@@ -23,3 +23,11 @@ jobs:
           ORG_GRADLE_PROJECT_moulconfigUsername: moulconfig
         run: |
           ./gradlew publish --stacktrace
+      - name: Generate JavaDoc
+        run: |
+          ./gradlew dokkaHtml --stacktrace
+      - name: Upload JavaDoc
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/dokka/html
