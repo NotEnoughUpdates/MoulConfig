@@ -26,6 +26,7 @@ import io.github.moulberry.moulconfig.annotations.*;
 import io.github.moulberry.moulconfig.observer.Property;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,10 +83,15 @@ public class TestCategory {
     @ConfigAccordionId(id = 1000)
     public int slider = 0;
 
+    @ConfigOption(name = "Key Binding", desc = "Key Binding")
+    @ConfigEditorKeybind(defaultKey = Keyboard.KEY_F)
+    public int keyBoard = Keyboard.KEY_F;
+
     @Accordion
-    @ConfigOption(name = "Hehe",desc = "hoho")
+    @ConfigOption(name = "Hehe", desc = "hoho")
     public TestAcc testAcc = new TestAcc();
-    public static class TestAcc{
+
+    public static class TestAcc {
         @ConfigOption(name = "a", desc = "b")
         @ConfigEditorColour
         public String colour = "0:0:0:0:0";

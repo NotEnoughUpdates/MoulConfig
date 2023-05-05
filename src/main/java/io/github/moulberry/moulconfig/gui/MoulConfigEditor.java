@@ -811,19 +811,23 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
             if (!Character.isISOControl(Keyboard.getEventCharacter()) && processedConfig.getConfigObject().shouldAutoFocusSearchbar()) {
                 searchField.setFocus(true);
+                return true;
             }
 
             String old = searchField.getText();
             searchField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-            searchField.setText(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(
-                searchField.getText(),
-                innerWidth / 2 - 20
-            ));
 
-            if (!searchField.getText().equals(old)) updateSearchResults();
+            if (!searchField.getText().equals(old)) {
+                searchField.setText(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(
+                    searchField.getText(),
+                    innerWidth / 2 - 20
+                ));
+                updateSearchResults();
+                return true;
+            }
         }
 
-        return true;
+        return false;
     }
 
     private void handleKeyboardPresses() {
