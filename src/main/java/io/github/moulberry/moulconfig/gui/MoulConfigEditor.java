@@ -809,9 +809,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 return true;
             }
 
-            if (!Character.isISOControl(Keyboard.getEventCharacter()) && processedConfig.getConfigObject().shouldAutoFocusSearchbar()) {
+            if (!searchField.getFocus() && (!Character.isISOControl(Keyboard.getEventCharacter()) && processedConfig.getConfigObject().shouldAutoFocusSearchbar())) {
                 searchField.setFocus(true);
-                return true;
             }
 
             String old = searchField.getText();
