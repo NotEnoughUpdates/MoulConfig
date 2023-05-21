@@ -32,7 +32,6 @@ import java.lang.reflect.Type;
 public class ProcessedOption {
     public final String name;
     public final String desc;
-    public final int subcategoryId;
     public final Field field;
     public final ProcessedCategory category;
     private final Object container;
@@ -41,10 +40,9 @@ public class ProcessedOption {
     public boolean isProperty;
     public Config config;
 
-    public ProcessedOption(String name, String desc, int subcategoryId, Field field, ProcessedCategory category, Object container, Config config) {
+    public ProcessedOption(String name, String desc, Field field, ProcessedCategory category, Object container, Config config) {
         this.name = name;
         this.desc = desc;
-        this.subcategoryId = subcategoryId;
         this.category = category;
         this.config = config;
         this.field = field;

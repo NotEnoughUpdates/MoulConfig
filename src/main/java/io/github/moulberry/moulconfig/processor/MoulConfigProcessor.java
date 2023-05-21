@@ -98,7 +98,6 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     protected ProcessedOption createProcessedOption(Object baseObject, Field field, ConfigOption option) {
         ProcessedOption processedOption = new ProcessedOption(
             option.name(), option.desc(),
-            option.subcategoryId(),
             field,
             currentCategory, baseObject,
             configBaseObject

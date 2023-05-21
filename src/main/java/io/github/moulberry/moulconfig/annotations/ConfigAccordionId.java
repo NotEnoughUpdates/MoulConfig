@@ -25,8 +25,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Specify that this config element should be the child of a {@link ConfigEditorAccordion} with the same {@link #id()}
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
+@Deprecated
 public @interface ConfigAccordionId {
+    /**
+     * The id that should match the corresponding {@link ConfigEditorAccordion}
+     */
 	int id();
 }

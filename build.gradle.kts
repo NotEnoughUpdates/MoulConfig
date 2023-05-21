@@ -1,5 +1,6 @@
 import xyz.wagyourtail.unimined.api.sourceSet
 import java.io.ByteArrayOutputStream
+import java.net.URL
 
 plugins {
     idea
@@ -60,10 +61,12 @@ dependencies {
 
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     compileOnly("org.projectlombok:lombok:1.18.26")
+    compileOnly("org.jetbrains:annotations:24.0.1")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
 sourceSets.main {
@@ -75,17 +78,28 @@ tasks.withType(JavaCompile::class) {
 }
 
 tasks.dokkaHtml {
-    dokkaSourceSets{
+    dokkaSourceSets {
         create("main") {
+            moduleName.set("MoulConfig")
             sourceRoots.from(sourceSet.main.get().allSource)
             classpath.from(tasks.compileJava.get().classpath)
+
+            includes.from(fileTree("docs") { include("*.md") })
+
+            sourceLink {
+                localDirectory.set(file("src/main/"))
+                remoteUrl.set(URL("https://github.com/NotEnoughUpdates/MoulConfig/blob/$hash/src/main/"))
+                remoteLineSuffix.set("#L")
+            }
         }
     }
 }
 
 project.afterEvaluate {
     tasks.named("runClient", JavaExec::class) {
-        this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+        this.javaLauncher.set(javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(8))
+        })
     }
 }
 
