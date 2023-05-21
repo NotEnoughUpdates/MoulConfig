@@ -1,11 +1,12 @@
-name: Release
+name: Update Javadoc
 on:
   push:
     tags:
       - '*'
+  workflow_dispatch: { }
 
 jobs:
-  publish:
+  update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -17,9 +18,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      - name: Publish
-        env:
-          ORG_GRADLE_PROJECT_moulconfigPassword: ${{ secrets.MAVENPASS }}
-          ORG_GRADLE_PROJECT_moulconfigUsername: moulconfig
+      - name: Generate JavaDoc
         run: |
-          ./gradlew publish --stacktrace
+          ./gradlew dokkaHtml --stacktrace
+      - name: Upload JavaDoc
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/dokka/html
