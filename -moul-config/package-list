@@ -33,7 +33,6 @@ $dokka.location:io.github.moulberry.moulconfig.annotations/ConfigEditorText///Po
 $dokka.location:io.github.moulberry.moulconfig.annotations/ConfigOption///PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.annotations/-config-option/index.html
 $dokka.location:io.github.moulberry.moulconfig.annotations/ConfigOption/desc/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.annotations/-config-option/desc.html
 $dokka.location:io.github.moulberry.moulconfig.annotations/ConfigOption/name/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.annotations/-config-option/name.html
-$dokka.location:io.github.moulberry.moulconfig.annotations/ConfigOption/subcategoryId/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.annotations/-config-option/subcategory-id.html
 $dokka.location:io.github.moulberry.moulconfig.annotations/ConfigOverlay///PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.annotations/-config-overlay/index.html
 $dokka.location:io.github.moulberry.moulconfig.annotations/ConfigOverlay/displayInline/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.annotations/-config-overlay/display-inline.html
 $dokka.location:io.github.moulberry.moulconfig.gui.editors////PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.gui.editors/index.html
@@ -410,7 +409,7 @@ $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedCategory/field
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedCategory/name/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-category/name.html
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedCategory/options/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-category/options.html
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption///PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/index.html
-$dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/ProcessedOption/#java.lang.String#java.lang.String#int#java.lang.reflect.Field#io.github.moulberry.moulconfig.processor.ProcessedCategory#java.lang.Object#io.github.moulberry.moulconfig.Config/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/-processed-option.html
+$dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/ProcessedOption/#java.lang.String#java.lang.String#java.lang.reflect.Field#io.github.moulberry.moulconfig.processor.ProcessedCategory#java.lang.Object#io.github.moulberry.moulconfig.Config/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/-processed-option.html
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/accordionId/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/accordion-id.html
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/category/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/category.html
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/config/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/config.html
@@ -423,7 +422,6 @@ $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/getType
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/isProperty/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/is-property.html
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/name/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/name.html
 $dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/set/#java.lang.Object/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/set.html
-$dokka.location:io.github.moulberry.moulconfig.processor/ProcessedOption/subcategoryId/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.processor/-processed-option/subcategory-id.html
 $dokka.location:io.github.moulberry.moulconfig.test////PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.test/index.html
 $dokka.location:io.github.moulberry.moulconfig.test/MoulConfigTest///PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.test/-moul-config-test/index.html
 $dokka.location:io.github.moulberry.moulconfig.test/MoulConfigTest/MoulConfigTest/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.test/-moul-config-test/-moul-config-test.html
