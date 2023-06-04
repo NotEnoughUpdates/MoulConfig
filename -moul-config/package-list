@@ -341,6 +341,14 @@ $dokka.location:io.github.moulberry.moulconfig.internal/TextRenderUtils/drawStri
 $dokka.location:io.github.moulberry.moulconfig.internal/TextRenderUtils/getCharVertLen/#char/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-text-render-utils/get-char-vert-len.html
 $dokka.location:io.github.moulberry.moulconfig.internal/TextRenderUtils/getVerticalHeight/#java.lang.String/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-text-render-utils/get-vertical-height.html
 $dokka.location:io.github.moulberry.moulconfig.internal/TextRenderUtils/renderToolTip/#net.minecraft.item.ItemStack#int#int#int#int#net.minecraft.client.gui.FontRenderer/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-text-render-utils/render-tool-tip.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings///PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/index.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/Warnings/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/-warnings.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/basePackage/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/base-package.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/isDevEnv/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/is-dev-env.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/logger/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/logger.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/shouldWarn/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/should-warn.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/testPackage/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/test-package.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/warn/#java.lang.String/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/warn.html
 $dokka.location:io.github.moulberry.moulconfig.observer////PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.observer/index.html
 $dokka.location:io.github.moulberry.moulconfig.observer/BaseObservable///PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.observer/-base-observable/index.html
 $dokka.location:io.github.moulberry.moulconfig.observer/BaseObservable/BaseObservable/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.observer/-base-observable/-base-observable.html
