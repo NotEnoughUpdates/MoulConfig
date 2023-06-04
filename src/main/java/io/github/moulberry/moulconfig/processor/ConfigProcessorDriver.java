@@ -23,6 +23,7 @@ package io.github.moulberry.moulconfig.processor;
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.annotations.*;
+import io.github.moulberry.moulconfig.internal.Warnings;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -53,7 +54,7 @@ public class ConfigProcessorDriver {
             if (field.getAnnotation(Expose.class) == null
                 && (field.getModifiers() & Modifier.TRANSIENT) == 0
                 && nonStoredConfigOptions.stream().noneMatch(field::isAnnotationPresent)) {
-                new Error("Warning: non transient @ConfigOption without @Expose in " + categoryClass + " on field " + field).printStackTrace();
+                Warnings.warn("Non transient @ConfigOption without @Expose in " + categoryClass + " on field " + field);
             }
 
             ConfigOverlay annotation = field.getAnnotation(ConfigOverlay.class);
@@ -74,7 +75,7 @@ public class ConfigProcessorDriver {
                     reader.endAccordion();
                 }
                 if (accordionStack.isEmpty()) {
-                    new Error("Warning: invalid @ConfigAccordionId in " + categoryClass + " on field " + field).printStackTrace();
+                    Warnings.warn("Invalid @ConfigAccordionId in " + categoryClass + " on field " + field);
                 }
             }
 
@@ -82,7 +83,7 @@ public class ConfigProcessorDriver {
             Accordion accordionClassAnnotation = field.getAnnotation(Accordion.class);
             if (accordionClassAnnotation != null) {
                 if (!usedAccordionIds.isEmpty()) {
-                    new Error("Warning: Cannot mix @ConfigEditorAccordion and @ConfigAccordionId with @Accordion in class " + categoryClass).printStackTrace();
+                    Warnings.warn("Cannot mix @ConfigEditorAccordion and @ConfigAccordionId with @Accordion in class " + categoryClass);
                 }
                 reader.beginAccordion(categoryObject, field, optionAnnotation, ++nextAnnotation);
                 try {
@@ -97,7 +98,7 @@ public class ConfigProcessorDriver {
             ConfigEditorAccordion selfAccordion = field.getAnnotation(ConfigEditorAccordion.class);
             if (selfAccordion != null) {
                 if (usedAccordionIds.contains(selfAccordion.id())) {
-                    new Error("Warning: reusing of config accordion id " + selfAccordion.id() + " in " + categoryClass + " on field " + field).printStackTrace();
+                    Warnings.warn("Reusing of config accordion id " + selfAccordion.id() + " in " + categoryClass + " on field " + field);
                 }
                 usedAccordionIds.add(selfAccordion.id());
                 accordionStack.push(selfAccordion.id());
@@ -119,10 +120,10 @@ public class ConfigProcessorDriver {
 
             if (categoryAnnotation == null) continue;
             if (categoryField.getAnnotation(Expose.class) == null) {
-                new Error("Warning: @Category without @Expose in " + configClass + " on field " + categoryField).printStackTrace();
+                Warnings.warn("@Category without @Expose in " + configClass + " on field " + categoryField);
             }
             if ((categoryField.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
-                new Error("Warning: @Category on non public field " + categoryField + " in " + configClass).printStackTrace();
+                Warnings.warn("@Category on non public field " + categoryField + " in " + configClass);
                 continue;
             }
             reader.beginCategory(configObject, categoryField, categoryAnnotation.name(), categoryAnnotation.desc());

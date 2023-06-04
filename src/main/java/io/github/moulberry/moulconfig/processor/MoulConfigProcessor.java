@@ -26,6 +26,7 @@ import io.github.moulberry.moulconfig.Overlay;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorAccordion;
+import io.github.moulberry.moulconfig.internal.Warnings;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -88,7 +89,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         ProcessedOption processedOption = createProcessedOption(baseObject, field, option);
         GuiOptionEditor optionGui = createOptionGui(processedOption, field, option);
         if (optionGui == null) {
-            new Error("Warning: Could not create GUI Option Editor for " + field + " in " + baseObject.getClass()).printStackTrace();
+            Warnings.warn("Could not create GUI Option Editor for " + field + " in " + baseObject.getClass());
             return;
         }
         processedOption.editor = optionGui;
