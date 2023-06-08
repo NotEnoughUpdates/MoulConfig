@@ -6,7 +6,7 @@ plugins {
     idea
     java
     `maven-publish`
-    id("xyz.wagyourtail.unimined") version "0.4.9"
+    id("xyz.wagyourtail.unimined") version "0.4.10"
     id("org.cadixdev.licenser") version "0.6.1"
     id("org.jetbrains.dokka") version "1.8.10"
 }
