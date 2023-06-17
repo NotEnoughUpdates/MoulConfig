@@ -29,13 +29,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import java.util.Locale;
 
 public class GuiOptionEditorInfoText extends GuiOptionEditor {
-    private String buttonText;
+    private String infoTitle;
 
-    public GuiOptionEditorInfoText(ProcessedOption option, String buttonText) {
+    public GuiOptionEditorInfoText(ProcessedOption option, String infoTitle) {
         super(option);
 
-        this.buttonText = buttonText;
-        if (this.buttonText != null && this.buttonText.isEmpty()) this.buttonText = null;
+        this.infoTitle = infoTitle;
+        if (this.infoTitle != null && this.infoTitle.isEmpty()) this.infoTitle = null;
     }
 
     @Override
@@ -46,8 +46,8 @@ public class GuiOptionEditorInfoText extends GuiOptionEditor {
 
         GlStateManager.color(1, 1, 1, 1);
 
-        if (buttonText != null) {
-            TextRenderUtils.drawStringCenteredScaledMaxWidth(buttonText, Minecraft.getMinecraft().fontRendererObj,
+        if (infoTitle != null) {
+            TextRenderUtils.drawStringCenteredScaledMaxWidth(infoTitle, Minecraft.getMinecraft().fontRendererObj,
                 x + width / 6, y + height - 7 - 6,
                 false, 44, 0xFF303030
             );
@@ -56,7 +56,7 @@ public class GuiOptionEditorInfoText extends GuiOptionEditor {
 
     @Override
     public boolean fulfillsSearch(String word) {
-        return super.fulfillsSearch(word) || buttonText.toLowerCase(Locale.ROOT).contains(word);
+        return super.fulfillsSearch(word) || (infoTitle != null && infoTitle.toLowerCase(Locale.ROOT).contains(word));
     }
 
     @Override
