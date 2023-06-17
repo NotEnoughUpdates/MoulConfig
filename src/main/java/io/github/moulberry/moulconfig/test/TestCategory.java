@@ -52,6 +52,10 @@ public class TestCategory {
     @ConfigOption(name = "Button using runnableId", desc = "Click to run")
     public boolean whatEver;
 
+    @ConfigEditorInfoText(infoTitle = "Test")
+    @ConfigOption(name = "More Info text Test", desc = "Even more text to do shit with")
+    public boolean infoText;
+
 
     @ConfigOption(name = "Text Test", desc = "Text Editor Test")
     @ConfigEditorText

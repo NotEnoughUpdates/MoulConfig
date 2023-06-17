@@ -57,7 +57,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     @Override
     public void beginCategory(Object baseObject, Field field, String name, String description) {
-        currentCategory = new ProcessedCategory(field.getName(), name, description);
+        currentCategory = new ProcessedCategory(field, name, description);
         categories.put(field.getName(), currentCategory);
     }
 
@@ -122,7 +122,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         MoulConfigProcessor<T> subProcessor = new MoulConfigProcessor<>(configBaseObject);
         subProcessor.processedOverlays = processedOverlays;
         subProcessor.editors = editors;
-        subProcessor.currentCategory = new ProcessedCategory(field.getName(), option.name(), option.desc());
+        subProcessor.currentCategory = new ProcessedCategory(field, option.name(), option.desc());
         ConfigProcessorDriver.processCategory(overlay, field.getType(), subProcessor);
         processedOverlays.put(overlay, subProcessor.currentCategory.options);
     }

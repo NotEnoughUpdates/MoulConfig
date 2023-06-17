@@ -20,6 +20,7 @@
 
 package io.github.moulberry.moulconfig.processor;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +28,12 @@ public class ProcessedCategory {
     public final String field;
     public final String name;
     public final String desc;
+    public final Field reflectField;
     public final List<ProcessedOption> options = new ArrayList<>();
 
-    public ProcessedCategory(String field, String name, String desc) {
-        this.field = field;
+    public ProcessedCategory(Field field, String name, String desc) {
+        this.field = field.getName();
+        this.reflectField = field;
         this.name = name;
         this.desc = desc;
     }

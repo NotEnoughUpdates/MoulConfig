@@ -126,13 +126,14 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         if (!toSearch.isEmpty()) {
             Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
             for (String word : toSearch.split(" +")) {
-                matchingOptions.removeIf(it -> !it.editor.fulfillsSearch(word));
+                matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !it.editor.fulfillsSearch(word)));
             }
 
             LinkedHashMap<String, ProcessedCategory> directlyMatchedCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
             if (!processedConfig.getConfigObject().shouldSearchCategoryNames()) directlyMatchedCategories.clear();
             for (String word : toSearch.split(" +")) {
-                directlyMatchedCategories.entrySet().removeIf(it -> !(it.getValue().name.toLowerCase(Locale.ROOT).contains(word) || it.getValue().desc.toLowerCase(Locale.ROOT).contains(word)));
+                directlyMatchedCategories.entrySet().removeIf(it -> ContextAware.wrapErrorWithContext(it.getValue().reflectField,
+                    () -> !(it.getValue().name.toLowerCase(Locale.ROOT).contains(word) || it.getValue().desc.toLowerCase(Locale.ROOT).contains(word))));
             }
 
             Set<ProcessedOption> matchingOptionsAndDependencies = new HashSet<>();
@@ -351,6 +352,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             GlStateManager.enableDepth();
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
+
                 int optionWidth = optionWidthDefault;
                 if (option.accordionId >= 0) {
                     if (!activeAccordions.containsKey(option.accordionId)) {
@@ -376,7 +378,13 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 }
                 int optionHeight = editor.getHeight();
                 if (innerTop + 5 + optionY + optionHeight > innerTop + 1 && innerTop + 5 + optionY < innerBottom - 1) {
-                    editor.render((innerLeft + innerRight - optionWidth) / 2 - 5, innerTop + 5 + optionY, optionWidth);
+                    int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                    int finalY = innerTop + 5 + optionY;
+                    int finalOptionWidth = optionWidth;
+                    ContextAware.wrapErrorWithContext(editor, () -> {
+                        editor.render(finalX, finalY, finalOptionWidth);
+                        return null;
+                    });
                 }
                 optionY += optionHeight + 5;
             }
@@ -425,11 +433,17 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 int optionHeight = editor.getHeight();
                 if (innerTop + 5 + optionYOverlay + optionHeight > innerTop + 1 &&
                     innerTop + 5 + optionYOverlay < innerBottom - 1) {
-                    editor.renderOverlay(
-                        (innerLeft + innerRight - optionWidth) / 2 - 5,
-                        innerTop + 5 + optionYOverlay,
-                        optionWidth
-                    );
+                    int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                    int finalY = innerTop + 5 + optionYOverlay;
+                    int finalOptionWidth = optionWidth;
+                    ContextAware.wrapErrorWithContext(editor, () -> {
+                        editor.renderOverlay(
+                            finalX,
+                            finalY,
+                            finalOptionWidth
+                        );
+                        return null;
+                    });
                 }
                 optionYOverlay += optionHeight + 5;
             }
@@ -699,13 +713,16 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                if (editor.mouseInputOverlay(
-                    (innerLeft + innerRight - optionWidth) / 2 - 5,
-                    innerTop + 5 + optionY,
-                    optionWidth,
+                int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                int finalY = innerTop + 5 + optionY;
+                int finalWidth = optionWidth;
+                if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInputOverlay(
+                    finalX,
+                    finalY,
+                    finalWidth,
                     mouseX,
                     mouseY
-                )) {
+                ))) {
                     return true;
                 }
                 optionY += editor.getHeight() + 5;
@@ -744,13 +761,16 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                             activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                         }
                     }
-                    if (editor.mouseInput(
-                        (innerLeft + innerRight - optionWidth) / 2 - 5,
-                        innerTop + 5 + optionY,
-                        optionWidth,
+                    int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                    int finalY = innerTop + 5 + optionY;
+                    int finalWidth = optionWidth;
+                    if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInput(
+                        finalX,
+                        finalY,
+                        finalWidth,
                         mouseX,
                         mouseY
-                    )) {
+                    ))) {
                         return true;
                     }
                     optionY += editor.getHeight() + 5;
@@ -797,7 +817,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                if (editor.keyboardInput()) {
+                if (ContextAware.wrapErrorWithContext(editor, () -> editor.keyboardInput())) {
                     return true;
                 }
             }

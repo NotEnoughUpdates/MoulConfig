@@ -26,6 +26,7 @@ import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Locale;
 
@@ -33,6 +34,11 @@ public abstract class GuiOptionEditor {
     private static final int HEIGHT = 45;
     protected final ProcessedOption option;
     private String searchDescNameCache;
+
+    @ApiStatus.Internal
+    public ProcessedOption getOption() {
+        return option;
+    }
 
     public GuiOptionEditor(ProcessedOption option) {
         this.option = option;
