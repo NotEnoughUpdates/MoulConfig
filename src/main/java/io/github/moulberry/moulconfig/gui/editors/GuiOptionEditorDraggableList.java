@@ -81,7 +81,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) ((ParameterizedType) option.getType()).getActualTypeArguments()[0];
             enumConstants = enumType.getEnumConstants();
             for (int i = 0; i < enumConstants.length; i++) {
-                this.exampleText.put(i, enumConstants[i].toString());
+                this.exampleText.put(enumConstants[i], enumConstants[i].toString());
             }
         } else {
             for (int i = 0; i < exampleText.length; i++) {
