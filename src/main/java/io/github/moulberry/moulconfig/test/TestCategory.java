@@ -29,6 +29,7 @@ import net.minecraft.util.ChatComponentText;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TestCategory {
@@ -156,5 +157,27 @@ public class TestCategory {
         public Runnable runValue = () -> Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Hehehe"));
     }
 
+    @ConfigOption(name = "Fuck it", desc = "Pronouns in MoulConfig")
+    @ConfigEditorDraggableList(requireNonEmpty = true)
+    public List<Pronouns> pronouns = new ArrayList<>(Collections.singletonList(Pronouns.USE_NAME));
+
+    public enum Pronouns {
+        HEHIM("He/Him"),
+        SHEHER("She/Her"),
+        ITITS("It/Its"),
+        THEYTHEM("They/Them"),
+        USE_NAME("Use Name"),
+        ;
+        String label;
+
+        Pronouns(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
 
 }

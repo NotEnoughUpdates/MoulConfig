@@ -21,6 +21,7 @@
 /**/
 package io.github.moulberry.moulconfig.test;
 
+import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.gui.*;
 import io.github.moulberry.moulconfig.gui.elements.*;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
@@ -67,6 +68,10 @@ public class MoulConfigTest {
             RenderUtils.drawFloatingRect(0, 0, o.getWidth(), o.getHeight());
             int mx = Mouse.getX();
             int my = Minecraft.getMinecraft().displayHeight - Mouse.getY() - 1;
+            ChromaColour c = ChromaColour.forLegacyString(testConfig.testCategory.colour);
+            RenderUtils.drawGradientRect(
+                0, 10, 10, 40, 40, c.getEffectiveColour().getRGB(), c.getEffectiveColour(10).getRGB()
+            );
             FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
             fontRendererObj.drawSplitString(
                 "Global Mouse X: " + mx + "\n" +

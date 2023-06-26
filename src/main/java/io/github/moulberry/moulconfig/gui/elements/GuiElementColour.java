@@ -202,7 +202,7 @@ public class GuiElementColour extends GuiElement {
 		} else {
 			Gui.drawRect(x + 5 + 64 + valueOffset + opacityOffset + 5 + 1, y + 5 + 27 + 1,
 				x + 5 + 64 + valueOffset + opacityOffset + 5 + 10 - 1, y + 5 + 37 - 1,
-				Color.HSBtoRGB((hsvChroma[0] + (System.currentTimeMillis() - ChromaColour.startTime) / 1000f) % 1, 0.8f, 0.8f)
+				Color.HSBtoRGB((float) (((double) hsvChroma[0] + (double) System.currentTimeMillis() / 1000.0) % 1), 0.8f, 0.8f)
 			);
 		}
 
