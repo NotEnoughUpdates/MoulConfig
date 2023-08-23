@@ -32,6 +32,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class MoulConfigProcessor<T extends Config> implements ConfigStructureReader {
 
@@ -41,10 +42,17 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     private ProcessedCategory currentCategory;
     private Map<Overlay, List<ProcessedOption>> processedOverlays = new IdentityHashMap<>();
     private Stack<Integer> accordion = new Stack<>();
+    private Stack<String> categoryPath = new Stack<>();
     private Map<Class<? extends Annotation>, BiFunction<ProcessedOption, Annotation, GuiOptionEditor>> editors = new HashMap<>();
 
     public MoulConfigProcessor(T configBaseObject) {
         this.configBaseObject = configBaseObject;
+    }
+
+    public static <T extends Config> MoulConfigProcessor<T> withDefaults(T configBaseObject) {
+        MoulConfigProcessor<T> moulConfigProcessor = new MoulConfigProcessor<>(configBaseObject);
+        BuiltinMoulConfigGuis.addProcessors(moulConfigProcessor);
+        return moulConfigProcessor;
     }
 
     public <A extends Annotation> void registerConfigEditor(Class<A> annotation, BiFunction<ProcessedOption, ? extends A, GuiOptionEditor> editorGenerator) {
@@ -65,6 +73,15 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         return configBaseObject;
     }
 
+    @Override
+    public void pushPath(String fieldPath) {
+        categoryPath.push(fieldPath);
+    }
+
+    @Override
+    public void popPath() {
+        categoryPath.pop();
+    }
 
     @Override
     public void endCategory() {
@@ -98,7 +115,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     protected ProcessedOption createProcessedOption(Object baseObject, Field field, ConfigOption option) {
         ProcessedOption processedOption = new ProcessedOption(
-            option.name(), option.desc(),
+            option.name(), option.desc(), String.join(".", categoryPath) + "." + field.getName(),
             field,
             currentCategory, baseObject,
             configBaseObject
@@ -123,7 +140,9 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         subProcessor.processedOverlays = processedOverlays;
         subProcessor.editors = editors;
         subProcessor.currentCategory = new ProcessedCategory(field, option.name(), option.desc());
+        pushPath(field.getName());
         ConfigProcessorDriver.processCategory(overlay, field.getType(), subProcessor);
+        popPath();
         processedOverlays.put(overlay, subProcessor.currentCategory.options);
     }
 
