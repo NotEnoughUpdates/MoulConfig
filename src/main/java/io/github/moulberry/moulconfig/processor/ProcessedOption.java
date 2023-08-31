@@ -32,8 +32,8 @@ import java.lang.reflect.Type;
 public class ProcessedOption {
     public final String name;
     public final String desc;
+    public final String hiddenKeys;
     public final Field field;
-    public final String path;
     public final ProcessedCategory category;
     private final Object container;
     public GuiOptionEditor editor;
@@ -41,10 +41,10 @@ public class ProcessedOption {
     public boolean isProperty;
     public Config config;
 
-    public ProcessedOption(String name, String desc, String path, Field field, ProcessedCategory category, Object container, Config config) {
+    public ProcessedOption(String name, String desc, String[] hiddenKeys, Field field, ProcessedCategory category, Object container, Config config) {
         this.name = name;
-        this.path = path;
         this.desc = desc;
+        this.hiddenKeys = String.join(" ", hiddenKeys);
         this.category = category;
         this.config = config;
         this.field = field;

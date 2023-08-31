@@ -29,21 +29,23 @@ import io.github.moulberry.moulconfig.internal.*;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
 import io.github.moulberry.moulconfig.processor.ProcessedCategory;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import lombok.Getter;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.Window;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
-public class MoulConfigEditor<T extends Config> extends GuiElement {
+public class MoulConfigEditor<T extends Config> extends Screen {
     private final long openedMillis;
     private final LerpingInteger optionsScroll = new LerpingInteger(0, 150);
     private final LerpingInteger categoryScroll = new LerpingInteger(0, 150);
@@ -52,16 +54,18 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     private final GuiElementTextField searchField = new GuiElementTextField("", 0, 20, 0);
     private String selectedCategory = null;
     private float optionsBarStart;
-    private float optionsBarend;
-    private int lastMouseX = 0;
-    private int keyboardScrollXCutoff = 0;
+    private float optionsBarEnd;
+    private double lastMouseX = 0;
+    private double keyboardScrollXCutoff = 0;
 
+    @Getter
     private LinkedHashMap<String, ProcessedCategory> currentlyVisibleCategories;
     private Set<ProcessedOption> currentlyVisibleOptions;
 
     private List<ProcessedOption> allOptions = new ArrayList<>();
 
     public MoulConfigEditor(MoulConfigProcessor<T> processedConfig) {
+        super(Text.empty());
         this.openedMillis = System.currentTimeMillis();
         this.processedConfig = processedConfig;
         for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
@@ -121,19 +125,28 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         propagateSearchinessForAccordions(options, nextRound, upwards);
     }
 
+    private String getSearchRegex() {
+        return "(%s)".formatted(String.join("|", this.searchField.getText().split("\\s+")));
+    }
+
     public void updateSearchResults() {
         String toSearch = searchField.getText().trim().toLowerCase(Locale.ROOT);
         if (!toSearch.isEmpty()) {
-            Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
+            String searchRegex = getSearchRegex();
+            Pattern pattern = Pattern.compile(searchRegex);
+            Set<ProcessedOption> matchingOptions = new LinkedHashSet<>(allOptions);
             for (String word : toSearch.split(" +")) {
                 matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !it.editor.fulfillsSearch(word)));
             }
 
             LinkedHashMap<String, ProcessedCategory> directlyMatchedCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
-            if (!processedConfig.getConfigObject().shouldSearchCategoryNames()) directlyMatchedCategories.clear();
-            for (String word : toSearch.split(" +")) {
-                directlyMatchedCategories.entrySet().removeIf(it -> ContextAware.wrapErrorWithContext(it.getValue().reflectField,
-                    () -> !(it.getValue().name.toLowerCase(Locale.ROOT).contains(word) || it.getValue().desc.toLowerCase(Locale.ROOT).contains(word))));
+            if (processedConfig.getConfigObject().shouldSearchCategoryNames()) {
+                for (String word : toSearch.split(" +")) {
+                    directlyMatchedCategories.entrySet().removeIf(it -> ContextAware.wrapErrorWithContext(it.getValue().reflectField,
+                        () -> !(it.getValue().name.toLowerCase(Locale.ROOT).contains(word) || it.getValue().desc.toLowerCase(Locale.ROOT).contains(word))));
+                }
+            } else {
+                directlyMatchedCategories.clear();
             }
 
             Set<ProcessedOption> matchingOptionsAndDependencies = new HashSet<>();
@@ -160,39 +173,30 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         }
     }
 
-    public LinkedHashMap<String, ProcessedCategory> getCurrentlyVisibleCategories() {
-        return currentlyVisibleCategories;
-    }
-
-    public void render() {
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float ignoredDelta) {
         optionsScroll.tick();
         categoryScroll.tick();
-        handleKeyboardPresses();
 
         List<String> tooltipToDisplay = null;
 
         long currentTime = System.currentTimeMillis();
         long delta = currentTime - openedMillis;
 
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        int width = scaledResolution.getScaledWidth();
-        int height = scaledResolution.getScaledHeight();
-        int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
-        int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
-
         float opacityFactor = LerpUtils.sigmoidZeroOne(delta / 500f);
-        RenderUtils.drawGradientRect(0, 0, 0, width, height,
+        RenderUtils.drawGradientRect(context, 0, 0, MinecraftClient.getInstance().getWindow().getWidth(), MinecraftClient.getInstance().getWindow().getHeight(),
             (int) (0x80 * opacityFactor) << 24 | 0x101010,
             (int) (0x90 * opacityFactor) << 24 | 0x101010
         );
+        int scaleFactor = (int) MinecraftClient.getInstance().getWindow().getScaleFactor();
 
-        int xSize = Math.min(scaledResolution.getScaledWidth() - 100 / scaledResolution.getScaleFactor(), 500);
-        int ySize = Math.min(scaledResolution.getScaledHeight() - 100 / scaledResolution.getScaleFactor(), 400);
+        int xSize = Math.min(context.getScaledWindowWidth() - 100 / scaleFactor, 500);
+        int ySize = Math.min(context.getScaledWindowHeight() - 100 / scaleFactor, 400);
 
-        int x = (scaledResolution.getScaledWidth() - xSize) / 2;
-        int y = (scaledResolution.getScaledHeight() - ySize) / 2;
+        int x = (context.getScaledWindowWidth() - xSize) / 2;
+        int y = (context.getScaledWindowHeight() - ySize) / 2;
 
-        int adjScaleFactor = Math.max(2, scaledResolution.getScaleFactor());
+        int adjScaleFactor = Math.max(2, scaleFactor);
 
         int openingXSize = xSize;
         int openingYSize = ySize;
@@ -203,31 +207,31 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             openingYSize = 5 + (int) (delta - 150) * (ySize - 5) / 150;
         }
         RenderUtils.drawFloatingRectDark(
-            (scaledResolution.getScaledWidth() - openingXSize) / 2,
-            (scaledResolution.getScaledHeight() - openingYSize) / 2,
+            context,
+            (context.getScaledWindowWidth() - openingXSize) / 2,
+            (context.getScaledWindowHeight() - openingYSize) / 2,
             openingXSize, openingYSize
         );
-        GlScissorStack.clear();
-        GlScissorStack.push((scaledResolution.getScaledWidth() - openingXSize) / 2,
-            (scaledResolution.getScaledHeight() - openingYSize) / 2,
-            (scaledResolution.getScaledWidth() + openingXSize) / 2,
-            (scaledResolution.getScaledHeight() + openingYSize) / 2, scaledResolution
+        context.enableScissor((context.getScaledWindowWidth() - openingXSize) / 2,
+            (context.getScaledWindowHeight() - openingYSize) / 2,
+            (context.getScaledWindowWidth() + openingXSize) / 2,
+            (context.getScaledWindowHeight() + openingYSize) / 2
         );
 
-        RenderUtils.drawFloatingRectDark(x + 5, y + 5, xSize - 10, 20, false);
+        RenderUtils.drawFloatingRectDark(context, x + 5, y + 5, xSize - 10, 20, false);
 
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+
         TextRenderUtils.drawStringCenteredScaledMaxWidth(
             processedConfig.getConfigObject().getTitle(),
-            fr,
-            x + xSize / 2,
+            context,
+            x + xSize / 2.0f,
             y + 15,
             false,
             xSize - processedConfig.getConfigObject().getSocials().size() * 18 * 2 - 25,
             0xa0a0a0
         );
 
-        RenderUtils.drawFloatingRectDark(x + 4, y + 49 - 20,
+        RenderUtils.drawFloatingRectDark(context, x + 4, y + 49 - 20,
             140, ySize - 54 + 20, false
         );
 
@@ -236,14 +240,14 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int innerRight = x + 144 - innerPadding;
         int innerTop = y + 49 + innerPadding;
         int innerBottom = y + ySize - 5 - innerPadding;
-        Gui.drawRect(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
-        Gui.drawRect(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
-        Gui.drawRect(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff28282E); //Right
-        Gui.drawRect(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff28282E); //Bottom
-        Gui.drawRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
+        context.fill(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
+        context.fill(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
+        context.fill(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff28282E); //Right
+        context.fill(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff28282E); //Bottom
+        context.fill(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
 
-        GlScissorStack.push(0, innerTop + 1, scaledResolution.getScaledWidth(),
-            innerBottom - 1, scaledResolution
+        context.enableScissor(0, innerTop + 1, context.getScaledWindowWidth(),
+            innerBottom - 1
         );
 
         float catBarSize = 1;
@@ -257,12 +261,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
             String catName = entry.getValue().name;
             if (entry.getKey().equals(getSelectedCategory())) {
-                catName = EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.UNDERLINE + catName;
+                catName = Formatting.DARK_AQUA.toString() + Formatting.UNDERLINE + catName;
             } else {
-                catName = EnumChatFormatting.GRAY + catName;
+                catName = Formatting.GRAY + catName;
             }
             TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
-                fr, x + 75, y + 70 + catY, false, 100, -1
+                context, x + 75, y + 70 + catY, false, 100, -1
             );
             catY += 15;
             if (catY > 0) {
@@ -285,27 +289,26 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     (catY + 5 + categoryScroll.getValue()) - catBarSize * (catY + 5 + categoryScroll.getValue())));
             }
         }
+
+        context.disableScissor();
+
         int catDist = innerBottom - innerTop - 12;
-        Gui.drawRect(innerLeft + 2, innerTop + 5, innerLeft + 7, innerBottom - 5, 0xff101010);
-        Gui.drawRect(innerLeft + 3, innerTop + 6 + (int) (catDist * catBarStart), innerLeft + 6,
+        context.fill(innerLeft + 2, innerTop + 5, innerLeft + 7, innerBottom - 5, 0xff101010);
+        context.fill(innerLeft + 3, innerTop + 6 + (int) (catDist * catBarStart), innerLeft + 6,
             innerTop + 6 + (int) (catDist * catBarEnd), 0xff303030
         );
 
-        GlScissorStack.pop(scaledResolution);
-
         TextRenderUtils.drawStringCenteredScaledMaxWidth("Categories",
-            fr, x + 75, y + 44, false, 120, 0xa368ef
+            context, x + 75, y + 44, false, 120, 0xa368ef
         );
 
-        RenderUtils.drawFloatingRectDark(x + 149, y + 29, xSize - 154, ySize - 34, false);
+        RenderUtils.drawFloatingRectDark(context, x + 149, y + 29, xSize - 154, ySize - 34, false);
 
         innerLeft = x + 149 + innerPadding;
         innerRight = x + xSize - 5 - innerPadding;
         innerBottom = y + ySize - 5 - innerPadding;
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SEARCH);
-        GlStateManager.color(1, 1, 1, 1);
-        RenderUtils.drawTexturedRect(innerRight - 20, innerTop - (20 + innerPadding) / 2 - 9, 18, 18, GL11.GL_NEAREST);
+        context.drawTexture(GuiTextures.SEARCH, innerRight - 20, (int) (innerTop - (20 + innerPadding) / 2.0f - 9), 0, 0, 18, 18, 18, 18);
 
         minimumSearchSize.tick();
         boolean shouldShow = !searchField.getText().trim().isEmpty() || searchField.getFocus();
@@ -319,12 +322,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         int rightStuffLen = 20;
         if (minimumSearchSize.getValue() > 1) {
-            int strLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(searchField.getText()) + 10;
+            int strLen = MinecraftClient.getInstance().textRenderer.getWidth(searchField.getText()) + 10;
             if (!shouldShow) strLen = 0;
 
             int len = Math.max(strLen, minimumSearchSize.getValue());
             searchField.setSize(len, 18);
-            searchField.render(innerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9);
+            searchField.render(context, innerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9);
 
             rightStuffLen += 5 + len;
         }
@@ -333,23 +336,23 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
 
             TextRenderUtils.drawStringScaledMaxWidth(cat.desc,
-                fr, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
+                context, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
             );
         }
 
-        Gui.drawRect(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
-        Gui.drawRect(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
-        Gui.drawRect(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff303036); //Right
-        Gui.drawRect(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff303036); //Bottom
-        Gui.drawRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
+        context.fill(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
+        context.fill(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
+        context.fill(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff303036); //Right
+        context.fill(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff303036); //Bottom
+        context.fill(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
 
-        GlScissorStack.push(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, scaledResolution);
+        context.enableScissor(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1);
         float barSize = 1;
         int optionY = -optionsScroll.getValue();
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
             int optionWidthDefault = innerRight - innerLeft - 20;
-            GlStateManager.enableDepth();
+            //GL11.glEnable(GL11.GL_DEPTH);
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
 
@@ -382,29 +385,28 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     int finalY = innerTop + 5 + optionY;
                     int finalOptionWidth = optionWidth;
                     ContextAware.wrapErrorWithContext(editor, () -> {
-                        editor.render(finalX, finalY, finalOptionWidth);
+                        editor.render(context, finalX, finalY, finalOptionWidth);
                         return null;
                     });
                 }
                 optionY += optionHeight + 5;
             }
-            GlStateManager.disableDepth();
+            //GL11.glDisable(GL11.GL_DEPTH);
             if (optionY > 0) {
                 barSize =
                     LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + optionsScroll.getValue()));
             }
         }
 
-        GlScissorStack.pop(scaledResolution);
+        context.disableScissor();
 
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
             int optionYOverlay = -optionsScroll.getValue();
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
             int optionWidthDefault = innerRight - innerLeft - 20;
 
-            GlStateManager.translate(0, 0, 10);
-            GlStateManager.enableDepth();
+            context.getMatrices().translate(0, 0, 10);
+            //GL11.glEnable(GL11.GL_DEPTH);
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
                 int optionWidth = optionWidthDefault;
@@ -438,6 +440,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     int finalOptionWidth = optionWidth;
                     ContextAware.wrapErrorWithContext(editor, () -> {
                         editor.renderOverlay(
+                            context,
                             finalX,
                             finalY,
                             finalOptionWidth
@@ -447,15 +450,14 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 }
                 optionYOverlay += optionHeight + 5;
             }
-            GlStateManager.disableDepth();
-            GlStateManager.translate(0, 0, -10);
+            //GL11.glDisable(GL11.GL_DEPTH);
+            context.getMatrices().translate(0, 0, -10);
         }
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
         optionsBarStart = optionsScroll.getValue() / (float) (optionY + optionsScroll.getValue());
-        optionsBarend = optionsBarStart + barSize;
-        if (optionsBarend > 1) {
-            optionsBarend = 1;
+        optionsBarEnd = optionsBarStart + barSize;
+        if (optionsBarEnd > 1) {
+            optionsBarEnd = 1;
             if (optionsScroll.getTarget() / (float) (optionY + optionsScroll.getValue()) + barSize < 1) {
                 int target = optionsScroll.getTarget();
                 optionsScroll.setValue((int) Math.ceil(
@@ -467,22 +469,20 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
         int dist = innerBottom - innerTop - 12;
-        Gui.drawRect(innerRight - 10, innerTop + 5, innerRight - 5, innerBottom - 5, 0xff101010);
-        Gui.drawRect(
+        context.fill(innerRight - 10, innerTop + 5, innerRight - 5, innerBottom - 5, 0xff101010);
+        context.fill(
             innerRight - 9,
             innerTop + 6 + (int) (dist * optionsBarStart),
             innerRight - 6,
-            innerTop + 6 + (int) (dist * optionsBarend),
+            innerTop + 6 + (int) (dist * optionsBarEnd),
             0xff303030
         );
 
         List<Social> socials = processedConfig.getConfigObject().getSocials();
-        for (int socialIndex = 0; socialIndex < socials.size(); socialIndex ++ ) {
+        for (int socialIndex = 0; socialIndex < socials.size(); socialIndex++) {
             Social social = socials.get(socialIndex);
-            Minecraft.getMinecraft().getTextureManager().bindTexture(social.getIcon());
-            GlStateManager.color(1, 1, 1, 1);
             int socialLeft = x + xSize - 23 - 18 * socialIndex;
-            RenderUtils.drawTexturedRect(socialLeft, y + 7, 16, 16, GL11.GL_LINEAR);
+            context.drawTexture(social.getIcon(), socialLeft, y + 7, 0, 0, 16, 16, 16, 16);
 
             if (mouseX >= socialLeft && mouseX <= socialLeft + 16 &&
                 mouseY >= y + 6 && mouseY <= y + 23) {
@@ -490,172 +490,128 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
-        GlScissorStack.clear();
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
         if (tooltipToDisplay != null) {
-            TextRenderUtils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+            context.drawTooltip(MinecraftClient.getInstance().textRenderer, tooltipToDisplay.stream().map(Text::literal).collect(Collectors.toList()), mouseX, mouseY);
         }
 
-        GlStateManager.translate(0, 0, -2);
+        context.disableScissor();
+
     }
 
-    public boolean mouseInput(int mouseX, int mouseY) {
+    @Override
+    public void renderBackground(DrawContext context) {
+        long deltaTime = System.currentTimeMillis() - openedMillis;
+        float opacity = LerpUtils.sigmoidZeroOne(deltaTime / 500f);
+        context.fillGradient(0, 0, this.width, this.height,
+            (int) (0x80 * opacity) << 24 | 0x101010,
+            (int) (0x90 * opacity) << 24 | 0x101010);
+    }
+
+    boolean optionsBarClicked = false;
+    boolean categoryBarClicked = false;
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         lastMouseX = mouseX;
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        int width = scaledResolution.getScaledWidth();
-        int height = scaledResolution.getScaledHeight();
 
-        int xSize = Math.min(width - 100 / scaledResolution.getScaleFactor(), 500);
-        int ySize = Math.min(height - 100 / scaledResolution.getScaleFactor(), 400);
+        Window window = MinecraftClient.getInstance().getWindow();
+        int width = window.getScaledWidth();
+        int height = window.getScaledHeight();
 
-        int x = (scaledResolution.getScaledWidth() - xSize) / 2;
-        int y = (scaledResolution.getScaledHeight() - ySize) / 2;
+        int xSize = (int) Math.min(width - 100 / window.getScaleFactor(), 500);
+        int ySize = (int) Math.min(height - 100 / window.getScaleFactor(), 400);
 
-        int adjScaleFactor = Math.max(2, scaledResolution.getScaleFactor());
+        int x = (window.getScaledWidth() - xSize) / 2;
+        int y = (window.getScaledHeight() - ySize) / 2;
 
-        int innerPadding = 20 / adjScaleFactor;
+        int adjustmentFactor = (int) Math.max(2, window.getScaleFactor());
+        int innerPadding = 20 / adjustmentFactor;
         int innerTop = y + 49 + innerPadding;
         int innerBottom = y + ySize - 5 - innerPadding;
         int innerLeft = x + 149 + innerPadding;
         int innerRight = x + xSize - 5 - innerPadding;
 
         int dist = innerBottom - innerTop - 12;
-        int optionsBarStartY = innerTop + 6 + (int) (dist * optionsBarStart);
-        int optionsBarEndY = innerTop + 6 + (int) (dist * optionsBarend);
         int optionsBarStartX = innerRight - 12;
         int optionsBarEndX = innerRight - 3;
 
         int categoryY = -categoryScroll.getValue();
         categoryY += 15 * getCurrentlyVisibleCategories().size();
-        int catDist = innerBottom - innerTop - 12;
-        float catBarStart = categoryScroll.getValue() / (float) (categoryY + categoryScroll.getValue());
-        float categoryBarSize = LerpUtils.clampZeroOne(
-            (float) (innerBottom - innerTop - 2) / (categoryY + 5 + categoryScroll.getValue()));
-        float catBarEnd = catBarStart + categoryBarSize;
-        int categoryBarStartY = innerTop + 6 + (int) (catDist * catBarStart);
-        int categoryBarEndY = innerTop + 6 + (int) (catDist * catBarEnd);
+        int categoryDist = innerBottom - innerTop - 12;
+        float categoryBarStart = (categoryScroll.getValue() / (float) (categoryY + categoryScroll.getValue()));
+        float categoryBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (categoryY + 5 + categoryScroll.getValue()));
+        float categoryBarEnd = categoryBarStart + categoryBarSize;
+        int categoryBarStartY = innerTop + 6 + (int) (categoryDist * categoryBarStart);
+        int categoryBarEndY = innerTop + 6 + (int) (categoryDist * categoryBarEnd);
         int categoryBarStartX = x + innerPadding + 7;
         int categoryBarEndX = x + innerPadding + 12;
-        keyboardScrollXCutoff = innerLeft - 10;
-        if (Mouse.getEventButtonState()) {
-            if ((mouseY < optionsBarStartY || mouseY > optionsBarEndY) &&
-                (mouseX >= optionsBarStartX && mouseX <= optionsBarEndX) && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
-                optionsScroll.setTimeToReachTarget(200);
-                optionsScroll.resetTimer();
-                optionsScroll.setTarget(mouseY - innerTop);
-                return true;
-            } else if ((mouseY < categoryBarStartY || mouseY > categoryBarEndY) &&
-                (mouseX >= categoryBarStartX && mouseX <= categoryBarEndX) && mouseY > innerTop + 6 &&
-                mouseY < innerBottom - 6) {
-                categoryScroll.setTimeToReachTarget(200);
-                categoryScroll.resetTimer();
-                categoryScroll.setTarget(mouseY - innerTop);
-                return true;
-            }
 
-            searchField.setFocus(mouseX >= innerRight - 20 && mouseX <= innerRight - 2 &&
-                mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9);
+        if ((mouseX > optionsBarStartX && mouseX < optionsBarEndX)
+            && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
 
-            if (minimumSearchSize.getValue() > 1) {
-                int strLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(searchField.getText()) + 10;
-                int len = Math.max(strLen, minimumSearchSize.getValue());
+            int newTarget = optionsScroll.getTarget();
 
-                if (mouseX >= innerRight - 25 - len && mouseX <= innerRight - 25 &&
-                    mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9) {
-                    String old = searchField.getText();
-                    searchField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+            float optionBarSize = 1;
+            int optionY = -newTarget;
 
-                    if (!searchField.getText().equals(old)) updateSearchResults();
-                }
-            }
-        }
-
-        int dWheel = Mouse.getEventDWheel();
-        if (mouseY > innerTop && mouseY < innerBottom && dWheel != 0) {
-            if (dWheel < 0) {
-                dWheel = -1;
-            }
-            if (dWheel > 0) {
-                dWheel = 1;
-            }
-            if (mouseX < innerLeft) {
-                int newTarget = categoryScroll.getTarget() - dWheel * 30;
-                if (newTarget < 0) {
-                    newTarget = 0;
-                }
-
-                float catBarSize = 1;
-                int catY = -newTarget;
-                for (Map.Entry<String, ProcessedCategory> entry : getCurrentlyVisibleCategories().entrySet()) {
-                    if (getSelectedCategory() == null) {
-                        setSelectedCategory(entry.getKey());
-                    }
-
-                    catY += 15;
-                    if (catY > 0) {
-                        catBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (catY + 5 + newTarget));
-                    }
-                }
-
-                int barMax = (int) Math.floor((catY + 5 + newTarget) - catBarSize * (catY + 5 + newTarget));
-                if (newTarget > barMax) {
-                    newTarget = barMax;
-                }
-                categoryScroll.resetTimer();
-                categoryScroll.setTarget(newTarget);
-            } else {
-                int newTarget = optionsScroll.getTarget() - dWheel * 30;
-                if (newTarget < 0) {
-                    newTarget = 0;
-                }
-
-                float barSize = 1;
-                int optionY = -newTarget;
-                if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-                    getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
-                    ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
-                    HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-                    for (ProcessedOption option : getOptionsInCategory(cat)) {
-                        if (option.accordionId >= 0) {
-                            if (!activeAccordions.containsKey(option.accordionId)) {
-                                continue;
-                            }
-                        }
-
-                        GuiOptionEditor editor = option.editor;
-                        if (editor == null) {
+            if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
+                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
+                HashMap<Integer, Integer> activeAccordions = new HashMap<>();
+                for (ProcessedOption option : getOptionsInCategory(cat)) {
+                    if (option.accordionId >= 0) {
+                        if (!activeAccordions.containsKey(option.accordionId)) {
                             continue;
                         }
-                        if (editor instanceof GuiOptionEditorAccordion) {
-                            GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
-                            if (accordion.getToggled()) {
-                                int accordionDepth = 0;
-                                if (option.accordionId >= 0) {
-                                    accordionDepth = activeAccordions.get(option.accordionId) + 1;
-                                }
-                                activeAccordions.put(accordion.getAccordionId(), accordionDepth);
-                            }
-                        }
-                        optionY += editor.getHeight() + 5;
+                    }
 
-                        if (optionY > 0) {
-                            barSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + newTarget));
+                    GuiOptionEditor editor = option.editor;
+                    if (editor == null) {
+                        continue;
+                    }
+                    if (editor instanceof GuiOptionEditorAccordion accordion) {
+                        if (accordion.getToggled()) {
+                            int accordionDepth = 0;
+                            if (option.accordionId >= 0) {
+                                accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                            }
+                            activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                         }
+                    }
+                    optionY += editor.getHeight() + 5;
+
+                    if (optionY > 0) {
+                        optionBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + newTarget));
                     }
                 }
 
-                int barMax = (int) Math.floor((optionY + 5 + newTarget) - barSize * (optionY + 5 + newTarget));
+                int barMax = (int) Math.floor((optionY + 5 + newTarget) - optionBarSize * (optionY + 5 + newTarget));
                 if (newTarget > barMax) {
                     newTarget = barMax;
                 }
+
+                double percent = (mouseY - innerTop) / (innerBottom - innerTop);
+
                 optionsScroll.setTimeToReachTarget(Math.min(
                     150,
                     Math.max(10, 5 * Math.abs(newTarget - optionsScroll.getValue()))
                 ));
                 optionsScroll.resetTimer();
-                optionsScroll.setTarget(newTarget);
+                optionsScroll.setTarget((int) (barMax * percent));
             }
-        } else if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
+
+            // TODO clickable options bar
+            return true;
+        } else if ((mouseY < categoryBarStartY || mouseY > categoryBarEndY) &&
+            (mouseX >= categoryBarStartX && mouseX <= categoryBarEndX) && mouseY > innerTop + 6 &&
+            mouseY < innerBottom - 6) {
+            // TODO clickable category bar
+            return true;
+        }
+
+        if (button == 0) {
             if (getCurrentlyVisibleCategories() != null) {
                 int catY = -categoryScroll.getValue();
                 for (Map.Entry<String, ProcessedCategory> entry : getCurrentlyVisibleCategories().entrySet()) {
@@ -682,6 +638,22 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 }
             }
         }
+
+        searchField.setFocus(mouseX >= innerRight - 20 && mouseX <= innerRight - 2 && mouseY >= (innerTop - (20 + innerPadding) / 2.0 - 9) && mouseY <= (innerTop - (20 + innerPadding) / 2.0 + 9));
+
+        if (minimumSearchSize.getValue() > 1) {
+            int stringLength = MinecraftClient.getInstance().textRenderer.getWidth(searchField.getText()) + 10;
+            int length = Math.max(stringLength, minimumSearchSize.getValue());
+
+            if (mouseX >= innerRight - 25 - length && mouseX <= innerRight - 25 &&
+                mouseY >= innerTop - (20 + innerPadding) / 2.0 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2.0 + 9) {
+                String oldSearch = searchField.getText();
+                searchField.mouseClicked(mouseX, mouseY, button);
+
+                if (!searchField.getText().equals(oldSearch)) updateSearchResults();
+            }
+        }
+
 
         int optionY = -optionsScroll.getValue();
         if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
@@ -721,7 +693,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     finalY,
                     finalWidth,
                     mouseX,
-                    mouseY
+                    mouseY,
+                    button
                 ))) {
                     return true;
                 }
@@ -729,8 +702,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
-        if (mouseX > innerLeft && mouseX < innerRight &&
-            mouseY > innerTop && mouseY < innerBottom) {
+        if (mouseX > innerLeft && mouseX < innerRight && mouseY > innerTop && mouseY < innerBottom) {
             optionY = -optionsScroll.getValue();
             if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
                 getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
@@ -769,7 +741,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         finalY,
                         finalWidth,
                         mouseX,
-                        mouseY
+                        mouseY,
+                        button
                     ))) {
                         return true;
                     }
@@ -778,18 +751,262 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
-        return true;
+        return false;
     }
 
-    public boolean keyboardInput() {
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        int width = scaledResolution.getScaledWidth();
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        Window window = MinecraftClient.getInstance().getWindow();
+        int width = window.getScaledWidth();
+        int height = window.getScaledHeight();
 
-        int xSize = Math.min(width - 100 / scaledResolution.getScaleFactor(), 500);
+        int xSize = (int) Math.min(width - 100 / window.getScaleFactor(), 500);
+        int ySize = (int) Math.min(height - 100 / window.getScaleFactor(), 400);
 
-        int adjScaleFactor = Math.max(2, scaledResolution.getScaleFactor());
+        int x = (window.getScaledWidth() - xSize) / 2;
+        int y = (window.getScaledHeight() - ySize) / 2;
 
-        int innerPadding = 20 / adjScaleFactor;
+        int adjustmentFactor = (int) Math.max(2, window.getScaleFactor());
+        int innerPadding = 20 / adjustmentFactor;
+        int innerTop = y + 49 + innerPadding;
+        int innerBottom = y + ySize - 5 - innerPadding;
+        int innerLeft = x + 149 + innerPadding;
+        int innerRight = x + xSize - 5 - innerPadding;
+
+
+        if (mouseX > innerLeft && mouseX < innerRight && mouseY > innerTop && mouseY < innerBottom) {
+            int optionY = -optionsScroll.getValue();
+            if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
+                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                int optionWidthDefault = innerRight - innerLeft - 20;
+                ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
+                HashMap<Integer, Integer> activeAccordions = new HashMap<>();
+                for (ProcessedOption option : getOptionsInCategory(cat)) {
+                    int optionWidth = optionWidthDefault;
+                    if (option.accordionId >= 0) {
+                        if (!activeAccordions.containsKey(option.accordionId)) {
+                            continue;
+                        }
+                        int accordionDepth = activeAccordions.get(option.accordionId);
+                        optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
+                    }
+
+                    GuiOptionEditor editor = option.editor;
+                    if (editor == null) {
+                        continue;
+                    }
+                    if (editor instanceof GuiOptionEditorAccordion) {
+                        GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
+                        if (accordion.getToggled()) {
+                            int accordionDepth = 0;
+                            if (option.accordionId >= 0) {
+                                accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                            }
+                            activeAccordions.put(accordion.getAccordionId(), accordionDepth);
+                        }
+                    }
+                    int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                    int finalY = innerTop + 5 + optionY;
+                    int finalWidth = optionWidth;
+                    if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseReleased(
+                        finalX,
+                        finalY,
+                        finalWidth,
+                        mouseX,
+                        mouseY,
+                        button
+                    ))) {
+                        return true;
+                    }
+                    optionY += editor.getHeight() + 5;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        Window window = MinecraftClient.getInstance().getWindow();
+        int width = window.getScaledWidth();
+        int height = window.getScaledHeight();
+
+        int xSize = (int) Math.min(width - 100 / window.getScaleFactor(), 500);
+        int ySize = (int) Math.min(height - 100 / window.getScaleFactor(), 400);
+
+        int x = (window.getScaledWidth() - xSize) / 2;
+        int y = (window.getScaledHeight() - ySize) / 2;
+
+        int adjustmentFactor = (int) Math.max(2, window.getScaleFactor());
+        int innerPadding = 20 / adjustmentFactor;
+        int innerTop = y + 49 + innerPadding;
+        int innerBottom = y + ySize - 5 - innerPadding;
+        int innerLeft = x + 149 + innerPadding;
+        int innerRight = x + xSize - 5 - innerPadding;
+
+
+        if (mouseX > innerLeft && mouseX < innerRight && mouseY > innerTop && mouseY < innerBottom) {
+            int optionY = -optionsScroll.getValue();
+            if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
+                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                int optionWidthDefault = innerRight - innerLeft - 20;
+                ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
+                HashMap<Integer, Integer> activeAccordions = new HashMap<>();
+                for (ProcessedOption option : getOptionsInCategory(cat)) {
+                    int optionWidth = optionWidthDefault;
+                    if (option.accordionId >= 0) {
+                        if (!activeAccordions.containsKey(option.accordionId)) {
+                            continue;
+                        }
+                        int accordionDepth = activeAccordions.get(option.accordionId);
+                        optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
+                    }
+
+                    GuiOptionEditor editor = option.editor;
+                    if (editor == null) {
+                        continue;
+                    }
+                    if (editor instanceof GuiOptionEditorAccordion) {
+                        GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
+                        if (accordion.getToggled()) {
+                            int accordionDepth = 0;
+                            if (option.accordionId >= 0) {
+                                accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                            }
+                            activeAccordions.put(accordion.getAccordionId(), accordionDepth);
+                        }
+                    }
+                    int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                    int finalY = innerTop + 5 + optionY;
+                    int finalWidth = optionWidth;
+                    if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseDragged(
+                        finalX,
+                        finalY,
+                        finalWidth,
+                        mouseX,
+                        mouseY,
+                        button,
+                        deltaX,
+                        deltaY
+                    ))) {
+                        return true;
+                    }
+                    optionY += editor.getHeight() + 5;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        Window window = MinecraftClient.getInstance().getWindow();
+        int width = window.getScaledWidth();
+        int height = window.getScaledHeight();
+
+        int xSize = (int) Math.min(width - 100 / window.getScaleFactor(), 500);
+        int ySize = (int) Math.min(height - 100 / window.getScaleFactor(), 400);
+
+        int x = (window.getScaledWidth() - xSize) / 2;
+        int y = (window.getScaledHeight() - ySize) / 2;
+
+        int adjustmentFactor = (int) Math.max(2, window.getScaleFactor());
+        int innerPadding = 20 / adjustmentFactor;
+        int innerTop = y + 49 + innerPadding;
+        int innerBottom = y + ySize - 5 - innerPadding;
+        int innerLeft = x + 149 + innerPadding;
+
+        if (mouseY > innerTop && mouseY < innerBottom) {
+            if (mouseX < innerLeft) {
+                int newTarget = (int) (categoryScroll.getTarget() - amount * 30);
+                if (newTarget < 0) newTarget = 0;
+
+                float tempCategoryBarSize = 1;
+                int tempCategoryY = -newTarget;
+
+                for (Map.Entry<String, ProcessedCategory> entry : getCurrentlyVisibleCategories().entrySet()) {
+                    if (getSelectedCategory() == null) {
+                        setSelectedCategory(entry.getKey());
+                    }
+
+                    tempCategoryY += 15;
+                    if (tempCategoryY > 0) {
+                        tempCategoryBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (tempCategoryY + 5 + newTarget));
+                    }
+
+                    int barMax = (int) Math.floor((tempCategoryY + 5 + newTarget) - tempCategoryBarSize * (tempCategoryY + 5 + newTarget));
+                    if (newTarget > barMax) {
+                        newTarget = barMax;
+                    }
+
+                    categoryScroll.resetTimer();
+                    categoryScroll.setTarget(newTarget);
+                }
+            } else {
+                int newTarget = (int) (optionsScroll.getTarget() - amount * 30);
+                if (newTarget < 0) newTarget = 0;
+
+                float optionBarSize = 1;
+                int optionY = -newTarget;
+
+                if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
+                    getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                    ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
+                    HashMap<Integer, Integer> activeAccordions = new HashMap<>();
+                    for (ProcessedOption option : getOptionsInCategory(cat)) {
+                        if (option.accordionId >= 0) {
+                            if (!activeAccordions.containsKey(option.accordionId)) {
+                                continue;
+                            }
+                        }
+
+                        GuiOptionEditor editor = option.editor;
+                        if (editor == null) {
+                            continue;
+                        }
+                        if (editor instanceof GuiOptionEditorAccordion) {
+                            GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
+                            if (accordion.getToggled()) {
+                                int accordionDepth = 0;
+                                if (option.accordionId >= 0) {
+                                    accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                                }
+                                activeAccordions.put(accordion.getAccordionId(), accordionDepth);
+                            }
+                        }
+                        optionY += editor.getHeight() + 5;
+
+                        if (optionY > 0) {
+                            optionBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + newTarget));
+                        }
+                    }
+
+                    int barMax = (int) Math.floor((optionY + 5 + newTarget) - optionBarSize * (optionY + 5 + newTarget));
+                    if (newTarget > barMax) {
+                        newTarget = barMax;
+                    }
+                    optionsScroll.setTimeToReachTarget(Math.min(
+                        150,
+                        Math.max(10, 5 * Math.abs(newTarget - optionsScroll.getValue()))
+                    ));
+                    optionsScroll.resetTimer();
+                    optionsScroll.setTarget(newTarget);
+                }
+            }
+        }
+
+
+        return super.mouseScrolled(mouseX, mouseY, amount);
+    }
+
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        int width = MinecraftClient.getInstance().getWindow().getScaledWidth();
+        int xSize = (int) Math.min(width - 100 / MinecraftClient.getInstance().getWindow().getScaleFactor(), 500);
+
+        int adjustmentFactor = (int) Math.max(2, MinecraftClient.getInstance().getWindow().getScaleFactor());
+        int innerPadding = 20 / adjustmentFactor;
         int innerWidth = xSize - 154 - innerPadding * 2;
 
         if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
@@ -817,52 +1034,33 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                if (ContextAware.wrapErrorWithContext(editor, () -> editor.keyboardInput())) {
+                if (ContextAware.wrapErrorWithContext(editor, () -> editor.keyboardInput(keyCode, scanCode, modifiers))) {
                     return true;
                 }
             }
         }
 
-        if (Keyboard.getEventKeyState()) {
-            if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_F)) {
-                searchField.setFocus(!searchField.getFocus());
-                return true;
-            }
-
-            if (!searchField.getFocus() && (!Character.isISOControl(Keyboard.getEventCharacter()) && processedConfig.getConfigObject().shouldAutoFocusSearchbar())) {
-                searchField.setFocus(true);
-            }
-
-            String old = searchField.getText();
-            searchField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-
-            if (!searchField.getText().equals(old)) {
-                searchField.setText(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(
-                    searchField.getText(),
-                    innerWidth / 2 - 20
-                ));
-                updateSearchResults();
-                return true;
-            }
+        if (Screen.hasControlDown() && InputUtil.GLFW_KEY_F == keyCode) {
+            searchField.setFocus(!searchField.getFocus());
+            return true;
         }
 
-        return false;
-    }
-
-    private void handleKeyboardPresses() {
-        LerpingInteger target = lastMouseX < keyboardScrollXCutoff ? categoryScroll : optionsScroll;
-        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-            target.setTimeToReachTarget(50);
-            target.resetTimer();
-            target.setTarget(target.getTarget() + 5);
-        } else if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-            target.setTimeToReachTarget(50);
-            target.resetTimer();
-            if (target.getTarget() >= 0) {
-                target.setTarget(target.getTarget() - 5);
-            }
-        } else if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-            processedConfig.getConfigObject().saveNow();
+        if (!searchField.getFocus() && !(Character.isISOControl(keyCode)) && keyCode <= 126 && processedConfig.getConfigObject().shouldAutoFocusSearchbar()) {
+            searchField.setFocus(true);
         }
+
+        String oldSearch = searchField.getText();
+        searchField.keyTyped(keyCode, scanCode, modifiers);
+
+        if (!searchField.getText().equals(oldSearch)) {
+            searchField.setText(MinecraftClient.getInstance().textRenderer.trimToWidth(
+                searchField.getText(),
+                innerWidth / 2 - 20
+            ));
+            updateSearchResults();
+            return true;
+        }
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }

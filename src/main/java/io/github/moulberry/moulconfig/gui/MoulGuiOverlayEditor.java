@@ -25,15 +25,16 @@ import io.github.moulberry.moulconfig.Overlay;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
+import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 import java.util.Map;
 
-public class MoulGuiOverlayEditor extends GuiScreen {
+public class MoulGuiOverlayEditor extends Screen {
     final List<Overlay> overlays;
     final Map<Overlay, List<ProcessedOption>> processedOptions;
 
@@ -41,6 +42,7 @@ public class MoulGuiOverlayEditor extends GuiScreen {
     float grabbedOverlayAnchorX, grabbedOverlayAnchorY;
 
     public MoulGuiOverlayEditor(List<Overlay> overlays, Map<Overlay, List<ProcessedOption>> processedOptions) {
+        super(Text.of("Overlay editor"));
         this.overlays = overlays;
         this.processedOptions = processedOptions;
     }
@@ -55,44 +57,44 @@ public class MoulGuiOverlayEditor extends GuiScreen {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        drawDefaultBackground();
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
         boolean hasHoveredAny = grabbedOverlay != null;
         for (Overlay overlay : overlays) {
             if (!overlay.shouldShowInEditor()) continue;
-            GlStateManager.pushMatrix();
-            overlay.transform();
+            context.getMatrices().push();
+            overlay.transform(context);
             boolean hovered = overlay == grabbedOverlay;
             if (!hasHoveredAny && isOverlayHovered(overlay, mouseX, mouseY)) {
                 hovered = true;
                 hasHoveredAny = true;
             }
-            drawRect(0, 0, overlay.getWidth(), overlay.getHeight(),
+            context.fill(0, 0, overlay.getWidth(), overlay.getHeight(),
                 hovered ? 0xB0808080 : 0x80101010);
-            TextRenderUtils.drawStringCenteredScaledMaxWidth(overlay.getName(), mc.fontRendererObj,
+            TextRenderUtils.drawStringCenteredScaledMaxWidth(overlay.getName(), context,
                 overlay.getWidth() / 2F, overlay.getHeight() / 2F,
                 true, overlay.getWidth(),
                 0xFFFFFFFF);
-            GlStateManager.popMatrix();
+            context.getMatrices().pop();
         }
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (mouseButton == 0) tryGrabOverlay(mouseX, mouseY);
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) tryGrabOverlay((int) mouseX, (int) mouseY);
+        return true;
     }
 
     @Override
-    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-        if (clickedMouseButton == 0)
-            tryMoveGrabbedOverlay(mouseX, mouseY);
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (button == 0) tryMoveGrabbedOverlay((int) mouseX, (int) mouseY);
+        return true;
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-        if (state == 0)
-            tryReleaseOverlay();
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0) tryReleaseOverlay();
+        return true;
     }
 
     public void tryGrabOverlay(int mouseX, int mouseY) {
@@ -110,9 +112,8 @@ public class MoulGuiOverlayEditor extends GuiScreen {
     public void tryMoveGrabbedOverlay(int mouseX, int mouseY) {
         Overlay overlay = this.grabbedOverlay;
         if (overlay == null) return;
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        overlay.xPosition = (mouseX - grabbedOverlayAnchorX) / (float) scaledResolution.getScaledWidth_double();
-        overlay.yPosition = (mouseY - grabbedOverlayAnchorY) / (float) scaledResolution.getScaledHeight_double();
+        overlay.xPosition = (mouseX - grabbedOverlayAnchorX) / (float) MinecraftClient.getInstance().getWindow().getScaledWidth();
+        overlay.yPosition = (mouseY - grabbedOverlayAnchorY) / (float) MinecraftClient.getInstance().getWindow().getScaledHeight();
     }
 
     public void tryReleaseOverlay() {

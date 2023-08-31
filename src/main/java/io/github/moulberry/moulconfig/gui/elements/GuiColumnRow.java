@@ -23,7 +23,8 @@ package io.github.moulberry.moulconfig.gui.elements;
 import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import lombok.ToString;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.DrawContext;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 import java.util.List;
@@ -71,18 +72,18 @@ public class GuiColumnRow extends GuiElementNew {
     }
 
     @Override
-    public void render(GuiImmediateContext context) {
-        GlStateManager.pushMatrix();
+    public void render(DrawContext drawContext, GuiImmediateContext context) {
+        drawContext.getMatrices().push();
         foldWithContext(context, (child, childContext) -> {
-            child.render(childContext);
-            GlStateManager.translate(child.getWidth(), 0, 0);
+            child.render(drawContext, childContext);
+            drawContext.getMatrices().translate(child.getWidth(), 0, 0);
         });
-        GlStateManager.popMatrix();
+        drawContext.getMatrices().pop();
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        foldWithContext(context, GuiElementNew::mouseEvent);
+    public void mouseEvent(int button, GuiImmediateContext context) {
+        foldWithContext(context, (guiElementNew, guiImmediateContext) -> guiElementNew.mouseEvent(button, context));
     }
 
     @Override

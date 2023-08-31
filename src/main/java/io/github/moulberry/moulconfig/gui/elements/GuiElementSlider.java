@@ -22,12 +22,8 @@ package io.github.moulberry.moulconfig.gui.elements;
 
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.gui.GuiElement;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Identifier;
 
 import java.util.function.Consumer;
 
@@ -44,8 +40,8 @@ public class GuiElementSlider extends GuiElement {
     private boolean clicked = false;
 
     public GuiElementSlider(
-        int x, int y, int width, float minValue, float maxValue, float minStep,
-        float value, Consumer<Float> setCallback
+            int x, int y, int width, float minValue, float maxValue, float minStep,
+            float value, Consumer<Float> setCallback
     ) {
         if (minStep < 0) minStep = 0.01f;
 
@@ -64,77 +60,82 @@ public class GuiElementSlider extends GuiElement {
     }
 
     @Override
-    public void render() {
-        final ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        int mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
-
+    public void render(DrawContext context, int ignored, int ignored_, float ignored__) {
         float value = this.value;
-        if (clicked) {
-            value = (mouseX - x) * (maxValue - minValue) / width + minValue;
-            value = Math.max(minValue, Math.min(maxValue, value));
-            value = Math.round(value / minStep) * minStep;
-        }
-
         float sliderAmount = Math.max(0, Math.min(1, (value - minValue) / (maxValue - minValue)));
         int sliderAmountI = (int) (width * sliderAmount);
 
-        GlStateManager.color(1f, 1f, 1f, 1f);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_ON_CAP);
-        RenderUtils.drawTexturedRect(x, y, 4, HEIGHT, GL11.GL_NEAREST);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_OFF_CAP);
-        RenderUtils.drawTexturedRect(x + width - 4, y, 4, HEIGHT, GL11.GL_NEAREST);
+        //GL11.glColor4f(1, 1, 1, 1);
+        context.drawTexture(GuiTextures.SLIDER_ON_CAP, x, y, 0, 0, 4, HEIGHT, 4, HEIGHT);
+        context.drawTexture(GuiTextures.SLIDER_OFF_CAP, x + width - 4, y, 0, 0, 4, HEIGHT, 4, HEIGHT);
 
         if (sliderAmountI > 5) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_ON_SEGMENT);
-            RenderUtils.drawTexturedRect(x + 4, y, sliderAmountI - 4, HEIGHT, GL11.GL_NEAREST);
+            context.drawTexture(GuiTextures.SLIDER_ON_SEGMENT, x + 4, y, 0, 0, sliderAmountI - 4, HEIGHT, sliderAmountI - 4, HEIGHT);
         }
 
         if (sliderAmountI < width - 5) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_OFF_SEGMENT);
-            RenderUtils.drawTexturedRect(x + sliderAmountI, y, width - 4 - sliderAmountI, HEIGHT, GL11.GL_NEAREST);
+            context.drawTexture(GuiTextures.SLIDER_OFF_SEGMENT, x + sliderAmountI, y, 0, 0, width - 4 - sliderAmountI, HEIGHT, (width - 4) - (x + sliderAmountI), HEIGHT);
         }
 
         for (int i = 1; i < 4; i++) {
             int notchX = x + width * i / 4 - 1;
-            Minecraft.getMinecraft().getTextureManager().bindTexture(
-                notchX > x + sliderAmountI ? GuiTextures.SLIDER_OFF_NOTCH : GuiTextures.SLIDER_ON_NOTCH);
-            RenderUtils.drawTexturedRect(notchX, y + (HEIGHT - 4) / 2, 2, 4, GL11.GL_NEAREST);
+            Identifier identifier = (
+                    notchX > x + sliderAmountI ? GuiTextures.SLIDER_OFF_NOTCH : GuiTextures.SLIDER_ON_NOTCH);
+            context.drawTexture(identifier, notchX, y + (HEIGHT - 4) / 2, 0, 0, 2, 4, 2, 4);
         }
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_BUTTON);
-        RenderUtils.drawTexturedRect(x + sliderAmountI - 4, y, 8, HEIGHT, GL11.GL_NEAREST);
+        context.drawTexture(GuiTextures.SLIDER_BUTTON, x + sliderAmountI - 4, y, 0, 0, 8, HEIGHT, 8, HEIGHT);
     }
 
     @Override
-    public boolean mouseInput(int mouseX, int mouseY) {
-        if (!Mouse.isButtonDown(0)) {
-            clicked = false;
-        }
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        clicked = mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + HEIGHT;
 
-        if (Mouse.getEventButton() == 0) {
-            clicked = Mouse.getEventButtonState() && mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + HEIGHT;
-            if (clicked) {
-                float value = (mouseX - x) * (maxValue - minValue) / width + minValue;
-                value = Math.max(minValue, Math.min(maxValue, value));
-                value = (float) (Math.round(value / minStep) * (double) minStep);
-                setCallback.accept(value);
-                return true;
-            }
-        }
+        //if (button == -1 && clicked) {
+        //    float value = (float) ((mouseX - x) * (maxValue - minValue) / width + minValue);
+        //    value = Math.max(minValue, Math.min(maxValue, value));
+        //    value = Math.round(value / minStep) * minStep;
+        //    setCallback.accept(value);
+        //    return true;
+        //}
 
-        if (!Mouse.getEventButtonState() && Mouse.getEventButton() == -1 && clicked) {
-            float value = (mouseX - x) * (maxValue - minValue) / width + minValue;
+        return moveIfClicked(mouseX, mouseY, button);
+    }
+
+    public boolean moveIfClicked(double mouseX, double mouseY, int button) {
+        if (clicked) {
+            double value = (mouseX - x) * (maxValue - minValue) / width + minValue;
             value = Math.max(minValue, Math.min(maxValue, value));
-            value = Math.round(value / minStep) * minStep;
-            setCallback.accept(value);
+            value = (float) (Math.round(value / minStep) * (double) minStep);
+            this.value = (float) value;
+            setCallback.accept((float) value);
             return true;
         }
-
         return false;
     }
 
     @Override
-    public boolean keyboardInput() {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return moveIfClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        clicked = false;
+        return false;
+    }
+
+    double lastMouseX = 0, lastMouseY = 0;
+
+    @Override
+    public void mouseMoved(double mouseX, double mouseY) {
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+        super.mouseMoved(mouseX, mouseY);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return false;
     }
 }

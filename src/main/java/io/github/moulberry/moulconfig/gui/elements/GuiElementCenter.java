@@ -22,7 +22,8 @@ package io.github.moulberry.moulconfig.gui.elements;
 
 import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.DrawContext;
+import org.lwjgl.opengl.GL11;
 
 import java.util.function.BiFunction;
 
@@ -48,12 +49,14 @@ public class GuiElementCenter extends GuiElementNew {
     }
 
     GuiImmediateContext getChildContext(GuiImmediateContext context) {
-        return context.translated(
-            getChildOffsetX(context),
-            getChildOffsetY(context),
-            child.getWidth(),
-            child.getHeight()
+        GuiImmediateContext translated = context.translated(
+                getChildOffsetX(context),
+                getChildOffsetY(context),
+                child.getWidth(),
+                child.getHeight()
         );
+
+        return translated;
     }
 
     public int getChildOffsetX(GuiImmediateContext context) {
@@ -70,11 +73,11 @@ public class GuiElementCenter extends GuiElementNew {
     }
 
     @Override
-    public void render(GuiImmediateContext context) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(getChildOffsetX(context), getChildOffsetY(context), 0);
-        child.render(getChildContext(context));
-        GlStateManager.popMatrix();
+    public void render(DrawContext drawContext, GuiImmediateContext context) {
+        drawContext.getMatrices().push();
+        drawContext.getMatrices().translate(getChildOffsetX(context), getChildOffsetY(context), 0);
+        child.render(drawContext, getChildContext(context));
+        drawContext.getMatrices().pop();
     }
 
     @Override
@@ -83,7 +86,7 @@ public class GuiElementCenter extends GuiElementNew {
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        child.mouseEvent(getChildContext(context));
+    public void mouseEvent(int button, GuiImmediateContext context) {
+        child.mouseEvent(button, getChildContext(context));
     }
 }

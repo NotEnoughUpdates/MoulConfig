@@ -21,30 +21,30 @@
 /**/
 package io.github.moulberry.moulconfig;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class GuiTextures {
-    public static ResourceLocation
-        DELETE, RESET, BUTTON, BUTTON_WHITE,
-        TOGGLE_OFF, TOGGLE_ONE, TOGGLE_TWO, TOGGLE_THREE, TOGGLE_ON, TOGGLE_BAR,
-        SLIDER_OFF_CAP, SLIDER_OFF_NOTCH, SLIDER_OFF_SEGMENT,
-        SLIDER_ON_CAP, SLIDER_ON_NOTCH, SLIDER_ON_SEGMENT,
-        SLIDER_BUTTON,
-        COLOUR_SELECTOR_DOT, COLOUR_SELECTOR_BAR, COLOUR_SELECTOR_BAR_ALPHA, COLOUR_SELECTOR_CHROMA,
-        COLOUR_PICKER_INTERNAL, COLOUR_PICKER_INTERNAL_VALUE, COLOUR_PICKER_INTERNAL_OPACITY,
-        SEARCH;
+    public static Identifier
+            DELETE, RESET, BUTTON, BUTTON_WHITE,
+            TOGGLE_OFF, TOGGLE_ONE, TOGGLE_TWO, TOGGLE_THREE, TOGGLE_ON, TOGGLE_BAR,
+            SLIDER_OFF_CAP, SLIDER_OFF_NOTCH, SLIDER_OFF_SEGMENT,
+            SLIDER_ON_CAP, SLIDER_ON_NOTCH, SLIDER_ON_SEGMENT,
+            SLIDER_BUTTON,
+            COLOUR_SELECTOR_DOT, COLOUR_SELECTOR_BAR, COLOUR_SELECTOR_BAR_ALPHA, COLOUR_SELECTOR_CHROMA,
+            COLOUR_PICKER, COLOUR_PICKER_VALUE, COLOUR_PICKER_OPACITY,
+            SEARCH;
 
-    private static ResourceLocation root;
+    private static Identifier root;
 
     static {
-        setTextureRoot(new ResourceLocation("moulconfig", ""));
+        setTextureRoot(new Identifier("moulconfig", ""));
     }
 
-    private static ResourceLocation r(String name) {
-        return new ResourceLocation(root.getResourceDomain(), ("".equals(root.getResourcePath()) ? name : root.getResourcePath() + "/" + name));
+    private static Identifier r(String name) {
+        return new Identifier(root.getNamespace(), ("".equals(root.getPath()) ? name : root.getPath() + "/" + name));
     }
 
-    public static void setTextureRoot(ResourceLocation root) {
+    public static void setTextureRoot(Identifier root) {
         GuiTextures.root = root;
         DELETE = r("delete.png");
         RESET = r("reset.png");
@@ -67,9 +67,9 @@ public class GuiTextures {
         COLOUR_SELECTOR_BAR = r("colour_selector_bar.png");
         COLOUR_SELECTOR_BAR_ALPHA = r("colour_selector_bar_alpha.png");
         COLOUR_SELECTOR_CHROMA = r("colour_selector_chroma.png");
-        COLOUR_PICKER_INTERNAL = r("internal/colourpicker");
-        COLOUR_PICKER_INTERNAL_VALUE = r("internal/colourpicker_value");
-        COLOUR_PICKER_INTERNAL_OPACITY = r("internal/colourpicker_opacity");
+        COLOUR_PICKER = r("colorcircle/colorpicker.png");
+        COLOUR_PICKER_VALUE = r("colorcircle/value.png");
+        COLOUR_PICKER_OPACITY = r("colorcircle/opacity.png");
         SEARCH = r("search.png");
     }
 

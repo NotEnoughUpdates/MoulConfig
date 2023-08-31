@@ -21,12 +21,12 @@
 package io.github.moulberry.moulconfig.internal;
 
 import io.github.moulberry.moulconfig.Config;
-import net.minecraft.launchwrapper.Launch;
+import net.fabricmc.loader.api.FabricLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Warnings {
-    public static boolean isDevEnv = Launch.blackboard.get("fml.deobfuscatedEnvironment") == Boolean.TRUE;
+    public static boolean isDevEnv = FabricLoader.getInstance().isDevelopmentEnvironment();
     public static boolean shouldWarn = Boolean.getBoolean("moulconfig.warn") || isDevEnv;
     public static Logger logger = LogManager.getLogger("MoulConfig");
     public static String basePackage = Config.class.getPackage().getName() + ".";

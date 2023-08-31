@@ -23,7 +23,8 @@ package io.github.moulberry.moulconfig.gui.elements;
 import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.DrawContext;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Renders an element with a floating rect.
@@ -64,12 +65,12 @@ public class GuiElementPanel extends GuiElementNew {
     }
 
     @Override
-    public void render(GuiImmediateContext context) {
-        GlStateManager.pushMatrix();
-        RenderUtils.drawFloatingRectDark(0, 0, getWidth(), getHeight());
-        GlStateManager.translate(insets, insets, 0);
-        element.render(getChildContext(context));
-        GlStateManager.popMatrix();
+    public void render(DrawContext drawContext, GuiImmediateContext context) {
+        drawContext.getMatrices().push();
+        RenderUtils.drawFloatingRectDark(drawContext, 0, 0, getWidth(), getHeight());
+        drawContext.getMatrices().translate(insets, insets, 0);
+        element.render(drawContext, getChildContext(context));
+        drawContext.getMatrices().pop();
     }
 
     @Override
@@ -78,7 +79,8 @@ public class GuiElementPanel extends GuiElementNew {
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        element.mouseEvent(getChildContext(context));
+    public void mouseEvent(int button, GuiImmediateContext context) {
+        element.mouseEvent(button, getChildContext(context));
     }
+
 }

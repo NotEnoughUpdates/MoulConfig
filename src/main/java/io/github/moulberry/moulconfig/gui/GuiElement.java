@@ -20,12 +20,33 @@
 
 package io.github.moulberry.moulconfig.gui;
 
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.DrawContext;
 
-public abstract class GuiElement extends Gui {
-	public abstract void render();
+public abstract class GuiElement {
 
-	public abstract boolean mouseInput(int mouseX, int mouseY);
+    public abstract void render(DrawContext context, int mouseX, int mouseY, float delta);
 
-	public abstract boolean keyboardInput();
+    public abstract boolean mouseClicked(double mouseX, double mouseY, int button);
+
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        return false;
+    }
+
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return false;
+    }
+
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return false;
+    }
+
+    public void mouseMoved(double mouseX, double mouseY) {}
+
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        return false;
+    }
+
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return false;
+    }
 }

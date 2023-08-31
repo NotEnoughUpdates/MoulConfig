@@ -23,9 +23,10 @@ package io.github.moulberry.moulconfig.gui.editors;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementTextField;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.InputUtil;
 
 public class GuiOptionEditorText extends GuiOptionEditor {
     private final GuiElementTextField textField;
@@ -37,8 +38,9 @@ public class GuiOptionEditorText extends GuiOptionEditor {
     }
 
     @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
+    public void render(DrawContext context, int x, int y, int width) {
+        super.render(context, x, y, width);
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         int height = getHeight();
 
         int fullWidth = Math.min(width / 3 - 10, 80);
@@ -47,18 +49,18 @@ public class GuiOptionEditorText extends GuiOptionEditor {
         if (textField.getFocus()) {
             fullWidth = Math.max(
                 fullWidth,
-                Minecraft.getMinecraft().fontRendererObj.getStringWidth(textField.getText()) + 10
+                textRenderer.getWidth(textField.getText()) + 10
             );
         }
 
         textField.setSize(fullWidth, 16);
         textField.setText((String) option.get());
 
-        textField.render(textFieldX, y + height - 7 - 14);
+        textField.render(context, textFieldX, y + height - 7 - 14);
     }
 
     @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+    public boolean mouseInput(int x, int y, int width, double mouseX, double mouseY, int button) {
         int height = getHeight();
 
         int fullWidth = Math.min(width / 3 - 10, 80);
@@ -68,17 +70,17 @@ public class GuiOptionEditorText extends GuiOptionEditor {
         if (textField.getFocus()) {
             fullWidth = Math.max(
                 fullWidth,
-                Minecraft.getMinecraft().fontRendererObj.getStringWidth(textField.getText()) + 10
+                MinecraftClient.getInstance().textRenderer.getWidth(textField.getText()) + 10
             );
         }
 
         int textFieldY = y + height - 7 - 14;
         textField.setSize(fullWidth, 16);
 
-        if (Mouse.getEventButtonState() && (Mouse.getEventButton() == 0 || Mouse.getEventButton() == 1)) {
+        if (button == 0 || button == 1) {
             if (mouseX > textFieldX && mouseX < textFieldX + fullWidth &&
                 mouseY > textFieldY && mouseY < textFieldY + 16) {
-                textField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+                textField.mouseClicked(mouseX, mouseY, button);
                 return true;
             }
             textField.unfocus();
@@ -88,14 +90,13 @@ public class GuiOptionEditorText extends GuiOptionEditor {
     }
 
     @Override
-    public boolean keyboardInput() {
-        if (!Keyboard.getEventKeyState()) return false;
-        if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE && textField.getFocus()) {
+    public boolean keyboardInput(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == InputUtil.GLFW_KEY_ENTER && textField.getFocus()) {
             textField.unfocus();
             return true;
         }
         if (textField.getFocus()) {
-            textField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+            textField.keyTyped(keyCode, scanCode, modifiers);
 
             try {
                 textField.setCustomBorderColour(0xffffffff);

@@ -19,8 +19,7 @@
  */
 
 package io.github.moulberry.moulconfig.gui;
-
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.DrawContext;
 
 import java.util.function.BiFunction;
 
@@ -31,7 +30,6 @@ import java.util.function.BiFunction;
  * Additionally, these elements now properly handle focus.
  */
 public abstract class GuiElementNew {
-    protected final Minecraft mc = Minecraft.getMinecraft();
     GuiContext context;
 
     protected GuiElementNew() {
@@ -116,14 +114,14 @@ public abstract class GuiElementNew {
      *
      * @param context the context in which this
      */
-    public abstract void render(GuiImmediateContext context);
+    public abstract void render(DrawContext drawContext, GuiImmediateContext context);
 
     /**
      * Called by the parent renderer. Use {@link org.lwjgl.input.Mouse} to obtain information about the event.
      *
      * @param context the context in which this
      */
-    public void mouseEvent(GuiImmediateContext context) {
+    public void mouseEvent(int button, GuiImmediateContext context) {
     }
 
     /**

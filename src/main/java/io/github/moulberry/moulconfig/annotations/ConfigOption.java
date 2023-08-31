@@ -30,5 +30,14 @@ import java.lang.annotation.Target;
 public @interface ConfigOption {
 	String name();
 
-	String desc();
+    String description() default "";
+
+    /**
+     * @deprecated Old description variable, will remain and work, you should use {@link ConfigOption#description()} instead
+     * @return the description
+     */
+    @Deprecated
+    String desc() default "";
+
+	String[] hiddenKeys() default {};
 }

@@ -24,6 +24,7 @@ import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementBoolean;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
+import net.minecraft.client.gui.DrawContext;
 
 public class GuiOptionEditorBoolean extends GuiOptionEditor {
 
@@ -43,25 +44,25 @@ public class GuiOptionEditorBoolean extends GuiOptionEditor {
     }
 
     @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
+    public void render(DrawContext context, int x, int y, int width) {
+        super.render(context, x, y, width);
         int height = getHeight();
 
         bool.x = x + width / 6 - 24;
         bool.y = y + height - 7 - 14;
-        bool.render();
+        bool.render(context, 0, 0, 0);
     }
 
     @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+    public boolean mouseInput(int x, int y, int width, double mouseX, double mouseY, int button) {
         int height = getHeight();
         bool.x = x + width / 6 - 24;
         bool.y = y + height - 7 - 14;
-        return bool.mouseInput(mouseX, mouseY);
+        return bool.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean keyboardInput() {
+    public boolean keyboardInput(int keyCode, int scanCode, int modifiers) {
         return false;
     }
 

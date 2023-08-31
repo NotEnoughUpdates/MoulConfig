@@ -26,10 +26,10 @@ package io.github.moulberry.moulconfig;
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorSlider;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.MathHelper;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.math.MathHelper;
+import org.lwjgl.opengl.GL11;
 
 public abstract class Overlay {
     @Expose
@@ -44,30 +44,30 @@ public abstract class Overlay {
     public float scale = 1F;
 
     public float getScale() {
-        return MathHelper.clamp_float(scale, 0.1F, 6.0F);
+        return MathHelper.clamp(0.1F, 6.0F, scale);
     }
 
     public float getEffectiveScale() {
-        return getScale() * new ScaledResolution(Minecraft.getMinecraft()).getScaleFactor();
+        return (float) (getScale() * MinecraftClient.getInstance().getWindow().getScaleFactor());
     }
 
     public float getX() {
-        float viewportWidth = (float) new ScaledResolution(Minecraft.getMinecraft()).getScaledWidth_double();
-        return MathHelper.clamp_float(
+        float viewportWidth = (float) MinecraftClient.getInstance().getWindow().getScaledWidth();
+        return MathHelper.clamp(
             (xPosition * viewportWidth),
             0, viewportWidth - getScaledWidth());
     }
 
     public float getY() {
-        float viewportHeight = (float) new ScaledResolution(Minecraft.getMinecraft()).getScaledHeight_double();
-        return MathHelper.clamp_float(
+        float viewportHeight = (float) MinecraftClient.getInstance().getWindow().getHeight();
+        return MathHelper.clamp(
             (yPosition * viewportHeight),
             0, viewportHeight - getScaledHeight());
     }
 
-    public void transform() {
-        GlStateManager.translate(getX(), getY(), 0);
-        GlStateManager.scale(scale, scale, 1);
+    public void transform(DrawContext drawContext) {
+        drawContext.getMatrices().translate(getX(), getY(), 0);
+        drawContext.getMatrices().scale(scale, scale, 1);
     }
 
     public float getScaledWidth() {

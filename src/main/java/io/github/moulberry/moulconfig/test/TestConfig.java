@@ -24,8 +24,8 @@ import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.Social;
 import io.github.moulberry.moulconfig.annotations.Category;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,14 +34,17 @@ public class TestConfig extends Config {
     @Category(name = "Test Category", desc = "Test Description")
     public TestCategory testCategory = new TestCategory();
 
+    @Category(name = "Test Category 2", desc = "Test Description 2")
+    public TestCategory test = new TestCategory();
+
     @Override
     public void executeRunnable(int runnableId) {
-        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Just executed runnableId " + runnableId));
+        MinecraftClient.getInstance().player.sendMessage(Text.literal("Just executed runnableId " + runnableId));
     }
 
     @Override
     public List<Social> getSocials() {
-        return Arrays.asList(Social.forLink("Go to Discord", GuiTextures.RESET, "https://discord.gg/moulberry"));
+        return List.of(Social.forLink("Go to Discord", GuiTextures.RESET, "https://discord.gg/moulberry"));
     }
 
     @Override
@@ -50,7 +53,7 @@ public class TestConfig extends Config {
     }
 
     @Override
-    public String getTitle() {
-        return "§bMoulConfig §aTest §eConfig";
+    public Text getTitle() {
+        return Text.literal("§bMoulConfig §aTest §eConfig");
     }
 }

@@ -20,46 +20,62 @@
 
 package io.github.moulberry.moulconfig.gui;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.moulberry.moulconfig.GuiTextures;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 
-@RequiredArgsConstructor
 @ToString
-public class GuiScreenElementWrapperNew extends GuiScreen {
+public class GuiScreenElementWrapperNew extends Screen {
     @NonNull
     public GuiContext context;
 
+    public GuiScreenElementWrapperNew(@NotNull GuiContext guiContext) {
+        super(Text.of("Gui screen element wrapper new"));
+        this.context = guiContext;
+    }
+
+    int lastMouseX = 0, lastMouseY = 0;
+
+
     GuiImmediateContext createContext() {
-        int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
-        int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+        int x = (int) MinecraftClient.getInstance().mouse.getX() * MinecraftClient.getInstance().getWindow().getScaledWidth() / MinecraftClient.getInstance().getWindow().getWidth();
+        int y = (int) MinecraftClient.getInstance().mouse.getY() * MinecraftClient.getInstance().getWindow().getScaledHeight() / MinecraftClient.getInstance().getWindow().getHeight();
         return new GuiImmediateContext(
-            width, height,
-            x, y, x, y
+                width, height,
+                x, y, x, y
         );
     }
 
     @Override
-    public void handleKeyboardInput() throws IOException {
-        super.handleKeyboardInput();
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (super.keyPressed(keyCode, scanCode, modifiers)) return true;
         context.getRoot().keyboardEvent(createContext());
+        return true;
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
-        context.getRoot().render(new GuiImmediateContext(
-            width, height, mouseX, mouseY, mouseX, mouseY
-        ));
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);;
+        this.context.getRoot().render(context, new GuiImmediateContext(width, height, mouseX, mouseY, mouseX, mouseY));
     }
 
+
     @Override
-    public void handleMouseInput() throws IOException {
-        super.handleMouseInput();
-        context.getRoot().mouseEvent(createContext());
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        super.mouseMoved(mouseX, mouseY);
+        this.lastMouseX = (int) mouseX;
+        this.lastMouseY = (int) mouseY;
+        context.getRoot().mouseEvent(button, createContext());
+
+        return true;
     }
 }

@@ -23,8 +23,7 @@ package io.github.moulberry.moulconfig.gui.editors;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.DrawContext;
 
 import java.util.Locale;
 
@@ -39,16 +38,14 @@ public class GuiOptionEditorInfoText extends GuiOptionEditor {
     }
 
     @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
+    public void render(DrawContext context, int x, int y, int width) {
+        super.render(context, x, y, width);
 
         int height = getHeight();
 
-        GlStateManager.color(1, 1, 1, 1);
-
         if (infoTitle != null) {
-            TextRenderUtils.drawStringCenteredScaledMaxWidth(infoTitle, Minecraft.getMinecraft().fontRendererObj,
-                x + width / 6, y + height - 7 - 6,
+            TextRenderUtils.drawStringCenteredScaledMaxWidth(infoTitle,context,
+                x + (float) width / 6, y + height - 7 - 6,
                 false, 44, 0xFF303030
             );
         }
@@ -60,12 +57,12 @@ public class GuiOptionEditorInfoText extends GuiOptionEditor {
     }
 
     @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+    public boolean mouseInput(int x, int y, int width, double mouseX, double mouseY, int button) {
         return false;
     }
 
     @Override
-    public boolean keyboardInput() {
+    public boolean keyboardInput(int keyCode, int scanCode, int modifiers) {
         return false;
     }
 }

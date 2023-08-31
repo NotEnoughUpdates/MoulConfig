@@ -41,11 +41,9 @@ package io.github.moulberry.moulconfig.gui.elements;/*
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.gui.GuiElement;
 import io.github.moulberry.moulconfig.internal.LerpUtils;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -81,19 +79,17 @@ public class GuiElementBoolean extends GuiElement {
     }
 
     @Override
-    public void render() {
-        GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.TOGGLE_BAR);
-        RenderUtils.drawTexturedRect(x, y, xSize, ySize);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        context.drawTexture(GuiTextures.TOGGLE_BAR, x, y, 0, 1, xSize, ySize);
 
-        ResourceLocation buttonLoc = GuiTextures.TOGGLE_ON;
+        Identifier toggleIdentifier = GuiTextures.TOGGLE_ON;
         long currentMillis = System.currentTimeMillis();
         long deltaMillis = currentMillis - lastMillis;
         lastMillis = currentMillis;
         boolean passedLimit = false;
         if (previewValue != value.get()) {
             if ((previewValue && animation > 12) ||
-                (!previewValue && animation < 24)) {
+                    (!previewValue && animation < 24)) {
                 passedLimit = true;
             }
         }
@@ -122,27 +118,24 @@ public class GuiElementBoolean extends GuiElement {
 
         int animation = (int) (LerpUtils.sigmoidZeroOne(this.animation / 36f) * 36);
         if (animation < 3) {
-            buttonLoc = GuiTextures.TOGGLE_OFF;
+            toggleIdentifier = GuiTextures.TOGGLE_OFF;
         } else if (animation < 13) {
-            buttonLoc = GuiTextures.TOGGLE_ONE;
+            toggleIdentifier = GuiTextures.TOGGLE_ONE;
         } else if (animation < 23) {
-            buttonLoc = GuiTextures.TOGGLE_TWO;
+            toggleIdentifier = GuiTextures.TOGGLE_TWO;
         } else if (animation < 33) {
-            buttonLoc = GuiTextures.TOGGLE_THREE;
+            toggleIdentifier = GuiTextures.TOGGLE_THREE;
         }
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(buttonLoc);
-        RenderUtils.drawTexturedRect(x + animation, y, 12, 14);
+        context.drawTexture(toggleIdentifier, x + animation, y, 0, 1, 12, 14);
     }
 
     @Override
-    public boolean mouseInput(int mouseX, int mouseY) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (mouseX > x - clickRadius && mouseX < x + xSize + clickRadius &&
-            mouseY > y - clickRadius && mouseY < y + ySize + clickRadius) {
-            if (Mouse.getEventButton() == 0) {
-                if (Mouse.getEventButtonState()) {
-                    previewValue = !value.get();
-                } else if (previewValue == !value.get()) {
+                mouseY > y - clickRadius && mouseY < y + ySize + clickRadius) {
+            if (button == 0) {
+                if (previewValue == !value.get()) {
                     toggleCallback.accept(!value.get());
                 }
             }
@@ -153,7 +146,20 @@ public class GuiElementBoolean extends GuiElement {
     }
 
     @Override
-    public boolean keyboardInput() {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (mouseX > x - clickRadius && mouseX < x + xSize + clickRadius &&
+                mouseY > y - clickRadius && mouseY < y + ySize + clickRadius) {
+            if (button == 0) {
+                previewValue = !value.get();
+            }
+        } else {
+            previewValue = value.get();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return false;
     }
 }

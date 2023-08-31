@@ -24,8 +24,9 @@ import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import lombok.AllArgsConstructor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 
 import java.util.function.Supplier;
 
@@ -34,17 +35,17 @@ import java.util.function.Supplier;
  */
 @AllArgsConstructor
 public class GuiElementText extends GuiElementNew {
-    final FontRenderer fontRenderer;
+    final TextRenderer textRenderer;
     final Supplier<String> string;
     final int width;
     final TextAlignment alignment;
     final boolean shadow;
 
     public GuiElementText(String string, int width) {
-        this(Minecraft.getMinecraft().fontRendererObj, () -> string, width, TextAlignment.LEFT, false);
+        this(MinecraftClient.getInstance().textRenderer, () -> string, width, TextAlignment.LEFT, false);
     }
     public GuiElementText(String string) {
-        this(string, Minecraft.getMinecraft().fontRendererObj.getStringWidth(string));
+        this(string, MinecraftClient.getInstance().textRenderer.getWidth(string));
     }
 
     @Override
@@ -54,26 +55,20 @@ public class GuiElementText extends GuiElementNew {
 
     @Override
     public int getHeight() {
-        return fontRenderer.FONT_HEIGHT + 4;
+        return textRenderer.fontHeight + 4;
     }
 
     @Override
-    public void render(GuiImmediateContext context) {
+    public void render(DrawContext drawContext, GuiImmediateContext context) {
         String text = string.get();
-        int length = fontRenderer.getStringWidth(text);
+        int length = textRenderer.getWidth(text);
         if (length > width) {
-            TextRenderUtils.drawStringScaledMaxWidth(text, fontRenderer, 2, 2, shadow, width, -1);
+            TextRenderUtils.drawStringScaledMaxWidth(text, drawContext, 2, 2, shadow, width, -1);
         }
         switch (alignment) {
-            case LEFT:
-                fontRenderer.drawString(text, 2, 2, -1, shadow);
-                break;
-            case CENTER:
-                fontRenderer.drawString(text, width / 2 - length / 2 + 2, 2, -1, shadow);
-                break;
-            case RIGHT:
-                fontRenderer.drawString(text, width - length + 2, 2, -1, shadow);
-                break;
+            case LEFT -> drawContext.drawText(textRenderer, text, 2, 2, -1, shadow);
+            case CENTER -> drawContext.drawText(textRenderer, text, width / 2 - length / 2 + 2, 2, -1, shadow);
+            case RIGHT -> drawContext.drawText(textRenderer, text, width - length + 2, 2, -1, shadow);
         }
     }
 

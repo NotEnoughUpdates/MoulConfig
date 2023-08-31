@@ -87,9 +87,7 @@ public class ConfigProcessorDriver {
                 }
                 reader.beginAccordion(categoryObject, field, optionAnnotation, ++nextAnnotation);
                 try {
-                    reader.pushPath(field.getName());
                     processCategory(field.get(categoryObject), field.getType(), reader);
-                    reader.popPath();
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -128,11 +126,15 @@ public class ConfigProcessorDriver {
                 Warnings.warn("@Category on non public field " + categoryField + " in " + configClass);
                 continue;
             }
-            reader.beginCategory(configObject, categoryField, categoryAnnotation.name(), categoryAnnotation.desc());
+            //noinspection deprecation - use old value instead of new, if new isn't present
+            reader.beginCategory(
+                configObject,
+                categoryField,
+                categoryAnnotation.name(),
+                categoryAnnotation.description().isEmpty() ? categoryAnnotation.desc() : categoryAnnotation.description()
+            );
             try {
-                reader.pushPath(categoryField.getName());
                 processCategory(categoryField.get(configObject), categoryField.getType(), reader);
-                reader.popPath();
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }

@@ -27,12 +27,6 @@ import java.lang.reflect.Field;
 
 public interface ConfigStructureReader {
 
-    default void pushPath(String fieldPath) {
-    }
-
-    default void popPath() {
-    }
-
     default void beginConfig(Class<? extends Config> configClass, Config configObject) {
     }
 
@@ -46,7 +40,6 @@ public interface ConfigStructureReader {
     void beginAccordion(Object baseObject, Field field, ConfigOption option, int id);
 
     void endAccordion();
-
     void emitOption(Object baseObject, Field field, ConfigOption option);
 
     void emitGuiOverlay(Object baseObject, Field field, ConfigOption option);

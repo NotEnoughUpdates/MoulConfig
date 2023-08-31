@@ -20,6 +20,8 @@
 
 package io.github.moulberry.moulconfig;
 
+import net.minecraft.text.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +33,8 @@ public abstract class Config {
         return new ArrayList<>();
     }
 
-    public String getTitle() {
-        return "Config GUI";
+    public Text getTitle() {
+        return Text.literal("Config GUI");
     }
 
     public void saveNow() {

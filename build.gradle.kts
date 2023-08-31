@@ -1,121 +1,76 @@
-import xyz.wagyourtail.unimined.api.sourceSet
-import java.io.ByteArrayOutputStream
-import java.net.URL
-
 plugins {
-    idea
-    java
-    `maven-publish`
-    id("xyz.wagyourtail.unimined") version "0.4.10"
+    id("fabric-loom") version "1.2-SNAPSHOT"
+    id("maven-publish")
     id("org.cadixdev.licenser") version "0.6.1"
     id("org.jetbrains.dokka") version "1.8.10"
 }
 
-group = "org.notenoughupdates.moulconfig"
+version = project.properties["mod_version"]!!
+group = project.properties["maven_group"]!!
 
-fun cmd(vararg args: String): String? {
-    val output = ByteArrayOutputStream()
-    val r = exec {
-        this.commandLine(args.toList())
-        this.isIgnoreExitValue = true
-        this.standardOutput = output
-        this.errorOutput = ByteArrayOutputStream()
-    }
-    return if (r.exitValue == 0) output.toByteArray().decodeToString().trim()
-    else null
-}
-
-val tag = cmd("git", "describe", "--tags", "HEAD")
-val hash = cmd("git", "rev-parse", "--short", "HEAD")!!
-val isSnapshot = tag == null
-version = tag ?: hash
-
-minecraft {
-    forge {
-        it.mcpChannel = "stable"
-        it.mcpVersion = "22-1.8.9"
-        it.setDevFallbackNamespace("intermediary")
-    }
-    mcRemapper.tinyRemapperConf = {
-        it.ignoreFieldDesc(true)
-        it.ignoreConflicts(true)
-    }
-    launcher.config("client") {
-        this.jvmArgs.add("-Dmoulconfig.testmod=true")
-        this.args.add(0, "--tweakClass")
-        this.args.add(1, "net.minecraftforge.fml.common.launcher.FMLTweaker")
-
-    }
+base {
+    archivesName.set(project.properties["archives_base_name"]!! as String)
 }
 
 repositories {
-    mavenLocal()
-    mavenCentral()
-    maven("https://repo.nea.moe/releases")
+    maven { url = uri("https://maven.wispforest.io") }
 }
 
 dependencies {
-    minecraft("net.minecraft:minecraft:1.8.9")
-    mappings("moe.nea.mcp:mcp-yarn:1.8.9")
-    "forge"("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+    minecraft("com.mojang:minecraft:${project.properties["minecraft_version"]}")
+    mappings("net.fabricmc:yarn:${project.properties["yarn_mappings"]}:v2")
+    modCompileOnly("net.fabricmc:fabric-loader:${project.properties["loader_version"]}")
+    modCompileOnly("net.fabricmc.fabric-api:fabric-api:${project.properties["fabric_version"]}")
 
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     compileOnly("org.projectlombok:lombok:1.18.26")
-    compileOnly("org.jetbrains:annotations:24.0.1")
 }
 
+tasks.getByName<ProcessResources>("processResources") {
+    inputs.property("version", project.properties["version"])
+
+    filesMatching("fabric.mod.json") {
+        expand(Pair("version", project.properties["version"]))
+    }
+}
+
+tasks.withType(JavaCompile::class.java).configureEach {
+    this.options.release.set(17)
+    this.options.encoding = "UTF-8"
+}
+
+
 java {
-    targetCompatibility = JavaVersion.VERSION_1_8
-    sourceCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 sourceSets.main {
-    output.setResourcesDir(file("$buildDir/classes/java/main"))
-}
-
-tasks.withType(JavaCompile::class) {
-    options.encoding = "UTF-8"
+    output.setResourcesDir("$buildDir/classes/java/main")
 }
 
 tasks.dokkaHtml {
     dokkaSourceSets {
         create("main") {
-            moduleName.set("MoulConfig")
-            sourceRoots.from(sourceSet.main.get().allSource)
+            moduleName.set("moulconfig")
+            sourceRoots.from(sourceSets.main.get().allSource)
             classpath.from(tasks.compileJava.get().classpath)
 
             includes.from(fileTree("docs") { include("*.md") })
 
             sourceLink {
-                localDirectory.set(file("src/main/"))
-                remoteUrl.set(URL("https://github.com/NotEnoughUpdates/MoulConfig/blob/$hash/src/main/"))
-                remoteLineSuffix.set("#L")
+                localDirectory.set(file("src/main"))
             }
         }
     }
-}
-
-project.afterEvaluate {
-    tasks.named("runClient", JavaExec::class) {
-        this.javaLauncher.set(javaToolchains.launcherFor {
-            languageVersion.set(JavaLanguageVersion.of(8))
-        })
-    }
-}
-
-license {
-    header(project.file("HEADER.txt"))
-    properties {
-        set("year", 2023)
-    }
-    skipExistingHeaders(true)
 }
 
 val noTestJar by tasks.creating(Jar::class) {
     from(zipTree(tasks.remapJar.map { it.archiveFile }))
     archiveClassifier.set("notest")
     exclude("io/github/moulberry/moulconfig/test/*")
-    exclude("mcmod.info")
 }
 
 publishing {
@@ -134,7 +89,7 @@ publishing {
                 licenses {
                     license {
                         name.set("LGPL-3.0 or later")
-                        url.set("https://github.com/NotEnoughUpdates/NotEnoughUpdates/blob/HEAD/COPYING.LESSER")
+                        url.set("https://github.com/Morazzer/MoulConfig/blob/HEAD/LICENSE")
                     }
                 }
                 developers {
@@ -144,22 +99,26 @@ publishing {
                     developer {
                         name.set("Linnea Gräf")
                     }
+                    developer {
+                        name.set("Morazzer")
+                    }
                 }
                 scm {
-                    url.set("https://github.com/NotEnoughUpdates/MoulConfig")
+                    url.set("https://github.com/Morazzer/MoulConfig")
                 }
             }
         }
     }
     repositories {
-        if (project.hasProperty("moulconfigPassword")) {
-            maven {
-                url = uri("https://maven.notenoughupdates.org/releases")
-                name = "moulconfig"
-                credentials(PasswordCredentials::class)
-                authentication {
-                    create<BasicAuthentication>("basic")
-                }
+        maven {
+            url = uri("https://repo.morazzer.dev/releases")
+            name = "moulconfig"
+            credentials {
+                username = System.getenv("moulconfigUsername")
+                password = System.getenv("moulconfigPassword")
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
             }
         }
     }

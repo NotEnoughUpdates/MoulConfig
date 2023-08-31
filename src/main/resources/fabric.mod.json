@@ -1,0 +1,28 @@
+{
+	"schemaVersion": 1,
+	"id": "moulconfigtest",
+	"version": "${version}",
+	"name": "moulconfigtest",
+	"description": "Testmod for moulconfig",
+	"authors": [
+		"Morazzer"
+	],
+	"contact": {
+		"sources": "https://github.com/Morazzer/moulconfig-port"
+	},
+	"license": "",
+	"icon": "assets/moulconfig/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"io.github.moulberry.moulconfig.test.MoulConfigTest"
+		]
+	},
+	"mixins": [],
+	"depends": {
+		"fabricloader": ">=0.14.21",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}

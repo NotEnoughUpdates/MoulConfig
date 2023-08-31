@@ -24,11 +24,9 @@ import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
@@ -60,14 +58,15 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
         this.useOrdinal = clazz == int.class || clazz == Integer.class;
     }
 
-    @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
+	@Override
+	public void render(DrawContext context, int x, int y, int width) {
+
+        super.render(context, x, y, width);
+		//context.fill(x - 10, y - 10, x + 10, y + 10, 0xFF000000);
         if (!open) {
             int height = getHeight();
 
-            FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-            int dropdownWidth = Math.min(width / 3 - 10, 80);
+			int dropdownWidth = Math.min(width / 3 - 10, 80);
             int left = x + width / 6 - dropdownWidth / 2;
             int top = y + height - 7 - 14;
             int selected = getSelectedIndex();
@@ -77,10 +76,10 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
                 selectedString = values[selected];
             }
 
-            RenderUtils.drawFloatingRectDark(left, top, dropdownWidth, 14, false);
+            RenderUtils.drawFloatingRectDark(context, left, top, dropdownWidth, 14, false);
             TextRenderUtils.drawStringScaled(
                 "▼",
-                fr,
+                context,
                 left + dropdownWidth - 10,
                 y + height - 7 - 15,
                 false,
@@ -88,7 +87,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
                 2
             );
 
-            TextRenderUtils.drawStringScaledMaxWidth(selectedString, fr, left + 3, top + 3, false,
+            TextRenderUtils.drawStringScaledMaxWidth(selectedString, context, left + 3, top + 3, false,
                 dropdownWidth - 16, 0xffa0a0a0
             );
         }
@@ -100,14 +99,14 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
         if (useOrdinal) {
             return (int) selectedObject;
         } else if (constants != null) {
-            return ((Enum) selectedObject).ordinal();
+            return ((Enum<?>) selectedObject).ordinal();
         } else {
             return Arrays.asList(values).indexOf(selectedObject);
         }
     }
 
     @Override
-    public void renderOverlay(int x, int y, int width) {
+    public void renderOverlay(DrawContext context, int x, int y, int width) {
         if (open) {
             int selected = getSelectedIndex();
             String selectedString = " - Select - ";
@@ -117,7 +116,6 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 
             int height = getHeight();
 
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
 			int dropdownWidth = Math.min(width / 3 - 10, 80);
 			int left = x + width / 6 - dropdownWidth / 2;
 			int top = y + height - 7 - 14;
@@ -127,15 +125,15 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 			int main = 0xff202026;
 			int blue = 0xff2355ad;
 
-			GlStateManager.pushMatrix();
-			GL11.glTranslated(0, 0, 100);
-			Gui.drawRect(left, top, left + 1, top + dropdownHeight, blue); //Left
-			Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, blue); //Top
-			Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, blue); //Right
-			Gui.drawRect(left + 1, top + dropdownHeight - 1, left + dropdownWidth - 1, top + dropdownHeight, blue); //Bottom
-			Gui.drawRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
+			context.getMatrices().push();
+			context.getMatrices().translate(0, 0, 100);
+			context.fill(left, top, left + 1, top + dropdownHeight, blue); //Left
+			context.fill(left + 1, top, left + dropdownWidth, top + 1, blue); //Top
+			context.fill(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, blue); //Right
+			context.fill(left + 1, top + dropdownHeight - 1, left + dropdownWidth - 1, top + dropdownHeight, blue); //Bottom
+			context.fill(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
 
-			Gui.drawRect(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, blue); //Bar
+			context.fill(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, blue); //Bar
 			int dropdownY = 13;
 			for (String option : values) {
 				if (option.isEmpty()) {
@@ -143,7 +141,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 				}
 				TextRenderUtils.drawStringScaledMaxWidth(
 					option,
-					fr,
+					context,
 					left + 3,
 					top + 3 + dropdownY,
 					false,
@@ -155,7 +153,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 
 			TextRenderUtils.drawStringScaled(
 				"\u25B2",
-				fr,
+				context,
 				left + dropdownWidth - 10,
 				y + height - 7 - 15,
 				false,
@@ -163,21 +161,22 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 				2
 			);
 
-			TextRenderUtils.drawStringScaledMaxWidth(selectedString, fr, left + 3, top + 3, false,
+			TextRenderUtils.drawStringScaledMaxWidth(selectedString, context, left + 3, top + 3, false,
 				dropdownWidth - 16, 0xffa0a0a0
 			);
-			GlStateManager.popMatrix();
+			context.getMatrices().pop();
 		}
 	}
 
 	@Override
-	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+	public boolean mouseInput(int x, int y, int width, double mouseX, double mouseY, int button) {
 		int height = getHeight();
 
 		int left = x + width / 6 - 40;
 		int top = y + height - 7 - 14;
 
-		if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
+		if (button == 0) {
+			System.out.println(mouseX + " " + mouseY);
 			if (mouseX >= left && mouseX <= left + 80 &&
 				mouseY >= top && mouseY <= top + 14) {
 				open = !open;
@@ -189,13 +188,13 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 	}
 
 	@Override
-	public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY) {
+	public boolean mouseInputOverlay(int x, int y, int width, double mouseX, double mouseY, int button) {
 		int height = getHeight();
 
 		int left = x + width / 6 - 40;
 		int top = y + height - 7 - 14;
 
-		if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
+		if (button == 0) {
 			if (!(mouseX >= left && mouseX <= left + 80 &&
 				mouseY >= top && mouseY <= top + 14) && open) {
 				open = false;
@@ -203,13 +202,12 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
 					int dropdownY = 13;
 					for (int ordinal = 0; ordinal < values.length; ordinal++) {
 						if (mouseY >= top + 3 + dropdownY && mouseY <= top + 3 + dropdownY + 12) {
-                            int selected = ordinal;
-                            if (constants != null) {
-                                option.set(constants[selected]);
+							if (constants != null) {
+                                option.set(constants[ordinal]);
                             } else if (useOrdinal) {
-                                option.set(selected);
+                                option.set(ordinal);
                             } else {
-                                option.set(values[selected]);
+                                option.set(values[ordinal]);
                             }
                             return true;
                         }
@@ -232,7 +230,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
     }
 
     @Override
-	public boolean keyboardInput() {
+	public boolean keyboardInput(int keyCode, int scanCode, int modifiers) {
 		return false;
 	}
 }

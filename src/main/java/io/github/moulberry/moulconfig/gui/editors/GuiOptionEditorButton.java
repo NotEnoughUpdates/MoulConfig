@@ -23,26 +23,24 @@ package io.github.moulberry.moulconfig.gui.editors;
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.gui.DrawContext;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Locale;
 
 public class GuiOptionEditorButton extends GuiOptionEditor {
-	private final int runnableId;
-	private String buttonText;
-	private final Config config;
-    private boolean isUsingRunnable;
+    private final int runnableId;
+    private String buttonText;
+    private final Config config;
+    private final boolean isUsingRunnable;
 
-	public GuiOptionEditorButton(
-        ProcessedOption option,
-        int runnableId,
-        String buttonText,
-        Config config
+    public GuiOptionEditorButton(
+            ProcessedOption option,
+            int runnableId,
+            String buttonText,
+            Config config
     ) {
         super(option);
         this.runnableId = runnableId;
@@ -53,35 +51,32 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
         if (this.buttonText == null) this.buttonText = "";
     }
 
-	@Override
-	public void render(int x, int y, int width) {
-		super.render(x, y, width);
+    @Override
+    public void render(DrawContext context, int x, int y, int width) {
+        super.render(context, x, y, width);
 
-		int height = getHeight();
+        int height = getHeight();
 
-		GlStateManager.color(1, 1, 1, 1);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
-		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
+        //GL11.glColor4f(1, 1, 1, 1);
+        context.drawTexture(GuiTextures.BUTTON, x + width / 6 - 24, y + height - 7 - 14, 0, 1, 48, 16, 48, 16);
 
-        TextRenderUtils.drawStringCenteredScaledMaxWidth(buttonText, Minecraft.getMinecraft().fontRendererObj,
-            x + width / 6, y + height - 7 - 6,
-            false, 44, 0xFF303030
+        TextRenderUtils.drawStringCenteredScaledMaxWidth(buttonText, context,
+                x + (float) width / 6, y + height - 7 - 6,
+                false, 44, 0xFF303030
         );
-	}
+    }
 
-	@Override
-	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-		if (Mouse.getEventButtonState()) {
-            int height = getHeight();
-            if (mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
+    @Override
+    public boolean mouseInput(int x, int y, int width, double mouseX, double mouseY, int button) {
+        int height = getHeight();
+        if (mouseX > x + (double) width / 6 - 24 && mouseX < x + (double) width / 6 + 24 &&
                 mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
-                if (isUsingRunnable) {
-                    ((Runnable) option.get()).run();
-                } else {
-                    config.executeRunnable(runnableId);
-                }
-                return true;
+            if (isUsingRunnable) {
+                ((Runnable) option.get()).run();
+            } else {
+                config.executeRunnable(runnableId);
             }
+            return true;
         }
 
         return false;
@@ -93,7 +88,7 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
     }
 
     @Override
-    public boolean keyboardInput() {
+    public boolean keyboardInput(int keyCode, int scanCode, int modifiers) {
         return false;
     }
 }

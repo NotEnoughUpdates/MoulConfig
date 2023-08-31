@@ -20,22 +20,21 @@
 
 package io.github.moulberry.moulconfig;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.awt.*;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Social {
 
-    public static Social forLink(String name, ResourceLocation icon, String link) {
+    public static Social forLink(String name, Identifier icon, String link) {
         try {
             return new URLSocial(name, new URI(link), icon);
         } catch (URISyntaxException e) {
@@ -47,14 +46,14 @@ public abstract class Social {
 
     public abstract List<String> getTooltip();
 
-    public abstract ResourceLocation getIcon();
+    public abstract Identifier getIcon();
 
     private static class URLSocial extends Social {
         private final String name;
         private final URI url;
-        private final ResourceLocation icon;
+        private final Identifier icon;
 
-        private URLSocial(String name, URI url, ResourceLocation icon) {
+        private URLSocial(String name, URI url, Identifier icon) {
             this.name = name;
             this.url = url;
             this.icon = icon;
@@ -65,19 +64,24 @@ public abstract class Social {
             try {
                 Desktop.getDesktop().browse(url);
             } catch (Exception e) {
-                ChatComponentText text = new ChatComponentText("Click here to open " + name);
-                text.setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.toString())));
-                Minecraft.getMinecraft().thePlayer.addChatMessage(text);
+                ClientPlayerEntity player = MinecraftClient.getInstance().player;
+                if (player == null) return;
+                player.sendMessage(
+                        Text.literal("Click here to open " + name)
+                                .styled(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.toString()))
+                                )
+                );
             }
         }
 
         @Override
         public List<String> getTooltip() {
-            return Arrays.asList(name);
+            return Collections.singletonList(name);
         }
 
         @Override
-        public ResourceLocation getIcon() {
+        public Identifier getIcon() {
             return icon;
         }
     }

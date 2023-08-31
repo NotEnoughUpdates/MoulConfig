@@ -21,34 +21,72 @@
 /**/
 package io.github.moulberry.moulconfig.test;
 
-import io.github.moulberry.moulconfig.ChromaColour;
-import io.github.moulberry.moulconfig.gui.*;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
+import io.github.moulberry.moulconfig.gui.GuiContext;
+import io.github.moulberry.moulconfig.gui.GuiScreenElementWrapper;
+import io.github.moulberry.moulconfig.gui.GuiScreenElementWrapperNew;
+import io.github.moulberry.moulconfig.gui.MoulConfigEditor;
 import io.github.moulberry.moulconfig.gui.elements.*;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.observer.Property;
 import io.github.moulberry.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.moulberry.moulconfig.processor.ConfigProcessorDriver;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import org.lwjgl.input.Mouse;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
 
+public class MoulConfigTest implements ClientModInitializer {
+
+    public static TestConfig testConfig = new TestConfig();
+
+    @Override
+    public void onInitializeClient() {
+        MoulConfigProcessor<TestConfig> testConfigMoulConfigProcessor = new MoulConfigProcessor<>(testConfig);
+        BuiltinMoulConfigGuis.addProcessors(testConfigMoulConfigProcessor);
+        ConfigProcessorDriver.processConfig(testConfig.getClass(), testConfig, testConfigMoulConfigProcessor);
+        testConfig.testCategory.text2.whenChanged((oldValue, newValue) ->
+                MinecraftClient.getInstance().player.sendMessage(
+                        Text.literal("Just changed text2 from " + oldValue + " to " + newValue)));
+
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
+            dispatcher.register(LiteralArgumentBuilder.<FabricClientCommandSource>literal("moulconfig").executes(context -> {
+                try {
+                    MinecraftClient.getInstance().send(() -> MinecraftClient.getInstance().setScreen(new MoulConfigEditor<>(testConfigMoulConfigProcessor)));
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+                return Command.SINGLE_SUCCESS;
+            }).then(LiteralArgumentBuilder.<FabricClientCommandSource>literal("testgui").executes(this::executeTestGui)));
+        });
+    }
+
+    public int executeTestGui(CommandContext<FabricClientCommandSource> context) {
+        Screen screen =new GuiScreenElementWrapperNew(new GuiContext(
+                new GuiElementCenter(new GuiElementPanel(
+                        new GuiElementColumn(
+                                new GuiElementText("Label", 80),
+                                new GuiColumnRow(new GuiElementSwitch(Property.of(true), 10000), new GuiElementText("Some property"))
+                        )
+                ))
+        ));
+        MinecraftClient.getInstance().send(() -> MinecraftClient.getInstance().setScreen(screen));
+        return Command.SINGLE_SUCCESS;
+    }
+}
+
+
+/*
 @Mod(modid = "moulconfig", name = "MoulConfig")
 public class MoulConfigTest {
 
-    GuiScreen screenToOpen = null;
+    Screen screenToOpen = null;
 
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
@@ -129,9 +167,10 @@ public class MoulConfigTest {
                         ))
                     ));
                 } else {
-                    screenToOpen = new GuiScreenElementWrapper(new MoulConfigEditor<>(testConfigMoulConfigProcessor));
+                    screenToOpen =;
                 }
             }
         });
     }
 }
+*/

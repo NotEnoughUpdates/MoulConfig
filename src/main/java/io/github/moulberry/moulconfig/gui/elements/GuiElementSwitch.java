@@ -25,12 +25,11 @@ import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.LerpUtils;
 import io.github.moulberry.moulconfig.internal.LerpingInteger;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.observer.GetSetter;
 import lombok.ToString;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Identifier;
+import org.lwjgl.opengl.GL11;
 
 /**
  * A gui element displaying a switch to represent a boolean value.
@@ -59,10 +58,8 @@ public class GuiElementSwitch extends GuiElementNew {
     }
 
     @Override
-    public void render(GuiImmediateContext context) {
-        GlStateManager.color(1, 1, 1, 1);
-        mc.getTextureManager().bindTexture(GuiTextures.TOGGLE_BAR);
-        RenderUtils.drawTexturedRect(0, 0, context.getWidth(), context.getHeight());
+    public void render(DrawContext drawContext, GuiImmediateContext context) {
+        drawContext.drawTexture(GuiTextures.TOGGLE_BAR, 0, 0, (float)0, (float)0, context.getWidth(), context.getHeight(), context.getWidth(), context.getHeight());
 
         boolean val = value.get();
         if (lastValue != val) {
@@ -74,11 +71,11 @@ public class GuiElementSwitch extends GuiElementNew {
         }
 
         float animationPercentage = LerpUtils.sigmoidZeroOne(animation.getValue() / 100F);
-        ResourceLocation buttonLocation;
+        Identifier buttonLocation;
         if (animationPercentage < 1 / 5F) {
             buttonLocation = GuiTextures.TOGGLE_OFF;
         } else if (animationPercentage < 2 / 5F) {
-            buttonLocation = GuiTextures.TOGGLE_ON;
+            buttonLocation = GuiTextures.TOGGLE_ONE;
         } else if (animationPercentage < 3 / 5F) {
             buttonLocation = GuiTextures.TOGGLE_TWO;
         } else if (animationPercentage < 4 / 5F) {
@@ -86,15 +83,14 @@ public class GuiElementSwitch extends GuiElementNew {
         } else {
             buttonLocation = GuiTextures.TOGGLE_ON;
         }
-        mc.getTextureManager().bindTexture(buttonLocation);
-        RenderUtils.drawTexturedRect(animationPercentage * (context.getWidth() - 12), 0, 12, 14);
+        drawContext.drawTexture(buttonLocation, (int) (animationPercentage * (context.getWidth() - 12)), 0, 0, 1, 12, 14, 12, 14);
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        super.mouseEvent(context);
-        if (!Mouse.getEventButtonState()) return;
-        if (context.isHovered() && Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+    public void mouseEvent(int button, GuiImmediateContext context) {
+        System.out.println(context.getMouseX() + " " + context.getMouseY());
+        super.mouseEvent(button, context);
+        if (context.isHovered() && button == 0) {
             value.set(!value.get());
         }
     }

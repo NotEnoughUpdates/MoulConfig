@@ -42,9 +42,8 @@ import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementSlider;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementTextField;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 
 public class GuiOptionEditorSlider extends GuiOptionEditor {
     private final GuiElementSlider slider;
@@ -56,8 +55,8 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
 
         float floatVal = getFloatValue();
         textField = new GuiElementTextField(
-            getStringifiedFloatValue(),
-            GuiElementTextField.NO_SPACE | GuiElementTextField.NUM_ONLY | GuiElementTextField.SCALE_TEXT
+                getStringifiedFloatValue(),
+                GuiElementTextField.NO_SPACE | GuiElementTextField.NUM_ONLY | GuiElementTextField.SCALE_TEXT
         );
 
         slider = new GuiElementSlider(0, 0, 80, minValue, maxValue, minStep, floatVal, (val) -> {
@@ -84,40 +83,40 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
     }
 
     @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
+    public void render(DrawContext context, int x, int y, int width) {
+        super.render(context, x, y, width);
+
+        slider.setValue(getFloatValue());
+
         int height = getHeight();
 
         int fullWidth = Math.min(width / 3 - 10, 80);
         int sliderWidth = (fullWidth - 5) * 3 / 4;
         int textFieldWidth = (fullWidth - 5) / 4;
 
-        if (!Mouse.isButtonDown(0)) {
-            slider.setValue(getFloatValue());
-        }
         slider.x = x + width / 6 - fullWidth / 2;
         slider.y = y + height - 7 - 14;
         slider.width = sliderWidth;
-        slider.render();
+        slider.render(context, 0, 0, 0);
 
         if (textField.getFocus()) {
             textField.setOptions(GuiElementTextField.NO_SPACE | GuiElementTextField.NUM_ONLY);
             textField.setSize(
-                Minecraft.getMinecraft().fontRendererObj.getStringWidth(textField.getText()) + 10,
-                16
+                    MinecraftClient.getInstance().textRenderer.getWidth(textField.getText()) + 10,
+                    16
             );
         } else {
             textField.setText(getStringifiedFloatValue());
             textField.setSize(textFieldWidth, 16);
             textField.setOptions(
-                GuiElementTextField.NO_SPACE | GuiElementTextField.NUM_ONLY | GuiElementTextField.SCALE_TEXT);
+                    GuiElementTextField.NO_SPACE | GuiElementTextField.NUM_ONLY | GuiElementTextField.SCALE_TEXT);
         }
 
-        textField.render(x + width / 6 - fullWidth / 2 + sliderWidth + 5, y + height - 7 - 14);
+        textField.render(context, x + width / 6 - fullWidth / 2 + sliderWidth + 5, y + height - 7 - 14);
     }
 
     @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+    public boolean mouseInput(int x, int y, int width, double mouseX, double mouseY, int button) {
         int height = getHeight();
 
         int fullWidth = Math.min(width / 3 - 10, 80);
@@ -127,23 +126,24 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
         slider.x = x + width / 6 - fullWidth / 2;
         slider.y = y + height - 7 - 14;
         slider.width = sliderWidth;
-        if (slider.mouseInput(mouseX, mouseY)) {
+        if (slider.mouseClicked(mouseX, mouseY, button)) {
+            slider.setValue(getFloatValue());
             textField.unfocus();
             return true;
         }
 
         if (textField.getFocus()) {
-            textFieldWidth = Minecraft.getMinecraft().fontRendererObj.getStringWidth(textField.getText()) + 10;
+            textFieldWidth = MinecraftClient.getInstance().textRenderer.getWidth(textField.getText()) + 10;
         }
 
         int textFieldX = x + width / 6 - fullWidth / 2 + sliderWidth + 5;
         int textFieldY = y + height - 7 - 14;
         textField.setSize(textFieldWidth, 16);
 
-        if (Mouse.getEventButtonState() && (Mouse.getEventButton() == 0 || Mouse.getEventButton() == 1)) {
+        if (button == 0 || button == 1) {
             if (mouseX > textFieldX && mouseX < textFieldX + textFieldWidth &&
-                mouseY > textFieldY && mouseY < textFieldY + 16) {
-                textField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+                    mouseY > textFieldY && mouseY < textFieldY + 16) {
+                textField.mouseClicked(mouseX, mouseY, button);
                 return true;
             }
             textField.unfocus();
@@ -153,9 +153,24 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
     }
 
     @Override
-    public boolean keyboardInput() {
-        if (Keyboard.getEventKeyState() && textField.getFocus()) {
-            textField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+    public boolean mouseReleased(int finalX, int finalY, int finalWidth, double mouseX, double mouseY, int button) {
+        return slider.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(int finalX, int finalY, int finalWidth, double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if (slider.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+            slider.setValue(getFloatValue());
+            textField.unfocus();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyboardInput(int keyCode, int scanCode, int modifiers) {
+        if (textField.getFocus()) {
+            textField.keyTyped(keyCode, scanCode, modifiers);
 
             try {
                 textField.setCustomBorderColour(0xffffffff);

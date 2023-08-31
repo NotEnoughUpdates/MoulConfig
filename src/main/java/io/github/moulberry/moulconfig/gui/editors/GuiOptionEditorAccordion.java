@@ -24,79 +24,92 @@ import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import org.lwjgl.opengl.GL11;
 
 public class GuiOptionEditorAccordion extends GuiOptionEditor {
-	private final int accordionId;
-	private boolean accordionToggled = false;
+    private final int accordionId;
+    private boolean accordionToggled = false;
 
-	public GuiOptionEditorAccordion(ProcessedOption option, int accordionId) {
-		super(option);
-		this.accordionId = accordionId;
-	}
+    public GuiOptionEditorAccordion(ProcessedOption option, int accordionId) {
+        super(option);
+        this.accordionId = accordionId;
+    }
 
-	@Override
-	public int getHeight() {
-		return 20;
-	}
+    @Override
+    public int getHeight() {
+        return 20;
+    }
 
-	public int getAccordionId() {
-		return accordionId;
-	}
+    public int getAccordionId() {
+        return accordionId;
+    }
 
-	public boolean getToggled() {
-		return accordionToggled;
-	}
+    public boolean getToggled() {
+        return accordionToggled;
+    }
 
-	@Override
-	public void render(int x, int y, int width) {
-		int height = getHeight();
-		RenderUtils.drawFloatingRectDark(x, y, width, height, true);
+    int lastX = 0, lastY = 0, lastWidth = 0, lastMouseX = 0, lastMouseY = 0;
 
-		Tessellator tessellator = Tessellator.getInstance();
-		WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-		GlStateManager.enableBlend();
-		GlStateManager.disableTexture2D();
-		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.color(1, 1, 1, 1);
-		worldrenderer.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION);
-		if (accordionToggled) {
-			worldrenderer.pos((double) x + 6, (double) y + 6, 0.0D).endVertex();
-			worldrenderer.pos((double) x + 9.75f, (double) y + 13.5f, 0.0D).endVertex();
-			worldrenderer.pos((double) x + 13.5f, (double) y + 6, 0.0D).endVertex();
-		} else {
-			worldrenderer.pos((double) x + 6, (double) y + 13.5f, 0.0D).endVertex();
-			worldrenderer.pos((double) x + 13.5f, (double) y + 9.75f, 0.0D).endVertex();
-			worldrenderer.pos((double) x + 6, (double) y + 6, 0.0D).endVertex();
-		}
-		tessellator.draw();
-		GlStateManager.enableTexture2D();
-		GlStateManager.disableBlend();
+    @Override
+    public void render(DrawContext context, int x, int y, int width) {
+        int height = getHeight();
+        RenderUtils.drawFloatingRectDark(context, x, y, width, height, true);
 
-		TextRenderUtils.drawStringScaledMaxWidth(option.name, Minecraft.getMinecraft().fontRendererObj,
-			x + 18, y + 6, false, width - 10, 0xc0c0c0
-		);
-	}
 
-	@Override
-	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-		if (Mouse.getEventButtonState() && mouseX > x && mouseX < x + width &&
-			mouseY > y && mouseY < y + getHeight()) {
-			accordionToggled = !accordionToggled;
-			return true;
-		}
+        Tessellator tessellator = Tessellator.getInstance();
 
-		return false;
-	}
+        //GL11.glEnable(GL11.GL_BLEND);
+        //GL11.glEnable(GL11.GL_4D_COLOR_TEXTURE);
+        //GL11.glDisable(GL11.GL_TEXTURE_2D);
+        //GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        //GL11.glColor4f(1, 1, 1, 1);
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION);
+        if (accordionToggled) {
+            buffer.vertex((double) x + 6, (double) y + 6, 0.0D).next();
+            buffer.vertex((double) x + 9.75f, (double) y + 13.5f, 0.0D).next();
+            buffer.vertex((double) x + 13.5f, (double) y + 6, 0.0D).next();
+        } else {
+            buffer.vertex((double) x + 6, (double) y + 13.5f, 0.0D).next();
+            buffer.vertex((double) x + 13.5f, (double) y + 9.75f, 0.0D).next();
+            buffer.vertex((double) x + 6, (double) y + 6, 0.0D).next();
+        }
+        tessellator.draw();
+        //GL11.glEnable(GL11.GL_TEXTURE_2D);
+        //GL11.glDisable(GL11.GL_BLEND);
 
-	@Override
-	public boolean keyboardInput() {
-		return false;
-	}
+        TextRenderUtils.drawStringScaledMaxWidth(option.name, context,
+                x + 18, y + 6, false, width - 10, 0xc0c0c0
+        );
+
+        //context.fill(lastX - 10, lastY - 1, lastX + lastWidth, lastY + 10, 0xFF000000);
+        //context.fill(lastMouseX - 10, lastMouseY - 1, lastMouseX + 10, lastMouseY + 10, 0xFF000000);
+    }
+
+    @Override
+    public boolean mouseInput(int x, int y, int width, double mouseX, double mouseY, int button) {
+        this.lastX = x;
+        this.lastY = y;
+        this.lastWidth = width;
+        this.lastMouseX = (int) mouseX;
+        this.lastMouseY = (int) mouseY;
+
+        if (mouseX > x && mouseX < x + width &&
+                mouseY > y && mouseY < y + getHeight()) {
+            accordionToggled = !accordionToggled;
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean keyboardInput(int keyCode, int scanCode, int modifiers) {
+        return false;
+    }
 }

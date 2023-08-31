@@ -24,9 +24,9 @@ package io.github.moulberry.moulconfig.test;
 import io.github.moulberry.moulconfig.Overlay;
 import io.github.moulberry.moulconfig.annotations.*;
 import io.github.moulberry.moulconfig.observer.Property;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.ChatComponentText;
-import org.lwjgl.input.Keyboard;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +36,7 @@ public class TestCategory {
 
     @Accordion
     @ConfigOverlay
-    @ConfigOption(name = "Overlay", desc = "Overlayering")
+    @ConfigOption(name = "Overlay", desc = "Overlayering", hiddenKeys = "very secret hidden key")
     public TestOverlay testOverlay = new TestOverlay();
 
     public static class TestOverlay extends Overlay {
@@ -48,7 +48,7 @@ public class TestCategory {
 
     @ConfigEditorButton(buttonText = "RUN!")
     @ConfigOption(name = "Button using runnable", desc = "Click to run")
-    public Runnable doRun = () -> Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Hehehe"));
+    public Runnable doRun = () -> MinecraftClient.getInstance().player.sendMessage(Text.literal("Hehehe"));
     @ConfigEditorButton(buttonText = "RUN!", runnableId = 10)
     @ConfigOption(name = "Button using runnableId", desc = "Click to run")
     public boolean whatEver;
@@ -89,8 +89,8 @@ public class TestCategory {
     public int slider = 0;
 
     @ConfigOption(name = "Key Binding", desc = "Key Binding")
-    @ConfigEditorKeybind(defaultKey = Keyboard.KEY_F)
-    public int keyBoard = Keyboard.KEY_F;
+    @ConfigEditorKeybind(defaultKey = InputUtil.GLFW_KEY_F)
+    public int keyBoard = InputUtil.GLFW_KEY_F;
 
     @Accordion
     @ConfigOption(name = "Hehe", desc = "hoho")
@@ -154,7 +154,7 @@ public class TestCategory {
     public static class SubAccordion {
         @ConfigOption(name = "Test Value", desc = "AAAA")
         @ConfigEditorButton
-        public Runnable runValue = () -> Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Hehehe"));
+        public Runnable runValue = () -> MinecraftClient.getInstance().player.sendMessage(Text.literal("Hehehe"));
     }
 
     @ConfigOption(name = "Fuck it", desc = "Pronouns in MoulConfig")

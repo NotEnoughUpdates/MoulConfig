@@ -22,15 +22,11 @@ package io.github.moulberry.moulconfig.gui.editors;
 
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
-import io.github.moulberry.moulconfig.internal.KeybindHelper;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 
 public class GuiOptionEditorKeybind extends GuiOptionEditor {
     private final int defaultKeyCode;
@@ -42,45 +38,41 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
     }
 
     @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
+    public void render(DrawContext context, int x, int y, int width) {
+        super.render(context, x, y, width);
 
         int height = getHeight();
 
-        GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
-        RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
+        context.drawTexture(GuiTextures.BUTTON, x + width / 6 - 24, y + height - 7 - 14, 0, 0, 48, 16, 48, 16);
 
-        String keyName = KeybindHelper.getKeyName((int) option.get());
-        String text = editingKeycode ? "> " + keyName + " <" : keyName;
+        Text keyName = InputUtil.fromKeyCode((int) option.get(), 0).getLocalizedText();
+        Text text = editingKeycode ? Text.literal("> ").append(keyName).append(Text.literal(" <")) : keyName;
         TextRenderUtils.drawStringCenteredScaledMaxWidth(text,
-            Minecraft.getMinecraft().fontRendererObj,
-            x + width / 6, y + height - 7 - 6,
-            false, 40, 0xFF303030
+                context,
+                x + (float) width / 6, y + height - 7 - 6,
+                false, 40, 0xFF303030
         );
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.RESET);
-        GlStateManager.color(1, 1, 1, 1);
-        RenderUtils.drawTexturedRect(x + width / 6 - 24 + 48 + 3, y + height - 7 - 14 + 3, 10, 11, GL11.GL_NEAREST);
+        context.drawTexture(GuiTextures.RESET, x + width / 6 - 24 + 48 + 3, y + height - 7 - 14 + 3, 0, 0, 10, 11, 10, 11);
     }
 
     @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        if (Mouse.getEventButtonState() && Mouse.getEventButton() != -1 && editingKeycode) {
+    public boolean mouseInput(int x, int y, int width, double mouseX, double mouseY, int button) {
+        if (button != -1 && editingKeycode) {
             editingKeycode = false;
-            option.set(Mouse.getEventButton() - 100);
+            option.set(button - 100);
             return true;
         }
 
-        if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
+        if (button == 0) {
             int height = getHeight();
-            if (mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-                mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
+            if (mouseX > x + (double) width / 6 - 24 && mouseX < x + (double) width / 6 + 24 &&
+                    mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
                 editingKeycode = true;
                 return true;
             }
-            if (mouseX > x + width / 6 - 24 + 48 + 3 && mouseX < x + width / 6 - 24 + 48 + 13 &&
-                mouseY > y + height - 7 - 14 + 3 && mouseY < y + height - 7 - 14 + 3 + 11) {
+            if (mouseX > x + (double) width / 6 - 24 + 48 + 3 && mouseX < x + (double) width / 6 - 24 + 48 + 13 &&
+                    mouseY > y + height - 7 - 14 + 3 && mouseY < y + height - 7 - 14 + 3 + 11) {
                 option.set(defaultKeyCode);
                 return true;
             }
@@ -90,13 +82,9 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
     }
 
     @Override
-    public boolean keyboardInput() {
+    public boolean keyboardInput(int keyCode, int scanCode, int modifiers) {
         if (editingKeycode) {
             editingKeycode = false;
-            int keyCode = 0;
-            if (Keyboard.getEventKey() != Keyboard.KEY_ESCAPE && Keyboard.getEventKey() != 0) {
-                keyCode = Keyboard.getEventKey();
-            }
             if (keyCode > 256) keyCode = 0;
             option.set(keyCode);
             return true;
