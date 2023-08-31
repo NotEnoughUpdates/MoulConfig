@@ -20,7 +20,6 @@
 
 package io.github.moulberry.moulconfig.gui.elements;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.gui.GuiElement;
@@ -28,20 +27,10 @@ import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.function.Consumer;
 
 public class GuiElementColour extends GuiElement {

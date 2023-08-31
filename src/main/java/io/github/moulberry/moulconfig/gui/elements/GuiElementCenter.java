@@ -23,7 +23,6 @@ package io.github.moulberry.moulconfig.gui.elements;
 import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import net.minecraft.client.gui.DrawContext;
-import org.lwjgl.opengl.GL11;
 
 import java.util.function.BiFunction;
 

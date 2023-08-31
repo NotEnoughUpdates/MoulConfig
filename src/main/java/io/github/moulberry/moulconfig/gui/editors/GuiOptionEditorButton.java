@@ -26,7 +26,6 @@ import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.gui.DrawContext;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Locale;
 

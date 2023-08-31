@@ -24,7 +24,6 @@ import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import lombok.ToString;
 import net.minecraft.client.gui.DrawContext;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 import java.util.List;

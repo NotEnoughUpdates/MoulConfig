@@ -22,20 +22,14 @@ package io.github.moulberry.moulconfig.gui.elements;
 
 import io.github.moulberry.moulconfig.internal.StringUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

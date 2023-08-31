@@ -29,7 +29,6 @@ import io.github.moulberry.moulconfig.internal.*;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
 import io.github.moulberry.moulconfig.processor.ProcessedCategory;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -37,15 +36,15 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
-public class MoulConfigEditor<T extends Config> extends Screen {
+public class MoulConfigEditor<T extends Config> extends GuiElement {
+
     private final long openedMillis;
     private final LerpingInteger optionsScroll = new LerpingInteger(0, 150);
     private final LerpingInteger categoryScroll = new LerpingInteger(0, 150);
@@ -58,14 +57,12 @@ public class MoulConfigEditor<T extends Config> extends Screen {
     private double lastMouseX = 0;
     private double keyboardScrollXCutoff = 0;
 
-    @Getter
     private LinkedHashMap<String, ProcessedCategory> currentlyVisibleCategories;
     private Set<ProcessedOption> currentlyVisibleOptions;
 
     private List<ProcessedOption> allOptions = new ArrayList<>();
 
     public MoulConfigEditor(MoulConfigProcessor<T> processedConfig) {
-        super(Text.empty());
         this.openedMillis = System.currentTimeMillis();
         this.processedConfig = processedConfig;
         for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
@@ -125,28 +122,19 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         propagateSearchinessForAccordions(options, nextRound, upwards);
     }
 
-    private String getSearchRegex() {
-        return "(%s)".formatted(String.join("|", this.searchField.getText().split("\\s+")));
-    }
-
     public void updateSearchResults() {
         String toSearch = searchField.getText().trim().toLowerCase(Locale.ROOT);
         if (!toSearch.isEmpty()) {
-            String searchRegex = getSearchRegex();
-            Pattern pattern = Pattern.compile(searchRegex);
-            Set<ProcessedOption> matchingOptions = new LinkedHashSet<>(allOptions);
+            Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
             for (String word : toSearch.split(" +")) {
                 matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !it.editor.fulfillsSearch(word)));
             }
 
             LinkedHashMap<String, ProcessedCategory> directlyMatchedCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
-            if (processedConfig.getConfigObject().shouldSearchCategoryNames()) {
-                for (String word : toSearch.split(" +")) {
-                    directlyMatchedCategories.entrySet().removeIf(it -> ContextAware.wrapErrorWithContext(it.getValue().reflectField,
+            if (!processedConfig.getConfigObject().shouldSearchCategoryNames()) directlyMatchedCategories.clear();
+            for (String word : toSearch.split(" +")) {
+                directlyMatchedCategories.entrySet().removeIf(it -> ContextAware.wrapErrorWithContext(it.getValue().reflectField,
                         () -> !(it.getValue().name.toLowerCase(Locale.ROOT).contains(word) || it.getValue().desc.toLowerCase(Locale.ROOT).contains(word))));
-                }
-            } else {
-                directlyMatchedCategories.clear();
             }
 
             Set<ProcessedOption> matchingOptionsAndDependencies = new HashSet<>();
@@ -173,10 +161,15 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         }
     }
 
+    public LinkedHashMap<String, ProcessedCategory> getCurrentlyVisibleCategories() {
+        return currentlyVisibleCategories;
+    }
+
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float ignoredDelta) {
         optionsScroll.tick();
         categoryScroll.tick();
+        //handleKeyboardPresses();
 
         List<String> tooltipToDisplay = null;
 
@@ -185,8 +178,8 @@ public class MoulConfigEditor<T extends Config> extends Screen {
 
         float opacityFactor = LerpUtils.sigmoidZeroOne(delta / 500f);
         RenderUtils.drawGradientRect(context, 0, 0, MinecraftClient.getInstance().getWindow().getWidth(), MinecraftClient.getInstance().getWindow().getHeight(),
-            (int) (0x80 * opacityFactor) << 24 | 0x101010,
-            (int) (0x90 * opacityFactor) << 24 | 0x101010
+                (int) (0x80 * opacityFactor) << 24 | 0x101010,
+                (int) (0x90 * opacityFactor) << 24 | 0x101010
         );
         int scaleFactor = (int) MinecraftClient.getInstance().getWindow().getScaleFactor();
 
@@ -207,32 +200,32 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             openingYSize = 5 + (int) (delta - 150) * (ySize - 5) / 150;
         }
         RenderUtils.drawFloatingRectDark(
-            context,
-            (context.getScaledWindowWidth() - openingXSize) / 2,
-            (context.getScaledWindowHeight() - openingYSize) / 2,
-            openingXSize, openingYSize
+                context,
+                (context.getScaledWindowWidth() - openingXSize) / 2,
+                (context.getScaledWindowHeight() - openingYSize) / 2,
+                openingXSize, openingYSize
         );
         context.enableScissor((context.getScaledWindowWidth() - openingXSize) / 2,
-            (context.getScaledWindowHeight() - openingYSize) / 2,
-            (context.getScaledWindowWidth() + openingXSize) / 2,
-            (context.getScaledWindowHeight() + openingYSize) / 2
+                (context.getScaledWindowHeight() - openingYSize) / 2,
+                (context.getScaledWindowWidth() + openingXSize) / 2,
+                (context.getScaledWindowHeight() + openingYSize) / 2
         );
 
         RenderUtils.drawFloatingRectDark(context, x + 5, y + 5, xSize - 10, 20, false);
 
 
         TextRenderUtils.drawStringCenteredScaledMaxWidth(
-            processedConfig.getConfigObject().getTitle(),
-            context,
-            x + xSize / 2.0f,
-            y + 15,
-            false,
-            xSize - processedConfig.getConfigObject().getSocials().size() * 18 * 2 - 25,
-            0xa0a0a0
+                processedConfig.getConfigObject().getTitle(),
+                context,
+                x + xSize / 2.0f,
+                y + 15,
+                false,
+                xSize - processedConfig.getConfigObject().getSocials().size() * 18 * 2 - 25,
+                0xa0a0a0
         );
 
         RenderUtils.drawFloatingRectDark(context, x + 4, y + 49 - 20,
-            140, ySize - 54 + 20, false
+                140, ySize - 54 + 20, false
         );
 
         int innerPadding = 20 / adjScaleFactor;
@@ -247,7 +240,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         context.fill(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
 
         context.enableScissor(0, innerTop + 1, context.getScaledWindowWidth(),
-            innerBottom - 1
+                innerBottom - 1
         );
 
         float catBarSize = 1;
@@ -266,12 +259,12 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                 catName = Formatting.GRAY + catName;
             }
             TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
-                context, x + 75, y + 70 + catY, false, 100, -1
+                    context, x + 75, y + 70 + catY, false, 100, -1
             );
             catY += 15;
             if (catY > 0) {
                 catBarSize =
-                    LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (catY + 5 + categoryScroll.getValue()));
+                        LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (catY + 5 + categoryScroll.getValue()));
             }
         }
 
@@ -282,11 +275,11 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             if (categoryScroll.getTarget() / (float) (catY + categoryScroll.getValue()) + catBarSize < 1) {
                 int target = optionsScroll.getTarget();
                 categoryScroll.setValue((int) Math.ceil(
-                    (catY + 5 + categoryScroll.getValue()) - catBarSize * (catY + 5 + categoryScroll.getValue())));
+                        (catY + 5 + categoryScroll.getValue()) - catBarSize * (catY + 5 + categoryScroll.getValue())));
                 categoryScroll.setTarget(target);
             } else {
                 categoryScroll.setValue((int) Math.ceil(
-                    (catY + 5 + categoryScroll.getValue()) - catBarSize * (catY + 5 + categoryScroll.getValue())));
+                        (catY + 5 + categoryScroll.getValue()) - catBarSize * (catY + 5 + categoryScroll.getValue())));
             }
         }
 
@@ -295,11 +288,11 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         int catDist = innerBottom - innerTop - 12;
         context.fill(innerLeft + 2, innerTop + 5, innerLeft + 7, innerBottom - 5, 0xff101010);
         context.fill(innerLeft + 3, innerTop + 6 + (int) (catDist * catBarStart), innerLeft + 6,
-            innerTop + 6 + (int) (catDist * catBarEnd), 0xff303030
+                innerTop + 6 + (int) (catDist * catBarEnd), 0xff303030
         );
 
         TextRenderUtils.drawStringCenteredScaledMaxWidth("Categories",
-            context, x + 75, y + 44, false, 120, 0xa368ef
+                context, x + 75, y + 44, false, 120, 0xa368ef
         );
 
         RenderUtils.drawFloatingRectDark(context, x + 149, y + 29, xSize - 154, ySize - 34, false);
@@ -336,7 +329,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
 
             TextRenderUtils.drawStringScaledMaxWidth(cat.desc,
-                context, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
+                    context, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
             );
         }
 
@@ -394,7 +387,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             //GL11.glDisable(GL11.GL_DEPTH);
             if (optionY > 0) {
                 barSize =
-                    LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + optionsScroll.getValue()));
+                        LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + optionsScroll.getValue()));
             }
         }
 
@@ -434,16 +427,16 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                 }
                 int optionHeight = editor.getHeight();
                 if (innerTop + 5 + optionYOverlay + optionHeight > innerTop + 1 &&
-                    innerTop + 5 + optionYOverlay < innerBottom - 1) {
+                        innerTop + 5 + optionYOverlay < innerBottom - 1) {
                     int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
                     int finalY = innerTop + 5 + optionYOverlay;
                     int finalOptionWidth = optionWidth;
                     ContextAware.wrapErrorWithContext(editor, () -> {
                         editor.renderOverlay(
-                            context,
-                            finalX,
-                            finalY,
-                            finalOptionWidth
+                                context,
+                                finalX,
+                                finalY,
+                                finalOptionWidth
                         );
                         return null;
                     });
@@ -461,21 +454,21 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             if (optionsScroll.getTarget() / (float) (optionY + optionsScroll.getValue()) + barSize < 1) {
                 int target = optionsScroll.getTarget();
                 optionsScroll.setValue((int) Math.ceil(
-                    (optionY + 5 + optionsScroll.getValue()) - barSize * (optionY + 5 + optionsScroll.getValue())));
+                        (optionY + 5 + optionsScroll.getValue()) - barSize * (optionY + 5 + optionsScroll.getValue())));
                 optionsScroll.setTarget(target);
             } else {
                 optionsScroll.setValue((int) Math.ceil(
-                    (optionY + 5 + optionsScroll.getValue()) - barSize * (optionY + 5 + optionsScroll.getValue())));
+                        (optionY + 5 + optionsScroll.getValue()) - barSize * (optionY + 5 + optionsScroll.getValue())));
             }
         }
         int dist = innerBottom - innerTop - 12;
         context.fill(innerRight - 10, innerTop + 5, innerRight - 5, innerBottom - 5, 0xff101010);
         context.fill(
-            innerRight - 9,
-            innerTop + 6 + (int) (dist * optionsBarStart),
-            innerRight - 6,
-            innerTop + 6 + (int) (dist * optionsBarEnd),
-            0xff303030
+                innerRight - 9,
+                innerTop + 6 + (int) (dist * optionsBarStart),
+                innerRight - 6,
+                innerTop + 6 + (int) (dist * optionsBarEnd),
+                0xff303030
         );
 
         List<Social> socials = processedConfig.getConfigObject().getSocials();
@@ -485,7 +478,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             context.drawTexture(social.getIcon(), socialLeft, y + 7, 0, 0, 16, 16, 16, 16);
 
             if (mouseX >= socialLeft && mouseX <= socialLeft + 16 &&
-                mouseY >= y + 6 && mouseY <= y + 23) {
+                    mouseY >= y + 6 && mouseY <= y + 23) {
                 tooltipToDisplay = social.getTooltip();
             }
         }
@@ -497,16 +490,6 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         }
 
         context.disableScissor();
-
-    }
-
-    @Override
-    public void renderBackground(DrawContext context) {
-        long deltaTime = System.currentTimeMillis() - openedMillis;
-        float opacity = LerpUtils.sigmoidZeroOne(deltaTime / 500f);
-        context.fillGradient(0, 0, this.width, this.height,
-            (int) (0x80 * opacity) << 24 | 0x101010,
-            (int) (0x90 * opacity) << 24 | 0x101010);
     }
 
     boolean optionsBarClicked = false;
@@ -534,6 +517,8 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         int innerRight = x + xSize - 5 - innerPadding;
 
         int dist = innerBottom - innerTop - 12;
+        int optionsBarStartY = (int) (innerTop + 6 + (dist * optionsBarStart));
+        int optionsBarEndY = (int) (innerTop + 6 + (dist * optionsBarEnd));
         int optionsBarStartX = innerRight - 12;
         int optionsBarEndX = innerRight - 3;
 
@@ -549,7 +534,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         int categoryBarEndX = x + innerPadding + 12;
 
         if ((mouseX > optionsBarStartX && mouseX < optionsBarEndX)
-            && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
+                && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
 
             int newTarget = optionsScroll.getTarget();
 
@@ -557,7 +542,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             int optionY = -newTarget;
 
             if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                    getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
                 ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                 HashMap<Integer, Integer> activeAccordions = new HashMap<>();
                 for (ProcessedOption option : getOptionsInCategory(cat)) {
@@ -595,8 +580,8 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                 double percent = (mouseY - innerTop) / (innerBottom - innerTop);
 
                 optionsScroll.setTimeToReachTarget(Math.min(
-                    150,
-                    Math.max(10, 5 * Math.abs(newTarget - optionsScroll.getValue()))
+                        150,
+                        Math.max(10, 5 * Math.abs(newTarget - optionsScroll.getValue()))
                 ));
                 optionsScroll.resetTimer();
                 optionsScroll.setTarget((int) (barMax * percent));
@@ -605,8 +590,8 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             // TODO clickable options bar
             return true;
         } else if ((mouseY < categoryBarStartY || mouseY > categoryBarEndY) &&
-            (mouseX >= categoryBarStartX && mouseX <= categoryBarEndX) && mouseY > innerTop + 6 &&
-            mouseY < innerBottom - 6) {
+                (mouseX >= categoryBarStartX && mouseX <= categoryBarEndX) && mouseY > innerTop + 6 &&
+                mouseY < innerBottom - 6) {
             // TODO clickable category bar
             return true;
         }
@@ -619,7 +604,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                         setSelectedCategory(entry.getKey());
                     }
                     if (mouseX >= x + 5 && mouseX <= x + 145 &&
-                        mouseY >= y + 70 + catY - 7 && mouseY <= y + 70 + catY + 7) {
+                            mouseY >= y + 70 + catY - 7 && mouseY <= y + 70 + catY + 7) {
                         setSelectedCategory(entry.getKey());
                         return true;
                     }
@@ -632,7 +617,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                 int socialLeft = x + xSize - 23 - 18 * socialIndex;
 
                 if (mouseX >= socialLeft && mouseX <= socialLeft + 16 &&
-                    mouseY >= y + 6 && mouseY <= y + 23) {
+                        mouseY >= y + 6 && mouseY <= y + 23) {
                     socials.get(socialIndex).onClick();
                     return true;
                 }
@@ -646,7 +631,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
             int length = Math.max(stringLength, minimumSearchSize.getValue());
 
             if (mouseX >= innerRight - 25 - length && mouseX <= innerRight - 25 &&
-                mouseY >= innerTop - (20 + innerPadding) / 2.0 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2.0 + 9) {
+                    mouseY >= innerTop - (20 + innerPadding) / 2.0 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2.0 + 9) {
                 String oldSearch = searchField.getText();
                 searchField.mouseClicked(mouseX, mouseY, button);
 
@@ -657,7 +642,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
 
         int optionY = -optionsScroll.getValue();
         if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-            getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
             int optionWidthDefault = innerRight - innerLeft - 20;
             ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
@@ -689,12 +674,12 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                 int finalY = innerTop + 5 + optionY;
                 int finalWidth = optionWidth;
                 if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInputOverlay(
-                    finalX,
-                    finalY,
-                    finalWidth,
-                    mouseX,
-                    mouseY,
-                    button
+                        finalX,
+                        finalY,
+                        finalWidth,
+                        mouseX,
+                        mouseY,
+                        button
                 ))) {
                     return true;
                 }
@@ -705,7 +690,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         if (mouseX > innerLeft && mouseX < innerRight && mouseY > innerTop && mouseY < innerBottom) {
             optionY = -optionsScroll.getValue();
             if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                    getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
                 int optionWidthDefault = innerRight - innerLeft - 20;
                 ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                 HashMap<Integer, Integer> activeAccordions = new HashMap<>();
@@ -737,12 +722,12 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                     int finalY = innerTop + 5 + optionY;
                     int finalWidth = optionWidth;
                     if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInput(
-                        finalX,
-                        finalY,
-                        finalWidth,
-                        mouseX,
-                        mouseY,
-                        button
+                            finalX,
+                            finalY,
+                            finalWidth,
+                            mouseX,
+                            mouseY,
+                            button
                     ))) {
                         return true;
                     }
@@ -777,7 +762,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         if (mouseX > innerLeft && mouseX < innerRight && mouseY > innerTop && mouseY < innerBottom) {
             int optionY = -optionsScroll.getValue();
             if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                    getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
                 int optionWidthDefault = innerRight - innerLeft - 20;
                 ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                 HashMap<Integer, Integer> activeAccordions = new HashMap<>();
@@ -809,12 +794,12 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                     int finalY = innerTop + 5 + optionY;
                     int finalWidth = optionWidth;
                     if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseReleased(
-                        finalX,
-                        finalY,
-                        finalWidth,
-                        mouseX,
-                        mouseY,
-                        button
+                            finalX,
+                            finalY,
+                            finalWidth,
+                            mouseX,
+                            mouseY,
+                            button
                     ))) {
                         return true;
                     }
@@ -848,7 +833,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         if (mouseX > innerLeft && mouseX < innerRight && mouseY > innerTop && mouseY < innerBottom) {
             int optionY = -optionsScroll.getValue();
             if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                    getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
                 int optionWidthDefault = innerRight - innerLeft - 20;
                 ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                 HashMap<Integer, Integer> activeAccordions = new HashMap<>();
@@ -880,14 +865,14 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                     int finalY = innerTop + 5 + optionY;
                     int finalWidth = optionWidth;
                     if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseDragged(
-                        finalX,
-                        finalY,
-                        finalWidth,
-                        mouseX,
-                        mouseY,
-                        button,
-                        deltaX,
-                        deltaY
+                            finalX,
+                            finalY,
+                            finalWidth,
+                            mouseX,
+                            mouseY,
+                            button,
+                            deltaX,
+                            deltaY
                     ))) {
                         return true;
                     }
@@ -950,7 +935,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                 int optionY = -newTarget;
 
                 if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-                    getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                        getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
                     ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                     HashMap<Integer, Integer> activeAccordions = new HashMap<>();
                     for (ProcessedOption option : getOptionsInCategory(cat)) {
@@ -986,8 +971,8 @@ public class MoulConfigEditor<T extends Config> extends Screen {
                         newTarget = barMax;
                     }
                     optionsScroll.setTimeToReachTarget(Math.min(
-                        150,
-                        Math.max(10, 5 * Math.abs(newTarget - optionsScroll.getValue()))
+                            150,
+                            Math.max(10, 5 * Math.abs(newTarget - optionsScroll.getValue()))
                     ));
                     optionsScroll.resetTimer();
                     optionsScroll.setTarget(newTarget);
@@ -1010,7 +995,7 @@ public class MoulConfigEditor<T extends Config> extends Screen {
         int innerWidth = xSize - 154 - innerPadding * 2;
 
         if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-            getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
             ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
@@ -1054,8 +1039,8 @@ public class MoulConfigEditor<T extends Config> extends Screen {
 
         if (!searchField.getText().equals(oldSearch)) {
             searchField.setText(MinecraftClient.getInstance().textRenderer.trimToWidth(
-                searchField.getText(),
-                innerWidth / 2 - 20
+                    searchField.getText(),
+                    innerWidth / 2 - 20
             ));
             updateSearchResults();
             return true;

@@ -41,8 +41,8 @@ package io.github.moulberry.moulconfig.gui.elements;/*
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.gui.GuiElement;
 import io.github.moulberry.moulconfig.internal.LerpUtils;
+import io.github.moulberry.moulconfig.internal.LerpingInteger;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.function.Consumer;
@@ -51,13 +51,11 @@ import java.util.function.Supplier;
 public class GuiElementBoolean extends GuiElement {
     public int x;
     public int y;
-    private Supplier<Boolean> value;
+    private final Supplier<Boolean> value;
     private final int clickRadius;
     private final Consumer<Boolean> toggleCallback;
-
-    private boolean previewValue;
-    private int animation = 0;
-    private long lastMillis = 0;
+    private final LerpingInteger integer;
+    private boolean lastValue = false;
 
     private static final int xSize = 48;
     private static final int ySize = 14;
@@ -70,78 +68,62 @@ public class GuiElementBoolean extends GuiElement {
         this.x = x;
         this.y = y;
         this.value = value;
-        this.previewValue = value.get();
+        this.integer = new LerpingInteger(0, 200);
         this.clickRadius = clickRadius;
         this.toggleCallback = toggleCallback;
-        this.lastMillis = System.currentTimeMillis();
 
-        if (previewValue) animation = 36;
+        if (value.get()) {
+            integer.setValue(100);
+            lastValue = value.get();
+            previousValue = value.get();
+        }
     }
 
     @Override
+    @SuppressWarnings("DuplicatedCode")
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawTexture(GuiTextures.TOGGLE_BAR, x, y, 0, 1, xSize, ySize);
+        context.drawTexture(GuiTextures.TOGGLE_BAR, x, y, (float) 0, (float) 0, 48, 14, 48, 14);
 
-        Identifier toggleIdentifier = GuiTextures.TOGGLE_ON;
-        long currentMillis = System.currentTimeMillis();
-        long deltaMillis = currentMillis - lastMillis;
-        lastMillis = currentMillis;
-        boolean passedLimit = false;
-        if (previewValue != value.get()) {
-            if ((previewValue && animation > 12) ||
-                    (!previewValue && animation < 24)) {
-                passedLimit = true;
-            }
-        }
-        if (previewValue != passedLimit) {
-            animation += deltaMillis / 10;
+        boolean val = value.get();
+        if (lastValue != val) {
+            integer.setTarget(val ? 100 : 0);
+            integer.resetTimer();
+            lastValue = val;
         } else {
-            animation -= deltaMillis / 10;
+            integer.tick();
         }
-        lastMillis -= deltaMillis % 10;
 
-        if (previewValue == value.get()) {
-            animation = Math.max(0, Math.min(36, animation));
-        } else if (!passedLimit) {
-            if (previewValue) {
-                animation = Math.max(0, Math.min(12, animation));
-            } else {
-                animation = Math.max(24, Math.min(36, animation));
-            }
+        float animationPercentage = LerpUtils.sigmoidZeroOne(integer.getValue() / 100F);
+        Identifier buttonLocation;
+        if (animationPercentage < 1 / 5F) {
+            buttonLocation = GuiTextures.TOGGLE_OFF;
+        } else if (animationPercentage < 2 / 5F) {
+            buttonLocation = GuiTextures.TOGGLE_ONE;
+        } else if (animationPercentage < 3 / 5F) {
+            buttonLocation = GuiTextures.TOGGLE_TWO;
+        } else if (animationPercentage < 4 / 5F) {
+            buttonLocation = GuiTextures.TOGGLE_THREE;
         } else {
-            if (previewValue) {
-                animation = Math.max(12, animation);
-            } else {
-                animation = Math.min(24, animation);
-            }
+            buttonLocation = GuiTextures.TOGGLE_ON;
         }
+        context.drawTexture(buttonLocation,  x+ (int) (animationPercentage * (48 - 12)), y, 0, 1, 12, 14, 12, 14);
 
-        int animation = (int) (LerpUtils.sigmoidZeroOne(this.animation / 36f) * 36);
-        if (animation < 3) {
-            toggleIdentifier = GuiTextures.TOGGLE_OFF;
-        } else if (animation < 13) {
-            toggleIdentifier = GuiTextures.TOGGLE_ONE;
-        } else if (animation < 23) {
-            toggleIdentifier = GuiTextures.TOGGLE_TWO;
-        } else if (animation < 33) {
-            toggleIdentifier = GuiTextures.TOGGLE_THREE;
-        }
-
-        context.drawTexture(toggleIdentifier, x + animation, y, 0, 1, 12, 14);
     }
+
+    boolean previousValue = false;
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (mouseX > x - clickRadius && mouseX < x + xSize + clickRadius &&
                 mouseY > y - clickRadius && mouseY < y + ySize + clickRadius) {
             if (button == 0) {
-                if (previewValue == !value.get()) {
+                if (previousValue == !value.get()) {
                     toggleCallback.accept(!value.get());
+                    return true;
                 }
             }
-        } else {
-            previewValue = value.get();
         }
+        previousValue = value.get();
         return false;
     }
 
@@ -150,16 +132,9 @@ public class GuiElementBoolean extends GuiElement {
         if (mouseX > x - clickRadius && mouseX < x + xSize + clickRadius &&
                 mouseY > y - clickRadius && mouseY < y + ySize + clickRadius) {
             if (button == 0) {
-                previewValue = !value.get();
+                previousValue = !value.get();
             }
-        } else {
-            previewValue = value.get();
         }
-        return false;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return false;
     }
 }

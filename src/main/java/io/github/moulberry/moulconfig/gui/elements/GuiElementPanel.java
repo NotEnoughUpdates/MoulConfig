@@ -24,7 +24,6 @@ import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import net.minecraft.client.gui.DrawContext;
-import org.lwjgl.opengl.GL11;
 
 /**
  * Renders an element with a floating rect.

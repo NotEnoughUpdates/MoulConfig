@@ -27,7 +27,6 @@ import io.github.moulberry.moulconfig.gui.elements.GuiElementColour;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import org.lwjgl.opengl.GL11;
 
 public class GuiOptionEditorColour extends GuiOptionEditor {
     private GuiElementColour colourElement = null;

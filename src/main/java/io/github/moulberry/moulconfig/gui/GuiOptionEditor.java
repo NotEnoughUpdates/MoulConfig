@@ -28,7 +28,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.StringVisitable;
 import org.jetbrains.annotations.ApiStatus;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Locale;
 
@@ -113,7 +112,7 @@ public abstract class GuiOptionEditor {
         if (searchDescNameCache == null) {
             searchDescNameCache = (option.name + option.desc + option.hiddenKeys).toLowerCase(Locale.ROOT);
         }
-        return searchDescNameCache.matches(word);
+        return searchDescNameCache.contains(word);
     }
 
     public boolean mouseDragged(int finalX,

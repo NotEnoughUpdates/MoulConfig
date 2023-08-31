@@ -20,15 +20,11 @@
 
 package io.github.moulberry.moulconfig.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.moulberry.moulconfig.GuiTextures;
 import lombok.NonNull;
 import lombok.ToString;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 

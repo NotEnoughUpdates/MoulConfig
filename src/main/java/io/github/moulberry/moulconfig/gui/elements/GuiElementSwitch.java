@@ -29,7 +29,6 @@ import io.github.moulberry.moulconfig.observer.GetSetter;
 import lombok.ToString;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
-import org.lwjgl.opengl.GL11;
 
 /**
  * A gui element displaying a switch to represent a boolean value.
@@ -88,7 +87,6 @@ public class GuiElementSwitch extends GuiElementNew {
 
     @Override
     public void mouseEvent(int button, GuiImmediateContext context) {
-        System.out.println(context.getMouseX() + " " + context.getMouseY());
         super.mouseEvent(button, context);
         if (context.isHovered() && button == 0) {
             value.set(!value.get());

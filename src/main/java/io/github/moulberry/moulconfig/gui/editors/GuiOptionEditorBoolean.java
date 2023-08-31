@@ -40,7 +40,7 @@ public class GuiOptionEditorBoolean extends GuiOptionEditor {
         super(option);
         this.config = config;
         this.runnableId = runnableId;
-        bool = new GuiElementBoolean(0, 0, () -> (Boolean) option.get(), 10, (value) -> onUpdate(option, value));
+        bool = new GuiElementBoolean(0, 0, () -> (boolean) option.get(), 10, (value) -> onUpdate(option, value));
     }
 
     @Override
@@ -59,6 +59,14 @@ public class GuiOptionEditorBoolean extends GuiOptionEditor {
         bool.x = x + width / 6 - 24;
         bool.y = y + height - 7 - 14;
         return bool.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseReleased(int x, int y, int width, double mouseX, double mouseY, int button) {
+        int height = getHeight();
+        bool.x = x + width / 6 - 24;
+        bool.y = y + height - 7 - 14;
+        return bool.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override

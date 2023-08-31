@@ -71,7 +71,18 @@ val noTestJar by tasks.creating(Jar::class) {
     from(zipTree(tasks.remapJar.map { it.archiveFile }))
     archiveClassifier.set("notest")
     exclude("io/github/moulberry/moulconfig/test/*")
+    exclude("fabric.mod.json")
+    exclude("moulconfig-refmap.json")
 }
+
+val nonMappedJar by tasks.creating(Jar::class) {
+    from(zipTree(tasks.jar.map { it.archiveFile }))
+    archiveClassifier.set("non-mapped")
+    exclude("io/github/moulberry/moulconfig/test/*")
+    exclude("fabric.mod.json")
+    exclude("moulconfig-refmap.json")
+}
+
 
 publishing {
     publications {
@@ -84,6 +95,9 @@ publishing {
             }
             artifact(tasks.jar) {
                 classifier = "named"
+            }
+            artifact(nonMappedJar) {
+                classifier = "dev"
             }
             pom {
                 licenses {

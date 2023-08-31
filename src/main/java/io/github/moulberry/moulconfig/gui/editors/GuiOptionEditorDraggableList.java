@@ -27,10 +27,8 @@ import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Formatting;
-import org.lwjgl.opengl.GL11;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -300,12 +298,18 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             }
             currentDragging = null;
             dragStartIndex = -1;
-            trashHoverTime = -System.currentTimeMillis();
             return false;
         }
 
         currentDragging = null;
         dragStartIndex = -1;
+
+        if (button != 0 || dropdownOpen) {
+            if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
+        } else if (mouseX >= x + width / 6.0 + 27 - 3 && mouseX <= x + (double) width / 6-0 + 27 + 11 + 3 &&
+                mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
+            if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
+        }
 
         return false;
     }
