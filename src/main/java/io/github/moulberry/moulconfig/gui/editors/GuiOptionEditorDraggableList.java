@@ -25,6 +25,7 @@ import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.internal.LerpUtils;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
+import io.github.moulberry.moulconfig.internal.Warnings;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -94,12 +95,21 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         option.explicitNotifyChange();
     }
 
+    private String getExampleText(Object forObject) {
+        String str = exampleText.get(forObject);
+        if (str == null) {
+            str = "<unknown " + forObject + ">";
+            Warnings.warnOnce("Could not find draggable list object for " + forObject + " on option " + option.field, forObject, option);
+        }
+        return str;
+    }
+
     @Override
     public int getHeight() {
         int height = super.getHeight() + 13;
 
         for (Object object : activeText) {
-            String str = exampleText.get(object);
+            String str = getExampleText(object);
             height += 10 * str.split("\n").length;
         }
 
@@ -111,27 +121,27 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     @Override
-	public void render(int x, int y, int width) {
+    public void render(int x, int y, int width) {
         super.render(x, y, width);
-		int height = getHeight();
+        int height = getHeight();
 
-		GlStateManager.color(1, 1, 1, 1);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
-		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
+        GlStateManager.color(1, 1, 1, 1);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
+        RenderUtils.drawTexturedRect(x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
 
-		TextRenderUtils.drawStringCenteredScaledMaxWidth("Add", Minecraft.getMinecraft().fontRendererObj,
-			x + width / 6, y + 45 - 7 - 6,
-			false, 44, 0xFF303030
-		);
+        TextRenderUtils.drawStringCenteredScaledMaxWidth("Add", Minecraft.getMinecraft().fontRendererObj,
+            x + width / 6, y + 45 - 7 - 6,
+            false, 44, 0xFF303030
+        );
 
-		long currentTime = System.currentTimeMillis();
-		if (trashHoverTime < 0) {
-			float greenBlue = LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f);
-			GlStateManager.color(1, greenBlue, greenBlue, 1);
-		} else {
-			float greenBlue = LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
-			GlStateManager.color(1, greenBlue, greenBlue, 1);
-		}
+        long currentTime = System.currentTimeMillis();
+        if (trashHoverTime < 0) {
+            float greenBlue = LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f);
+            GlStateManager.color(1, greenBlue, greenBlue, 1);
+        } else {
+            float greenBlue = LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
+            GlStateManager.color(1, greenBlue, greenBlue, 1);
+        }
 
         if (canDeleteRightNow()) {
             Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.DELETE);
@@ -144,7 +154,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         int i = 0;
         int yOff = 0;
         for (Object indexObject : activeText) {
-            String str = exampleText.get(indexObject);
+            String str = getExampleText(indexObject);
 
             String[] multilines = str.split("\n");
 
@@ -155,204 +165,205 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                     String line = multilines[multilineIndex];
                     TextRenderUtils.drawStringScaledMaxWidth(line + EnumChatFormatting.RESET, Minecraft.getMinecraft().fontRendererObj,
                         x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
-					);
-				}
-				Minecraft.getMinecraft().fontRendererObj.drawString(
-					"≡",
-					x + 10,
-					y + 50 + yOff + ySize / 2 - 4,
-					0xffffff,
-					true
-				);
-			}
+                    );
+                }
+                Minecraft.getMinecraft().fontRendererObj.drawString(
+                    "≡",
+                    x + 10,
+                    y + 50 + yOff + ySize / 2 - 4,
+                    0xffffff,
+                    true
+                );
+            }
 
-			yOff += ySize;
-		}
-	}
+            yOff += ySize;
+        }
+    }
 
-	@Override
-	public void renderOverlay(int x, int y, int width) {
+    @Override
+    public void renderOverlay(int x, int y, int width) {
         super.renderOverlay(x, y, width);
-		if (dropdownOpen) {
+        if (dropdownOpen) {
             List<Object> remaining = new ArrayList<>(exampleText.keySet());
-			remaining.removeAll(activeText);
+            remaining.removeAll(activeText);
 
-			FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-			int dropdownWidth = Math.min(width / 2 - 10, 150);
-			int left = dragOffsetX;
-			int top = dragOffsetY;
+            FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+            int dropdownWidth = Math.min(width / 2 - 10, 150);
+            int left = dragOffsetX;
+            int top = dragOffsetY;
 
-			int dropdownHeight = -1 + 12 * remaining.size();
+            int dropdownHeight = -1 + 12 * remaining.size();
 
-			int main = 0xff202026;
-			int outline = 0xff404046;
-			Gui.drawRect(left, top, left + 1, top + dropdownHeight, outline); //Left
-			Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, outline); //Top
-			Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, outline); //Right
-			Gui.drawRect(
-				left + 1,
-				top + dropdownHeight - 1,
-				left + dropdownWidth - 1,
-				top + dropdownHeight,
-				outline
-			); //Bottom
-			Gui.drawRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
+            int main = 0xff202026;
+            int outline = 0xff404046;
+            Gui.drawRect(left, top, left + 1, top + dropdownHeight, outline); //Left
+            Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, outline); //Top
+            Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, outline); //Right
+            Gui.drawRect(
+                left + 1,
+                top + dropdownHeight - 1,
+                left + dropdownWidth - 1,
+                top + dropdownHeight,
+                outline
+            ); //Bottom
+            Gui.drawRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
 
-			int dropdownY = -1;
-			for (Object indexObject : remaining) {
-				String str = exampleText.get(indexObject);
-				if (str.isEmpty()) {
-					str = "<NONE>";
-				}
-				TextRenderUtils.drawStringScaledMaxWidth(str.replaceAll("(\n.*)+", " ..."),
-					fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
-				);
-				dropdownY += 12;
-			}
-		} else if (currentDragging != null) {
-			int opacity = 0x80;
-			long currentTime = System.currentTimeMillis();
-			if (trashHoverTime < 0) {
-				float greenBlue = LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f);
-				opacity = (int) (opacity * greenBlue);
-			} else {
-				float greenBlue = LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
-				opacity = (int) (opacity * greenBlue);
-			}
+            int dropdownY = -1;
+            for (Object indexObject : remaining) {
+                String str = getExampleText(indexObject);
+                if (str.isEmpty()) {
+                    str = "<NONE>";
+                }
+                TextRenderUtils.drawStringScaledMaxWidth(str.replaceAll("(\n.*)+", " ..."),
+                    fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
+                );
+                dropdownY += 12;
+            }
+        } else if (currentDragging != null) {
+            int opacity = 0x80;
+            long currentTime = System.currentTimeMillis();
+            if (trashHoverTime < 0) {
+                float greenBlue = LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f);
+                opacity = (int) (opacity * greenBlue);
+            } else {
+                float greenBlue = LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
+                opacity = (int) (opacity * greenBlue);
+            }
 
-			if (opacity < 20) return;
+            if (opacity < 20) return;
 
-			ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-			int mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
-			int mouseY = scaledResolution.getScaledHeight() -
-				Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
+            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+            int mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
+            int mouseY = scaledResolution.getScaledHeight() -
+                Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
 
-			String str = exampleText.get(currentDragging);
+            String str = getExampleText(currentDragging);
+            String[] multilines = str.split("\n");
 
-			String[] multilines = str.split("\n");
+            GlStateManager.enableBlend();
+            for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
+                String line = multilines[multilineIndex];
+                TextRenderUtils.drawStringScaledMaxWidth(
+                    line + EnumChatFormatting.RESET,
+                    Minecraft.getMinecraft().fontRendererObj,
+                    dragOffsetX + mouseX + 10,
+                    dragOffsetY + mouseY + multilineIndex * 10,
+                    true,
+                    width - 20,
+                    0xffffff | (opacity << 24)
+                );
+            }
 
-			GlStateManager.enableBlend();
-			for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
-				String line = multilines[multilineIndex];
-				TextRenderUtils.drawStringScaledMaxWidth(
-					line + EnumChatFormatting.RESET,
-					Minecraft.getMinecraft().fontRendererObj,
-					dragOffsetX + mouseX + 10,
-					dragOffsetY + mouseY + multilineIndex * 10,
-					true,
-					width - 20,
-					0xffffff | (opacity << 24)
-				);
-			}
+            int ySize = multilines.length * 10;
 
-			int ySize = multilines.length * 10;
+            Minecraft.getMinecraft().fontRendererObj.drawString("\u2261",
+                dragOffsetX + mouseX,
+                dragOffsetY + mouseY + ySize / 2 - 4, 0xffffff, true
+            );
+        }
+    }
 
-			Minecraft.getMinecraft().fontRendererObj.drawString("\u2261",
-				dragOffsetX + mouseX,
-				dragOffsetY + mouseY + ySize / 2 - 4, 0xffffff, true
-			);
-		}
-	}
-
-	@Override
-	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-		if (!Mouse.getEventButtonState() && !dropdownOpen &&
-			dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
-			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
-			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
-			if (canDeleteRightNow()) {
+    @Override
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+        if (!Mouse.getEventButtonState() && !dropdownOpen &&
+            dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
+            mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
+            mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
+            if (canDeleteRightNow()) {
                 activeText.remove(dragStartIndex);
                 saveChanges();
-			}
-			currentDragging = null;
-			dragStartIndex = -1;
-			return false;
-		}
+            }
+            currentDragging = null;
+            dragStartIndex = -1;
+            return false;
+        }
 
-		if (!Mouse.isButtonDown(0) || dropdownOpen) {
-			currentDragging = null;
-			dragStartIndex = -1;
-			if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
-		} else if (currentDragging != null &&
-			mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
-			mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
-			if (trashHoverTime < 0 && canDeleteRightNow()) trashHoverTime = System.currentTimeMillis();
-		} else {
-			if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
-		}
+        if (!Mouse.isButtonDown(0) || dropdownOpen) {
+            currentDragging = null;
+            dragStartIndex = -1;
+            if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
+        } else if (currentDragging != null &&
+            mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
+            mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
+            if (trashHoverTime < 0 && canDeleteRightNow()) trashHoverTime = System.currentTimeMillis();
+        } else {
+            if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
+        }
 
-		if (Mouse.getEventButtonState()) {
-			int height = getHeight();
+        if (Mouse.getEventButtonState()) {
+            int height = getHeight();
 
-			if (dropdownOpen) {
-				List<Object> remaining = new ArrayList<>(exampleText.keySet());
-				remaining.removeAll(activeText);
+            if (dropdownOpen) {
+                List<Object> remaining = new ArrayList<>(exampleText.keySet());
+                remaining.removeAll(activeText);
 
-				int dropdownWidth = Math.min(width / 2 - 10, 150);
-				int left = dragOffsetX;
-				int top = dragOffsetY;
+                int dropdownWidth = Math.min(width / 2 - 10, 150);
+                int left = dragOffsetX;
+                int top = dragOffsetY;
 
-				int dropdownHeight = -1 + 12 * remaining.size();
+                int dropdownHeight = -1 + 12 * remaining.size();
 
-				if (mouseX > left && mouseX < left + dropdownWidth &&
-					mouseY > top && mouseY < top + dropdownHeight) {
-					int dropdownY = -1;
-					for (Object objectIndex : remaining) {
-						if (mouseY < top + dropdownY + 12) {
+                if (mouseX > left && mouseX < left + dropdownWidth &&
+                    mouseY > top && mouseY < top + dropdownHeight) {
+                    int dropdownY = -1;
+                    for (Object objectIndex : remaining) {
+                        if (mouseY < top + dropdownY + 12) {
                             activeText.add(0, objectIndex);
                             saveChanges();
                             if (remaining.size() == 1) dropdownOpen = false;
                             return true;
                         }
 
-						dropdownY += 12;
-					}
-				}
+                        dropdownY += 12;
+                    }
+                }
 
-				dropdownOpen = false;
-				return true;
-			}
+                dropdownOpen = false;
+                return true;
+            }
 
-			if (activeText.size() < exampleText.size() &&
-				mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-				mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
-				dropdownOpen = !dropdownOpen;
-				dragOffsetX = mouseX;
-				dragOffsetY = mouseY;
-				return true;
-			}
+            if (activeText.size() < exampleText.size() &&
+                mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
+                mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
+                dropdownOpen = !dropdownOpen;
+                dragOffsetX = mouseX;
+                dragOffsetY = mouseY;
+                return true;
+            }
 
-			if (Mouse.getEventButton() == 0 &&
-				mouseX > x + 5 && mouseX < x + width - 5 &&
-				mouseY > y + 45 && mouseY < y + height - 6) {
-				int yOff = 0;
-				int i = 0;
-				for (Object objectIndex: activeText) {
-                    int ySize = 10 * exampleText.get(objectIndex).split("\n").length;
-					if (mouseY < y + 50 + yOff + ySize) {
-						dragOffsetX = x + 10 - mouseX;
-						dragOffsetY = y + 50 + yOff - mouseY;
+            if (Mouse.getEventButton() == 0 &&
+                mouseX > x + 5 && mouseX < x + width - 5 &&
+                mouseY > y + 45 && mouseY < y + height - 6) {
+                int yOff = 0;
+                int i = 0;
+                for (Object objectIndex : activeText) {
+                    String str = getExampleText(objectIndex);
+                    int ySize = 10 * str.split("\n").length;
+                    if (mouseY < y + 50 + yOff + ySize) {
+                        dragOffsetX = x + 10 - mouseX;
+                        dragOffsetY = y + 50 + yOff - mouseY;
 
-						currentDragging = objectIndex;
-						dragStartIndex = i;
-						break;
-					}
-					yOff += ySize;
-					i++;
-				}
-			}
-		} else if (Mouse.getEventButton() == -1 && currentDragging != null) {
-			int yOff = 0;
-			int i = 0;
-			for (Object objectIndex : activeText) {
-				if (dragOffsetY + mouseY + 4 < y + 50 + yOff + 10) {
-					activeText.remove(dragStartIndex);
+                        currentDragging = objectIndex;
+                        dragStartIndex = i;
+                        break;
+                    }
+                    yOff += ySize;
+                    i++;
+                }
+            }
+        } else if (Mouse.getEventButton() == -1 && currentDragging != null) {
+            int yOff = 0;
+            int i = 0;
+            for (Object objectIndex : activeText) {
+                if (dragOffsetY + mouseY + 4 < y + 50 + yOff + 10) {
+                    activeText.remove(dragStartIndex);
                     activeText.add(i, currentDragging);
                     saveChanges();
                     dragStartIndex = i;
                     break;
                 }
-                yOff += 10 * exampleText.get(objectIndex).split("\n").length;
+                String str = getExampleText(objectIndex);
+                yOff += 10 * str.split("\n").length;
                 i++;
             }
         }

@@ -25,26 +25,43 @@ import net.minecraft.launchwrapper.Launch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 public class Warnings {
     public static boolean isDevEnv = Launch.blackboard.get("fml.deobfuscatedEnvironment") == Boolean.TRUE;
     public static boolean shouldWarn = Boolean.getBoolean("moulconfig.warn") || isDevEnv;
     public static Logger logger = LogManager.getLogger("MoulConfig");
     public static String basePackage = Config.class.getPackage().getName() + ".";
     public static String testPackage = basePackage + "test.";
+    public static HashSet<Object> warnedObjects = new HashSet<>();
+
+    public static void warnOnce(String warningText, Object... warningBucketEntries) {
+        if (!shouldWarn) return;
+        List<Object> warningBucket = Arrays.asList(warningBucketEntries);
+        if (warnedObjects.contains(warningBucket)) return;
+        warnedObjects.add(warningBucket);
+        warn0(warningText, 3);
+    }
+
+    private static void warn0(String warningText, int depth) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int i = 0;
+        StackTraceElement modCall = null;
+        for (StackTraceElement stackTraceElement : stackTrace) {
+            if (i++ < depth || (stackTraceElement.getClassName().startsWith(basePackage) &&
+                !stackTraceElement.getClassName().startsWith(testPackage)))
+                continue;
+            modCall = stackTraceElement;
+            break;
+        }
+        logger.warn("Warning: " + warningText + " at " + stackTrace[depth] + " called by " + modCall);
+    }
 
     public static void warn(String warningText) {
         if (shouldWarn) {
-            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            int i = 0;
-            StackTraceElement modCall = null;
-            for (StackTraceElement stackTraceElement : stackTrace) {
-                if (i++ < 2 || (stackTraceElement.getClassName().startsWith(basePackage) &&
-                    !stackTraceElement.getClassName().startsWith(testPackage)))
-                    continue;
-                modCall = stackTraceElement;
-                break;
-            }
-            logger.warn("Warning: " + warningText + " at " + stackTrace[2] + " called by " + modCall);
+            warn0(warningText, 3);
         }
     }
 }

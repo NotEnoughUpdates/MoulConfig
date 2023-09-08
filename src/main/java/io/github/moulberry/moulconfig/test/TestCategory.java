@@ -29,6 +29,7 @@ import net.minecraft.util.ChatComponentText;
 import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -110,7 +111,7 @@ public class TestCategory {
     @ConfigEditorDraggableList(
         exampleText = {"A", "2", "3", "4"}
     )
-    public List<Integer> thingy = new ArrayList<>();
+    public List<Integer> thingy = new ArrayList<>(Arrays.asList(10));
 
     @ConfigOption(name = "Drag List 2", desc = "Using EnumSet")
     @ConfigEditorDraggableList(requireNonEmpty = true)
