@@ -358,6 +358,8 @@ $dokka.location:io.github.moulberry.moulconfig.internal/Warnings/logger/#/Pointi
 $dokka.location:io.github.moulberry.moulconfig.internal/Warnings/shouldWarn/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/should-warn.html
 $dokka.location:io.github.moulberry.moulconfig.internal/Warnings/testPackage/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/test-package.html
 $dokka.location:io.github.moulberry.moulconfig.internal/Warnings/warn/#java.lang.String/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/warn.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/warnOnce/#java.lang.String#java.lang.Object.../PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/warn-once.html
+$dokka.location:io.github.moulberry.moulconfig.internal/Warnings/warnedObjects/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.internal/-warnings/warned-objects.html
 $dokka.location:io.github.moulberry.moulconfig.observer////PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.observer/index.html
 $dokka.location:io.github.moulberry.moulconfig.observer/BaseObservable///PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.observer/-base-observable/index.html
 $dokka.location:io.github.moulberry.moulconfig.observer/BaseObservable/BaseObservable/#/PointingToDeclaration/-moul-config/io.github.moulberry.moulconfig.observer/-base-observable/-base-observable.html
