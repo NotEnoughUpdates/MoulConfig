@@ -376,7 +376,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                int optionHeight = editor.getHeight();
+                int optionHeight = ContextAware.wrapErrorWithContext(editor, editor::getHeight);
                 if (innerTop + 5 + optionY + optionHeight > innerTop + 1 && innerTop + 5 + optionY < innerBottom - 1) {
                     int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
                     int finalY = innerTop + 5 + optionY;
@@ -430,7 +430,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                int optionHeight = editor.getHeight();
+                int optionHeight = ContextAware.wrapErrorWithContext(editor, editor::getHeight);
                 if (innerTop + 5 + optionYOverlay + optionHeight > innerTop + 1 &&
                     innerTop + 5 + optionYOverlay < innerBottom - 1) {
                     int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
@@ -477,7 +477,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         );
 
         List<Social> socials = processedConfig.getConfigObject().getSocials();
-        for (int socialIndex = 0; socialIndex < socials.size(); socialIndex ++ ) {
+        for (int socialIndex = 0; socialIndex < socials.size(); socialIndex++) {
             Social social = socials.get(socialIndex);
             Minecraft.getMinecraft().getTextureManager().bindTexture(social.getIcon());
             GlStateManager.color(1, 1, 1, 1);
@@ -636,7 +636,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                                 activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                             }
                         }
-                        optionY += editor.getHeight() + 5;
+                        optionY += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
 
                         if (optionY > 0) {
                             barSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + newTarget));
@@ -725,7 +725,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 ))) {
                     return true;
                 }
-                optionY += editor.getHeight() + 5;
+                optionY += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
             }
         }
 
@@ -773,7 +773,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     ))) {
                         return true;
                     }
-                    optionY += editor.getHeight() + 5;
+                    optionY += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
                 }
             }
         }
@@ -817,7 +817,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                if (ContextAware.wrapErrorWithContext(editor, () -> editor.keyboardInput())) {
+                if (ContextAware.wrapErrorWithContext(editor, editor::keyboardInput)) {
                     return true;
                 }
             }
