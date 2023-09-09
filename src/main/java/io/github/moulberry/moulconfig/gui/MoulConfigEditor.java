@@ -122,6 +122,16 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     public void updateSearchResults() {
+        updateSearchResults(false);
+    }
+
+    public void updateSearchResults(boolean recalculateOptionUniverse) {
+        if(recalculateOptionUniverse){
+            allOptions.clear();
+            for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
+                allOptions.addAll(category.options);
+            }
+        }
         String toSearch = searchField.getText().trim().toLowerCase(Locale.ROOT);
         if (!toSearch.isEmpty()) {
             Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
