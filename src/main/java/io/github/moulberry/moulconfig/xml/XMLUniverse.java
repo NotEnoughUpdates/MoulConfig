@@ -28,6 +28,7 @@ public class XMLUniverse {
         var xmlUniverse = new XMLUniverse();
         xmlUniverse.registerLoader(new SwitchLoader());
         xmlUniverse.registerLoader(new GuiLoader());
+        xmlUniverse.registerLoader(new ArrayLoader());
         xmlUniverse.registerLoader(new ColumnLoader());
         xmlUniverse.registerLoader(new RowLoader());
         xmlUniverse.registerLoader(new TextLoader());

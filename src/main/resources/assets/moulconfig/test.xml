@@ -15,5 +15,8 @@
                     animationSpeed="100"
             />
         </Row>
+        <Array data="@data">
+            <Text text="@this" width="80"/>
+        </Array>
     </Column>
 </Gui>

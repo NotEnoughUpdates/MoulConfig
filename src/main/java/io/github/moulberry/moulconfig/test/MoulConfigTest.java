@@ -25,6 +25,7 @@ import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.gui.*;
 import io.github.moulberry.moulconfig.gui.elements.*;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
+import io.github.moulberry.moulconfig.observer.ObservableList;
 import io.github.moulberry.moulconfig.observer.Property;
 import io.github.moulberry.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.moulberry.moulconfig.processor.ConfigProcessorDriver;
@@ -49,6 +50,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
+
+import java.util.Arrays;
 
 @Mod(modid = "moulconfig", name = "MoulConfig")
 public class MoulConfigTest {
@@ -149,5 +152,7 @@ public class MoulConfigTest {
     public static class ObjectBound {
         @Bind
         public boolean value;
+        @Bind
+        public ObservableList<String> data = new ObservableList<>(Arrays.asList("Hehhehehe", "Hohohohoho", "Hihihihi"));
     }
 }
