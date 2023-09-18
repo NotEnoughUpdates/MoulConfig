@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Gui xmlns="http://notenoughupdates.org/moulconfig"
->
-    <Switch
-            value="@value"
-            animationSpeed="100"
-    />
+<Gui xmlns="http://notenoughupdates.org/moulconfig">
+    <Column>
+        <Row>
+            <Text text="Option A" width="80"/>
+            <Switch
+                    value="@value"
+                    animationSpeed="100"
+            />
+        </Row>
+        <Row>
+            <Text text="Option B" width="80"/>
+            <Switch
+                    value="@value"
+                    animationSpeed="100"
+            />
+        </Row>
+    </Column>
 </Gui>

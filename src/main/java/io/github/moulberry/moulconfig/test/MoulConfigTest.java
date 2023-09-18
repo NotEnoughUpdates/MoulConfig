@@ -130,7 +130,7 @@ public class MoulConfigTest {
                             new GuiElementCenter(new GuiElementPanel(
                                     new GuiElementColumn(
                                             new GuiElementText("Label", 80),
-                                            new GuiColumnRow(new GuiElementSwitch(Property.of(false), 100), new GuiElementText("Some property"))
+                                            new GuiElementRow(new GuiElementSwitch(Property.of(false), 100), new GuiElementText("Some property"))
                                     )
                             ))
                     ));

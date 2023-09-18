@@ -1,8 +1,7 @@
 package io.github.moulberry.moulconfig.xml;
 
 import io.github.moulberry.moulconfig.gui.GuiElementNew;
-import io.github.moulberry.moulconfig.xml.loaders.GuiLoader;
-import io.github.moulberry.moulconfig.xml.loaders.SwitchLoader;
+import io.github.moulberry.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
 import lombok.var;
 import org.w3c.dom.Element;
@@ -29,6 +28,9 @@ public class XMLUniverse {
         var xmlUniverse = new XMLUniverse();
         xmlUniverse.registerLoader(new SwitchLoader());
         xmlUniverse.registerLoader(new GuiLoader());
+        xmlUniverse.registerLoader(new ColumnLoader());
+        xmlUniverse.registerLoader(new RowLoader());
+        xmlUniverse.registerLoader(new TextLoader());
         xmlUniverse.registerMapper(String.class, Function.identity());
         xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
         xmlUniverse.registerMapper(int.class, Integer::valueOf);

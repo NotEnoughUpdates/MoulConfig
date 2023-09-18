@@ -34,14 +34,14 @@ import java.util.function.BiFunction;
  * A gui element composing multiple other gui elements by stacking them horizontally.
  */
 @ToString
-public class GuiColumnRow extends GuiElementNew {
+public class GuiElementRow extends GuiElementNew {
     final List<GuiElementNew> children;
 
-    public GuiColumnRow(List<GuiElementNew> children) {
+    public GuiElementRow(List<GuiElementNew> children) {
         this.children = children;
     }
 
-    public GuiColumnRow(GuiElementNew... children) {
+    public GuiElementRow(GuiElementNew... children) {
         this(Arrays.asList(children));
     }
 
