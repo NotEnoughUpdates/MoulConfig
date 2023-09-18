@@ -1,4 +1,3 @@
-import xyz.wagyourtail.unimined.api.sourceSet
 import java.io.ByteArrayOutputStream
 import java.net.URL
 
@@ -6,7 +5,7 @@ plugins {
     idea
     java
     `maven-publish`
-    id("xyz.wagyourtail.unimined") version "0.4.10"
+    id("xyz.wagyourtail.unimined") version "1.0.5"
     id("org.cadixdev.licenser") version "0.6.1"
     id("org.jetbrains.dokka") version "1.8.10"
 }
@@ -30,21 +29,21 @@ val hash = cmd("git", "rev-parse", "--short", "HEAD")!!
 val isSnapshot = tag == null
 version = tag ?: hash
 
-minecraft {
-    forge {
-        it.mcpChannel = "stable"
-        it.mcpVersion = "22-1.8.9"
-        it.setDevFallbackNamespace("intermediary")
+unimined.minecraft {
+    version("1.8.9")
+    mappings {
+        searge()
+        mcp("stable", "22-1.8.9")
     }
-    mcRemapper.tinyRemapperConf = {
-        it.ignoreFieldDesc(true)
-        it.ignoreConflicts(true)
+    minecraftForge {
+        loader("11.15.1.2318-1.8.9")
     }
-    launcher.config("client") {
-        this.jvmArgs.add("-Dmoulconfig.testmod=true")
-        this.args.add(0, "--tweakClass")
-        this.args.add(1, "net.minecraftforge.fml.common.launcher.FMLTweaker")
-
+    runs {
+        config("client") {
+            this.jvmArgs.add("-Dmoulconfig.testmod=true")
+            this.args.add(0, "--tweakClass")
+            this.args.add(1, "net.minecraftforge.fml.common.launcher.FMLTweaker")
+        }
     }
 }
 
@@ -55,10 +54,6 @@ repositories {
 }
 
 dependencies {
-    minecraft("net.minecraft:minecraft:1.8.9")
-    mappings("moe.nea.mcp:mcp-yarn:1.8.9")
-    "forge"("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
-
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     compileOnly("org.projectlombok:lombok:1.18.26")
     compileOnly("org.jetbrains:annotations:24.0.1")
@@ -70,7 +65,7 @@ java {
 }
 
 sourceSets.main {
-    output.setResourcesDir(file("$buildDir/classes/java/main"))
+    output.setResourcesDir(java.classesDirectory)
 }
 
 tasks.withType(JavaCompile::class) {
@@ -81,7 +76,7 @@ tasks.dokkaHtml {
     dokkaSourceSets {
         create("main") {
             moduleName.set("MoulConfig")
-            sourceRoots.from(sourceSet.main.get().allSource)
+            sourceRoots.from(sourceSets.main.get().allSource)
             classpath.from(tasks.compileJava.get().classpath)
 
             includes.from(fileTree("docs") { include("*.md") })
@@ -110,9 +105,10 @@ license {
     }
     skipExistingHeaders(true)
 }
+val remapJar: Zip by tasks
 
 val noTestJar by tasks.creating(Jar::class) {
-    from(zipTree(tasks.remapJar.map { it.archiveFile }))
+    from(zipTree(remapJar.archiveFile))
     archiveClassifier.set("notest")
     exclude("io/github/moulberry/moulconfig/test/*")
     exclude("mcmod.info")
@@ -124,7 +120,7 @@ publishing {
             artifact(noTestJar) {
                 classifier = ""
             }
-            artifact(tasks.remapJar) {
+            artifact(remapJar) {
                 classifier = "test"
             }
             artifact(tasks.jar) {
