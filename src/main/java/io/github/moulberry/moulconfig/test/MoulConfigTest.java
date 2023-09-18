@@ -51,6 +51,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -171,6 +172,12 @@ public class MoulConfigTest {
         @Bind
         public boolean value;
         @Bind
-        public ObservableList<Element> data = new ObservableList<>(Arrays.asList(new Element("Test 1"), new Element("Test 2"), new Element("Test 3")));
+        public float slider;
+        @Bind
+        public void addElement() {
+            data.add(new Element("Added Element"));
+        }
+        @Bind
+        public ObservableList<Element> data = new ObservableList<>(new ArrayList<>(Arrays.asList(new Element("Test 1"), new Element("Test 2"), new Element("Test 3"))));
     }
 }

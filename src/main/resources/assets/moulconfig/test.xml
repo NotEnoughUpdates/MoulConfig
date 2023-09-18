@@ -24,5 +24,9 @@
                 </Button>
             </Row>
         </Array>
+        <Button onClick="@addElement">
+            <Text text="Add Element"/>
+        </Button>
+        <Slider value="@slider" minValue="0" maxValue="20"/>
     </Column>
 </Gui>
