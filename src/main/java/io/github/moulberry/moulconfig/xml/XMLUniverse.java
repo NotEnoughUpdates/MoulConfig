@@ -1,6 +1,8 @@
 package io.github.moulberry.moulconfig.xml;
 
 import io.github.moulberry.moulconfig.gui.GuiElementNew;
+import io.github.moulberry.moulconfig.xml.loaders.GuiLoader;
+import io.github.moulberry.moulconfig.xml.loaders.SwitchLoader;
 import lombok.SneakyThrows;
 import lombok.var;
 import org.w3c.dom.Element;
@@ -21,6 +23,24 @@ public class XMLUniverse {
 
     public static QName qName(String localPart) {
         return new QName(MOULCONFIG_XML_NS, localPart);
+    }
+
+    public static XMLUniverse getDefaultUniverse() {
+        var xmlUniverse = new XMLUniverse();
+        xmlUniverse.registerLoader(new SwitchLoader());
+        xmlUniverse.registerLoader(new GuiLoader());
+        xmlUniverse.registerMapper(String.class, Function.identity());
+        xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
+        xmlUniverse.registerMapper(int.class, Integer::valueOf);
+        xmlUniverse.registerMapper(Float.class, Float::valueOf);
+        xmlUniverse.registerMapper(float.class, Float::valueOf);
+        xmlUniverse.registerMapper(Double.class, Double::valueOf);
+        xmlUniverse.registerMapper(double.class, Double::valueOf);
+        xmlUniverse.registerMapper(Long.class, Long::valueOf);
+        xmlUniverse.registerMapper(long.class, Long::valueOf);
+        xmlUniverse.registerMapper(Boolean.class, Boolean::valueOf);
+        xmlUniverse.registerMapper(boolean.class, Boolean::valueOf);
+        return xmlUniverse;
     }
 
 

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Switch xmlns="http://notenoughupdates.org/moulconfig"
-        value="@value"
-        animationSpeed="100"
+<Gui xmlns="http://notenoughupdates.org/moulconfig"
 >
-</Switch>
+    <Switch
+            value="@value"
+            animationSpeed="100"
+    />
+</Gui>

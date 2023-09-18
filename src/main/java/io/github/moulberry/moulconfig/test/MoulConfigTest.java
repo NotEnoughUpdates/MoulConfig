@@ -30,7 +30,6 @@ import io.github.moulberry.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.moulberry.moulconfig.processor.ConfigProcessorDriver;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
 import io.github.moulberry.moulconfig.xml.Bind;
-import io.github.moulberry.moulconfig.xml.XMLSwitchLoader;
 import io.github.moulberry.moulconfig.xml.XMLUniverse;
 import lombok.SneakyThrows;
 import lombok.var;
@@ -50,8 +49,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
-
-import java.util.function.Function;
 
 @Mod(modid = "moulconfig", name = "MoulConfig")
 public class MoulConfigTest {
@@ -138,24 +135,10 @@ public class MoulConfigTest {
                             ))
                     ));
                 } else if (args.length > 0 && "testxml".equals(args[0])) {
-                    var xmlUniverse = new XMLUniverse();
-                    xmlUniverse.registerLoader(new XMLSwitchLoader());
-                    xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
-                    xmlUniverse.registerMapper(int.class, Integer::valueOf);
-                    xmlUniverse.registerMapper(String.class, Function.identity());
-                    xmlUniverse.registerMapper(Float.class, Float::valueOf);
-                    xmlUniverse.registerMapper(float.class, Float::valueOf);
-                    xmlUniverse.registerMapper(Double.class, Double::valueOf);
-                    xmlUniverse.registerMapper(double.class, Double::valueOf);
-                    xmlUniverse.registerMapper(Long.class, Long::valueOf);
-                    xmlUniverse.registerMapper(long.class, Long::valueOf);
-                    xmlUniverse.registerMapper(Boolean.class, Boolean::valueOf);
-                    xmlUniverse.registerMapper(boolean.class, Boolean::valueOf);
+                    var xmlUniverse = XMLUniverse.getDefaultUniverse();
                     var gui = xmlUniverse.load(new ObjectBound(), Minecraft.getMinecraft().getResourceManager()
                             .getResource(new ResourceLocation("moulconfig:test.xml")).getInputStream());
-                    screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(
-                            new GuiElementCenter(new GuiElementPanel(gui))
-                    ));
+                    screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(gui));
                 } else {
                     screenToOpen = new GuiScreenElementWrapper(new MoulConfigEditor<>(testConfigMoulConfigProcessor));
                 }
