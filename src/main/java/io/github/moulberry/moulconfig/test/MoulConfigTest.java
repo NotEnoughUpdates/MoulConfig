@@ -23,7 +23,7 @@ package io.github.moulberry.moulconfig.test;
 
 import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.gui.*;
-import io.github.moulberry.moulconfig.gui.elements.*;
+import io.github.moulberry.moulconfig.gui.component.*;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.observer.ObservableList;
 import io.github.moulberry.moulconfig.observer.Property;
@@ -131,10 +131,10 @@ public class MoulConfigTest {
                     screenToOpen = new MoulGuiOverlayEditor(testConfigMoulConfigProcessor);
                 } else if (args.length > 0 && "testgui".equals(args[0])) {
                     screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(
-                            new GuiElementCenter(new GuiElementPanel(
-                                    new GuiElementColumn(
-                                            new GuiElementText("Label", 80),
-                                            new GuiElementRow(new GuiElementSwitch(Property.of(false), 100), new GuiElementText("Some property"))
+                            new CenterComponent(new PanelComponent(
+                                    new ColumnComponent(
+                                            new TextComponent("Label", 80),
+                                            new RowComponent(new SwitchComponent(Property.of(false), 100), new TextComponent("Some property"))
                                     )
                             ))
                     ));

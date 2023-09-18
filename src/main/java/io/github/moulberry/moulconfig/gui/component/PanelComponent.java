@@ -18,9 +18,9 @@
  *
  */
 
-package io.github.moulberry.moulconfig.gui.elements;
+package io.github.moulberry.moulconfig.gui.component;
 
-import io.github.moulberry.moulconfig.gui.GuiElementNew;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import net.minecraft.client.renderer.GlStateManager;
@@ -30,25 +30,25 @@ import java.util.function.BiFunction;
 /**
  * Renders an element with a floating rect.
  */
-public class GuiElementPanel extends GuiElementNew {
-    private final GuiElementNew element;
+public class PanelComponent extends GuiComponent {
+    private final GuiComponent element;
     private final int insets;
 
     /**
      * @param element the child element to render the panels contents
      * @param insets  the padding size of this panel
      */
-    public GuiElementPanel(GuiElementNew element, int insets) {
+    public PanelComponent(GuiComponent element, int insets) {
         this.element = element;
         this.insets = insets;
     }
 
-    public GuiElementPanel(GuiElementNew element) {
+    public PanelComponent(GuiComponent element) {
         this(element, 2);
     }
 
     @Override
-    public <T> T foldChildren(T initial, BiFunction<GuiElementNew, T, T> visitor) {
+    public <T> T foldChildren(T initial, BiFunction<GuiComponent, T, T> visitor) {
         return visitor.apply(element, initial);
     }
 

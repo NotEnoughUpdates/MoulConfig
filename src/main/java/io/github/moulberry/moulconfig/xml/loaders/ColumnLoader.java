@@ -1,6 +1,6 @@
 package io.github.moulberry.moulconfig.xml.loaders;
 
-import io.github.moulberry.moulconfig.gui.elements.GuiElementColumn;
+import io.github.moulberry.moulconfig.gui.component.ColumnComponent;
 import io.github.moulberry.moulconfig.xml.XMLContext;
 import io.github.moulberry.moulconfig.xml.XMLGuiLoader;
 import io.github.moulberry.moulconfig.xml.XMLUniverse;
@@ -8,10 +8,10 @@ import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 
-public class ColumnLoader implements XMLGuiLoader<GuiElementColumn> {
+public class ColumnLoader implements XMLGuiLoader<ColumnComponent> {
     @Override
-    public GuiElementColumn createInstance(XMLContext<?> context, Element element) {
-        return new GuiElementColumn(context.getChildFragments(element));
+    public ColumnComponent createInstance(XMLContext<?> context, Element element) {
+        return new ColumnComponent(context.getChildFragments(element));
     }
 
     @Override

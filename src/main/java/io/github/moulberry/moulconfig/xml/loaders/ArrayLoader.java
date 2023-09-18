@@ -1,7 +1,7 @@
 package io.github.moulberry.moulconfig.xml.loaders;
 
-import io.github.moulberry.moulconfig.gui.GuiElementNew;
-import io.github.moulberry.moulconfig.gui.elements.GuiElementArray;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
+import io.github.moulberry.moulconfig.gui.component.ArrayComponent;
 import io.github.moulberry.moulconfig.observer.GetSetter;
 import io.github.moulberry.moulconfig.observer.ObservableList;
 import io.github.moulberry.moulconfig.xml.XMLContext;
@@ -11,11 +11,11 @@ import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 
-public class ArrayLoader implements XMLGuiLoader<GuiElementNew> {
+public class ArrayLoader implements XMLGuiLoader<GuiComponent> {
     @Override
-    public GuiElementNew createInstance(XMLContext<?> context, Element element) {
+    public GuiComponent createInstance(XMLContext<?> context, Element element) {
         GetSetter<ObservableList> list = context.getPropertyFromAttribute(element, new QName("data"), ObservableList.class);
-        return new GuiElementArray<Object>(
+        return new ArrayComponent<Object>(
                 list.get(),
                 object -> context.getChildFragment(element, object)
         );

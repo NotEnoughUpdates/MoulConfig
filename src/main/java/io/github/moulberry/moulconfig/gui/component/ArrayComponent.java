@@ -1,7 +1,7 @@
-package io.github.moulberry.moulconfig.gui.elements;
+package io.github.moulberry.moulconfig.gui.component;
 
+import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiContext;
-import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.observer.ObservableList;
 import lombok.Getter;
@@ -15,16 +15,16 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Getter
-public class GuiElementArray<T> extends GuiElementNew {
+public class ArrayComponent<T> extends GuiComponent {
     public final ObservableList<T> list;
 
-    public final Function<? super T, ? extends GuiElementNew> render;
-    public List<GuiElementNew> guiElements;
-    public IdentityHashMap<T, GuiElementNew> cache = new IdentityHashMap<>();
+    public final Function<? super T, ? extends GuiComponent> render;
+    public List<GuiComponent> guiElements;
+    public IdentityHashMap<T, GuiComponent> cache = new IdentityHashMap<>();
 
     private int width, height;
 
-    public GuiElementArray(ObservableList<T> list, Function<? super T, ? extends GuiElementNew> render) {
+    public ArrayComponent(ObservableList<T> list, Function<? super T, ? extends GuiComponent> render) {
         this.list = list;
         this.render = render;
         list.setObserver(this::reinitializeChildren);
@@ -34,7 +34,7 @@ public class GuiElementArray<T> extends GuiElementNew {
     @Override
     public void setContext(GuiContext context) {
         super.setContext(context);
-        for (GuiElementNew guiElement : guiElements) {
+        for (GuiComponent guiElement : guiElements) {
             guiElement.setContext(context);
         }
     }
@@ -44,7 +44,7 @@ public class GuiElementArray<T> extends GuiElementNew {
         height = 0;
         guiElements = new ArrayList<>();
         for (T t : list) {
-            GuiElementNew apply = cache.computeIfAbsent(t, render);
+            GuiComponent apply = cache.computeIfAbsent(t, render);
             apply.setContext(getContext());
             width = Math.max(apply.getWidth(), width);
             height += apply.getHeight();
@@ -53,14 +53,14 @@ public class GuiElementArray<T> extends GuiElementNew {
     }
 
     @Override
-    public <T> T foldChildren(T initial, BiFunction<GuiElementNew, T, T> visitor) {
-        for (GuiElementNew guiElement : guiElements) {
+    public <T> T foldChildren(T initial, BiFunction<GuiComponent, T, T> visitor) {
+        for (GuiComponent guiElement : guiElements) {
             initial = visitor.apply(guiElement, initial);
         }
         return initial;
     }
 
-    public void foldWithContext(GuiImmediateContext context, BiConsumer<GuiElementNew, GuiImmediateContext> visitor) {
+    public void foldWithContext(GuiImmediateContext context, BiConsumer<GuiComponent, GuiImmediateContext> visitor) {
         foldChildren(0, (child, position) -> {
             visitor.accept(child, context.translated(0, position, child.getWidth(), child.getHeight()));
             return child.getHeight() + position;
@@ -89,11 +89,11 @@ public class GuiElementArray<T> extends GuiElementNew {
 
     @Override
     public void mouseEvent(GuiImmediateContext context) {
-        foldWithContext(context, GuiElementNew::mouseEvent);
+        foldWithContext(context, GuiComponent::mouseEvent);
     }
 
     @Override
     public void keyboardEvent(GuiImmediateContext context) {
-        foldWithContext(context, GuiElementNew::keyboardEvent);
+        foldWithContext(context, GuiComponent::keyboardEvent);
     }
 }

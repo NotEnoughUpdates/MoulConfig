@@ -18,10 +18,10 @@
  *
  */
 
-package io.github.moulberry.moulconfig.gui.elements;
+package io.github.moulberry.moulconfig.gui.component;
 
 import io.github.moulberry.moulconfig.GuiTextures;
-import io.github.moulberry.moulconfig.gui.GuiElementNew;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.LerpUtils;
 import io.github.moulberry.moulconfig.internal.LerpingInteger;
@@ -36,13 +36,13 @@ import org.lwjgl.input.Mouse;
  * A gui element displaying a switch to represent a boolean value.
  */
 @ToString
-public class GuiElementSwitch extends GuiElementNew {
+public class SwitchComponent extends GuiComponent {
     final GetSetter<Boolean> value;
     // TODO: replace LerpingInteger with a proper percentage, so that flickering does not take longer to update.
     final LerpingInteger animation;
     private boolean lastValue;
 
-    public GuiElementSwitch(GetSetter<Boolean> value, int timeToReachTarget) {
+    public SwitchComponent(GetSetter<Boolean> value, int timeToReachTarget) {
         this.value = value;
         this.lastValue = value.get();
         this.animation = new LerpingInteger(value.get() ? 100 : 0, timeToReachTarget);

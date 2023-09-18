@@ -1,6 +1,6 @@
 package io.github.moulberry.moulconfig.xml;
 
-import io.github.moulberry.moulconfig.gui.GuiElementNew;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
 import lombok.var;
@@ -77,7 +77,7 @@ public class XMLUniverse {
     }
 
     @SneakyThrows
-    public GuiElementNew load(Object bindTo, InputStream stream) {
+    public GuiComponent load(Object bindTo, InputStream stream) {
         var factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         var builder = factory.newDocumentBuilder();
@@ -87,7 +87,7 @@ public class XMLUniverse {
         return load(objectXMLContext, documentElement);
     }
 
-    public GuiElementNew load(XMLContext<?> context, Element element) {
+    public GuiComponent load(XMLContext<?> context, Element element) {
         var elementLoader = guiElements.get(new QName(element.getNamespaceURI(), element.getLocalName()));
         return elementLoader.createInstance(context, element);
     }

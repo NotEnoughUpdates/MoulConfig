@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A GuiContext manages focus and global state of a collection of {@link GuiElementNew gui elements}.
+ * A GuiContext manages focus and global state of a collection of {@link GuiComponent gui elements}.
  */
 @Getter
 @ToString
@@ -37,11 +37,11 @@ public class GuiContext {
     /**
      * The root element of this GuiContext
      */
-    public final GuiElementNew root;
-    public GuiElementNew focusedElement;
+    public final GuiComponent root;
+    public GuiComponent focusedElement;
     public List<FloatingGuiElement> floatingWindows = new ArrayList<>();
 
-    public GuiContext(GuiElementNew root) {
+    public GuiContext(GuiComponent root) {
         this.root = root;
         root.foldRecursive((Void) null, (guiElementNew, _void) -> {
             guiElementNew.setContext(this);

@@ -30,11 +30,11 @@ import java.util.function.BiFunction;
  * (in methods such as mouseClick) as coordinates relative to themselves, and draw onto a pre transformed GL matrix stack.
  * Additionally, these elements now properly handle focus.
  */
-public abstract class GuiElementNew {
+public abstract class GuiComponent {
     protected final Minecraft mc = Minecraft.getMinecraft();
     GuiContext context;
 
-    protected GuiElementNew() {
+    protected GuiComponent() {
     }
 
     public void setContext(GuiContext context) {
@@ -94,7 +94,7 @@ public abstract class GuiElementNew {
      * @param visitor a consumer to be invoked for all gui elements in the scene tree. the returned value is then passed on to the next invocation.
      * @param initial an initial value to be given to the function
      */
-    public final <T> T foldRecursive(T initial, BiFunction<GuiElementNew, T, T> visitor) {
+    public final <T> T foldRecursive(T initial, BiFunction<GuiComponent, T, T> visitor) {
         return foldChildren(visitor.apply(this, initial), (element, state) -> element.foldRecursive(state, visitor));
     }
 
@@ -106,7 +106,7 @@ public abstract class GuiElementNew {
      * @param visitor a consumer to be called for all children for this element.
      * @param initial an initial value to be given to the function
      */
-    public <T> T foldChildren(T initial, BiFunction<GuiElementNew, T, T> visitor) {
+    public <T> T foldChildren(T initial, BiFunction<GuiComponent, T, T> visitor) {
         return initial;
     }
 

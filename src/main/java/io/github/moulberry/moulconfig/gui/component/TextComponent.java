@@ -18,9 +18,9 @@
  *
  */
 
-package io.github.moulberry.moulconfig.gui.elements;
+package io.github.moulberry.moulconfig.gui.component;
 
-import io.github.moulberry.moulconfig.gui.GuiElementNew;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import lombok.AllArgsConstructor;
@@ -33,17 +33,17 @@ import java.util.function.Supplier;
  * A gui element which renders a string in a single line
  */
 @AllArgsConstructor
-public class GuiElementText extends GuiElementNew {
+public class TextComponent extends GuiComponent {
     final FontRenderer fontRenderer;
     final Supplier<String> string;
     final int width;
     final TextAlignment alignment;
     final boolean shadow;
 
-    public GuiElementText(String string, int width) {
+    public TextComponent(String string, int width) {
         this(Minecraft.getMinecraft().fontRendererObj, () -> string, width, TextAlignment.LEFT, false);
     }
-    public GuiElementText(String string) {
+    public TextComponent(String string) {
         this(string, Minecraft.getMinecraft().fontRendererObj.getStringWidth(string));
     }
 

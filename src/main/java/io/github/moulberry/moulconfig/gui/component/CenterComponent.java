@@ -18,9 +18,9 @@
  *
  */
 
-package io.github.moulberry.moulconfig.gui.elements;
+package io.github.moulberry.moulconfig.gui.component;
 
-import io.github.moulberry.moulconfig.gui.GuiElementNew;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -29,10 +29,10 @@ import java.util.function.BiFunction;
 /**
  * A gui element centers another gui element
  */
-public class GuiElementCenter extends GuiElementNew {
-    final GuiElementNew child;
+public class CenterComponent extends GuiComponent {
+    final GuiComponent child;
 
-    public GuiElementCenter(GuiElementNew child) {
+    public CenterComponent(GuiComponent child) {
         this.child = child;
     }
 
@@ -65,7 +65,7 @@ public class GuiElementCenter extends GuiElementNew {
     }
 
     @Override
-    public <T> T foldChildren(T initial, BiFunction<GuiElementNew, T, T> visitor) {
+    public <T> T foldChildren(T initial, BiFunction<GuiComponent, T, T> visitor) {
         return visitor.apply(child, initial);
     }
 

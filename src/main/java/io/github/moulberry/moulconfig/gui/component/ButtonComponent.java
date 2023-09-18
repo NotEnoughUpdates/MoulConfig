@@ -1,14 +1,14 @@
-package io.github.moulberry.moulconfig.gui.elements;
+package io.github.moulberry.moulconfig.gui.component;
 
-import io.github.moulberry.moulconfig.gui.GuiElementNew;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-public class GuiElementButton extends GuiElementPanel {
+public class ButtonComponent extends PanelComponent {
     final Runnable onClick;
 
-    public GuiElementButton(GuiElementNew element, int insets, Runnable onClick) {
+    public ButtonComponent(GuiComponent element, int insets, Runnable onClick) {
         super(element, insets);
         this.onClick = onClick;
     }
