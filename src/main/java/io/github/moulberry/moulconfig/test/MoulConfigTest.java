@@ -29,6 +29,11 @@ import io.github.moulberry.moulconfig.observer.Property;
 import io.github.moulberry.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.moulberry.moulconfig.processor.ConfigProcessorDriver;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
+import io.github.moulberry.moulconfig.xml.Bind;
+import io.github.moulberry.moulconfig.xml.XMLSwitchLoader;
+import io.github.moulberry.moulconfig.xml.XMLUniverse;
+import lombok.SneakyThrows;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -36,6 +41,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,6 +50,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
+
+import java.util.function.Function;
 
 @Mod(modid = "moulconfig", name = "MoulConfig")
 public class MoulConfigTest {
@@ -70,17 +78,17 @@ public class MoulConfigTest {
             int my = Minecraft.getMinecraft().displayHeight - Mouse.getY() - 1;
             ChromaColour c = ChromaColour.forLegacyString(testConfig.testCategory.colour);
             RenderUtils.drawGradientRect(
-                0, 10, 10, 40, 40, c.getEffectiveColour().getRGB(), c.getEffectiveColour(10).getRGB()
+                    0, 10, 10, 40, 40, c.getEffectiveColour().getRGB(), c.getEffectiveColour(10).getRGB()
             );
             FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
             fontRendererObj.drawSplitString(
-                "Global Mouse X: " + mx + "\n" +
-                    "Global Mouse X: " + my + "\n" +
-                    "Local Mouse X: " + o.realWorldXToLocalX(mx) + "\n" +
-                    "Local Mouse Y: " + o.realWorldYToLocalY(my) + "\n" +
-                    "Width: " + o.getWidth() + "\n" +
-                    "Height: " + o.getHeight(),
-                1, 1, o.getWidth(), 0xFFFFFFFF
+                    "Global Mouse X: " + mx + "\n" +
+                            "Global Mouse X: " + my + "\n" +
+                            "Local Mouse X: " + o.realWorldXToLocalX(mx) + "\n" +
+                            "Local Mouse Y: " + o.realWorldYToLocalY(my) + "\n" +
+                            "Width: " + o.getWidth() + "\n" +
+                            "Height: " + o.getHeight(),
+                    1, 1, o.getWidth(), 0xFFFFFFFF
             );
             GlStateManager.popMatrix();
         }
@@ -96,8 +104,8 @@ public class MoulConfigTest {
         BuiltinMoulConfigGuis.addProcessors(testConfigMoulConfigProcessor);
         ConfigProcessorDriver.processConfig(testConfig.getClass(), testConfig, testConfigMoulConfigProcessor);
         testConfig.testCategory.text2.whenChanged((oldValue, newValue) ->
-            Minecraft.getMinecraft().thePlayer.addChatMessage(
-                new ChatComponentText("Just changed text2 from " + oldValue + " to " + newValue)));
+                Minecraft.getMinecraft().thePlayer.addChatMessage(
+                        new ChatComponentText("Just changed text2 from " + oldValue + " to " + newValue)));
         ClientCommandHandler.instance.registerCommand(new CommandBase() {
             @Override
             public String getCommandName() {
@@ -114,6 +122,7 @@ public class MoulConfigTest {
                 return true;
             }
 
+            @SneakyThrows
             @Override
             public void processCommand(ICommandSender sender, String[] args) {
                 sender.addChatMessage(new ChatComponentText("Mouling"));
@@ -121,17 +130,41 @@ public class MoulConfigTest {
                     screenToOpen = new MoulGuiOverlayEditor(testConfigMoulConfigProcessor);
                 } else if (args.length > 0 && "testgui".equals(args[0])) {
                     screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(
-                        new GuiElementCenter(new GuiElementPanel(
-                            new GuiElementColumn(
-                                new GuiElementText("Label", 80),
-                                new GuiColumnRow(new GuiElementSwitch(Property.of(false), 100), new GuiElementText("Some property"))
-                            )
-                        ))
+                            new GuiElementCenter(new GuiElementPanel(
+                                    new GuiElementColumn(
+                                            new GuiElementText("Label", 80),
+                                            new GuiColumnRow(new GuiElementSwitch(Property.of(false), 100), new GuiElementText("Some property"))
+                                    )
+                            ))
+                    ));
+                } else if (args.length > 0 && "testxml".equals(args[0])) {
+                    var xmlUniverse = new XMLUniverse();
+                    xmlUniverse.registerLoader(new XMLSwitchLoader());
+                    xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
+                    xmlUniverse.registerMapper(int.class, Integer::valueOf);
+                    xmlUniverse.registerMapper(String.class, Function.identity());
+                    xmlUniverse.registerMapper(Float.class, Float::valueOf);
+                    xmlUniverse.registerMapper(float.class, Float::valueOf);
+                    xmlUniverse.registerMapper(Double.class, Double::valueOf);
+                    xmlUniverse.registerMapper(double.class, Double::valueOf);
+                    xmlUniverse.registerMapper(Long.class, Long::valueOf);
+                    xmlUniverse.registerMapper(long.class, Long::valueOf);
+                    xmlUniverse.registerMapper(Boolean.class, Boolean::valueOf);
+                    xmlUniverse.registerMapper(boolean.class, Boolean::valueOf);
+                    var gui = xmlUniverse.load(new ObjectBound(), Minecraft.getMinecraft().getResourceManager()
+                            .getResource(new ResourceLocation("moulconfig:test.xml")).getInputStream());
+                    screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(
+                            new GuiElementCenter(new GuiElementPanel(gui))
                     ));
                 } else {
                     screenToOpen = new GuiScreenElementWrapper(new MoulConfigEditor<>(testConfigMoulConfigProcessor));
                 }
             }
         });
+    }
+
+    public static class ObjectBound {
+        @Bind
+        public boolean value;
     }
 }
