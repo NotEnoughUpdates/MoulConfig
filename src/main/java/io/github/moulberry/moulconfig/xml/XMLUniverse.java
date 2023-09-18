@@ -33,6 +33,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new ColumnLoader());
         xmlUniverse.registerLoader(new RowLoader());
         xmlUniverse.registerLoader(new TextLoader());
+        xmlUniverse.registerLoader(new ScrollPanelLoader());
         xmlUniverse.registerLoader(new TextFieldLoader());
         xmlUniverse.registerLoader(new ButtonLoader());
         xmlUniverse.registerLoader(new SliderLoader());

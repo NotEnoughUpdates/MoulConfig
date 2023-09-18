@@ -27,6 +27,16 @@ import lombok.Value;
  */
 @Value
 public class GuiImmediateContext {
+
+    /**
+     * The current absolute offset for this gui context. This should not need to be accessed, unless you are contacting some API that does not access GlStateManager.
+     */
+    int renderOffsetX;
+    /**
+     * The current absolute offset for this gui context. This should not need to be accessed, unless you are contacting some API that does not access GlStateManager.
+     */
+    int renderOffsetY;
+
     /**
      * The available width for that gui element to render in.
      */
@@ -69,7 +79,7 @@ public class GuiImmediateContext {
      */
     public GuiImmediateContext withBleed(int xBleed, int yBleed) {
         return new GuiImmediateContext(
-            width + 2 * xBleed, height + 2 * yBleed,
+            renderOffsetX - xBleed, renderOffsetY - yBleed, width + 2 * xBleed, height + 2 * yBleed,
             mouseX + xBleed, mouseY + yBleed,
             absoluteMouseX, absoluteMouseY
         );
@@ -85,7 +95,22 @@ public class GuiImmediateContext {
      */
     public GuiImmediateContext translated(int xOffset, int yOffset, int width, int height) {
         return new GuiImmediateContext(
-            width, height, mouseX - xOffset, mouseY - yOffset,
+            renderOffsetX + xOffset, renderOffsetY + yOffset, width, height, mouseX - xOffset, mouseY - yOffset,
+            absoluteMouseX, absoluteMouseY
+        );
+    }
+
+    /**
+     * Construct a new context representing that is located within this context. Does not translate the rendering offset.
+     *
+     * @param xOffset relative x position of the new context in the currrent context
+     * @param yOffset relative y position of the new context in the currrent context
+     * @param width   width of the new sub context
+     * @param height  height of the new sub context
+     */
+    public GuiImmediateContext translatedNonRendering(int xOffset, int yOffset, int width, int height) {
+        return new GuiImmediateContext(
+            renderOffsetX, renderOffsetY, width, height, mouseX - xOffset, mouseY - yOffset,
             absoluteMouseX, absoluteMouseY
         );
     }

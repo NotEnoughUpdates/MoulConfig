@@ -17,15 +17,17 @@
                     animationSpeed="1000"
             />
         </Row>
-        <Array data="@data">
-            <Row>
-                <Text text="@text" width="80"/>
-                <Switch value="@enabled"/>
-                <Button onClick="@randomize">
-                    <Text text="Randomize"/>
-                </Button>
-            </Row>
-        </Array>
+        <ScrollPanel width="200" height="100">
+            <Array data="@data">
+                <Row>
+                    <Text text="@text" width="80"/>
+                    <Switch value="@enabled"/>
+                    <Button onClick="@randomize">
+                        <Text text="Randomize"/>
+                    </Button>
+                </Row>
+            </Array>
+        </ScrollPanel>
         <Button onClick="@addElement">
             <Text text="Add Element"/>
         </Button>

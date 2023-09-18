@@ -38,6 +38,7 @@ public class GuiScreenElementWrapperNew extends GuiScreen {
         int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
         int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
         return new GuiImmediateContext(
+            0, 0,
             width, height,
             x, y, x, y
         );
@@ -53,7 +54,7 @@ public class GuiScreenElementWrapperNew extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
         context.getRoot().render(new GuiImmediateContext(
-            width, height, mouseX, mouseY, mouseX, mouseY
+            0, 0, width, height, mouseX, mouseY, mouseX, mouseY
         ));
     }
 
