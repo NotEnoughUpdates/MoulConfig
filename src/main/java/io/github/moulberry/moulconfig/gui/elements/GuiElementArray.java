@@ -1,5 +1,6 @@
 package io.github.moulberry.moulconfig.gui.elements;
 
+import io.github.moulberry.moulconfig.gui.GuiContext;
 import io.github.moulberry.moulconfig.gui.GuiElementNew;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.observer.ObservableList;
@@ -30,12 +31,21 @@ public class GuiElementArray<T> extends GuiElementNew {
         reinitializeChildren();
     }
 
+    @Override
+    public void setContext(GuiContext context) {
+        super.setContext(context);
+        for (GuiElementNew guiElement : guiElements) {
+            guiElement.setContext(context);
+        }
+    }
+
     public void reinitializeChildren() {
         width = 0;
         height = 0;
         guiElements = new ArrayList<>();
         for (T t : list) {
             GuiElementNew apply = cache.computeIfAbsent(t, render);
+            apply.setContext(getContext());
             width = Math.max(apply.getWidth(), width);
             height += apply.getHeight();
             guiElements.add(apply);

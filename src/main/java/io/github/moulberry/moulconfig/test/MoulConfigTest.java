@@ -52,6 +52,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Mouse;
 
 import java.util.Arrays;
+import java.util.Random;
 
 @Mod(modid = "moulconfig", name = "MoulConfig")
 public class MoulConfigTest {
@@ -149,10 +150,27 @@ public class MoulConfigTest {
         });
     }
 
+
+    public static class Element {
+        public Element(String text) {
+            this.text = text;
+        }
+
+        @Bind
+        public String text;
+        @Bind
+        public boolean enabled;
+
+        @Bind
+        public void randomize() {
+            text = "§" + "abcdef0123456789".charAt(new Random().nextInt(16)) + text.replaceAll("§.", "");
+        }
+    }
+
     public static class ObjectBound {
         @Bind
         public boolean value;
         @Bind
-        public ObservableList<String> data = new ObservableList<>(Arrays.asList("Hehhehehe", "Hohohohoho", "Hihihihi"));
+        public ObservableList<Element> data = new ObservableList<>(Arrays.asList(new Element("Test 1"), new Element("Test 2"), new Element("Test 3")));
     }
 }

@@ -25,6 +25,8 @@ import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import net.minecraft.client.renderer.GlStateManager;
 
+import java.util.function.BiFunction;
+
 /**
  * Renders an element with a floating rect.
  */
@@ -43,6 +45,11 @@ public class GuiElementPanel extends GuiElementNew {
 
     public GuiElementPanel(GuiElementNew element) {
         this(element, 2);
+    }
+
+    @Override
+    public <T> T foldChildren(T initial, BiFunction<GuiElementNew, T, T> visitor) {
+        return visitor.apply(element, initial);
     }
 
     @Override

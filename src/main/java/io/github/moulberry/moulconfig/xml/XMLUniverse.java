@@ -10,6 +10,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -32,6 +33,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new ColumnLoader());
         xmlUniverse.registerLoader(new RowLoader());
         xmlUniverse.registerLoader(new TextLoader());
+        xmlUniverse.registerLoader(new ButtonLoader());
         xmlUniverse.registerMapper(String.class, Function.identity());
         xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
         xmlUniverse.registerMapper(int.class, Integer::valueOf);
@@ -53,6 +55,11 @@ public class XMLUniverse {
             var annotation = field.getAnnotation(Bind.class);
             if (annotation == null) continue;
             properties.getNamedProperties().put(annotation.value().isEmpty() ? field.getName() : annotation.value(), field);
+        }
+        for (Method method : clazz.getMethods()) {
+            var annotation = method.getAnnotation(Bind.class);
+            if(annotation == null)continue;
+            properties.getNamedFunctions().put(annotation.value().isEmpty() ? method.getName() : annotation.value(), method);
         }
         return properties;
     }

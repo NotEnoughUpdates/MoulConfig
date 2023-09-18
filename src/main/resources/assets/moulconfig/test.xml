@@ -12,11 +12,17 @@
             <Text text="Option B" width="80"/>
             <Switch
                     value="@value"
-                    animationSpeed="100"
+                    animationSpeed="1000"
             />
         </Row>
         <Array data="@data">
-            <Text text="@this" width="80"/>
+            <Row>
+                <Text text="@text" width="80"/>
+                <Switch value="@enabled"/>
+                <Button onClick="@randomize">
+                    <Text text="Randomize"/>
+                </Button>
+            </Row>
         </Array>
     </Column>
 </Gui>
