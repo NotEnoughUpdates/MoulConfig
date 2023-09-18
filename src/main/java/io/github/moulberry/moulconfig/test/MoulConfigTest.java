@@ -172,11 +172,16 @@ public class MoulConfigTest {
         @Bind
         public boolean value;
         @Bind
+        public String textField = "";
+        @Bind
         public float slider;
+
         @Bind
         public void addElement() {
-            data.add(new Element("Added Element"));
+            data.add(new Element(textField));
+            textField = "";
         }
+
         @Bind
         public ObservableList<Element> data = new ObservableList<>(new ArrayList<>(Arrays.asList(new Element("Test 1"), new Element("Test 2"), new Element("Test 3"))));
     }

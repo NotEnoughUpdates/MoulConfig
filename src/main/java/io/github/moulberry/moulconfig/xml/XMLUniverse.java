@@ -33,6 +33,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new ColumnLoader());
         xmlUniverse.registerLoader(new RowLoader());
         xmlUniverse.registerLoader(new TextLoader());
+        xmlUniverse.registerLoader(new TextFieldLoader());
         xmlUniverse.registerLoader(new ButtonLoader());
         xmlUniverse.registerLoader(new SliderLoader());
         xmlUniverse.registerMapper(String.class, Function.identity());
@@ -59,7 +60,7 @@ public class XMLUniverse {
         }
         for (Method method : clazz.getMethods()) {
             var annotation = method.getAnnotation(Bind.class);
-            if(annotation == null)continue;
+            if (annotation == null) continue;
             properties.getNamedFunctions().put(annotation.value().isEmpty() ? method.getName() : annotation.value(), method);
         }
         return properties;

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Gui xmlns="http://notenoughupdates.org/moulconfig">
     <Column>
-        <Text text="Laudantium velit velit iure consequatur nobis dolores possimus aut.Eos inventore vero fugit dolores.Optio exercitationem perspiciatis recusandae quas maximeest repudiandae. Delectus sapiente quis est sedalias et. Est modi tempora dolor dolores molestiaeexpedita et harum." width="180"/>
+        <Text text="Laudantium velit velit iure consequatur nobis dolores possimus aut.Eos inventore vero fugit dolores.Optio exercitationem perspiciatis recusandae quas maximeest repudiandae. Delectus sapiente quis est sedalias et. Est modi tempora dolor dolores molestiaeexpedita et harum."
+              width="180"/>
         <Row>
             <Text text="Option A" width="80"/>
             <Switch
@@ -28,6 +29,7 @@
         <Button onClick="@addElement">
             <Text text="Add Element"/>
         </Button>
+        <TextField value="@textField" editable="true" suggestion="Test"/>
         <Slider value="@slider" minValue="0" maxValue="20"/>
     </Column>
 </Gui>
