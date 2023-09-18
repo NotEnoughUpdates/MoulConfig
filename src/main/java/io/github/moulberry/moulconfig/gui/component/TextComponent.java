@@ -23,26 +23,42 @@ package io.github.moulberry.moulconfig.gui.component;
 import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiUtilRenderComponents;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * A gui element which renders a string in a single line
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TextComponent extends GuiComponent {
     final FontRenderer fontRenderer;
     final Supplier<String> string;
     final int width;
     final TextAlignment alignment;
     final boolean shadow;
+    final boolean split;
+    private String lastString;
+    private List<String> lastSplit;
+    private static final Pattern colorPattern = Pattern.compile("§[a-f0-9r]");
+
 
     public TextComponent(String string, int width) {
-        this(Minecraft.getMinecraft().fontRendererObj, () -> string, width, TextAlignment.LEFT, false);
+        this(Minecraft.getMinecraft().fontRendererObj, () -> string, width, TextAlignment.LEFT, false, false);
     }
+
     public TextComponent(String string) {
         this(string, Minecraft.getMinecraft().fontRendererObj.getStringWidth(string));
     }
@@ -54,27 +70,51 @@ public class TextComponent extends GuiComponent {
 
     @Override
     public int getHeight() {
-        return fontRenderer.FONT_HEIGHT + 4;
+        return 2 + (fontRenderer.FONT_HEIGHT + 2) * split(string.get()).size();
+    }
+
+    public List<String> split(String text) {
+        if (!split) return Arrays.asList(text);
+        if (Objects.equals(text, lastString))
+            return lastSplit;
+        lastString = text;
+        List<IChatComponent> iChatComponents = GuiUtilRenderComponents.splitText(new ChatComponentText(text), width, fontRenderer, false, false);
+        String lastFormat = "§r";
+        List<String> strings = new ArrayList<>(iChatComponents.size());
+        for (IChatComponent iChatComponent : iChatComponents) {
+            String formattedText = lastFormat + iChatComponent.getFormattedText().replaceAll("^((§.)*) *", "$1");
+            strings.add(formattedText);
+            var matcher = colorPattern.matcher(formattedText);
+            while (matcher.find()) {
+                lastFormat = matcher.group(0);
+            }
+        }
+        return lastSplit = strings;
     }
 
     @Override
     public void render(GuiImmediateContext context) {
-        String text = string.get();
-        int length = fontRenderer.getStringWidth(text);
-        if (length > width) {
-            TextRenderUtils.drawStringScaledMaxWidth(text, fontRenderer, 2, 2, shadow, width, -1);
+        GlStateManager.pushMatrix();
+        List<String> lines = split(string.get());
+        for (String line : lines) {
+            int length = fontRenderer.getStringWidth(line);
+            if (length > width) {
+                TextRenderUtils.drawStringScaledMaxWidth(line, fontRenderer, 2, 2, shadow, width, -1);
+            }
+            switch (alignment) {
+                case LEFT:
+                    fontRenderer.drawString(line, 2, 2, -1, shadow);
+                    break;
+                case CENTER:
+                    fontRenderer.drawString(line, width / 2 - length / 2 + 2, 2, -1, shadow);
+                    break;
+                case RIGHT:
+                    fontRenderer.drawString(line, width - length + 2, 2, -1, shadow);
+                    break;
+            }
+            GlStateManager.translate(0, fontRenderer.FONT_HEIGHT + 2, 0);
         }
-        switch (alignment) {
-            case LEFT:
-                fontRenderer.drawString(text, 2, 2, -1, shadow);
-                break;
-            case CENTER:
-                fontRenderer.drawString(text, width / 2 - length / 2 + 2, 2, -1, shadow);
-                break;
-            case RIGHT:
-                fontRenderer.drawString(text, width - length + 2, 2, -1, shadow);
-                break;
-        }
+        GlStateManager.popMatrix();
     }
 
     public enum TextAlignment {

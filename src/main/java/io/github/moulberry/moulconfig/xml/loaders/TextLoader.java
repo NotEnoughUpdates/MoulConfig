@@ -14,15 +14,14 @@ public class TextLoader implements XMLGuiLoader<TextComponent> {
     @Override
     public TextComponent createInstance(XMLContext<?> context, Element element) {
         var string = context.getPropertyFromAttribute(element, new QName("text"), String.class);
-        var width = context.getPropertyFromAttribute(element, new QName("width"), int.class);
         var textAlignment = context.getPropertyFromAttribute(element, new QName("textAlign"), String.class);
-        var shadow = context.getPropertyFromAttribute(element, new QName("shadow"), boolean.class);
         return new TextComponent(
                 Minecraft.getMinecraft().fontRendererObj,
                 string,
-                width != null ? width.get() : Minecraft.getMinecraft().fontRendererObj.getStringWidth(string.get()),
+                context.getPropertyFromAttribute(element, new QName("width"), int.class, Minecraft.getMinecraft().fontRendererObj.getStringWidth(string.get())),
                 textAlignment == null ? TextComponent.TextAlignment.LEFT : TextComponent.TextAlignment.valueOf(textAlignment.get()),
-                shadow != null ? shadow.get() : true
+                context.getPropertyFromAttribute(element, new QName("shadow"), boolean.class, true),
+                context.getPropertyFromAttribute(element, new QName("split"), boolean.class, true)
         );
     }
 
