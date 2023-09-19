@@ -13,6 +13,7 @@ io.github.moulberry.moulconfig.xml
 io.github.moulberry.moulconfig.xml.loaders
 module:legacy
 io.github.moulberry.moulconfig
+io.github.moulberry.moulconfig.forge
 io.github.moulberry.moulconfig.gui
 io.github.moulberry.moulconfig.gui.editors
 io.github.moulberry.moulconfig.gui.elements
