@@ -1,13 +1,15 @@
 import java.io.ByteArrayOutputStream
+import java.net.URL
 
 plugins {
     idea
     java
     `maven-publish`
-    id("xyz.wagyourtail.unimined") version "1.0.5"
-    id("org.cadixdev.licenser") version "0.6.1"
-//    id("org.jetbrains.dokka") version "1.8.10"
-    kotlin("jvm") version "1.9.0"
+    id("gg.essential.loom") version "0.10.0.+"
+    id("dev.architectury.architectury-pack200") version "0.1.3"
+    id("org.jetbrains.dokka") version "1.8.10"
+    kotlin("jvm") version "1.8.21"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 
@@ -35,35 +37,28 @@ allprojects {
         maven("https://repo.nea.moe/releases")
     }
 }
+loom {
+    forge {
+        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
+    }
+}
 
-unimined.minecraft {
-    version("1.8.9")
-    mappings {
-        searge()
-        mcp("stable", "22-1.8.9")
-    }
-    minecraftForge {
-        loader("11.15.1.2318-1.8.9")
-    }
-    runs {
-        config("client") {
-            this.jvmArgs.add("-Dmoulconfig.testmod=true")
-            this.args.add(0, "--tweakClass")
-            this.args.add(1, "net.minecraftforge.fml.common.launcher.FMLTweaker")
-        }
-    }
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+dependencies {
+    "minecraft"("com.mojang:minecraft:1.8.9")
+    "mappings"("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
+    "forge"("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+}
+val include by configurations.creating {
+    isVisible = true
 }
 
 dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     compileOnly("org.projectlombok:lombok:1.18.26")
     compileOnly("org.jetbrains:annotations:24.0.1")
-    implementation(project(":common"))
-}
-
-java {
-    targetCompatibility = JavaVersion.VERSION_1_8
-    sourceCompatibility = JavaVersion.VERSION_1_8
+    implementation((project(":common")))
+    include(project(":common", configuration = "singleFile"))
 }
 
 sourceSets.main {
@@ -73,10 +68,14 @@ sourceSets.main {
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
-/*
+
+tasks.shadowJar {
+    configurations = listOf(include)
+}
+
 tasks.dokkaHtml {
     dokkaSourceSets {
-        create("main") {
+        ("main") {
             moduleName.set("MoulConfig")
             sourceRoots.from(sourceSets.main.get().allSource)
             classpath.from(tasks.compileJava.get().classpath)
@@ -91,7 +90,6 @@ tasks.dokkaHtml {
         }
     }
 }
-*/
 project.afterEvaluate {
     tasks.named("runClient", JavaExec::class) {
         this.javaLauncher.set(javaToolchains.launcherFor {
@@ -100,17 +98,20 @@ project.afterEvaluate {
     }
 }
 
-license {
-    header(project.file("HEADER.txt"))
-    properties {
-        set("year", 2023)
-    }
-    skipExistingHeaders(true)
+tasks.jar {
+    archiveClassifier.set("small")
 }
-val remapJar: Zip by tasks
+tasks.shadowJar {
+    archiveClassifier.set("dev")
+}
+tasks.remapJar {
+    archiveClassifier.set("")
+    dependsOn(tasks.shadowJar)
+    input.set(tasks.shadowJar.flatMap { it.archiveFile })
+}
 
-val noTestJar by tasks.creating(Jar::class) {
-    from(zipTree(remapJar.archiveFile))
+val libraryJar by tasks.creating(Jar::class) {
+    from(zipTree(tasks.remapJar.get().archiveFile))
     archiveClassifier.set("notest")
     exclude("io/github/moulberry/moulconfig/test/*")
     exclude("mcmod.info")
@@ -119,13 +120,13 @@ val noTestJar by tasks.creating(Jar::class) {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifact(noTestJar) {
+            artifact(libraryJar) {
                 classifier = ""
             }
-            artifact(remapJar) {
+            artifact(tasks.remapJar) {
                 classifier = "test"
             }
-            artifact(tasks.jar) {
+            artifact(tasks.shadowJar) {
                 classifier = "named"
             }
             pom {

@@ -66,12 +66,12 @@ data class GuiImmediateContext(
      * The position of the mouse, relative to the root element.
      */
     val absoluteMouseY: Int,
-    ) {
+) {
     val isHovered: Boolean
         /**
          * Check if the mouse is positioned within this context.
          */
-        get() = mouseX in 0..<width && mouseY in 0..<height
+        get() = mouseX in 0 until width && mouseY in 0 until height
 
     /**
      * Construct a new context that bleeds out over the boundaries of the existing context.
