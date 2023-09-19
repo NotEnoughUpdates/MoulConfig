@@ -1,6 +1,7 @@
 plugins {
     java
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm")
+    id("org.jetbrains.dokka")
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
@@ -17,4 +18,13 @@ dependencies {
 val singleFile by configurations.creating
 artifacts {
     add(singleFile.name, tasks.jar)
+}
+tasks.dokkaHtml {
+    dokkaSourceSets {
+        ("main") {
+            moduleName.set("MoulConfig-Common")
+            sourceRoots.from(sourceSets.main.get().allSource)
+            classpath.from(tasks.compileJava.get().classpath)
+        }
+    }
 }

@@ -23,4 +23,5 @@ pluginManagement {
 rootProject.name = "MoulConfig"
 
 include("common")
+include("legacy")
 include("modern")
