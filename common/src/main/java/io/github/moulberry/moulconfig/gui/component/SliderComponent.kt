@@ -67,7 +67,7 @@ open class SliderComponent(
 
     override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext) {
         if (!context.renderContext.isMouseButtonDown(0)) clicked = false
-        if (mouseEvent is MouseEvent.Click && mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
+        if (context.isHovered && mouseEvent is MouseEvent.Click && mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
             clicked = true
         }
         if (clicked) {
