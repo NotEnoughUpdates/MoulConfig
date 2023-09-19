@@ -21,16 +21,15 @@
 package io.github.moulberry.moulconfig.gui.component;
 
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.MyResourceLocation;
 import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
+import io.github.moulberry.moulconfig.gui.MouseEvent;
 import io.github.moulberry.moulconfig.internal.LerpUtils;
 import io.github.moulberry.moulconfig.internal.LerpingInteger;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.observer.GetSetter;
 import lombok.ToString;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Mouse;
+import lombok.var;
 
 /**
  * A gui element displaying a switch to represent a boolean value.
@@ -60,9 +59,9 @@ public class SwitchComponent extends GuiComponent {
 
     @Override
     public void render(GuiImmediateContext context) {
-        GlStateManager.color(1, 1, 1, 1);
-        mc.getTextureManager().bindTexture(GuiTextures.TOGGLE_BAR);
-        RenderUtils.drawTexturedRect(0, 0, context.getWidth(), context.getHeight());
+        context.getRenderContext().color(1, 1, 1, 1);
+        mc.bindTexture(GuiTextures.TOGGLE_BAR);
+        context.getRenderContext().drawTexturedRect(0, 0, context.getWidth(), context.getHeight());
 
         boolean val = value.get();
         if (lastValue != val) {
@@ -74,7 +73,7 @@ public class SwitchComponent extends GuiComponent {
         }
 
         float animationPercentage = LerpUtils.sigmoidZeroOne(animation.getValue() / 100F);
-        ResourceLocation buttonLocation;
+        MyResourceLocation buttonLocation;
         if (animationPercentage < 1 / 5F) {
             buttonLocation = GuiTextures.TOGGLE_OFF;
         } else if (animationPercentage < 2 / 5F) {
@@ -86,15 +85,16 @@ public class SwitchComponent extends GuiComponent {
         } else {
             buttonLocation = GuiTextures.TOGGLE_ON;
         }
-        mc.getTextureManager().bindTexture(buttonLocation);
-        RenderUtils.drawTexturedRect(animationPercentage * (context.getWidth() - 12), 0, 12, 14);
+        mc.bindTexture(buttonLocation);
+        context.getRenderContext().drawTexturedRect(animationPercentage * (context.getWidth() - 12), 0, 12, 14);
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        super.mouseEvent(context);
-        if (!Mouse.getEventButtonState()) return;
-        if (context.isHovered() && Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+    public void mouseEvent(MouseEvent event, GuiImmediateContext context) {
+        super.mouseEvent(event, context);
+        if (!(event instanceof MouseEvent.Click)) return;
+        var click = (MouseEvent.Click) event;
+        if (context.isHovered() && click.getMouseButton() == 0 && click.getMouseState()) {
             value.set(!value.get());
         }
     }

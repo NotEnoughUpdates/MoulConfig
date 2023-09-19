@@ -21,6 +21,7 @@
 package io.github.moulberry.moulconfig.gui.elements;
 
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.IMinecraft;
 import io.github.moulberry.moulconfig.gui.GuiElement;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -79,29 +80,29 @@ public class GuiElementSlider extends GuiElement {
         int sliderAmountI = (int) (width * sliderAmount);
 
         GlStateManager.color(1f, 1f, 1f, 1f);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_ON_CAP);
+        IMinecraft.instance.bindTexture(GuiTextures.SLIDER_ON_CAP);
         RenderUtils.drawTexturedRect(x, y, 4, HEIGHT, GL11.GL_NEAREST);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_OFF_CAP);
+        IMinecraft.instance.bindTexture(GuiTextures.SLIDER_OFF_CAP);
         RenderUtils.drawTexturedRect(x + width - 4, y, 4, HEIGHT, GL11.GL_NEAREST);
 
         if (sliderAmountI > 5) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_ON_SEGMENT);
+            IMinecraft.instance.bindTexture(GuiTextures.SLIDER_ON_SEGMENT);
             RenderUtils.drawTexturedRect(x + 4, y, sliderAmountI - 4, HEIGHT, GL11.GL_NEAREST);
         }
 
         if (sliderAmountI < width - 5) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_OFF_SEGMENT);
+            IMinecraft.instance.bindTexture(GuiTextures.SLIDER_OFF_SEGMENT);
             RenderUtils.drawTexturedRect(x + sliderAmountI, y, width - 4 - sliderAmountI, HEIGHT, GL11.GL_NEAREST);
         }
 
         for (int i = 1; i < 4; i++) {
             int notchX = x + width * i / 4 - 1;
-            Minecraft.getMinecraft().getTextureManager().bindTexture(
+            IMinecraft.instance.bindTexture(
                 notchX > x + sliderAmountI ? GuiTextures.SLIDER_OFF_NOTCH : GuiTextures.SLIDER_ON_NOTCH);
             RenderUtils.drawTexturedRect(notchX, y + (HEIGHT - 4) / 2, 2, 4, GL11.GL_NEAREST);
         }
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SLIDER_BUTTON);
+        IMinecraft.instance.bindTexture(GuiTextures.SLIDER_BUTTON);
         RenderUtils.drawTexturedRect(x + sliderAmountI - 4, y, 8, HEIGHT, GL11.GL_NEAREST);
     }
 

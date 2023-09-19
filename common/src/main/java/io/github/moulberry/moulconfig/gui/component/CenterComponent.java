@@ -22,7 +22,8 @@ package io.github.moulberry.moulconfig.gui.component;
 
 import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
-import net.minecraft.client.renderer.GlStateManager;
+import io.github.moulberry.moulconfig.gui.KeyboardEvent;
+import io.github.moulberry.moulconfig.gui.MouseEvent;
 
 import java.util.function.BiFunction;
 
@@ -71,19 +72,19 @@ public class CenterComponent extends GuiComponent {
 
     @Override
     public void render(GuiImmediateContext context) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(getChildOffsetX(context), getChildOffsetY(context), 0);
+        context.getRenderContext().pushMatrix();
+        context.getRenderContext().translate(getChildOffsetX(context), getChildOffsetY(context), 0);
         child.render(getChildContext(context));
-        GlStateManager.popMatrix();
+        context.getRenderContext().popMatrix();
     }
 
     @Override
-    public void keyboardEvent(GuiImmediateContext context) {
-        child.keyboardEvent(getChildContext(context));
+    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
+        child.keyboardEvent(event, getChildContext(context));
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        child.mouseEvent(getChildContext(context));
+    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        child.mouseEvent(mouseEvent, getChildContext(context));
     }
 }

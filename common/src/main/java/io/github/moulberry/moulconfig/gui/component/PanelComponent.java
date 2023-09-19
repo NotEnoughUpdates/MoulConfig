@@ -22,8 +22,8 @@ package io.github.moulberry.moulconfig.gui.component;
 
 import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
+import io.github.moulberry.moulconfig.gui.KeyboardEvent;
+import io.github.moulberry.moulconfig.gui.MouseEvent;
 
 import java.util.function.BiFunction;
 
@@ -72,20 +72,20 @@ public class PanelComponent extends GuiComponent {
 
     @Override
     public void render(GuiImmediateContext context) {
-        GlStateManager.pushMatrix();
-        RenderUtils.drawFloatingRectDark(0, 0, getWidth(), getHeight());
-        GlStateManager.translate(insets, insets, 0);
+        context.getRenderContext().pushMatrix();
+        context.getRenderContext().renderDarkRect(0, 0, getWidth(), getHeight());
+        context.getRenderContext().translate(insets, insets, 0);
         element.render(getChildContext(context));
-        GlStateManager.popMatrix();
+        context.getRenderContext().popMatrix();
     }
 
     @Override
-    public void keyboardEvent(GuiImmediateContext context) {
-        element.keyboardEvent(getChildContext(context));
+    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
+        element.keyboardEvent(event, getChildContext(context));
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        element.mouseEvent(getChildContext(context));
+    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        element.mouseEvent(mouseEvent, getChildContext(context));
     }
 }

@@ -17,58 +17,61 @@
  * along with MoulConfig. If not, see <https://www.gnu.org/licenses/>.
  *
  */
+package io.github.moulberry.moulconfig.gui
 
-package io.github.moulberry.moulconfig.gui;
-
-import lombok.Value;
+import io.github.moulberry.moulconfig.common.RenderContext
 
 /**
  * A context containing the constraints of a gui elements, as well as the state of the user interface, relative to that gui element.
  */
-@Value
-public class GuiImmediateContext {
+data class GuiImmediateContext(
+    val renderContext: RenderContext,
 
     /**
      * The current absolute offset for this gui context. This should not need to be accessed, unless you are contacting some API that does not access GlStateManager.
      */
-    int renderOffsetX;
+    val renderOffsetX: Int,
+
     /**
      * The current absolute offset for this gui context. This should not need to be accessed, unless you are contacting some API that does not access GlStateManager.
      */
-    int renderOffsetY;
+    val renderOffsetY: Int,
 
     /**
      * The available width for that gui element to render in.
      */
-    int width;
+    val width: Int,
+
     /**
      * The available height for that gui element to render in.
      */
-    int height;
-    /**
-     * The position of the mouse, relative to this gui element.
-     */
-    int mouseX;
-    /**
-     * The position of the mouse, relative to this gui element.
-     */
-    int mouseY;
-    /**
-     * The position of the mouse, relative to the root element.
-     */
-    int absoluteMouseX;
-    /**
-     * The position of the mouse, relative to the root element.
-     */
-    int absoluteMouseY;
+    val height: Int,
 
     /**
-     * Check if the mouse is positioned within this context.
+     * The position of the mouse, relative to this gui element.
      */
-    public boolean isHovered() {
-        return 0 <= mouseX && mouseX < width
-            && 0 <= mouseY && mouseY < height;
-    }
+    val mouseX: Int,
+
+    /**
+     * The position of the mouse, relative to this gui element.
+     */
+    val mouseY: Int,
+
+    /**
+     * The position of the mouse, relative to the root element.
+     */
+    val absoluteMouseX: Int,
+
+    /**
+     * The position of the mouse, relative to the root element.
+     */
+    val absoluteMouseY: Int,
+    ) {
+    val isHovered: Boolean
+        /**
+         * Check if the mouse is positioned within this context.
+         */
+        get() = mouseX in 0..<width && mouseY in 0..<height
 
     /**
      * Construct a new context that bleeds out over the boundaries of the existing context.
@@ -77,42 +80,49 @@ public class GuiImmediateContext {
      * @param xBleed extra size in the negative and positive x direction
      * @param yBleed extra size in the negative and positive y direction
      */
-    public GuiImmediateContext withBleed(int xBleed, int yBleed) {
-        return new GuiImmediateContext(
+    fun withBleed(xBleed: Int, yBleed: Int): GuiImmediateContext {
+        return GuiImmediateContext(
+            renderContext,
             renderOffsetX - xBleed, renderOffsetY - yBleed, width + 2 * xBleed, height + 2 * yBleed,
             mouseX + xBleed, mouseY + yBleed,
             absoluteMouseX, absoluteMouseY
-        );
+        )
     }
 
     /**
      * Construct a new context representing that is located within this context.
      *
-     * @param xOffset relative x position of the new context in the currrent context
-     * @param yOffset relative y position of the new context in the currrent context
+     * @param xOffset relative x position of the new context in the current context
+     * @param yOffset relative y position of the new context in the current context
      * @param width   width of the new sub context
      * @param height  height of the new sub context
      */
-    public GuiImmediateContext translated(int xOffset, int yOffset, int width, int height) {
-        return new GuiImmediateContext(
-            renderOffsetX + xOffset, renderOffsetY + yOffset, width, height, mouseX - xOffset, mouseY - yOffset,
-            absoluteMouseX, absoluteMouseY
-        );
+    fun translated(xOffset: Int, yOffset: Int, width: Int, height: Int): GuiImmediateContext {
+        return GuiImmediateContext(
+            renderContext,
+            renderOffsetX + xOffset,
+            renderOffsetY + yOffset,
+            width,
+            height,
+            mouseX - xOffset,
+            mouseY - yOffset,
+            absoluteMouseX,
+            absoluteMouseY
+        )
     }
 
     /**
      * Construct a new context representing that is located within this context. Does not translate the rendering offset.
      *
-     * @param xOffset relative x position of the new context in the currrent context
-     * @param yOffset relative y position of the new context in the currrent context
+     * @param xOffset relative x position of the new context in the current context
+     * @param yOffset relative y position of the new context in the current context
      * @param width   width of the new sub context
      * @param height  height of the new sub context
      */
-    public GuiImmediateContext translatedNonRendering(int xOffset, int yOffset, int width, int height) {
-        return new GuiImmediateContext(
-            renderOffsetX, renderOffsetY, width, height, mouseX - xOffset, mouseY - yOffset,
+    fun translatedNonRendering(xOffset: Int, yOffset: Int, width: Int, height: Int): GuiImmediateContext {
+        return GuiImmediateContext(
+            renderContext, renderOffsetX, renderOffsetY, width, height, mouseX - xOffset, mouseY - yOffset,
             absoluteMouseX, absoluteMouseY
-        );
+        )
     }
-
 }

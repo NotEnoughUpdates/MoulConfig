@@ -23,6 +23,7 @@ package io.github.moulberry.moulconfig.gui;
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.Social;
+import io.github.moulberry.moulconfig.common.IMinecraft;
 import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementTextField;
 import io.github.moulberry.moulconfig.internal.*;
@@ -313,7 +314,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         innerRight = x + xSize - 5 - innerPadding;
         innerBottom = y + ySize - 5 - innerPadding;
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.SEARCH);
+        IMinecraft.instance.bindTexture(GuiTextures.SEARCH);
         GlStateManager.color(1, 1, 1, 1);
         RenderUtils.drawTexturedRect(innerRight - 20, innerTop - (20 + innerPadding) / 2 - 9, 18, 18, GL11.GL_NEAREST);
 

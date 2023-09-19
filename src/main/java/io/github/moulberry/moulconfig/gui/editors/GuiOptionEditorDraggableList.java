@@ -21,6 +21,7 @@
 package io.github.moulberry.moulconfig.gui.editors;
 
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.IMinecraft;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.internal.LerpUtils;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
@@ -126,7 +127,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         int height = getHeight();
 
         GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
+        IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
         RenderUtils.drawTexturedRect(x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
 
         TextRenderUtils.drawStringCenteredScaledMaxWidth("Add", Minecraft.getMinecraft().fontRendererObj,
@@ -144,7 +145,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         }
 
         if (canDeleteRightNow()) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.DELETE);
+            IMinecraft.instance.bindTexture(GuiTextures.DELETE);
             RenderUtils.drawTexturedRect(x + width / 6 + 27, y + 45 - 7 - 13, 11, 14, GL11.GL_NEAREST);
         }
 

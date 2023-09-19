@@ -22,7 +22,9 @@ package io.github.moulberry.moulconfig.gui.elements;
 
 import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.IMinecraft;
 import io.github.moulberry.moulconfig.gui.GuiElement;
+import io.github.moulberry.moulconfig.internal.ForgeMinecraft;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import net.minecraft.client.Minecraft;
@@ -164,10 +166,10 @@ public class GuiElementColour extends GuiElement {
 			valueOffset = 15;
 
 			Minecraft.getMinecraft().getTextureManager().loadTexture(
-                GuiTextures.COLOUR_PICKER_INTERNAL_VALUE,
+                ForgeMinecraft.fromMyResourceLocation(GuiTextures.COLOUR_PICKER_INTERNAL_VALUE),
 				new DynamicTexture(bufferedImageValue)
 			);
-			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.COLOUR_PICKER_INTERNAL_VALUE);
+			IMinecraft.instance.bindTexture(GuiTextures.COLOUR_PICKER_INTERNAL_VALUE);
 			GlStateManager.color(1, 1, 1, 1);
 			RenderUtils.drawTexturedRect(x + 5 + 64 + 5, y + 5, 10, 64, GL11.GL_NEAREST);
 		}
@@ -176,15 +178,15 @@ public class GuiElementColour extends GuiElement {
 		if (opacitySlider) {
 			opacityOffset = 15;
 
-			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.COLOUR_SELECTOR_BAR_ALPHA);
+            IMinecraft.instance.bindTexture(GuiTextures.COLOUR_SELECTOR_BAR_ALPHA);
 			GlStateManager.color(1, 1, 1, 1);
 			RenderUtils.drawTexturedRect(x + 5 + 64 + 5 + valueOffset, y + 5, 10, 64, GL11.GL_NEAREST);
 
 			Minecraft.getMinecraft().getTextureManager().loadTexture(
-                GuiTextures.COLOUR_PICKER_INTERNAL_OPACITY,
+                ForgeMinecraft.fromMyResourceLocation(GuiTextures.COLOUR_PICKER_INTERNAL_OPACITY),
 				new DynamicTexture(bufferedImageOpacity)
 			);
-			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.COLOUR_PICKER_INTERNAL_OPACITY);
+            IMinecraft.instance.bindTexture(GuiTextures.COLOUR_PICKER_INTERNAL_OPACITY);
 			GlStateManager.color(1, 1, 1, 1);
 			RenderUtils.drawTexturedRect(x + 5 + 64 + 5 + valueOffset, y + 5, 10, 64, GL11.GL_NEAREST);
 		}
@@ -206,7 +208,7 @@ public class GuiElementColour extends GuiElement {
 			);
 		}
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.COLOUR_SELECTOR_BAR);
+        IMinecraft.instance.bindTexture(GuiTextures.COLOUR_SELECTOR_BAR);
 		GlStateManager.color(1, 1, 1, 1);
 		if (valueSlider) RenderUtils.drawTexturedRect(x + 5 + 64 + 5, y + 5, 10, 64, GL11.GL_NEAREST);
 		if (opacitySlider) RenderUtils.drawTexturedRect(x + 5 + 64 + 5 + valueOffset, y + 5, 10, 64, GL11.GL_NEAREST);
@@ -214,7 +216,7 @@ public class GuiElementColour extends GuiElement {
 		if (chromaSpeed > 0) {
 			RenderUtils.drawTexturedRect(x + 5 + 64 + valueOffset + opacityOffset + 5, y + 5, 10, 64, GL11.GL_NEAREST);
 		} else {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.COLOUR_SELECTOR_CHROMA);
+            IMinecraft.instance.bindTexture(GuiTextures.COLOUR_SELECTOR_CHROMA);
 			RenderUtils.drawTexturedRect(x + 5 + 64 + valueOffset + opacityOffset + 5, y + 5 + 27, 10, 10, GL11.GL_NEAREST);
 		}
 
@@ -232,12 +234,12 @@ public class GuiElementColour extends GuiElement {
 			);
 		}
 
-		Minecraft.getMinecraft().getTextureManager().loadTexture(GuiTextures.COLOUR_PICKER_INTERNAL, new DynamicTexture(bufferedImage));
-		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.COLOUR_PICKER_INTERNAL);
+		Minecraft.getMinecraft().getTextureManager().loadTexture(ForgeMinecraft.fromMyResourceLocation(GuiTextures.COLOUR_PICKER_INTERNAL), new DynamicTexture(bufferedImage));
+        IMinecraft.instance.bindTexture(GuiTextures.COLOUR_PICKER_INTERNAL);
 		GlStateManager.color(1, 1, 1, 1);
 		RenderUtils.drawTexturedRect(x + 1, y + 1, 72, 72, GL11.GL_LINEAR);
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.COLOUR_SELECTOR_DOT);
+        IMinecraft.instance.bindTexture(GuiTextures.COLOUR_SELECTOR_DOT);
 		GlStateManager.color(1, 1, 1, 1);
 		RenderUtils.drawTexturedRect(x + 5 + 32 + selx - 4, y + 5 + 32 + sely - 4, 8, 8, GL11.GL_NEAREST);
 

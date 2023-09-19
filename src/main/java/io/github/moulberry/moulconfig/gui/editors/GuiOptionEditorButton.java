@@ -22,6 +22,7 @@ package io.github.moulberry.moulconfig.gui.editors;
 
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.IMinecraft;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
@@ -60,7 +61,7 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
 		int height = getHeight();
 
 		GlStateManager.color(1, 1, 1, 1);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
+        IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
 		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
 
         TextRenderUtils.drawStringCenteredScaledMaxWidth(buttonText, Minecraft.getMinecraft().fontRendererObj,

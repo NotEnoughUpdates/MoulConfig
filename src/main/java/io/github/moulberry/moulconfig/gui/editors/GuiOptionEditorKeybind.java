@@ -21,6 +21,7 @@
 package io.github.moulberry.moulconfig.gui.editors;
 
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.IMinecraft;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.internal.KeybindHelper;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
@@ -48,7 +49,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
         int height = getHeight();
 
         GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON);
+        IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
         RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
 
         String keyName = KeybindHelper.getKeyName((int) option.get());
@@ -59,7 +60,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
             false, 40, 0xFF303030
         );
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.RESET);
+        IMinecraft.instance.bindTexture(GuiTextures.RESET);
         GlStateManager.color(1, 1, 1, 1);
         RenderUtils.drawTexturedRect(x + width / 6 - 24 + 48 + 3, y + height - 7 - 14 + 3, 10, 11, GL11.GL_NEAREST);
     }

@@ -20,7 +20,8 @@
 
 package io.github.moulberry.moulconfig.gui;
 
-import net.minecraft.client.Minecraft;
+import io.github.moulberry.moulconfig.common.IMinecraft;
+import lombok.Getter;
 
 import java.util.function.BiFunction;
 
@@ -31,7 +32,8 @@ import java.util.function.BiFunction;
  * Additionally, these elements now properly handle focus.
  */
 public abstract class GuiComponent {
-    protected final Minecraft mc = Minecraft.getMinecraft();
+    protected final IMinecraft mc = IMinecraft.instance;
+    @Getter
     GuiContext context;
 
     protected GuiComponent() {
@@ -39,10 +41,6 @@ public abstract class GuiComponent {
 
     public void setContext(GuiContext context) {
         this.context = context;
-    }
-
-    public GuiContext getContext() {
-        return context;
     }
 
     /**
@@ -123,7 +121,7 @@ public abstract class GuiComponent {
      *
      * @param context the context in which this
      */
-    public void mouseEvent(GuiImmediateContext context) {
+    public void mouseEvent(MouseEvent mouseEvent,GuiImmediateContext context) {
     }
 
     /**
@@ -132,7 +130,7 @@ public abstract class GuiComponent {
      *
      * @param context the context in which this
      */
-    public void keyboardEvent(GuiImmediateContext context) {
+    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
     }
 
 }

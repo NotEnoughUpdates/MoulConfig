@@ -1,21 +1,15 @@
 package io.github.moulberry.moulconfig.gui.component;
 
+import io.github.moulberry.moulconfig.common.IFontRenderer;
+import io.github.moulberry.moulconfig.common.KeyboardConstants;
 import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
+import io.github.moulberry.moulconfig.gui.KeyboardEvent;
+import io.github.moulberry.moulconfig.gui.MouseEvent;
 import io.github.moulberry.moulconfig.internal.ClipboardUtils;
-import io.github.moulberry.moulconfig.internal.KeybindHelper;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.observer.GetSetter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+import lombok.var;
 
 @RequiredArgsConstructor
 public class TextFieldComponent extends GuiComponent {
@@ -32,7 +26,7 @@ public class TextFieldComponent extends GuiComponent {
     final GetSetter<Boolean> editable;
     final String suggestion;
     final int width;
-    final FontRenderer font = Minecraft.getMinecraft().fontRendererObj;
+    final IFontRenderer font = mc.getDefaultFontRenderer();
 
     int cursor = 0;
     int selection = -1;
@@ -71,22 +65,22 @@ public class TextFieldComponent extends GuiComponent {
         validateCursor();
         checkScrollOffset();
         visibleText = font.trimStringToWidth(safeSubString(text.get(), scrollOffset), width - TEXT_PADDING_X * 2);
-        renderBox();
-        renderText(visibleText);
+        renderBox(context);
+        renderText(context, visibleText);
         if (text.get().isEmpty() && !isFocused()) {
-            font.drawString(suggestion, TEXT_PADDING_X, TEXT_PADDING_Y, SUGGESTION_COLOR);
+            font.drawString(suggestion, TEXT_PADDING_X, TEXT_PADDING_Y, SUGGESTION_COLOR, false);
         }
         if (isFocused()) {
-            renderCursor();
+            renderCursor(context);
         }
-        renderSelection();
+        renderSelection(context);
     }
 
     public void validateCursor() {
         cursor = Math.max(0, Math.min(text.get().length(), cursor));
     }
 
-    private void renderSelection() {
+    private void renderSelection(GuiImmediateContext context) {
         if (selection == cursor || selection == -1) return;
         int left = Math.min(cursor, selection);
         int right = Math.max(cursor, selection);
@@ -95,63 +89,46 @@ public class TextFieldComponent extends GuiComponent {
         int normalizedRight = Math.min(scrollOffset + visibleText.length(), right) - scrollOffset;
         int leftPos = font.getStringWidth(safeSubString(visibleText, 0, normalizedLeft));
         int rightPos = leftPos + font.getStringWidth(safeSubString(visibleText, normalizedLeft, normalizedRight));
-        invertedRect(TEXT_PADDING_X + leftPos, TEXT_PADDING_Y, TEXT_PADDING_X + rightPos, getHeight() - TEXT_PADDING_Y);
+        context.getRenderContext().invertedRect(TEXT_PADDING_X + leftPos, TEXT_PADDING_Y, TEXT_PADDING_X + rightPos, getHeight() - TEXT_PADDING_Y);
     }
 
-    private void invertedRect(int left, int top, int right, int bottom) {
-        GlStateManager.enableColorLogic();
-        GlStateManager.colorLogicOp(GL11.GL_OR_REVERSE);
-        GlStateManager.disableTexture2D();
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        GlStateManager.color(0.0F, 0.0F, 255.0F, 255.0F);
-        worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        worldrenderer.pos(right, top, 0).endVertex();
-        worldrenderer.pos(left, top, 0).endVertex();
-        worldrenderer.pos(left, bottom, 0).endVertex();
-        worldrenderer.pos(right, bottom, 0).endVertex();
-        tessellator.draw();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableColorLogic();
-    }
-
-    private void renderCursor() {
+    private void renderCursor(GuiImmediateContext context) {
         if (System.currentTimeMillis() / 1000 % 2 == 0) {
             return;
         }
         if (cursor < scrollOffset) return;
         if (cursor > scrollOffset + visibleText.length()) return;
         int cursorOffset = font.getStringWidth(safeSubString(visibleText, 0, cursor - scrollOffset));
-        RenderUtils.drawGradientRect(0, TEXT_PADDING_X + cursorOffset, TEXT_PADDING_Y, TEXT_PADDING_X + cursorOffset + 1, getHeight() - TEXT_PADDING_Y, CURSOR_COLOR, CURSOR_COLOR);
+        context.getRenderContext().drawColoredRect(TEXT_PADDING_X + cursorOffset, TEXT_PADDING_Y, TEXT_PADDING_X + cursorOffset + 1, getHeight() - TEXT_PADDING_Y, CURSOR_COLOR);
     }
 
 
-    private void renderText(String visibleText) {
+    private void renderText(GuiImmediateContext context, String visibleText) {
         int textColor = editable.get() ? ENABLED_COLOR : DISABLED_COLOR;
         font.drawString(visibleText, TEXT_PADDING_X, TEXT_PADDING_Y, textColor, true);
     }
 
-    private void renderBox() {
+    private void renderBox(GuiImmediateContext context) {
         int borderColor = isFocused() ? BORDER_COLOR_SELECTED : BORDER_COLOR_UNSELECTED;
-        RenderUtils.drawGradientRect(0, 0, 0, width, getHeight(), borderColor, borderColor);
-        RenderUtils.drawGradientRect(0, 1, 1, width - 1, getHeight() - 1, BACKGROUND_COLOR, BACKGROUND_COLOR);
+        context.getRenderContext().drawColoredRect(0, 0, width, getHeight(), borderColor);
+        context.getRenderContext().drawColoredRect(1, 1, width - 1, getHeight() - 1, BACKGROUND_COLOR);
     }
 
     @Override
-    public void keyboardEvent(GuiImmediateContext context) {
+    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
         if (!editable.get())
             return;
-        if (!Keyboard.getEventKeyState()) return;
-        switch (Keyboard.getEventKey()) {
-            case Keyboard.KEY_LEFT:
-                onDirectionalKey(-1);
+        if (!event.getPress()) return;
+        switch (event.getKey()) {
+            case KeyboardConstants.KEY_LEFT:
+                onDirectionalKey(context, -1);
                 return;
-            case Keyboard.KEY_RIGHT:
-                onDirectionalKey(1);
+            case KeyboardConstants.KEY_RIGHT:
+                onDirectionalKey(context, 1);
                 return;
-            case Keyboard.KEY_HOME:
-            case Keyboard.KEY_UP:
-                if (KeybindHelper.isShiftDown()) {
+            case KeyboardConstants.KEY_HOME:
+            case KeyboardConstants.KEY_UP:
+                if (context.getRenderContext().isShiftDown()) {
                     if (selection == -1) selection = cursor;
                 } else {
                     selection = -1;
@@ -159,9 +136,9 @@ public class TextFieldComponent extends GuiComponent {
                 cursor = 0;
                 scrollCursorIntoView();
                 return;
-            case Keyboard.KEY_DOWN:
-            case Keyboard.KEY_END:
-                if (KeybindHelper.isShiftDown()) {
+            case KeyboardConstants.KEY_DOWN:
+            case KeyboardConstants.KEY_END:
+                if (context.getRenderContext().isShiftDown()) {
                     if (selection == -1) selection = cursor;
                 } else {
                     selection = -1;
@@ -169,46 +146,46 @@ public class TextFieldComponent extends GuiComponent {
                 cursor = text.get().length();
                 scrollCursorIntoView();
                 return;
-            case Keyboard.KEY_C:
-                if (KeybindHelper.isCtrlDown()) {
+            case KeyboardConstants.KEY_C:
+                if (context.getRenderContext().isCtrlDown()) {
                     ClipboardUtils.copyToClipboard(getSelection());
                     return;
                 }
                 break;
-            case Keyboard.KEY_X:
-                if (KeybindHelper.isCtrlDown()) {
+            case KeyboardConstants.KEY_X:
+                if (context.getRenderContext().isCtrlDown()) {
                     ClipboardUtils.copyToClipboard(getSelection());
                     writeText("");
                     return;
                 }
                 break;
-            case Keyboard.KEY_V:
-                if (KeybindHelper.isCtrlDown()) {
+            case KeyboardConstants.KEY_V:
+                if (context.getRenderContext().isCtrlDown()) {
                     writeText(ClipboardUtils.getClipboardContent());
                     return;
                 }
                 break;
-            case Keyboard.KEY_A:
-                if (KeybindHelper.isCtrlDown()) {
+            case KeyboardConstants.KEY_A:
+                if (context.getRenderContext().isCtrlDown()) {
                     cursor = text.get().length();
                     selection = 0;
                     scrollCursorIntoView();
                     return;
                 }
                 break;
-            case Keyboard.KEY_BACK:
+            case KeyboardConstants.KEY_BACK:
                 if (selection == -1)
-                    selection = skipCharacters(KeybindHelper.isCtrlDown(), -1);
+                    selection = skipCharacters(context.getRenderContext().isCtrlDown(), -1);
                 writeText("");
                 return;
-            case Keyboard.KEY_DELETE:
+            case KeyboardConstants.KEY_DELETE:
                 if (selection == -1)
-                    selection = skipCharacters(KeybindHelper.isCtrlDown(), 1);
+                    selection = skipCharacters(context.getRenderContext().isCtrlDown(), 1);
                 writeText("");
                 return;
 
         }
-        char c = Keyboard.getEventCharacter();
+        char c = event.getChar();
         if (c >= ' ' && c != '§' && c != 127) {
             writeText(c + "");
         }
@@ -222,10 +199,13 @@ public class TextFieldComponent extends GuiComponent {
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        super.mouseEvent(context);
-        if (context.isHovered() && Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
-            requestFocus();
+    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        super.mouseEvent(mouseEvent, context);
+        if (context.isHovered() && mouseEvent instanceof MouseEvent.Click) {
+            var click = ((MouseEvent.Click) mouseEvent);
+            if (click.getMouseState() && click.getMouseButton() == 0) {
+                requestFocus();
+            }
         }
     }
 
@@ -252,16 +232,16 @@ public class TextFieldComponent extends GuiComponent {
         scrollCursorIntoView();
     }
 
-    void onDirectionalKey(int i) {
-        if (KeybindHelper.isShiftDown()) {
+    void onDirectionalKey(GuiImmediateContext context, int i) {
+        if (context.getRenderContext().isShiftDown()) {
             if (selection == -1) selection = cursor;
-            cursor = skipCharacters(KeybindHelper.isCtrlDown(), i);
+            cursor = skipCharacters(context.getRenderContext().isCtrlDown(), i);
         } else {
             if (selection != -1) {
                 cursor = i < 0 ? Math.min(cursor, selection) : Math.max(cursor, selection);
                 selection = -1;
             } else {
-                cursor = skipCharacters(KeybindHelper.isCtrlDown(), i);
+                cursor = skipCharacters(context.getRenderContext().isCtrlDown(), i);
             }
         }
         scrollCursorIntoView();

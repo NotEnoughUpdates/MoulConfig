@@ -1,5 +1,4 @@
 import java.io.ByteArrayOutputStream
-import java.net.URL
 
 plugins {
     idea
@@ -7,10 +6,10 @@ plugins {
     `maven-publish`
     id("xyz.wagyourtail.unimined") version "1.0.5"
     id("org.cadixdev.licenser") version "0.6.1"
-    id("org.jetbrains.dokka") version "1.8.10"
+//    id("org.jetbrains.dokka") version "1.8.10"
+    kotlin("jvm") version "1.9.0"
 }
 
-group = "org.notenoughupdates.moulconfig"
 
 fun cmd(vararg args: String): String? {
     val output = ByteArrayOutputStream()
@@ -27,7 +26,15 @@ fun cmd(vararg args: String): String? {
 val tag = cmd("git", "describe", "--tags", "HEAD")
 val hash = cmd("git", "rev-parse", "--short", "HEAD")!!
 val isSnapshot = tag == null
-version = tag ?: hash
+allprojects {
+    group = "org.notenoughupdates.moulconfig"
+    version = tag ?: hash
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven("https://repo.nea.moe/releases")
+    }
+}
 
 unimined.minecraft {
     version("1.8.9")
@@ -47,16 +54,11 @@ unimined.minecraft {
     }
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven("https://repo.nea.moe/releases")
-}
-
 dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.26")
     compileOnly("org.projectlombok:lombok:1.18.26")
     compileOnly("org.jetbrains:annotations:24.0.1")
+    implementation(project(":common"))
 }
 
 java {
@@ -71,7 +73,7 @@ sourceSets.main {
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
-
+/*
 tasks.dokkaHtml {
     dokkaSourceSets {
         create("main") {
@@ -89,7 +91,7 @@ tasks.dokkaHtml {
         }
     }
 }
-
+*/
 project.afterEvaluate {
     tasks.named("runClient", JavaExec::class) {
         this.javaLauncher.set(javaToolchains.launcherFor {

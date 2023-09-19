@@ -2,12 +2,10 @@ package io.github.moulberry.moulconfig.gui.component;
 
 import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
-import io.github.moulberry.moulconfig.internal.GlScissorStack;
+import io.github.moulberry.moulconfig.gui.KeyboardEvent;
+import io.github.moulberry.moulconfig.gui.MouseEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.var;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Mouse;
 
 import java.util.function.BiFunction;
 
@@ -35,27 +33,27 @@ public class ScrollPanelComponent extends GuiComponent {
 
     @Override
     public void render(GuiImmediateContext context) {
-        GlStateManager.pushMatrix();
-        var sr = new ScaledResolution(mc);
+        context.getRenderContext().pushMatrix();
         var x = context.getRenderOffsetX();
         var y = context.getRenderOffsetY();
-        GlScissorStack.push(x, y, x + width, y + height, sr);
-        GlStateManager.translate(0, -scrollOffset, 0);
+
+        context.getRenderContext().pushScissor(x, y, x + width, y + height);
+        context.getRenderContext().translate(0, -scrollOffset, 0);
         child.render(context.translatedNonRendering(0, -scrollOffset, width, height));
-        GlScissorStack.pop(sr);
-        GlStateManager.popMatrix();
+        context.getRenderContext().popScissor();
+        context.getRenderContext().popMatrix();
     }
 
     @Override
-    public void keyboardEvent(GuiImmediateContext context) {
-        child.keyboardEvent(context.translatedNonRendering(0, -scrollOffset, width, height));
+    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
+        child.keyboardEvent(event, context.translatedNonRendering(0, -scrollOffset, width, height));
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        if (context.isHovered() && Mouse.getEventDWheel() != 0) {
-            scrollOffset = Math.max(0, Math.min(scrollOffset - Mouse.getEventDWheel() * 10, child.getHeight() - height));
+    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        if (context.isHovered() && mouseEvent instanceof MouseEvent.Scroll) {
+            scrollOffset = (int) Math.max(0, Math.min(scrollOffset - (((MouseEvent.Scroll) mouseEvent).getDWheel()), child.getHeight() - height));
         }
-        child.mouseEvent(context.translatedNonRendering(0, -scrollOffset, width, height));
+        child.mouseEvent(mouseEvent, context.translatedNonRendering(0, -scrollOffset, width, height));
     }
 }

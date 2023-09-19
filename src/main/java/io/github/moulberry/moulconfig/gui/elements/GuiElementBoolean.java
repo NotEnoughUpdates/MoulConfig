@@ -39,12 +39,13 @@ package io.github.moulberry.moulconfig.gui.elements;/*
 
 
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.IMinecraft;
+import io.github.moulberry.moulconfig.common.MyResourceLocation;
 import io.github.moulberry.moulconfig.gui.GuiElement;
 import io.github.moulberry.moulconfig.internal.LerpUtils;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 
 import java.util.function.Consumer;
@@ -83,10 +84,10 @@ public class GuiElementBoolean extends GuiElement {
     @Override
     public void render() {
         GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.TOGGLE_BAR);
+        IMinecraft.instance.bindTexture(GuiTextures.TOGGLE_BAR);
         RenderUtils.drawTexturedRect(x, y, xSize, ySize);
 
-        ResourceLocation buttonLoc = GuiTextures.TOGGLE_ON;
+        MyResourceLocation buttonLoc = GuiTextures.TOGGLE_ON;
         long currentMillis = System.currentTimeMillis();
         long deltaMillis = currentMillis - lastMillis;
         lastMillis = currentMillis;
@@ -131,7 +132,7 @@ public class GuiElementBoolean extends GuiElement {
             buttonLoc = GuiTextures.TOGGLE_THREE;
         }
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(buttonLoc);
+        IMinecraft.instance.bindTexture(buttonLoc);
         RenderUtils.drawTexturedRect(x + animation, y, 12, 14);
     }
 

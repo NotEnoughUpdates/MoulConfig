@@ -24,6 +24,7 @@ import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.Social;
 import io.github.moulberry.moulconfig.annotations.Category;
+import io.github.moulberry.moulconfig.internal.ForgeMinecraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 
@@ -41,7 +42,7 @@ public class TestConfig extends Config {
 
     @Override
     public List<Social> getSocials() {
-        return Arrays.asList(Social.forLink("Go to Discord", GuiTextures.RESET, "https://discord.gg/moulberry"));
+        return Arrays.asList(Social.forLink("Go to Discord", ForgeMinecraft.fromMyResourceLocation(GuiTextures.RESET), "https://discord.gg/moulberry"));
     }
 
     @Override

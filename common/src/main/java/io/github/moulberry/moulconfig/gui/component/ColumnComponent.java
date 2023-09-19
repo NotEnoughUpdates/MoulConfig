@@ -22,8 +22,9 @@ package io.github.moulberry.moulconfig.gui.component;
 
 import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
+import io.github.moulberry.moulconfig.gui.KeyboardEvent;
+import io.github.moulberry.moulconfig.gui.MouseEvent;
 import lombok.ToString;
-import net.minecraft.client.renderer.GlStateManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -72,21 +73,22 @@ public class ColumnComponent extends GuiComponent {
 
     @Override
     public void render(GuiImmediateContext context) {
-        GlStateManager.pushMatrix();
+        context.getRenderContext().pushMatrix();
         foldWithContext(context, (child, childContext) -> {
             child.render(childContext);
-            GlStateManager.translate(0, child.getHeight(), 0);
+            context.getRenderContext().translate(0, child.getHeight(), 0);
         });
-        GlStateManager.popMatrix();
+        context.getRenderContext().popMatrix();
     }
 
     @Override
-    public void mouseEvent(GuiImmediateContext context) {
-        foldWithContext(context, GuiComponent::mouseEvent);
+    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        foldWithContext(context, (component, context1) -> component.mouseEvent(mouseEvent, context1));
     }
 
     @Override
-    public void keyboardEvent(GuiImmediateContext context) {
-        foldWithContext(context, GuiComponent::keyboardEvent);
+    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
+        foldWithContext(context, (guiComponent, guiImmediateContext) ->
+            guiComponent.keyboardEvent(event, guiImmediateContext));
     }
 }

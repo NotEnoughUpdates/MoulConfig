@@ -8,3 +8,6 @@ pluginManagement {
 }
 
 rootProject.name = "MoulConfig"
+
+include("common")
+include("modern")

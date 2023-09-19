@@ -22,6 +22,7 @@ package io.github.moulberry.moulconfig.gui.editors;
 
 import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.IMinecraft;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementColour;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
@@ -48,7 +49,7 @@ public class GuiOptionEditorColour extends GuiOptionEditor {
 		int g = (argb >> 8) & 0xFF;
 		int b = argb & 0xFF;
 		GlStateManager.color(r / 255f, g / 255f, b / 255f, 1);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BUTTON_WHITE);
+        IMinecraft.instance.bindTexture(GuiTextures.BUTTON_WHITE);
 		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
 	}
 

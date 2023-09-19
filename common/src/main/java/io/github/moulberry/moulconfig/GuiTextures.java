@@ -21,10 +21,10 @@
 /**/
 package io.github.moulberry.moulconfig;
 
-import net.minecraft.util.ResourceLocation;
+import io.github.moulberry.moulconfig.common.MyResourceLocation;
 
 public class GuiTextures {
-    public static ResourceLocation
+    public static MyResourceLocation
         DELETE, RESET, BUTTON, BUTTON_WHITE,
         TOGGLE_OFF, TOGGLE_ONE, TOGGLE_TWO, TOGGLE_THREE, TOGGLE_ON, TOGGLE_BAR,
         SLIDER_OFF_CAP, SLIDER_OFF_NOTCH, SLIDER_OFF_SEGMENT,
@@ -34,17 +34,17 @@ public class GuiTextures {
         COLOUR_PICKER_INTERNAL, COLOUR_PICKER_INTERNAL_VALUE, COLOUR_PICKER_INTERNAL_OPACITY,
         SEARCH;
 
-    private static ResourceLocation root;
+    private static MyResourceLocation root;
 
     static {
-        setTextureRoot(new ResourceLocation("moulconfig", ""));
+        setTextureRoot(new MyResourceLocation("moulconfig", ""));
     }
 
-    private static ResourceLocation r(String name) {
-        return new ResourceLocation(root.getResourceDomain(), ("".equals(root.getResourcePath()) ? name : root.getResourcePath() + "/" + name));
+    private static MyResourceLocation r(String name) {
+        return new MyResourceLocation(root.getRoot(), ("".equals(root.getPath()) ? name : root.getPath() + "/" + name));
     }
 
-    public static void setTextureRoot(ResourceLocation root) {
+    public static void setTextureRoot(MyResourceLocation root) {
         GuiTextures.root = root;
         DELETE = r("delete.png");
         RESET = r("reset.png");
