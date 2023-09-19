@@ -33,6 +33,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
         maven("https://repo.nea.moe/releases")
+        maven("https://repo.spongepowered.org/maven/")
     }
     afterEvaluate {
         (tasks.findByName("dokkaHtml") as? DokkaTask)?.apply {

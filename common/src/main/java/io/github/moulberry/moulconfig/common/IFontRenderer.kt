@@ -1,5 +1,8 @@
 package io.github.moulberry.moulconfig.common
 
+/**
+ * Not for manual implementation. This should be implemented by the corresponding platform.
+ */
 interface IFontRenderer {
     val height: Int
     fun getStringWidth(string: String): Int

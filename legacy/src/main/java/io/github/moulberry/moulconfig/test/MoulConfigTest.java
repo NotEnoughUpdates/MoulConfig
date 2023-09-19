@@ -22,6 +22,8 @@
 package io.github.moulberry.moulconfig.test;
 
 import io.github.moulberry.moulconfig.ChromaColour;
+import io.github.moulberry.moulconfig.common.IItemStack;
+import io.github.moulberry.moulconfig.forge.ForgeItemStack;
 import io.github.moulberry.moulconfig.gui.*;
 import io.github.moulberry.moulconfig.gui.component.*;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
@@ -40,6 +42,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -169,6 +173,8 @@ public class MoulConfigTest {
     }
 
     public static class ObjectBound {
+        @Bind
+        public IItemStack itemStack = ForgeItemStack.of(new ItemStack(Blocks.sand));
         @Bind
         public boolean value;
         @Bind

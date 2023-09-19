@@ -6,13 +6,14 @@ import io.github.moulberry.moulconfig.xml.XMLContext;
 import io.github.moulberry.moulconfig.xml.XMLGuiLoader;
 import io.github.moulberry.moulconfig.xml.XMLUniverse;
 import lombok.var;
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 
 public class TextLoader implements XMLGuiLoader<TextComponent> {
     @Override
-    public TextComponent createInstance(XMLContext<?> context, Element element) {
+    public @NotNull TextComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         var string = context.getPropertyFromAttribute(element, new QName("text"), String.class);
         var textAlignment = context.getPropertyFromAttribute(element, new QName("textAlign"), String.class);
         return new TextComponent(

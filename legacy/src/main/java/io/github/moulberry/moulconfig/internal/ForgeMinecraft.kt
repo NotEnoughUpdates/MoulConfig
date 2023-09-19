@@ -19,6 +19,11 @@ class ForgeMinecraft : IMinecraft {
                 resourceLocation.path
             )
         }
+
+        @JvmStatic
+        fun fromResourceLocation(resouceLocation: ResourceLocation): MyResourceLocation {
+            return MyResourceLocation(resouceLocation.resourceDomain, resouceLocation.resourcePath)
+        }
     }
 
     override val defaultFontRenderer: IFontRenderer

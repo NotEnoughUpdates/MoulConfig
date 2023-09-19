@@ -37,6 +37,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new TextFieldLoader());
         xmlUniverse.registerLoader(new ButtonLoader());
         xmlUniverse.registerLoader(new SliderLoader());
+        xmlUniverse.registerLoader(new ItemStackLoader());
         xmlUniverse.registerMapper(String.class, Function.identity());
         xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
         xmlUniverse.registerMapper(int.class, Integer::valueOf);

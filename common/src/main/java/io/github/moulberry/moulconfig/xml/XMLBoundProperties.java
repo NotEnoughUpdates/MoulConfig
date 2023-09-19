@@ -61,6 +61,7 @@ public class XMLBoundProperties {
         };
     }
 
+    @SneakyThrows
     public <T> GetSetter<T> getBoundProperty(String name, Class<T> clazz, Object object) {
         if (name.equals("this")) {
             if (!TypeUtils.areTypesEquals(clazz, object.getClass())) {
@@ -79,29 +80,46 @@ public class XMLBoundProperties {
             };
         }
         var field = namedProperties.get(name);
-        if (field == null) throw new NullPointerException("Could not find bind target for " + name + " in " + clazz);
-        if (!TypeUtils.areTypesEquals(field.getType(), clazz))
-            throw new IllegalArgumentException("Bind target " + name + " is of the wrong type " + field.getType() + " instead of " + clazz);
-        field.setAccessible(true);
-        try {
-            var getter = lookup.unreflectGetter(field).bindTo(object);
-            var setter = lookup.unreflectSetter(field).bindTo(object);
+        if (field == null) {
+            Method method = namedFunctions.get(name);
+            if (method == null)
+                throw new NullPointerException("Could not find bind target for " + name + " in " + clazz);
+            if (!TypeUtils.areTypesEquals(method.getReturnType(), clazz))
+                throw new IllegalArgumentException("Bind target " + method + " is of the wrong type " + method.getReturnType() + " instead of " + clazz);
+            if (method.getParameterCount() != 0)
+                throw new RuntimeException("Bind target " + method + " is not a pure getter");
+            MethodHandle unreflect = lookup.unreflect(method).bindTo(object);
             return new GetSetter<T>() {
-
                 @SneakyThrows
                 @Override
                 public T get() {
-                    return (T) getter.invoke();
+                    return (T) unreflect.invoke();
                 }
 
-                @SneakyThrows
                 @Override
                 public void set(T newValue) {
-                    setter.invoke(newValue);
+                    throw new UnsupportedOperationException();
                 }
             };
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
         }
+        if (!TypeUtils.areTypesEquals(field.getType(), clazz))
+            throw new IllegalArgumentException("Bind target " + name + " is of the wrong type " + field.getType() + " instead of " + clazz);
+        field.setAccessible(true);
+        var getter = lookup.unreflectGetter(field).bindTo(object);
+        var setter = lookup.unreflectSetter(field).bindTo(object);
+        return new GetSetter<T>() {
+
+            @SneakyThrows
+            @Override
+            public T get() {
+                return (T) getter.invoke();
+            }
+
+            @SneakyThrows
+            @Override
+            public void set(T newValue) {
+                setter.invoke(newValue);
+            }
+        };
     }
 }

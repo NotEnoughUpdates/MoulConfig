@@ -7,13 +7,14 @@ import io.github.moulberry.moulconfig.observer.ObservableList;
 import io.github.moulberry.moulconfig.xml.XMLContext;
 import io.github.moulberry.moulconfig.xml.XMLGuiLoader;
 import io.github.moulberry.moulconfig.xml.XMLUniverse;
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 
 public class ArrayLoader implements XMLGuiLoader<GuiComponent> {
     @Override
-    public GuiComponent createInstance(XMLContext<?> context, Element element) {
+    public @NotNull GuiComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         GetSetter<ObservableList> list = context.getPropertyFromAttribute(element, new QName("data"), ObservableList.class);
         return new ArrayComponent<Object>(
                 list.get(),

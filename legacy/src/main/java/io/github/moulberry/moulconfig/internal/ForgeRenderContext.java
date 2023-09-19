@@ -1,12 +1,19 @@
 package io.github.moulberry.moulconfig.internal;
 
+import io.github.moulberry.moulconfig.common.IItemStack;
 import io.github.moulberry.moulconfig.common.RenderContext;
+import io.github.moulberry.moulconfig.forge.ForgeItemStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -89,6 +96,18 @@ public class ForgeRenderContext implements RenderContext {
     @Override
     public void popScissor() {
         GlScissorStack.pop(new ScaledResolution(Minecraft.getMinecraft()));
+    }
+
+    @Override
+    public void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable String overlayText) {
+        ForgeItemStack forgeStack = (ForgeItemStack) itemStack;
+        ItemStack backing = forgeStack.getBacking();
+        RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
+        RenderHelper.enableGUIStandardItemLighting();
+        renderItem.renderItemAndEffectIntoGUI(backing, x, y);
+        if (overlayText != null)
+            renderItem.renderItemOverlayIntoGUI(Minecraft.getMinecraft().fontRendererObj, backing, x, y, overlayText);
+        RenderHelper.disableStandardItemLighting();
     }
 
 }
