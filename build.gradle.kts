@@ -47,5 +47,40 @@ allprojects {
                 }
             }
         }
+        extensions.findByType<PublishingExtension>()?.apply {
+            repositories {
+                if (project.hasProperty("moulconfigPassword")) {
+                    maven {
+                        url = uri("https://maven.notenoughupdates.org/releases")
+                        name = "moulconfig"
+                        credentials(PasswordCredentials::class)
+                        authentication {
+                            create<BasicAuthentication>("basic")
+                        }
+                    }
+                }
+            }
+            publications.filterIsInstance<MavenPublication>().forEach {
+                it.pom {
+                    licenses {
+                        license {
+                            name.set("LGPL-3.0 or later")
+                            url.set("https://github.com/NotEnoughUpdates/NotEnoughUpdates/blob/HEAD/COPYING.LESSER")
+                        }
+                    }
+                    developers {
+                        developer {
+                            name.set("NotEnoughUpdates contributors")
+                        }
+                        developer {
+                            name.set("Linnea Gräf")
+                        }
+                    }
+                    scm {
+                        url.set("https://github.com/NotEnoughUpdates/MoulConfig")
+                    }
+                }
+            }
+        }
     }
 }
