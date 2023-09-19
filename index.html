@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>MoulConfig</title>
+    <title>All modules</title>
     <link href="images/logo-icon.svg" rel="icon" type="image/svg">
     <script>var pathToRoot = "";</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -40,11 +40,8 @@
             </a>
     </div>
     <div>
-1.3.0    </div>
+2.0.0    </div>
     <div class="pull-right d-flex">
-        <div class="filter-section" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":dokkaHtml/main">main</button>
-        </div>
         <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
         <div id="searchBar"></div>
     </div>
@@ -54,173 +51,31 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" id="content" pageIds="MoulConfig::////PointingToDeclaration//-1546576237">
+<div class="main-content" id="content" pageIds="MoulConfig::.ext/allModules///PointingToDeclaration//0">
   <div class="breadcrumbs"></div>
   <div class="cover ">
-    <h1 class="cover"><span>Moul</span><wbr></wbr><span><span>Config</span></span></h1>
-    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><p class="paragraph">MoulConfig is a mod configuration GUI for Minecraft™ mods.</p><p class="paragraph">It was originally developed by <a href="https://moulberry.codes">Moulberry</a>, and is now mostly maintained by nea89. The original code was available under an LGPL 3.0 license, and this version keeps that license.</p><h2 class=""> Installation</h2><p class="paragraph">This version of MoulConfig is published to the <a href="https://maven.notenoughupdates.org/#/">NEU Maven Repository</a>. The latest version number can be <a href="https://maven.notenoughupdates.org/#/releases/org/notenoughupdates/moulconfig/MoulConfig">found there as well</a>.</p><p class="paragraph">There are two relevant artifacts. The test mod, which should be used during development that provides textures, and the library jar, which should be shaded and compiled against (it also contains textures, but forge cannot load those textures). Below is an example on how to use this with architectury loom. Not all of this example might be necessary for your use case, but this should take you relatively far.</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">repositories {<br>    /// Your other releases<br>    maven(&quot;https://maven.notenoughupdates.org/releases/&quot;)<br>}<br><br>val devenvMod by configurations.creating {<br>    isTransitive = false<br>    isVisible = false<br>}<br><br>// Your gradle template probably already includes something like this configuration.<br>// **Make sure that the configuration is extending modImplementation, otherwise you will run into name issues**<br>val shadowModImpl by configurations.creating {<br>    configurations.modImplementation.get().extendsFrom(this)<br>}<br><br>dependencies {<br>    // Where shadowModImpl is a gradle configuration that remaps and shades the jar.<br>    // This version should not have :test at the end (so that you don't accidentally reference the test mod)<br>    &quot;shadowModImpl&quot;(&quot;org.notenoughupdates.moulconfig:MoulConfig:&lt;version&gt;&quot;)<br><br>    // Where devenvMod is a gradle configuration from which all resolved jars are loaded as mod.<br>    // Be aware of the :test at the end.<br>    &quot;devenvMod&quot;(&quot;org.notenoughupdates.moulconfig:MoulConfig:&lt;version&gt;:test&quot;)<br>}<br><br>// The code below is just to demonstrate how a gradle configuration might be loaded as a list of development environment<br>// mods without user interaction<br>loom {<br>    launchConfigs {<br>        &quot;client&quot; {<br>            arg(&quot;--mods&quot;, devenvMod.resolve().joinToString(&quot;,&quot;) { it.relativeTo(file(&quot;run&quot;)).path })<br>        }<br>    }<br>}<br><br><br>tasks.shadowJar {<br>    // Make sure to relocate MoulConfig to avoid version clashes with other mods<br>    configurations = listOf(shadowModImpl)<br>    relocate(&quot;io.github.moulberry.moulconfig&quot;, &quot;my.mod.deps.moulconfig&quot;)<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><h2 class=""> Usage</h2><p class="paragraph">See the <a href="-moul-config/io.github.moulberry.moulconfig.test/-moul-config-test/index.html">TestMod</a> for usage examples, or check out the annotation package documentation to see the kind of config variable editors MoulConfig has built in.</p></div></div>
-  </div>
-  <h2 class="">Packages</h2>
-  <div class="table"><a data-name="2012979281%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig" id="2012979281%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
+    <h2 class="">All modules:</h2>
+    <div class="table"><a data-name="2092645322%2FMain%2F0" anchor-label="common" id="2092645322%2FMain%2F0" data-filterable-set=""></a>
+      <div class="table-row">
         <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig/index.html">io.github.moulberry.moulconfig</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2012979281%2FPackages%2F-1546576237"></span>
+          <div class="w-100"><span class="inline-flex">
+              <div><a href="common/index.html">common</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2092645322%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
+          <div><span class="brief-comment"></span></div>
         </div>
-        <div></div>
       </div>
-    </div>
-<a data-name="657534087%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig.annotations" id="657534087%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
+<a data-name="1426696108%2FMain%2F0" anchor-label="legacy" id="1426696108%2FMain%2F0" data-filterable-set=""></a>
+      <div class="table-row">
         <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig.annotations/index.html">io.github.moulberry.moulconfig.annotations</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="657534087%2FPackages%2F-1546576237"></span>
+          <div class="w-100"><span class="inline-flex">
+              <div><a href="legacy/index.html">legacy</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1426696108%2FMain%2F0"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
+          <div><span class="brief-comment"></span></div>
         </div>
-        <div></div>
-      </div>
-    </div>
-<a data-name="-1557113634%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig.gui" id="-1557113634%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
-        <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig.gui/index.html">io.github.moulberry.moulconfig.gui</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1557113634%2FPackages%2F-1546576237"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
-        </div>
-        <div></div>
-      </div>
-    </div>
-<a data-name="1630125974%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig.gui.editors" id="1630125974%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
-        <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig.gui.editors/index.html">io.github.moulberry.moulconfig.gui.editors</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1630125974%2FPackages%2F-1546576237"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
-        </div>
-        <div></div>
-      </div>
-    </div>
-<a data-name="-75958453%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig.gui.elements" id="-75958453%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
-        <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig.gui.elements/index.html">io.github.moulberry.moulconfig.gui.elements</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-75958453%2FPackages%2F-1546576237"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
-        </div>
-        <div></div>
-      </div>
-    </div>
-<a data-name="2012583806%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig.internal" id="2012583806%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
-        <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig.internal/index.html">io.github.moulberry.moulconfig.internal</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2012583806%2FPackages%2F-1546576237"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
-        </div>
-        <div></div>
-      </div>
-    </div>
-<a data-name="-569325993%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig.observer" id="-569325993%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
-        <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig.observer/index.html">io.github.moulberry.moulconfig.observer</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-569325993%2FPackages%2F-1546576237"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
-        </div>
-        <div></div>
-      </div>
-    </div>
-<a data-name="-254255947%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig.processor" id="-254255947%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
-        <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig.processor/index.html">io.github.moulberry.moulconfig.processor</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-254255947%2FPackages%2F-1546576237"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
-        </div>
-        <div></div>
-      </div>
-    </div>
-<a data-name="-1894470509%2FPackages%2F-1546576237" anchor-label="io.github.moulberry.moulconfig.test" id="-1894470509%2FPackages%2F-1546576237" data-filterable-set=":dokkaHtml/main"></a>
-    <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-      <div>
-        <div class="main-subrow ">
-          <div class=""><span class="inline-flex">
-              <div><a href="-moul-config/io.github.moulberry.moulconfig.test/index.html">io.github.moulberry.moulconfig.test</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1894470509%2FPackages%2F-1546576237"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div class="pull-right">
-            <div class="platform-tags no-gutters">
-              <div class="platform-tag jvm-like">main</div>
-            </div>
-          </div>
-        </div>
-        <div></div>
       </div>
     </div>
   </div>
