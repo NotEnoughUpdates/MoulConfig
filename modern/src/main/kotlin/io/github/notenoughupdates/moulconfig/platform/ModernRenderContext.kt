@@ -9,6 +9,7 @@ import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.*
 import net.minecraft.client.util.InputUtil
 import org.joml.Matrix4f
+import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.util.*
 
@@ -58,23 +59,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun isMouseButtonDown(mouseButton: Int): Boolean {
-        return when (mouseButton) {
-            0 -> {
-                mouse.wasLeftButtonClicked()
-            }
-
-            2 -> {
-                mouse.wasMiddleButtonClicked()
-            }
-
-            1 -> {
-                mouse.wasRightButtonClicked()
-            }
-
-            else -> {
-                false
-            }
-        }
+        return GLFW.glfwGetMouseButton(window.handle, mouseButton) == GLFW.GLFW_PRESS
     }
 
     override fun isKeyboardKeyDown(keyboardKey: Int): Boolean {
