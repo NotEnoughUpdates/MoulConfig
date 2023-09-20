@@ -1,11 +1,14 @@
 package io.github.notenoughupdates.moulconfig.platform
 
+import com.mojang.blaze3d.systems.RenderSystem
 import io.github.moulberry.moulconfig.common.IFontRenderer
 import io.github.moulberry.moulconfig.common.IItemStack
 import io.github.moulberry.moulconfig.common.RenderContext
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.render.*
 import net.minecraft.client.util.InputUtil
+import org.joml.Matrix4f
 import org.lwjgl.opengl.GL11
 import java.util.*
 
@@ -98,15 +101,16 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun drawTexturedRect(x: Float, y: Float, width: Float, height: Float) {
-        drawContext.drawTexture(
-            ModernMinecraft.boundTexture,
-            x.toInt(),
-            y.toInt(),
-            width.toInt(),
-            height.toInt(),
-            width.toInt(),
-            height.toInt()
-        )
+        RenderSystem.setShaderTexture(0, ModernMinecraft.boundTexture!!)
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram)
+        val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
+        val bufferBuilder = Tessellator.getInstance().buffer
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE)
+        bufferBuilder.vertex(matrix4f, x, y, 0F).texture(0F, 0F).next()
+        bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(0F, 1F).next()
+        bufferBuilder.vertex(matrix4f, x + width, y + height, 0f).texture(1F, 1F).next()
+        bufferBuilder.vertex(matrix4f, x + width, y, 0F).texture(1F, 0F).next()
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end())
     }
 
     override fun renderDarkRect(x: Int, y: Int, width: Int, height: Int) {

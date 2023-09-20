@@ -33,6 +33,6 @@
             <Text text="Add Element"/>
         </Button>
         <TextField value="@textField" editable="true" suggestion="Test"/>
-        <Slider value="@slider" minValue="0" maxValue="20"/>
+        <Slider value="@slider" minValue="-10" maxValue="20"/>
     </Column>
 </Gui>

@@ -34,7 +34,7 @@ open class SliderComponent(
         context.renderContext.drawTexturedRect(0F, 0F, 4F, height.toFloat())
         mc.bindTexture(GuiTextures.SLIDER_OFF_CAP)
         context.renderContext.drawTexturedRect((width - 4).toFloat(), 0F, 4F, height.toFloat())
-        val sliderPosition = (value / (maxValue - minValue) * width).toInt()
+        val sliderPosition = ((value - minValue) / (maxValue - minValue) * width).toInt()
         if (sliderPosition > 5) {
             mc.bindTexture(GuiTextures.SLIDER_ON_SEGMENT)
             context.renderContext.drawTexturedRect(4F, 0F, (sliderPosition - 4).toFloat(), height.toFloat())
@@ -58,7 +58,7 @@ open class SliderComponent(
     }
 
     fun setValueFromContext(context: GuiImmediateContext) {
-        var v: Float = context.mouseX * (maxValue - minValue) / width
+        var v: Float = context.mouseX * (maxValue - minValue) / width + minValue
         v = min(v.toDouble(), maxValue.toDouble()).toFloat()
         v = max(v.toDouble(), minValue.toDouble()).toFloat()
         v = Math.round(v / minStep) * minStep

@@ -38,4 +38,5 @@ tasks.remapJar {
 
 tasks.jar {
     archiveClassifier.set("small")
+    dependsOn(tasks.processResources)
 }
