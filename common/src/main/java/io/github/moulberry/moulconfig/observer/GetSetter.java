@@ -42,5 +42,19 @@ public interface GetSetter<T> extends Supplier<T>, Consumer<T> {
     default void accept(T t) {
         set(t);
     }
+
+    static <T> GetSetter<T> constant(T t) {
+        return new GetSetter<T>() {
+            @Override
+            public T get() {
+                return t;
+            }
+
+            @Override
+            public void set(T newValue) {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
 }
 

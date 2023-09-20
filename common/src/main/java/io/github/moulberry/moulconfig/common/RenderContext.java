@@ -19,11 +19,11 @@ public interface RenderContext {
     boolean isKeyboardKeyDown(int keyboardKey);
 
     default boolean isShiftDown() {
-        return isKeyboardKeyDown(KeyboardConstants.KEY_LSHIFT) || isKeyboardKeyDown(KeyboardConstants.KEY_RSHIFT);
+        return isKeyboardKeyDown(KeyboardConstants.INSTANCE.getShiftLeft()) || isKeyboardKeyDown(KeyboardConstants.INSTANCE.getShiftRight());
     }
 
     default boolean isCtrlDown() {
-        return isKeyboardKeyDown(KeyboardConstants.KEY_LCONTROL) || isKeyboardKeyDown(KeyboardConstants.KEY_RCONTROL);
+        return isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCtrlLeft()) || isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCtrlRight());
     }
 
     default void drawStringScaledMaxWidth(@NotNull String text, @NotNull IFontRenderer fontRenderer, int x, int y, boolean shadow, int width, int color) {

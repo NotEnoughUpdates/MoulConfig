@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.platform
 
 import io.github.moulberry.moulconfig.common.IFontRenderer
+import io.github.moulberry.moulconfig.common.IKeyboardConstants
 import io.github.moulberry.moulconfig.common.IMinecraft
 import io.github.moulberry.moulconfig.common.MyResourceLocation
 import net.minecraft.client.MinecraftClient
@@ -34,4 +35,6 @@ class ModernMinecraft : IMinecraft {
 
     override val defaultFontRenderer: IFontRenderer
         get() = ModernFontRenderer(MinecraftClient.getInstance().textRenderer)
+    override val keyboardConstants: IKeyboardConstants
+        get() = ModernKeyboardConstants
 }

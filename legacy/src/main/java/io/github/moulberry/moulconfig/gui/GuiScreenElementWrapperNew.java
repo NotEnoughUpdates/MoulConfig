@@ -49,7 +49,9 @@ public class GuiScreenElementWrapperNew extends GuiScreen {
     @Override
     public void handleKeyboardInput() throws IOException {
         super.handleKeyboardInput();
-        context.getRoot().keyboardEvent(new KeyboardEvent(Keyboard.getEventKeyState(), Keyboard.getEventKey(), Keyboard.getEventCharacter()), createContext());
+
+        context.getRoot().keyboardEvent(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), Keyboard.getEventKeyState()), createContext());
+        context.getRoot().keyboardEvent(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()), createContext());
     }
 
     @Override

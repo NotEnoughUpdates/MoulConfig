@@ -1,5 +1,6 @@
 package io.github.notenoughupdates.moulconfig.platform
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import io.github.moulberry.moulconfig.common.IFontRenderer
 import io.github.moulberry.moulconfig.common.IItemStack
@@ -82,7 +83,21 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun invertedRect(left: Float, top: Float, right: Float, bottom: Float) {
-        // TODO: Inverted rect time
+        val tess = Tessellator.getInstance()
+        val buffer = tess.buffer
+        val matrix = drawContext.matrices.peek().positionMatrix
+        RenderSystem.setShaderColor(0F, 0F, 1f, 1f)
+        RenderSystem.setShader(GameRenderer::getPositionProgram)
+        RenderSystem.enableColorLogicOp()
+        RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE)
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION)
+        buffer.vertex(matrix, left, bottom, 0F).next()
+        buffer.vertex(matrix, right, bottom, 0F).next()
+        buffer.vertex(matrix, right, top, 0F).next()
+        buffer.vertex(matrix, left, top, 0F).next()
+        BufferRenderer.drawWithGlobalProgram(buffer.end())
+        RenderSystem.disableColorLogicOp()
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
     }
 
     override fun drawTexturedRect(x: Float, y: Float, width: Float, height: Float) {

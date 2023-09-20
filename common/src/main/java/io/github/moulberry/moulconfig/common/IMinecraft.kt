@@ -9,6 +9,7 @@ import java.util.*
 interface IMinecraft {
     fun bindTexture(resourceLocation: MyResourceLocation)
     val defaultFontRenderer: IFontRenderer
+    val keyboardConstants: IKeyboardConstants
 
     companion object {
         @JvmField

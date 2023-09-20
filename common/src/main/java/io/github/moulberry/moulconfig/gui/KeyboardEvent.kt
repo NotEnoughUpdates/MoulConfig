@@ -1,3 +1,6 @@
 package io.github.moulberry.moulconfig.gui
 
-data class KeyboardEvent(val press: Boolean, val key: Int, val char: Char)
+sealed interface KeyboardEvent {
+    data class CharTyped(val char: Char) : KeyboardEvent
+    data class KeyPressed(val keycode: Int, val pressed: Boolean) : KeyboardEvent
+}

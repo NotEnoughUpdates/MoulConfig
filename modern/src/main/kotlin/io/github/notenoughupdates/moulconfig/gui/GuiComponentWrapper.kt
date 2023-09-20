@@ -2,6 +2,7 @@ package io.github.notenoughupdates.moulconfig.gui
 
 import io.github.moulberry.moulconfig.gui.GuiContext
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext
+import io.github.moulberry.moulconfig.gui.KeyboardEvent
 import io.github.moulberry.moulconfig.gui.MouseEvent
 import io.github.notenoughupdates.moulconfig.platform.ModernRenderContext
 import net.minecraft.client.MinecraftClient
@@ -35,6 +36,21 @@ class GuiComponentWrapper(
     override fun render(drawContext: DrawContext?, i: Int, j: Int, f: Float) {
         super.render(drawContext, i, j, f)
         context.root.render(createContext(drawContext))
+    }
+
+    override fun charTyped(c: Char, i: Int): Boolean {
+        context.root.keyboardEvent(KeyboardEvent.CharTyped(c), createContext())
+        return true
+    }
+
+    override fun keyPressed(i: Int, j: Int, k: Int): Boolean {
+        context.root.keyboardEvent(KeyboardEvent.KeyPressed(i, true), createContext())
+        return true
+    }
+
+    override fun keyReleased(i: Int, j: Int, k: Int): Boolean {
+        context.root.keyboardEvent(KeyboardEvent.KeyPressed(i, false), createContext())
+        return true
     }
 
     override fun mouseMoved(d: Double, e: Double) {

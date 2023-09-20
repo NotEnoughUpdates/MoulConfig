@@ -9,6 +9,7 @@
         <Button onClick="@click">
             <Text text="Click here for free kittens"/>
         </Button>
-        <Slider minValue="-10" maxValue="10" minStep="0.1" value="@sliderLol"></Slider>
+        <TextField value="@search" suggestion="Placeholder"/>
+        <Slider minValue="-10" maxValue="10" minStep="0.1" value="@sliderLol"/>
     </Column>
 </Gui>

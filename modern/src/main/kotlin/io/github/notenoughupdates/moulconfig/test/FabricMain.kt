@@ -36,8 +36,12 @@ class FabricMain : ModInitializer {
     class ObjectBound {
         @field:Bind("sliderLol")
         var slider: Float = 0F
+
         @field:Bind
         var data: ObservableList<IItemStack> = ObservableList(mutableListOf())
+
+        @field:Bind
+        var search: String = ""
 
         @Bind("click")
         fun click() {
