@@ -68,7 +68,7 @@ public class TextFieldComponent extends GuiComponent {
         renderBox(context);
         renderText(context, visibleText);
         if (text.get().isEmpty() && !isFocused()) {
-            font.drawString(suggestion, TEXT_PADDING_X, TEXT_PADDING_Y, SUGGESTION_COLOR, false);
+            context.getRenderContext().drawString(font, suggestion, TEXT_PADDING_X, TEXT_PADDING_Y, SUGGESTION_COLOR, false);
         }
         if (isFocused()) {
             renderCursor(context);
@@ -105,7 +105,7 @@ public class TextFieldComponent extends GuiComponent {
 
     private void renderText(GuiImmediateContext context, String visibleText) {
         int textColor = editable.get() ? ENABLED_COLOR : DISABLED_COLOR;
-        font.drawString(visibleText, TEXT_PADDING_X, TEXT_PADDING_Y, textColor, true);
+        context.getRenderContext().drawString(font, visibleText, TEXT_PADDING_X, TEXT_PADDING_Y, textColor, true);
     }
 
     private void renderBox(GuiImmediateContext context) {

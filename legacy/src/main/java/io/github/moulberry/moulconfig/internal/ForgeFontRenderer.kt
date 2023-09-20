@@ -23,10 +23,6 @@ class ForgeFontRenderer(val font: FontRenderer) : IFontRenderer {
         private val colorPattern: Pattern = Pattern.compile("§[a-f0-9r]")
     }
 
-    override fun drawString(text: String, x: Int, y: Int, color: Int, shadow: Boolean) {
-        font.drawString(text, x.toFloat(), y.toFloat(), color, shadow)
-    }
-
     override fun splitText(text: String, width: Int): List<String> {
         val iChatComponents =
             GuiUtilRenderComponents.splitText(ChatComponentText(text), width, font, false, false)

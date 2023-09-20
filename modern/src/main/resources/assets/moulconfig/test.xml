@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Gui xmlns="http://notenoughupdates.org/moulconfig">
+    <Column>
+        <Text text="Laudantium velit velit iure consequatur nobis dolores possimus aut.Eos inventore vero fugit dolores.Optio exercitationem perspiciatis recusandae quas maximeest repudiandae. Delectus sapiente quis est sedalias et. Est modi tempora dolor dolores molestiaeexpedita et harum."
+              width="180"/>
+        <Array data="@data">
+            <ItemStack value="@this"/>
+        </Array>
+        <Button onClick="@click">
+            <Text text="Click here for free kittens"/>
+        </Button>
+        <Slider minValue="-10" maxValue="10" minStep="0.1" value="@sliderLol"></Slider>
+    </Column>
+</Gui>

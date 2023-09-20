@@ -55,14 +55,16 @@ public class XMLUniverse {
 
     private XMLBoundProperties createPropertyFinder(Class<?> clazz) {
         var properties = new XMLBoundProperties();
-        for (Field field : clazz.getFields()) {
+        for (Field field : clazz.getDeclaredFields()) {
             var annotation = field.getAnnotation(Bind.class);
             if (annotation == null) continue;
+            field.setAccessible(true);
             properties.getNamedProperties().put(annotation.value().isEmpty() ? field.getName() : annotation.value(), field);
         }
-        for (Method method : clazz.getMethods()) {
+        for (Method method : clazz.getDeclaredMethods()) {
             var annotation = method.getAnnotation(Bind.class);
             if (annotation == null) continue;
+            method.setAccessible(true);
             properties.getNamedFunctions().put(annotation.value().isEmpty() ? method.getName() : annotation.value(), method);
         }
         return properties;

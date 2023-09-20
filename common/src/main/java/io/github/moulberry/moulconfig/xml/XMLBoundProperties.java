@@ -29,7 +29,7 @@ public class XMLBoundProperties {
         if (method.getParameterCount() != 1) {
             throw new IllegalArgumentException("Bound method " + name + " should only take one argument on object " + object);
         }
-        if (!TypeUtils.areTypesEquals(method.getParameterTypes()[0], tClass)) {
+        if (!TypeUtils.doesAExtendB(tClass, method.getParameterTypes()[0])) {
             throw new IllegalArgumentException("Bound method " + name + " should take one argument of type " + tClass + " instead of " + method.getParameterTypes()[0]);
         }
         MethodHandle methodHandle = lookup.unreflect(method).bindTo(object);
@@ -64,7 +64,7 @@ public class XMLBoundProperties {
     @SneakyThrows
     public <T> GetSetter<T> getBoundProperty(String name, Class<T> clazz, Object object) {
         if (name.equals("this")) {
-            if (!TypeUtils.areTypesEquals(clazz, object.getClass())) {
+            if (!TypeUtils.doesAExtendB(object.getClass(), clazz)) {
                 throw new IllegalArgumentException("Bind target " + name + " is of the wrong type " + object.getClass() + " instead of " + clazz);
             }
             return new GetSetter<T>() {
@@ -84,7 +84,7 @@ public class XMLBoundProperties {
             Method method = namedFunctions.get(name);
             if (method == null)
                 throw new NullPointerException("Could not find bind target for " + name + " in " + clazz);
-            if (!TypeUtils.areTypesEquals(method.getReturnType(), clazz))
+            if (!TypeUtils.doesAExtendB(method.getReturnType(), clazz))
                 throw new IllegalArgumentException("Bind target " + method + " is of the wrong type " + method.getReturnType() + " instead of " + clazz);
             if (method.getParameterCount() != 0)
                 throw new RuntimeException("Bind target " + method + " is not a pure getter");
@@ -102,7 +102,7 @@ public class XMLBoundProperties {
                 }
             };
         }
-        if (!TypeUtils.areTypesEquals(field.getType(), clazz))
+        if (!TypeUtils.doesAExtendB(field.getType(), clazz))
             throw new IllegalArgumentException("Bind target " + name + " is of the wrong type " + field.getType() + " instead of " + clazz);
         field.setAccessible(true);
         var getter = lookup.unreflectGetter(field).bindTo(object);

@@ -31,9 +31,11 @@ public interface RenderContext {
         translate(x, y, 0);
         float scale = Math.min(1F, Math.max(0.1F, width / (float) fontRenderer.getStringWidth(text)));
         scale(scale, scale, 1F);
-        fontRenderer.drawString(text, 0, 0, color, shadow);
+        drawString(fontRenderer, text, 0, 0, color, shadow);
         popMatrix();
     }
+
+    int drawString(IFontRenderer fontRenderer, String text, int x, int y, int color, boolean shadow);
 
     void drawColoredRect(float left, float top, float right, float bottom, int color);
 

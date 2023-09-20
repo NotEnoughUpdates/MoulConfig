@@ -4,6 +4,9 @@ public class TypeUtils {
     public static boolean areTypesEquals(Class<?> a, Class<?> b) {
         return normalizeNative(a) == normalizeNative(b);
     }
+    public static boolean doesAExtendB(Class<?> a, Class<?> b) {
+        return normalizeNative(b).isAssignableFrom(normalizeNative(a));
+    }
 
     public static Class<?> normalizeNative(Class<?> clazz) {
         if (clazz == int.class) return Integer.class;

@@ -1,5 +1,6 @@
 package io.github.moulberry.moulconfig.internal;
 
+import io.github.moulberry.moulconfig.common.IFontRenderer;
 import io.github.moulberry.moulconfig.common.IItemStack;
 import io.github.moulberry.moulconfig.common.RenderContext;
 import io.github.moulberry.moulconfig.forge.ForgeItemStack;
@@ -52,6 +53,11 @@ public class ForgeRenderContext implements RenderContext {
     @Override
     public boolean isKeyboardKeyDown(int keyboardKey) {
         return Keyboard.isKeyDown(keyboardKey);
+    }
+
+    @Override
+    public int drawString(IFontRenderer renderer, String text, int x, int y, int color, boolean shadow) {
+        return ((ForgeFontRenderer) renderer).getFont().drawString(text, x, y, color, shadow);
     }
 
 

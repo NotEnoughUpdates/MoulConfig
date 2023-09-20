@@ -86,13 +86,13 @@ public class TextComponent extends GuiComponent {
             }
             switch (alignment) {
                 case LEFT:
-                    fontRenderer.drawString(line, 2, 2, -1, shadow);
+                    context.getRenderContext().drawString(fontRenderer, line, 2, 2, -1, shadow);
                     break;
                 case CENTER:
-                    fontRenderer.drawString(line, width / 2 - length / 2 + 2, 2, -1, shadow);
+                    context.getRenderContext().drawString(fontRenderer, line, width / 2 - length / 2 + 2, 2, -1, shadow);
                     break;
                 case RIGHT:
-                    fontRenderer.drawString(line, width - length + 2, 2, -1, shadow);
+                    context.getRenderContext().drawString(fontRenderer, line, width - length + 2, 2, -1, shadow);
                     break;
             }
             context.getRenderContext().translate(0, fontRenderer.getHeight() + 2, 0);
