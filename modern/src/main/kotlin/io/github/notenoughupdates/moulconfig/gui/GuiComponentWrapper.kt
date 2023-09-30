@@ -46,6 +46,14 @@ class GuiComponentWrapper(
     }
 
     override fun keyPressed(i: Int, j: Int, k: Int): Boolean {
+        if (i == 256) {
+            if (context.focusedElement != null) {
+                context.focusedElement = null
+            } else {
+                close()
+            }
+            return true
+        }
         context.root.keyboardEvent(KeyboardEvent.KeyPressed(i, true), createContext())
         return true
     }
