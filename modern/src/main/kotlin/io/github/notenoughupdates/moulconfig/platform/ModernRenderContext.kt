@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.*
 import net.minecraft.client.util.InputUtil
+import net.minecraft.text.Text
 import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
@@ -138,6 +139,24 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
             y,
             overlayText ?: ""
         )
+    }
+
+    var scheduledTooltip: List<String>? = null
+
+    override fun scheduleDrawTooltip(tooltipLines: MutableList<String>) {
+        scheduledTooltip = tooltipLines
+    }
+
+    override fun doDrawTooltip() {
+        if (scheduledTooltip != null) {
+            drawContext.drawTooltip(
+                MinecraftClient.getInstance().textRenderer,
+                scheduledTooltip!!.map { Text.literal(it) },
+                // TODO: improve this somewhat
+                (MinecraftClient.getInstance().mouse.x / MinecraftClient.getInstance().window.scaleFactor).toInt(),
+                (MinecraftClient.getInstance().mouse.y / MinecraftClient.getInstance().window.scaleFactor).toInt(),
+            )
+        }
     }
 
 }

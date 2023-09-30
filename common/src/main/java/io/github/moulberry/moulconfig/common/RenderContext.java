@@ -3,6 +3,8 @@ package io.github.moulberry.moulconfig.common;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public interface RenderContext {
     void pushMatrix();
 
@@ -50,4 +52,8 @@ public interface RenderContext {
     void popScissor();
 
     void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable String overlayText);
+
+    void scheduleDrawTooltip(@NotNull List<String> tooltipLines);
+
+    void doDrawTooltip();
 }

@@ -57,10 +57,12 @@ public class GuiScreenElementWrapperNew extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         super.drawScreen(mouseX, mouseY, partialTicks);
+        ForgeRenderContext frc = new ForgeRenderContext();
         context.getRoot().render(new GuiImmediateContext(
-            new ForgeRenderContext(),
+            frc,
             0, 0, width, height, mouseX, mouseY, mouseX, mouseY
         ));
+        frc.doDrawTooltip();
     }
 
     @Override

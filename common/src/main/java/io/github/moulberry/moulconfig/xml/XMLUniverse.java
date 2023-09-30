@@ -4,7 +4,6 @@ import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
 import lombok.var;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -12,7 +11,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -39,6 +40,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new TextFieldLoader());
         xmlUniverse.registerLoader(new ButtonLoader());
         xmlUniverse.registerLoader(new SliderLoader());
+        xmlUniverse.registerLoader(new HoverLoader());
         xmlUniverse.registerLoader(new ItemStackLoader());
         xmlUniverse.registerMapper(String.class, Function.identity());
         xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
@@ -51,6 +53,7 @@ public class XMLUniverse {
         xmlUniverse.registerMapper(long.class, Long::valueOf);
         xmlUniverse.registerMapper(Boolean.class, Boolean::valueOf);
         xmlUniverse.registerMapper(boolean.class, Boolean::valueOf);
+        xmlUniverse.registerMapper(List.class, str -> Arrays.asList(str.split(";")));
         return xmlUniverse;
     }
 

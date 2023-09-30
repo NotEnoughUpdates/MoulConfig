@@ -19,6 +19,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.List;
+
 public class ForgeRenderContext implements RenderContext {
     @Override
     public void pushMatrix() {
@@ -114,6 +116,26 @@ public class ForgeRenderContext implements RenderContext {
         if (overlayText != null)
             renderItem.renderItemOverlayIntoGUI(Minecraft.getMinecraft().fontRendererObj, backing, x, y, overlayText);
         RenderHelper.disableStandardItemLighting();
+    }
+
+    List<String> scheduledTooltip;
+
+    @Override
+    public void scheduleDrawTooltip(@NotNull List<String> tooltipLines) {
+        scheduledTooltip = tooltipLines;
+    }
+
+    @Override
+    public void doDrawTooltip() {
+        if (scheduledTooltip != null) {
+            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+            int width = scaledResolution.getScaledWidth();
+            int height = scaledResolution.getScaledHeight();
+            int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
+            int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
+            TextRenderUtils.drawHoveringText(scheduledTooltip, mouseX, mouseY,
+                width, height, -1, Minecraft.getMinecraft().fontRendererObj);
+        }
     }
 
 }

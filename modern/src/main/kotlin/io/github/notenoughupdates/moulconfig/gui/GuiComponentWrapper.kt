@@ -35,7 +35,9 @@ class GuiComponentWrapper(
 
     override fun render(drawContext: DrawContext?, i: Int, j: Int, f: Float) {
         super.render(drawContext, i, j, f)
-        context.root.render(createContext(drawContext))
+        val ctx = createContext(drawContext)
+        context.root.render(ctx)
+        ctx.renderContext.doDrawTooltip()
     }
 
     override fun charTyped(c: Char, i: Int): Boolean {

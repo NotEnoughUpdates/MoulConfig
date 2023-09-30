@@ -2,8 +2,10 @@
 <Root xmlns="http://notenoughupdates.org/moulconfig">
     <Gui>
         <Column>
-            <Text text="Laudantium velit velit iure consequatur nobis dolores possimus aut.Eos inventore vero fugit dolores.Optio exercitationem perspiciatis recusandae quas maximeest repudiandae. Delectus sapiente quis est sedalias et. Est modi tempora dolor dolores molestiaeexpedita et harum."
-                  width="180"/>
+            <Hover lines="Hehehhe;More Hehehehehe">
+                <Text text="Laudantium velit velit iure consequatur nobis dolores possimus aut.Eos inventore vero fugit dolores.Optio exercitationem perspiciatis recusandae quas maximeest repudiandae. Delectus sapiente quis est sedalias et. Est modi tempora dolor dolores molestiaeexpedita et harum."
+                      width="180"/>
+            </Hover>
             <ItemStack value="@itemStack"/>
             <Row>
                 <Text text="Option A" width="80"/>
