@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Gui xmlns="http://notenoughupdates.org/moulconfig">
-    <Column>
-        <Text text="Laudantium velit velit iure consequatur nobis dolores possimus aut.Eos inventore vero fugit dolores.Optio exercitationem perspiciatis recusandae quas maximeest repudiandae. Delectus sapiente quis est sedalias et. Est modi tempora dolor dolores molestiaeexpedita et harum."
-              width="180"/>
-        <ItemStack value="@itemStack"></ItemStack>
-        <Row>
-            <Text text="Option A" width="80"/>
-            <Switch
-                    value="@value"
-                    animationSpeed="100"
-            />
-        </Row>
-        <Row>
-            <Text text="Option B" width="80"/>
-            <Switch
-                    value="@value"
-                    animationSpeed="1000"
-            />
-        </Row>
-        <ScrollPanel width="200" height="100">
-            <Array data="@data">
-                <Row>
-                    <Text text="@text" width="80"/>
-                    <Switch value="@enabled"/>
-                    <Button onClick="@randomize">
-                        <Text text="Randomize"/>
-                    </Button>
-                </Row>
-            </Array>
-        </ScrollPanel>
-        <Button onClick="@addElement">
-            <Text text="Add Element"/>
-        </Button>
-        <TextField value="@textField" editable="true" suggestion="Test"/>
-        <Slider value="@slider" minValue="-10" maxValue="20"/>
-    </Column>
-</Gui>
+<Root xmlns="http://notenoughupdates.org/moulconfig">
+    <Gui>
+        <Column>
+            <Text text="Laudantium velit velit iure consequatur nobis dolores possimus aut.Eos inventore vero fugit dolores.Optio exercitationem perspiciatis recusandae quas maximeest repudiandae. Delectus sapiente quis est sedalias et. Est modi tempora dolor dolores molestiaeexpedita et harum."
+                  width="180"/>
+            <ItemStack value="@itemStack"/>
+            <Row>
+                <Text text="Option A" width="80"/>
+                <Switch
+                        value="@value"
+                        animationSpeed="100"
+                />
+            </Row>
+            <Row>
+                <Text text="Option B" width="80"/>
+                <Switch
+                        value="@value"
+                        animationSpeed="1000"
+                />
+            </Row>
+            <ScrollPanel width="200" height="100">
+                <Array data="@data">
+                    <Row>
+                        <Text text="@text" width="80"/>
+                        <Switch value="@enabled"/>
+                        <Button onClick="@randomize">
+                            <Text text="Randomize"/>
+                        </Button>
+                    </Row>
+                </Array>
+            </ScrollPanel>
+            <Button onClick="@addElement">
+                <Text text="Add Element"/>
+            </Button>
+            <TextField value="@textField" editable="true" suggestion="Test"/>
+            <Slider value="@slider" minValue="-10" maxValue="20"/>
+        </Column>
+    </Gui>
+</Root>

@@ -43,7 +43,7 @@ class FabricMain : ModInitializer {
         @field:Bind
         var search: String = ""
 
-        @Bind("click")
+        @Bind
         fun click() {
             data.add(ModernItemStack.of(ItemStack(Registries.ITEM.entrySet.random().value)))
         }

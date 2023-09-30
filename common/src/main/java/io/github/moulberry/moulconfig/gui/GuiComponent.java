@@ -117,7 +117,7 @@ public abstract class GuiComponent {
     public abstract void render(GuiImmediateContext context);
 
     /**
-     * Called by the parent renderer. Use {@link org.lwjgl.input.Mouse} to obtain information about the event.
+     * Called by the parent renderer.
      *
      * @param context the context in which this
      */
@@ -125,7 +125,7 @@ public abstract class GuiComponent {
     }
 
     /**
-     * Called by the parent renderer. Use {@link org.lwjgl.input.Keyboard} to obtain information about the event.
+     * Called by the parent renderer.
      * <p>N.B.: this method is called regardless of whether this element is focused or not.</p>
      *
      * @param context the context in which this

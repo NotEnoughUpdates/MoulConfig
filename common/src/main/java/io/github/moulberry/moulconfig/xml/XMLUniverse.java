@@ -4,6 +4,7 @@ import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
 import lombok.var;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -32,6 +33,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new ArrayLoader());
         xmlUniverse.registerLoader(new ColumnLoader());
         xmlUniverse.registerLoader(new RowLoader());
+        xmlUniverse.registerLoader(new RootLoader());
         xmlUniverse.registerLoader(new TextLoader());
         xmlUniverse.registerLoader(new ScrollPanelLoader());
         xmlUniverse.registerLoader(new TextFieldLoader());

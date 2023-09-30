@@ -2,6 +2,7 @@ package io.github.moulberry.moulconfig.xml.loaders
 
 import io.github.moulberry.moulconfig.gui.component.TextFieldComponent
 import io.github.moulberry.moulconfig.observer.GetSetter
+import io.github.moulberry.moulconfig.xml.ChildCount
 import io.github.moulberry.moulconfig.xml.XMLContext
 import io.github.moulberry.moulconfig.xml.XMLGuiLoader
 import io.github.moulberry.moulconfig.xml.XMLUniverse
@@ -21,5 +22,13 @@ class TextFieldLoader : XMLGuiLoader<TextFieldComponent?> {
 
     override fun getName(): QName {
         return XMLUniverse.qName("TextField")
+    }
+
+    override fun getChildCount(): ChildCount {
+        return ChildCount.NONE
+    }
+
+    override fun getAttributeNames(): Map<String, Boolean> {
+        return mapOf("value" to true, "width" to false, "editable" to false, "suggestion" to false)
     }
 }
