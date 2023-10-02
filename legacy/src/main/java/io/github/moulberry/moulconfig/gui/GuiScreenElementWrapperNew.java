@@ -22,7 +22,6 @@ package io.github.moulberry.moulconfig.gui;
 
 import io.github.moulberry.moulconfig.internal.ForgeRenderContext;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
@@ -30,11 +29,14 @@ import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 
-@RequiredArgsConstructor
 @ToString
 public class GuiScreenElementWrapperNew extends GuiScreen {
     @NonNull
     public GuiContext context;
+
+    public GuiScreenElementWrapperNew(GuiContext context) {
+        this.context = context;
+    }
 
     GuiImmediateContext createContext() {
         int x = Mouse.getEventX() * this.width / this.mc.displayWidth;

@@ -56,5 +56,21 @@ public interface GetSetter<T> extends Supplier<T>, Consumer<T> {
             }
         };
     }
+
+    static <T> GetSetter<T> floating(T t) {
+        return new GetSetter<T>() {
+            T storage = t;
+
+            @Override
+            public T get() {
+                return storage;
+            }
+
+            @Override
+            public void set(T newValue) {
+                storage = newValue;
+            }
+        };
+    }
 }
 

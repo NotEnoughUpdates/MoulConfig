@@ -118,6 +118,7 @@ open class TextFieldComponent(
 
     override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext) {
         if (!editable.get()) return
+        if (!isFocused) return
         if (event is KeyboardEvent.KeyPressed && event.pressed) {
             when (event.keycode) {
                 KeyboardConstants.left -> {

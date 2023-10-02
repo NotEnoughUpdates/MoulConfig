@@ -125,4 +125,14 @@ data class GuiImmediateContext(
             absoluteMouseX, absoluteMouseY
         )
     }
+
+    fun scaled(scale: Float): GuiImmediateContext {
+        return GuiImmediateContext(
+            renderContext,
+            renderOffsetX, renderOffsetY,
+            (width / scale).toInt(), (height / scale).toInt(),
+            ((mouseX - renderOffsetX) * scale).toInt(), ((mouseY - renderOffsetY) * scale).toInt(),
+            absoluteMouseX, absoluteMouseY
+        )
+    }
 }
