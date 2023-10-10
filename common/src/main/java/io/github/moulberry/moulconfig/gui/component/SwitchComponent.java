@@ -86,7 +86,7 @@ public class SwitchComponent extends GuiComponent {
             buttonLocation = GuiTextures.TOGGLE_ON;
         }
         mc.bindTexture(buttonLocation);
-        context.getRenderContext().drawTexturedRect(animationPercentage * (context.getWidth() - 12), 0, 12, 14);
+        context.getRenderContext().drawTexturedRect(animationPercentage * (context.getWidth() - 12), 0, 12, context.getHeight());
     }
 
     @Override
