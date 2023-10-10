@@ -6,6 +6,7 @@ import io.github.moulberry.moulconfig.common.IMinecraft
 import io.github.moulberry.moulconfig.common.MyResourceLocation
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier
+import java.io.InputStream
 
 
 class ModernMinecraft : IMinecraft {
@@ -31,6 +32,11 @@ class ModernMinecraft : IMinecraft {
 
     override fun bindTexture(resourceLocation: MyResourceLocation) {
         boundTexture = fromMyResourceLocation(resourceLocation)
+    }
+
+    override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {
+        return MinecraftClient.getInstance().resourceManager.getResource(fromMyResourceLocation(resourceLocation))
+            .get().inputStream
     }
 
     override val defaultFontRenderer: IFontRenderer

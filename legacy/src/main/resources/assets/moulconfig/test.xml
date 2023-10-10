@@ -7,6 +7,13 @@
                       width="180"/>
             </Hover>
             <ItemStack value="@itemStack"/>
+            <Panel>
+                <Collapsible title="Test">
+                    <Scale scale="10">
+                        <Text text="test"/>
+                    </Scale>
+                </Collapsible>
+            </Panel>
             <Row>
                 <Text text="Option A" width="80"/>
                 <Switch

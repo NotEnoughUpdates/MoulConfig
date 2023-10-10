@@ -1,5 +1,6 @@
 package io.github.moulberry.moulconfig.common
 
+import java.io.InputStream
 import java.util.*
 
 /**
@@ -8,6 +9,7 @@ import java.util.*
  */
 interface IMinecraft {
     fun bindTexture(resourceLocation: MyResourceLocation)
+    fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream
     val defaultFontRenderer: IFontRenderer
     val keyboardConstants: IKeyboardConstants
 

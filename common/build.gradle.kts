@@ -2,6 +2,7 @@ plugins {
     java
     kotlin("jvm")
     id("org.jetbrains.dokka")
+    kotlin("plugin.lombok")
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))

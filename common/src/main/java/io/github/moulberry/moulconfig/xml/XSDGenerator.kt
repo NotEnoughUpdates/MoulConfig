@@ -93,6 +93,14 @@ class XSDGenerator(val universe: XMLUniverse) {
             it.setAttribute("minOccurs", "0")
             it.setAttribute("maxOccurs", "unbounded")
         }
+
+        val twoWidget = root.createChild(XMLNS_XML_SCHEMA, "complexType")
+        twoWidget.setAttribute("name", "TwoWidget")
+        twoWidget.createChild(XMLNS_XML_SCHEMA, "group").also {
+            it.setAttribute("ref", "AnyWidget")
+            it.setAttribute("minOccurs", "2")
+            it.setAttribute("maxOccurs", "2")
+        }
     }
 
     fun writeType(type: XMLGuiLoader<*>) {
@@ -105,6 +113,7 @@ class XSDGenerator(val universe: XMLUniverse) {
                 ChildCount.NONE -> "Widgetless"
                 ChildCount.ONE -> "SingleWidget"
                 ChildCount.ANY -> "MultiWidget"
+                ChildCount.TWO -> "TwoWidget"
             }
         )
         type.attributeNames.forEach { name, required ->

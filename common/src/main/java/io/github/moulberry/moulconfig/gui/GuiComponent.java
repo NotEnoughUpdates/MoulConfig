@@ -22,6 +22,7 @@ package io.github.moulberry.moulconfig.gui;
 
 import io.github.moulberry.moulconfig.common.IMinecraft;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
@@ -92,7 +93,7 @@ public abstract class GuiComponent {
      * @param visitor a consumer to be invoked for all gui elements in the scene tree. the returned value is then passed on to the next invocation.
      * @param initial an initial value to be given to the function
      */
-    public final <T> T foldRecursive(T initial, BiFunction<GuiComponent, T, T> visitor) {
+    public final <T> T foldRecursive(T initial, @NotNull BiFunction<@NotNull GuiComponent, T, T> visitor) {
         return foldChildren(visitor.apply(this, initial), (element, state) -> element.foldRecursive(state, visitor));
     }
 
@@ -104,7 +105,7 @@ public abstract class GuiComponent {
      * @param visitor a consumer to be called for all children for this element.
      * @param initial an initial value to be given to the function
      */
-    public <T> T foldChildren(T initial, BiFunction<GuiComponent, T, T> visitor) {
+    public <T> T foldChildren(T initial, @NotNull BiFunction<@NotNull GuiComponent, T, T> visitor) {
         return initial;
     }
 
@@ -114,14 +115,14 @@ public abstract class GuiComponent {
      *
      * @param context the context in which this
      */
-    public abstract void render(GuiImmediateContext context);
+    public abstract void render(@NotNull GuiImmediateContext context);
 
     /**
      * Called by the parent renderer.
      *
      * @param context the context in which this
      */
-    public void mouseEvent(MouseEvent mouseEvent,GuiImmediateContext context) {
+    public void mouseEvent(@NotNull MouseEvent mouseEvent,@NotNull GuiImmediateContext context) {
     }
 
     /**
@@ -130,7 +131,7 @@ public abstract class GuiComponent {
      *
      * @param context the context in which this
      */
-    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
+    public void keyboardEvent(@NotNull KeyboardEvent event,@NotNull  GuiImmediateContext context) {
     }
 
 }

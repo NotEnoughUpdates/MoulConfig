@@ -13,7 +13,7 @@ class TextFieldLoader : XMLGuiLoader<TextFieldComponent?> {
     override fun createInstance(context: XMLContext<*>, element: Element): TextFieldComponent {
         return TextFieldComponent(
             context.getPropertyFromAttribute(element, QName("value"), String::class.java)!!,
-            context.getPropertyFromAttribute(element, QName("width"), Int::class.javaPrimitiveType, 80),
+            context.getPropertyFromAttribute(element, QName("width"), Int::class.java, 80),
             context.getPropertyFromAttribute(element, QName("editable"), Boolean::class.java)
                 ?: GetSetter.constant(true),
             context.getPropertyFromAttribute(element, QName("suggestion"), String::class.java, ""),

@@ -1,9 +1,13 @@
 package io.github.moulberry.moulconfig.xml;
 
+import io.github.moulberry.moulconfig.common.IMinecraft;
+import io.github.moulberry.moulconfig.common.MyResourceLocation;
 import io.github.moulberry.moulconfig.gui.GuiComponent;
+import io.github.moulberry.moulconfig.gui.component.PanelLoader;
 import io.github.moulberry.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
 import lombok.var;
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -38,6 +42,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new TextLoader());
         xmlUniverse.registerLoader(new ScrollPanelLoader());
         xmlUniverse.registerLoader(new TextFieldLoader());
+        xmlUniverse.registerLoader(new BasicCollapsibleLoader());
         xmlUniverse.registerLoader(new ButtonLoader());
         xmlUniverse.registerLoader(new SliderLoader());
         xmlUniverse.registerLoader(new HoverLoader());
@@ -45,6 +50,10 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new ScaleLoader());
         xmlUniverse.registerLoader(new SpacerLoader());
         xmlUniverse.registerLoader(new ItemStackLoader());
+        xmlUniverse.registerLoader(new FragmentLoader());
+        xmlUniverse.registerLoader(new IndirectLoader());
+        xmlUniverse.registerLoader(new WhenLoader());
+        xmlUniverse.registerLoader(new PanelLoader());
         xmlUniverse.registerMapper(String.class, Function.identity());
         xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
         xmlUniverse.registerMapper(int.class, Integer::valueOf);
@@ -57,6 +66,7 @@ public class XMLUniverse {
         xmlUniverse.registerMapper(Boolean.class, Boolean::valueOf);
         xmlUniverse.registerMapper(boolean.class, Boolean::valueOf);
         xmlUniverse.registerMapper(List.class, str -> Arrays.asList(str.split(";")));
+        xmlUniverse.registerMapper(MyResourceLocation.class, MyResourceLocation.Companion::parse);
         return xmlUniverse;
     }
 
@@ -104,6 +114,11 @@ public class XMLUniverse {
     public GuiComponent load(XMLContext<?> context, Element element) {
         var elementLoader = guiElements.get(new QName(element.getNamespaceURI(), element.getLocalName()));
         return elementLoader.createInstance(context, element);
+    }
+
+    @NotNull
+    public GuiComponent load(@NotNull Object bind, @NotNull MyResourceLocation location) {
+        return load(bind, IMinecraft.instance.loadResourceLocation(location));
     }
 
     public <E> E mapXMLObject(String attributeValue, Class<E> type) {

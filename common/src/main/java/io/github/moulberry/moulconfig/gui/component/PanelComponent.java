@@ -63,7 +63,7 @@ public class PanelComponent extends GuiComponent {
 
     @Override
     public int getHeight() {
-        return element.getHeight() + insets * 2;
+        return element.getHeight() + insets * 2 + 2;
     }
 
     GuiImmediateContext getChildContext(GuiImmediateContext context) {
@@ -73,7 +73,7 @@ public class PanelComponent extends GuiComponent {
     @Override
     public void render(GuiImmediateContext context) {
         context.getRenderContext().pushMatrix();
-        context.getRenderContext().renderDarkRect(0, 0, getWidth(), getHeight());
+        context.getRenderContext().renderDarkRect(0, 0, getWidth(), getHeight() - 2);
         context.getRenderContext().translate(insets, insets, 0);
         element.render(getChildContext(context));
         context.getRenderContext().popMatrix();

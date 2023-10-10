@@ -6,10 +6,16 @@ import io.github.moulberry.moulconfig.common.IMinecraft
 import io.github.moulberry.moulconfig.common.MyResourceLocation
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
+import java.io.InputStream
 
 class ForgeMinecraft : IMinecraft {
     override fun bindTexture(resourceLocation: MyResourceLocation) {
         Minecraft.getMinecraft().textureManager.bindTexture(fromMyResourceLocation(resourceLocation))
+    }
+
+    override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {
+        return Minecraft.getMinecraft().resourceManager.getResource(fromMyResourceLocation(resourceLocation))
+            .inputStream
     }
 
     companion object {

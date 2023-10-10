@@ -6,6 +6,7 @@ plugins {
     id("gg.essential.loom")
     id("org.jetbrains.dokka")
     id("com.github.johnrengelman.shadow")
+    kotlin("plugin.lombok")
 }
 
 loom {
