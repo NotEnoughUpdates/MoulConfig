@@ -115,6 +115,14 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun renderDarkRect(x: Int, y: Int, width: Int, height: Int) {
+        val main: Int = -0x1000000 or 0x202026
+        val light = -0xcfcfca
+        val dark = -0xefefea
+        drawContext.fill(x, y, x + 1, y + height, light)
+        drawContext.fill(x + 1, y, x + width, y + 1, light)
+        drawContext.fill(x + width - 1, y + 1, x + width, y + height, dark)
+        drawContext.fill(x + 1, y + height - 1, x + width - 1, y + height, dark)
+        drawContext.fill(x + 1, y + 1, x + width - 1, y + height - 1, main)
         drawContext.fill(x, y, x + width, y + height, 0xa0202020.toInt())
         drawContext.drawBorder(x, y, width, height, 0xffc0c0c0.toInt())
     }

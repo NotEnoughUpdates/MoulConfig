@@ -32,7 +32,9 @@
                 <Array data="@data">
                     <Row>
                         <Text text="@text" width="80"/>
-                        <Switch value="@enabled"/>
+                        <Center>
+                            <Switch value="@enabled"/>
+                        </Center>
                         <Button onClick="@randomize">
                             <Text text="Randomize"/>
                         </Button>
