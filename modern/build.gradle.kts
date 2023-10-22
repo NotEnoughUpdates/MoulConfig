@@ -3,6 +3,7 @@ plugins {
     kotlin("jvm")
     id("gg.essential.loom")
     id("com.github.johnrengelman.shadow")
+    `maven-publish`
 }
 
 loom {
@@ -40,3 +41,19 @@ tasks.jar {
     archiveClassifier.set("small")
     dependsOn(tasks.processResources)
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifact(tasks.remapJar) {
+                classifier = ""
+            }
+            artifact(tasks.shadowJar) {
+                classifier = "named"
+            }
+        }
+    }
+}
+
+
+
