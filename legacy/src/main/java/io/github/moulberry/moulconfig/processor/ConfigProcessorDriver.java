@@ -23,7 +23,9 @@ package io.github.moulberry.moulconfig.processor;
 import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.annotations.*;
+import io.github.moulberry.moulconfig.internal.BoundField;
 import io.github.moulberry.moulconfig.internal.Warnings;
+import lombok.var;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -45,10 +47,14 @@ public class ConfigProcessorDriver {
         return fields;
     }
 
-    public static void processCategory(Object categoryObject, Class<?> categoryClass, ConfigStructureReader reader) {
+    public static void processCategory(Object categoryObject, Class<?> categoryClass, ConfigStructureReader reader,
+                                       List<BoundField> deferredSubCategories) {
         Stack<Integer> accordionStack = new Stack<>();
         Set<Integer> usedAccordionIds = new HashSet<>();
         for (Field field : getAllFields(categoryClass)) {
+            if (field.getAnnotation(Category.class) != null) {
+                deferredSubCategories.add(new BoundField(field, categoryObject));
+            }
             ConfigOption optionAnnotation = field.getAnnotation(ConfigOption.class);
             if (optionAnnotation == null) continue;
             if (field.getAnnotation(Expose.class) == null
@@ -88,7 +94,11 @@ public class ConfigProcessorDriver {
                 reader.beginAccordion(categoryObject, field, optionAnnotation, ++nextAnnotation);
                 try {
                     reader.pushPath(field.getName());
-                    processCategory(field.get(categoryObject), field.getType(), reader);
+                    var subCategory = new ArrayList<BoundField>();
+                    processCategory(field.get(categoryObject), field.getType(), reader, subCategory);
+                    if (!subCategory.isEmpty()) {
+                        Warnings.warn("Cannot define sub categories inside of an accordion: " + subCategory.get(0));
+                    }
                     reader.popPath();
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
@@ -115,28 +125,48 @@ public class ConfigProcessorDriver {
         }
     }
 
+    private static void processCategoryMeta(
+        ConfigStructureReader reader,
+        Object parent,
+        Field categoryField,
+        Field parentField
+    ) {
+        Category categoryAnnotation = categoryField.getAnnotation(Category.class);
+
+        if (categoryAnnotation == null) return;
+        if (categoryField.getAnnotation(Expose.class) == null) {
+            Warnings.warn("@Category without @Expose in " + parent.getClass() + " on field " + categoryField);
+        }
+        if ((categoryField.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
+            Warnings.warn("@Category on non public field " + categoryField + " in " + parent.getClass());
+            return;
+        }
+        var deferredSubCategories = new ArrayList<BoundField>();
+        reader.beginCategory(parent, categoryField, categoryAnnotation.name(), categoryAnnotation.desc());
+        if (parentField != null) {
+            reader.setCategoryParent(parentField);
+        }
+        try {
+            reader.pushPath(categoryField.getName());
+            processCategory(categoryField.get(parent), categoryField.getType(), reader, deferredSubCategories);
+            reader.popPath();
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        reader.endCategory();
+        for (var subCategory : deferredSubCategories) {
+            if (parentField == null) {
+                processCategoryMeta(reader, subCategory.getBoundTo(), subCategory.getField(), categoryField);
+            } else {
+                Warnings.warn("Found double recursive usb category at " + subCategory);
+            }
+        }
+    }
+
     public static void processConfig(Class<? extends Config> configClass, Config configObject, ConfigStructureReader reader) {
         reader.beginConfig(configClass, configObject);
         for (Field categoryField : getAllFields(configClass)) {
-            Category categoryAnnotation = categoryField.getAnnotation(Category.class);
-
-            if (categoryAnnotation == null) continue;
-            if (categoryField.getAnnotation(Expose.class) == null) {
-                Warnings.warn("@Category without @Expose in " + configClass + " on field " + categoryField);
-            }
-            if ((categoryField.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
-                Warnings.warn("@Category on non public field " + categoryField + " in " + configClass);
-                continue;
-            }
-            reader.beginCategory(configObject, categoryField, categoryAnnotation.name(), categoryAnnotation.desc());
-            try {
-                reader.pushPath(categoryField.getName());
-                processCategory(categoryField.get(configObject), categoryField.getType(), reader);
-                reader.popPath();
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-            reader.endCategory();
+            processCategoryMeta(reader, configObject, categoryField, null);
         }
         reader.endConfig();
     }

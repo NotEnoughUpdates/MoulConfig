@@ -41,6 +41,9 @@ public interface ConfigStructureReader {
 
     void beginCategory(Object baseObject, Field field, String name, String description);
 
+    default void setCategoryParent(Field field) {
+    }
+
     void endCategory();
 
     void beginAccordion(Object baseObject, Field field, ConfigOption option, int id);

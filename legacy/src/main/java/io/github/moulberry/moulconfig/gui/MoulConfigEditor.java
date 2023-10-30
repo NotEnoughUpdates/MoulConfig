@@ -30,6 +30,7 @@ import io.github.moulberry.moulconfig.internal.*;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
 import io.github.moulberry.moulconfig.processor.ProcessedCategory;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
+import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -127,7 +128,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     public void updateSearchResults(boolean recalculateOptionUniverse) {
-        if(recalculateOptionUniverse){
+        if (recalculateOptionUniverse) {
             allOptions.clear();
             for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
                 allOptions.addAll(category.options);
@@ -172,7 +173,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     public LinkedHashMap<String, ProcessedCategory> getCurrentlyVisibleCategories() {
-        return currentlyVisibleCategories;
+        var newHashes = new LinkedHashMap<>(currentlyVisibleCategories);
+        newHashes.entrySet().removeIf(it ->
+            it.getValue().parent != null
+                && !it.getValue().parent.equals(getSelectedCategory())
+                && !(currentlyVisibleCategories.get(getSelectedCategory()) != null && it.getValue().parent.equals(currentlyVisibleCategories.get(getSelectedCategory()).parent)));
+        return newHashes;
     }
 
     public void render() {
@@ -253,12 +259,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         Gui.drawRect(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff28282E); //Bottom
         Gui.drawRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
 
+        /// <editor-fold name="Render categories on the left">
+
         GlScissorStack.push(0, innerTop + 1, scaledResolution.getScaledWidth(),
             innerBottom - 1, scaledResolution
         );
 
         float catBarSize = 1;
         int catY = -categoryScroll.getValue();
+
 
         LinkedHashMap<String, ProcessedCategory> currentConfigEditing = getCurrentlyVisibleCategories();
         for (Map.Entry<String, ProcessedCategory> entry : currentConfigEditing.entrySet()) {
@@ -303,6 +312,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         );
 
         GlScissorStack.pop(scaledResolution);
+        /// </editor-fold>
 
         TextRenderUtils.drawStringCenteredScaledMaxWidth("Categories",
             fr, x + 75, y + 44, false, 120, 0xa368ef
@@ -354,6 +364,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         Gui.drawRect(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff303036); //Bottom
         Gui.drawRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
 
+        /// <editor-fold name="Render options on the right">
         GlScissorStack.push(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, scaledResolution);
         float barSize = 1;
         int optionY = -optionsScroll.getValue();
@@ -407,6 +418,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         }
 
         GlScissorStack.pop(scaledResolution);
+
+        /// </editor-fold>
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {

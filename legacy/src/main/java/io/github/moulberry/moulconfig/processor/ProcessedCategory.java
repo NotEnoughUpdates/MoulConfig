@@ -20,6 +20,8 @@
 
 package io.github.moulberry.moulconfig.processor;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +33,18 @@ public class ProcessedCategory {
     public final Field reflectField;
     public final List<ProcessedOption> options = new ArrayList<>();
 
+    public @Nullable String parent;
+
+
     public ProcessedCategory(Field field, String name, String desc) {
+        this(field, name, desc, null);
+    }
+
+    public ProcessedCategory(Field field, String name, String desc, @Nullable String parent) {
         this.field = field.getName();
         this.reflectField = field;
         this.name = name;
+        this.parent = parent;
         this.desc = desc;
     }
 }
