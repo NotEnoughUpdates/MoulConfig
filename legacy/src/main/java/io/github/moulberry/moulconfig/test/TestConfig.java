@@ -34,6 +34,8 @@ import java.util.List;
 public class TestConfig extends Config {
     @Category(name = "Test Category", desc = "Test Description")
     public TestCategory testCategory = new TestCategory();
+    @Category(name = "Parent category",desc = "pArenting")
+    public TestCategoryParent parent = new TestCategoryParent();
 
     @Override
     public void executeRunnable(int runnableId) {

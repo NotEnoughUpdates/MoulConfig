@@ -66,7 +66,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     @Override
     public void beginCategory(Object baseObject, Field field, String name, String description) {
         currentCategory = new ProcessedCategory(field, name, description);
-        categories.put(field.getName(), currentCategory);
+        categories.put(field.toString(), currentCategory);
     }
 
     public T getConfigObject() {
@@ -127,6 +127,11 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     }
 
     @Override
+    public void setCategoryParent(Field field) {
+        currentCategory.parent = field.toString();
+    }
+
+    @Override
     public void emitGuiOverlay(Object baseObject, Field field, ConfigOption option) {
         Overlay overlay;
         try {
@@ -141,7 +146,8 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         subProcessor.editors = editors;
         subProcessor.currentCategory = new ProcessedCategory(field, option.name(), option.desc());
         pushPath(field.getName());
-        ConfigProcessorDriver.processCategory(overlay, field.getType(), subProcessor);
+        //TODO: warn for category inside overlay
+        ConfigProcessorDriver.processCategory(overlay, field.getType(), subProcessor, new ArrayList<>());
         popPath();
         processedOverlays.put(overlay, subProcessor.currentCategory.options);
     }
