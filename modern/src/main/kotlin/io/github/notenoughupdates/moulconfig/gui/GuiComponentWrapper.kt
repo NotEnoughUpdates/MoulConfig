@@ -10,7 +10,7 @@ import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.text.Text
 
-class GuiComponentWrapper(
+open class GuiComponentWrapper(
     val context: GuiContext,
     label: Text = Text.literal("")
 ) : Screen(label) {
