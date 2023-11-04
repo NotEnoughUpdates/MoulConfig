@@ -33,6 +33,36 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 public class RenderUtils {
+
+    public static void drawOpenCloseTriangle(
+        boolean isOpen,
+        double x,
+        double y,
+        double width,
+        double height
+    ) {
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(1, 1, 1, 1);
+        worldrenderer.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION);
+        if (isOpen) {
+            worldrenderer.pos(x, y, 0.0D).endVertex();
+            worldrenderer.pos(x + width / 2, y + height, 0.0D).endVertex();
+            worldrenderer.pos(x + width, y, 0.0D).endVertex();
+        } else {
+            worldrenderer.pos(x, y + height, 0.0D).endVertex();
+            worldrenderer.pos(x + width, y + height / 2, 0.0D).endVertex();
+            worldrenderer.pos(x, y, 0.0D).endVertex();
+        }
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+
+    }
+
     public static void drawFloatingRectDark(int x, int y, int width, int height) {
         drawFloatingRectDark(x, y, width, height, true);
     }
