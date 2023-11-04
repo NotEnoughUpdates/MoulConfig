@@ -57,6 +57,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     private float optionsBarend;
     private int lastMouseX = 0;
     private int keyboardScrollXCutoff = 0;
+    private boolean showSubcategories = true;
 
     private LinkedHashMap<String, ProcessedCategory> currentlyVisibleCategories;
     private Set<ProcessedOption> currentlyVisibleOptions;
@@ -132,6 +133,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     public void updateSearchResults(boolean recalculateOptionUniverse) {
+        showSubcategories = true;
         if (recalculateOptionUniverse) {
             allOptions.clear();
             for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
@@ -178,10 +180,16 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
     public LinkedHashMap<String, ProcessedCategory> getCurrentlyVisibleCategories() {
         var newHashes = new LinkedHashMap<>(currentlyVisibleCategories);
-        newHashes.entrySet().removeIf(it ->
-            it.getValue().parent != null
-                && !it.getValue().parent.equals(getSelectedCategory())
-                && !(currentlyVisibleCategories.get(getSelectedCategory()) != null && it.getValue().parent.equals(currentlyVisibleCategories.get(getSelectedCategory()).parent)));
+        newHashes.entrySet().removeIf(it -> {
+            if (it.getValue().parent == null) return false;
+            if (!showSubcategories) return true;
+            if (it.getValue().parent.equals(getSelectedCategory())) return false;
+            var processedCategory = currentlyVisibleCategories.get(getSelectedCategory());
+            if (processedCategory == null) return true;
+            //noinspection RedundantIfStatement
+            if (it.getValue().parent.equals(processedCategory.parent)) return false;
+            return true;
+        });
         return newHashes;
     }
 
@@ -295,7 +303,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 fr, x + 75, y + 70 + catY, false, childCategories != null ? 80 : 100, -1
             );
             if (childCategories != null) {
-                RenderUtils.drawOpenCloseTriangle(isSelected || childCategories.contains(getSelectedCategory()), x + 22, y + 67 + catY, 6, 6);
+                RenderUtils.drawOpenCloseTriangle(showSubcategories && (isSelected || childCategories.contains(getSelectedCategory())), x + 22, y + 67 + catY, 6, 6);
             }
             catY += 15;
             if (catY > 0) {
@@ -701,7 +709,13 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     }
                     if (mouseX >= x + 5 && mouseX <= x + 145 &&
                         mouseY >= y + 70 + catY - 7 && mouseY <= y + 70 + catY + 7) {
-                        setSelectedCategory(entry.getKey());
+                        if (entry.getKey().equals(getSelectedCategory())) {
+                            if (entry.getValue().parent == null)
+                                showSubcategories = !showSubcategories;
+                        } else {
+                            showSubcategories = true;
+                            setSelectedCategory(entry.getKey());
+                        }
                         return true;
                     }
                     catY += 15;
