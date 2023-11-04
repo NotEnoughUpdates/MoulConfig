@@ -303,7 +303,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 fr, x + 75, y + 70 + catY, false, childCategories != null ? 80 : 100, -1
             );
             if (childCategories != null) {
-                RenderUtils.drawOpenCloseTriangle(showSubcategories && (isSelected || childCategories.contains(getSelectedCategory())), x + 25, y + 67 + catY, 6, 6);
+                var isExpanded = showSubcategories && (isSelected || childCategories.contains(getSelectedCategory()));
+                RenderUtils.drawOpenCloseTriangle(isExpanded, x + 25, y + 67 + catY, 6, 6);
+                if (isExpanded)
+                    drawVerticalLine(x + 28, y + catY + 76, y + catY + 76 + childCategories.size() * 15, 0xFF444444);
             }
             catY += 15;
             if (catY > 0) {
