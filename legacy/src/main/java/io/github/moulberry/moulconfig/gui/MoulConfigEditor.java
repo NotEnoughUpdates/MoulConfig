@@ -60,14 +60,18 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
     private LinkedHashMap<String, ProcessedCategory> currentlyVisibleCategories;
     private Set<ProcessedOption> currentlyVisibleOptions;
-
+    private Map<String, Set<String>> childCategoryLookup = new HashMap<>();
     private List<ProcessedOption> allOptions = new ArrayList<>();
 
     public MoulConfigEditor(MoulConfigProcessor<T> processedConfig) {
         this.openedMillis = System.currentTimeMillis();
         this.processedConfig = processedConfig;
-        for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
-            allOptions.addAll(category.options);
+        for (Map.Entry<String, ProcessedCategory> category : processedConfig.getAllCategories().entrySet()) {
+            allOptions.addAll(category.getValue().options);
+            if (category.getValue().parent != null) {
+                childCategoryLookup.computeIfAbsent(category.getValue().parent, ignored -> new HashSet<>())
+                    .add(category.getKey());
+            }
         }
         updateSearchResults();
     }
@@ -181,6 +185,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         return newHashes;
     }
 
+    public LinkedHashMap<String, ProcessedCategory> getCurrentlySearchedCategories() {
+        return currentlyVisibleCategories;
+    }
+
     public void render() {
         optionsScroll.tick();
         categoryScroll.tick();
@@ -276,14 +284,19 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 setSelectedCategory(entry.getKey());
             }
             String catName = entry.getValue().name;
-            if (entry.getKey().equals(getSelectedCategory())) {
+            var isSelected = entry.getKey().equals(getSelectedCategory());
+            if (isSelected) {
                 catName = EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.UNDERLINE + catName;
             } else {
                 catName = EnumChatFormatting.GRAY + catName;
             }
+            var childCategories = childCategoryLookup.get(entry.getKey());
             TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
-                fr, x + 75, y + 70 + catY, false, 100, -1
+                fr, x + 75, y + 70 + catY, false, childCategories != null ? 80 : 100, -1
             );
+            if (childCategories != null) {
+                RenderUtils.drawOpenCloseTriangle(isSelected || childCategories.contains(getSelectedCategory()), x + 22, y + 67 + catY, 6, 6);
+            }
             catY += 15;
             if (catY > 0) {
                 catBarSize =
