@@ -284,7 +284,6 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         float catBarSize = 1;
         int catY = -categoryScroll.getValue();
 
-
         LinkedHashMap<String, ProcessedCategory> currentConfigEditing = getCurrentlyVisibleCategories();
         for (Map.Entry<String, ProcessedCategory> entry : currentConfigEditing.entrySet()) {
             String selectedCategory = getSelectedCategory();
@@ -295,8 +294,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             var isSelected = entry.getKey().equals(getSelectedCategory());
             if (isSelected) {
                 catName = EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.UNDERLINE + catName;
-            } else {
+            } else if (entry.getValue().parent == null) {
                 catName = EnumChatFormatting.GRAY + catName;
+            } else {
+                catName = EnumChatFormatting.DARK_GRAY + catName;
             }
             var childCategories = childCategoryLookup.get(entry.getKey());
             TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
