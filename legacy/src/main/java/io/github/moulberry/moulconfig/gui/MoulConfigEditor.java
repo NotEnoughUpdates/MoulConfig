@@ -304,9 +304,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             );
             if (childCategories != null) {
                 var isExpanded = showSubcategories && (isSelected || childCategories.contains(getSelectedCategory()));
-                RenderUtils.drawOpenCloseTriangle(isExpanded, x + 25, y + 67 + catY, 6, 6);
+                RenderUtils.drawOpenCloseTriangle(isExpanded, x + 24.5, y + 67 + catY, 6, 6);
                 if (isExpanded)
-                    drawVerticalLine(x + 28, y + catY + 76, y + catY + 76 + childCategories.size() * 15, 0xFF444444);
+                    drawVerticalLine(x + 27, y + catY + 76, y + catY + 76 + childCategories.size() * 15, 0xFF444444);
             }
             catY += 15;
             if (catY > 0) {
