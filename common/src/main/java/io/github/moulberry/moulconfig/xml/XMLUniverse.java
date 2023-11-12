@@ -54,6 +54,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new IndirectLoader());
         xmlUniverse.registerLoader(new WhenLoader());
         xmlUniverse.registerLoader(new PanelLoader());
+        xmlUniverse.registerLoader(new MetaLoader());
         xmlUniverse.registerMapper(String.class, Function.identity());
         xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
         xmlUniverse.registerMapper(int.class, Integer::valueOf);

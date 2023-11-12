@@ -1,9 +1,6 @@
 package io.github.notenoughupdates.moulconfig.gui
 
-import io.github.moulberry.moulconfig.gui.GuiContext
-import io.github.moulberry.moulconfig.gui.GuiImmediateContext
-import io.github.moulberry.moulconfig.gui.KeyboardEvent
-import io.github.moulberry.moulconfig.gui.MouseEvent
+import io.github.moulberry.moulconfig.gui.*
 import io.github.notenoughupdates.moulconfig.platform.ModernRenderContext
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
@@ -14,6 +11,10 @@ open class GuiComponentWrapper(
     val context: GuiContext,
     label: Text = Text.literal("")
 ) : Screen(label) {
+    init {
+        context.setCloseRequestHandler(this::close)
+    }
+
     open fun createContext(drawContext: DrawContext? = null): GuiImmediateContext {
         val mouse = MinecraftClient.getInstance().mouse
         val window = client!!.window
@@ -32,6 +33,17 @@ open class GuiComponentWrapper(
             x, y, x, y
         )
     }
+
+    override fun close() {
+        if (context.onBeforeClose() == CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE) {
+            super.close()
+        }
+    }
+
+    override fun removed() {
+        context.onAfterClose()
+    }
+
 
     override fun render(drawContext: DrawContext?, i: Int, j: Int, f: Float) {
         super.render(drawContext, i, j, f)

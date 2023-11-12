@@ -40,6 +40,7 @@ public class GuiContext {
     public final GuiComponent root;
     public GuiComponent focusedElement;
     public List<FloatingGuiElement> floatingWindows = new ArrayList<>();
+    public Runnable closeRequestHandler;
 
     public GuiContext(GuiComponent root) {
         this.root = root;
@@ -47,5 +48,29 @@ public class GuiContext {
             guiElementNew.setContext(this);
             return _void;
         });
+    }
+
+    public void onAfterClose() {
+        root.foldRecursive((Void) null, (component, _void) -> {
+            if (component instanceof CloseEventListener) {
+                ((CloseEventListener) component).onAfterClose();
+            }
+            return _void;
+        });
+    }
+
+    public CloseEventListener.CloseAction onBeforeClose() {
+        return root.foldRecursive(CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE, (component, action) -> {
+            if (component instanceof CloseEventListener) {
+                return ((CloseEventListener) component).onBeforeClose().or(action);
+            }
+            return action;
+        });
+    }
+
+    public void requestClose() {
+        if (closeRequestHandler != null) {
+            closeRequestHandler.run();
+        }
     }
 }

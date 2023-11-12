@@ -24,6 +24,7 @@ import io.github.moulberry.moulconfig.internal.ForgeRenderContext;
 import lombok.NonNull;
 import lombok.ToString;
 import net.minecraft.client.gui.GuiScreen;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -34,8 +35,9 @@ public class GuiScreenElementWrapperNew extends GuiScreen {
     @NonNull
     public GuiContext context;
 
-    public GuiScreenElementWrapperNew(GuiContext context) {
+    public GuiScreenElementWrapperNew(@NotNull GuiContext context) {
         this.context = context;
+        context.setCloseRequestHandler(this::requestClose);
     }
 
     protected GuiImmediateContext createContext() {
@@ -46,6 +48,28 @@ public class GuiScreenElementWrapperNew extends GuiScreen {
             width, height,
             x, y, x, y
         );
+    }
+
+    @Override
+    public void onGuiClosed() {
+        super.onGuiClosed();
+        context.onAfterClose();
+    }
+
+    public void requestClose() {
+        if (context.onBeforeClose() == CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE) {
+            this.mc.displayGuiScreen(null);
+            if (this.mc.currentScreen == null) {
+                this.mc.setIngameFocus();
+            }
+        }
+    }
+
+    @Override
+    protected void keyTyped(char typedChar, int keyCode) {
+        if (keyCode == Keyboard.KEY_ESCAPE) {
+            requestClose();
+        }
     }
 
     @Override

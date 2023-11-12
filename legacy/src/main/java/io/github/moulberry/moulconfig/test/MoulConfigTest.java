@@ -84,17 +84,17 @@ public class MoulConfigTest {
             int my = Minecraft.getMinecraft().displayHeight - Mouse.getY() - 1;
             ChromaColour c = ChromaColour.forLegacyString(testConfig.testCategory.colour);
             RenderUtils.drawGradientRect(
-                    0, 10, 10, 40, 40, c.getEffectiveColour().getRGB(), c.getEffectiveColour(10).getRGB()
+                0, 10, 10, 40, 40, c.getEffectiveColour().getRGB(), c.getEffectiveColour(10).getRGB()
             );
             FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
             fontRendererObj.drawSplitString(
-                    "Global Mouse X: " + mx + "\n" +
-                            "Global Mouse X: " + my + "\n" +
-                            "Local Mouse X: " + o.realWorldXToLocalX(mx) + "\n" +
-                            "Local Mouse Y: " + o.realWorldYToLocalY(my) + "\n" +
-                            "Width: " + o.getWidth() + "\n" +
-                            "Height: " + o.getHeight(),
-                    1, 1, o.getWidth(), 0xFFFFFFFF
+                "Global Mouse X: " + mx + "\n" +
+                    "Global Mouse X: " + my + "\n" +
+                    "Local Mouse X: " + o.realWorldXToLocalX(mx) + "\n" +
+                    "Local Mouse Y: " + o.realWorldYToLocalY(my) + "\n" +
+                    "Width: " + o.getWidth() + "\n" +
+                    "Height: " + o.getHeight(),
+                1, 1, o.getWidth(), 0xFFFFFFFF
             );
             GlStateManager.popMatrix();
         }
@@ -110,8 +110,8 @@ public class MoulConfigTest {
         BuiltinMoulConfigGuis.addProcessors(testConfigMoulConfigProcessor);
         ConfigProcessorDriver.processConfig(testConfig.getClass(), testConfig, testConfigMoulConfigProcessor);
         testConfig.testCategory.text2.whenChanged((oldValue, newValue) ->
-                Minecraft.getMinecraft().thePlayer.addChatMessage(
-                        new ChatComponentText("Just changed text2 from " + oldValue + " to " + newValue)));
+            Minecraft.getMinecraft().thePlayer.addChatMessage(
+                new ChatComponentText("Just changed text2 from " + oldValue + " to " + newValue)));
         ClientCommandHandler.instance.registerCommand(new CommandBase() {
             @Override
             public String getCommandName() {
@@ -136,17 +136,17 @@ public class MoulConfigTest {
                     screenToOpen = new MoulGuiOverlayEditor(testConfigMoulConfigProcessor);
                 } else if (args.length > 0 && "testgui".equals(args[0])) {
                     screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(
-                            new CenterComponent(new PanelComponent(
-                                    new ColumnComponent(
-                                            new TextComponent("Label", 80),
-                                            new RowComponent(new SwitchComponent(Property.of(false), 100), new TextComponent("Some property"))
-                                    )
-                            ))
+                        new CenterComponent(new PanelComponent(
+                            new ColumnComponent(
+                                new TextComponent("Label", 80),
+                                new RowComponent(new SwitchComponent(Property.of(false), 100), new TextComponent("Some property"))
+                            )
+                        ))
                     ));
                 } else if (args.length > 0 && "testxml".equals(args[0])) {
                     var xmlUniverse = XMLUniverse.getDefaultUniverse();
                     var gui = xmlUniverse.load(new ObjectBound(), Minecraft.getMinecraft().getResourceManager()
-                            .getResource(new ResourceLocation("moulconfig:test.xml")).getInputStream());
+                        .getResource(new ResourceLocation("moulconfig:test.xml")).getInputStream());
                     screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(gui));
                 } else {
                     screenToOpen = new GuiScreenElementWrapper(new MoulConfigEditor<>(testConfigMoulConfigProcessor));
@@ -173,6 +173,20 @@ public class MoulConfigTest {
     }
 
     public static class ObjectBound {
+        @Bind
+        public Runnable requestClose;
+
+        @Bind
+        public void afterClose() {
+            System.out.println("After close");
+        }
+
+        @Bind
+        public CloseEventListener.CloseAction beforeClose() {
+            System.out.println("Before close");
+            return CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE;
+        }
+
         @Bind
         public IItemStack itemStack = ForgeItemStack.of(new ItemStack(Blocks.sand));
         @Bind
