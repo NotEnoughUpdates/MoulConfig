@@ -1,0 +1,3 @@
+MoulConfig.xsd linguist-generated
+gradlew* linguist-vendored
+gradle/wrapper/* linguist-vendored
