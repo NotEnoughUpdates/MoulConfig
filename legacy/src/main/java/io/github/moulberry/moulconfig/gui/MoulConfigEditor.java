@@ -36,7 +36,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.EnumChatFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -293,9 +292,22 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             var isSelected = entry.getKey().equals(getSelectedCategory());
             var childCategories = childCategoryLookup.get(entry.getKey());
             var catName = processedConfig.getConfigObject().formatCategoryName(entry.getValue(), isSelected);
-            TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
-                fr, x + 75, y + 70 + catY, false, childCategories != null ? 80 : 100, -1
-            );
+            var align = processedConfig.getConfigObject().alignCategory(entry.getValue(), isSelected);
+            var textLength = fr.getStringWidth(catName);
+            var isIndented = childCategories != null || entry.getValue().parent != null;
+            if (textLength > ((isIndented) ? 90 : 100)) {
+                TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
+                    fr, x + 75 + (isIndented ? 5 : 0), y + 70 + catY, false, (isIndented ? 90 : 100), -1
+                );
+            } else if (align == HorizontalAlign.CENTER) {
+                TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
+                    fr, x + 75, y + 70 + catY, false, (isIndented ? 90 : 100), -1
+                );
+            } else if (align == HorizontalAlign.RIGHT) {
+                fr.drawString(catName, x + 75 + 50 - textLength, y + 70 + catY - fr.FONT_HEIGHT / 2, -1, false);
+            } else {
+                fr.drawString(catName, x + 75 - 50 + (isIndented ? 10 : 0), y + 70 + catY - fr.FONT_HEIGHT / 2, -1, false);
+            }
             if (childCategories != null) {
                 var isExpanded = showSubcategories && (isSelected || childCategories.contains(getSelectedCategory()));
                 RenderUtils.drawOpenCloseTriangle(isExpanded, x + 24.5, y + 67 + catY, 6, 6);

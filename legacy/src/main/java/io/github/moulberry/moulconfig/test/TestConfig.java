@@ -24,7 +24,9 @@ import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.Social;
 import io.github.moulberry.moulconfig.annotations.Category;
+import io.github.moulberry.moulconfig.gui.HorizontalAlign;
 import io.github.moulberry.moulconfig.internal.ForgeMinecraft;
+import io.github.moulberry.moulconfig.processor.ProcessedCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 
@@ -36,6 +38,16 @@ public class TestConfig extends Config {
     public TestCategory testCategory = new TestCategory();
     @Category(name = "Parent category",desc = "pArenting")
     public TestCategoryParent parent = new TestCategoryParent();
+
+    @Override
+    public HorizontalAlign alignCategory(ProcessedCategory category, boolean isSelected) {
+        return HorizontalAlign.RIGHT;
+    }
+
+    @Override
+    public String formatCategoryName(ProcessedCategory category, boolean isSelected) {
+        return super.formatCategoryName(category, isSelected) + "AAAAAAAAAAAA";
+    }
 
     @Override
     public void executeRunnable(int runnableId) {

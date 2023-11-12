@@ -20,6 +20,7 @@
 
 package io.github.moulberry.moulconfig;
 
+import io.github.moulberry.moulconfig.gui.HorizontalAlign;
 import io.github.moulberry.moulconfig.processor.ProcessedCategory;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -28,6 +29,10 @@ import java.util.List;
 
 public abstract class Config {
     public void executeRunnable(int runnableId) {
+    }
+
+    public HorizontalAlign alignCategory(ProcessedCategory category, boolean isSelected) {
+        return HorizontalAlign.CENTER;
     }
 
     public String formatCategoryName(ProcessedCategory category, boolean isSelected) {
