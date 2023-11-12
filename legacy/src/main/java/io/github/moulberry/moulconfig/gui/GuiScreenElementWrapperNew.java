@@ -38,7 +38,7 @@ public class GuiScreenElementWrapperNew extends GuiScreen {
         this.context = context;
     }
 
-    GuiImmediateContext createContext() {
+    protected GuiImmediateContext createContext() {
         int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
         int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
         return new GuiImmediateContext(

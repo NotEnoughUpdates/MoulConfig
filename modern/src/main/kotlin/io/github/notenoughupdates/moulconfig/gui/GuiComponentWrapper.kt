@@ -14,7 +14,7 @@ open class GuiComponentWrapper(
     val context: GuiContext,
     label: Text = Text.literal("")
 ) : Screen(label) {
-    private fun createContext(drawContext: DrawContext? = null): GuiImmediateContext {
+    open fun createContext(drawContext: DrawContext? = null): GuiImmediateContext {
         val mouse = MinecraftClient.getInstance().mouse
         val window = client!!.window
         val x = (mouse.x * window.scaledWidth.toDouble() / window.width.toDouble()).toInt()
