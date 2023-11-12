@@ -20,11 +20,24 @@
 
 package io.github.moulberry.moulconfig;
 
+import io.github.moulberry.moulconfig.processor.ProcessedCategory;
+import net.minecraft.util.EnumChatFormatting;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Config {
     public void executeRunnable(int runnableId) {
+    }
+
+    public String formatCategoryName(ProcessedCategory category, boolean isSelected) {
+        if (isSelected) {
+            return EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.UNDERLINE + category.name;
+        } else if (category.parent == null) {
+            return EnumChatFormatting.GRAY + category.name;
+        } else {
+            return EnumChatFormatting.DARK_GRAY + category.name;
+        }
     }
 
     public List<Social> getSocials() {

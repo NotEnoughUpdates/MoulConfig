@@ -290,16 +290,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             if (selectedCategory == null || !currentConfigEditing.containsKey(selectedCategory)) {
                 setSelectedCategory(entry.getKey());
             }
-            String catName = entry.getValue().name;
             var isSelected = entry.getKey().equals(getSelectedCategory());
-            if (isSelected) {
-                catName = EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.UNDERLINE + catName;
-            } else if (entry.getValue().parent == null) {
-                catName = EnumChatFormatting.GRAY + catName;
-            } else {
-                catName = EnumChatFormatting.DARK_GRAY + catName;
-            }
             var childCategories = childCategoryLookup.get(entry.getKey());
+            var catName = processedConfig.getConfigObject().formatCategoryName(entry.getValue(), isSelected);
             TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
                 fr, x + 75, y + 70 + catY, false, childCategories != null ? 80 : 100, -1
             );
