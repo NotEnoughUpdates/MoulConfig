@@ -407,7 +407,33 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             int optionWidthDefault = innerRight - innerLeft - 20;
             GlStateManager.enableDepth();
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ProcessedOption option : getOptionsInCategory(cat)) {
+            var options = getOptionsInCategory(cat);
+            if (options.isEmpty()) {
+                var titlePositionX = (innerLeft + innerRight) / 2;
+                var titlePositionY = (innerTop + innerBottom) / 3;
+                var innerSize = innerRight - innerLeft - 40;
+                var titleScale = 2;
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(titlePositionX, titlePositionY, 0);
+                TextRenderUtils.drawStringCenteredScaledMaxWidth("§7Seems like your search is found in a subcategory.", fr,
+                    0,
+                    titleScale * fr.FONT_HEIGHT,
+                    true, innerSize, -1
+                );
+                TextRenderUtils.drawStringCenteredScaledMaxWidth("§7Check out the subcategories on the left.", fr,
+                    0,
+                    (titleScale + 1) * fr.FONT_HEIGHT,
+                    true, innerSize, -1
+                );
+                GlStateManager.scale(titleScale, titleScale, 1);
+                TextRenderUtils.drawStringCenteredScaledMaxWidth("§7No options found.", fr,
+                    0,
+                    0,
+                    true, innerSize / titleScale, -1
+                );
+                GlStateManager.popMatrix();
+            }
+            for (ProcessedOption option : options) {
 
                 int optionWidth = optionWidthDefault;
                 if (option.accordionId >= 0) {
