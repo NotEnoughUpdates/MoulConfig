@@ -168,6 +168,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             currentlyVisibleOptions = matchingOptionsAndDependencies;
 
             Set<ProcessedCategory> visibleCategories = matchingOptionsAndDependencies.stream().map(it -> it.category).collect(Collectors.toSet());
+            Set<ProcessedCategory> parentCategories = visibleCategories.stream()
+                .filter(it -> it.parent != null).map(it -> processedConfig.getAllCategories().get(it.parent))
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+            visibleCategories.addAll(parentCategories);
             LinkedHashMap<String, ProcessedCategory> matchingCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
             matchingCategories.entrySet().removeIf(stringProcessedCategoryEntry -> !visibleCategories.contains(stringProcessedCategoryEntry.getValue()));
             currentlyVisibleCategories = matchingCategories;

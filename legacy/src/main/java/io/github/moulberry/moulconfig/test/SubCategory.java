@@ -10,4 +10,10 @@ public class SubCategory {
     )
     @ConfigEditorBoolean
     public boolean w = false;
+    @ConfigOption(
+        name = "EICAR",
+        desc = "com"
+    )
+    @ConfigEditorBoolean
+    public boolean we = false;
 }
