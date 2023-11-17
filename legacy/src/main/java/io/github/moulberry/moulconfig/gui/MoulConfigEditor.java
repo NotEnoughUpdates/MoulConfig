@@ -146,18 +146,25 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !it.editor.fulfillsSearch(word)));
             }
 
-            LinkedHashMap<String, ProcessedCategory> directlyMatchedCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
+            HashSet<ProcessedCategory> directlyMatchedCategories = new HashSet<>(processedConfig.getAllCategories().values());
             if (!processedConfig.getConfigObject().shouldSearchCategoryNames()) directlyMatchedCategories.clear();
             for (String word : toSearch.split(" +")) {
-                directlyMatchedCategories.entrySet().removeIf(it -> ContextAware.wrapErrorWithContext(it.getValue().reflectField,
-                    () -> !(it.getValue().name.toLowerCase(Locale.ROOT).contains(word) || it.getValue().desc.toLowerCase(Locale.ROOT).contains(word))));
+                directlyMatchedCategories.removeIf(it -> ContextAware.wrapErrorWithContext(it.reflectField,
+                    () -> !(it.name.toLowerCase(Locale.ROOT).contains(word) || it.desc.toLowerCase(Locale.ROOT).contains(word))));
             }
 
             Set<ProcessedOption> matchingOptionsAndDependencies = new HashSet<>();
 
+            var childCategoriesOfDirectlyMatched = directlyMatchedCategories.stream()
+                .flatMap(it -> childCategoryLookup.getOrDefault(it.name, Collections.emptySet()).stream())
+                .map(processedConfig.getAllCategories()::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+            directlyMatchedCategories.addAll(childCategoriesOfDirectlyMatched);
+
             // No search propagation needed if category is matched.
             // Add them directly to the final visible option set.
-            for (ProcessedCategory directCategory : directlyMatchedCategories.values()) {
+            for (ProcessedCategory directCategory : directlyMatchedCategories) {
                 matchingOptionsAndDependencies.addAll(directCategory.options);
                 directCategory.options.forEach(matchingOptions::remove);
             }
@@ -481,6 +488,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         /// </editor-fold>
 
+        /// <editor-fold name="Render overlays for options on the right">
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
             int optionYOverlay = -optionsScroll.getValue();
@@ -535,6 +543,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             GlStateManager.translate(0, 0, -10);
         }
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        /// </editor-fold>
 
         optionsBarStart = optionsScroll.getValue() / (float) (optionY + optionsScroll.getValue());
         optionsBarend = optionsBarStart + barSize;
