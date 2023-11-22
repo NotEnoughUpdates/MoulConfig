@@ -1,31 +1,49 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     idea
     java
     `maven-publish`
     kotlin("jvm")
-    id("gg.essential.loom")
     id("org.jetbrains.dokka")
     id("com.github.johnrengelman.shadow")
+    id("xyz.wagyourtail.unimined")
     kotlin("plugin.lombok")
 }
 
-loom {
-    forge {
-        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
+unimined.minecraft {
+    version("1.8.9")
+    mappings {
+        searge()
+        mcp("stable", "22-1.8.9")
     }
-    launchConfigs {
-        "client" {
-            property("moulconfig.testmod", "true")
+    minecraftForge {
+        loader("11.15.1.2318-1.8.9")
+    }
+    runs {
+        config("client") {
+            this.jvmArgs.add("-Dmoulconfig.testmod=true")
+            this.jvmArgs.add("-Dmoulconfig.warn.crash=false")
         }
     }
 }
+//loom {
+//    forge {
+//        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
+//    }
+//    launchConfigs {
+//        "client" {
+//            property("moulconfig.testmod", "true")
+//        }
+//    }
+//}
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
-dependencies {
-    "minecraft"("com.mojang:minecraft:1.8.9")
-    "mappings"("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
-    "forge"("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+java {
+    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_1_8
 }
+
 val include by configurations.creating {
     isVisible = true
 }
@@ -46,6 +64,12 @@ tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
 
+tasks.withType(KotlinCompile::class) {
+    this.compilerOptions {
+        this.jvmTarget.set(JvmTarget.JVM_1_8)
+    }
+}
+
 tasks.shadowJar {
     configurations = listOf(include)
 }
@@ -62,13 +86,6 @@ tasks.dokkaHtml {
     }
 }
 
-project.afterEvaluate {
-    tasks.named("runClient", JavaExec::class) {
-        this.javaLauncher.set(javaToolchains.launcherFor {
-            languageVersion.set(JavaLanguageVersion.of(8))
-        })
-    }
-}
 
 tasks.jar {
     archiveClassifier.set("small")
@@ -76,14 +93,12 @@ tasks.jar {
 tasks.shadowJar {
     archiveClassifier.set("dev")
 }
-tasks.remapJar {
+val remapJar by tasks.named("remapJar", Zip::class) {
     archiveClassifier.set("")
-    dependsOn(tasks.shadowJar)
-    input.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
 
 val libraryJar by tasks.creating(Jar::class) {
-    from(zipTree(tasks.remapJar.get().archiveFile))
+    from(zipTree(remapJar.archiveFile))
     archiveClassifier.set("notest")
     exclude("io/github/moulberry/moulconfig/test/*")
     exclude("mcmod.info")
@@ -95,7 +110,7 @@ publishing {
             artifact(libraryJar) {
                 classifier = ""
             }
-            artifact(tasks.remapJar) {
+            artifact(remapJar) {
                 classifier = "test"
             }
             artifact(tasks.shadowJar) {

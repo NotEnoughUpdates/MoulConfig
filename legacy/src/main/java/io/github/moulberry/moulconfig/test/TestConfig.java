@@ -20,6 +20,7 @@
 
 package io.github.moulberry.moulconfig.test;
 
+import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.Social;
@@ -35,8 +36,10 @@ import java.util.List;
 
 public class TestConfig extends Config {
     @Category(name = "Test Category", desc = "Test Description")
+    @Expose
     public TestCategory testCategory = new TestCategory();
     @Category(name = "Parent category",desc = "pArenting")
+    @Expose
     public TestCategoryParent parent = new TestCategoryParent();
 
     @Override

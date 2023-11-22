@@ -7,7 +7,9 @@ import io.github.moulberry.moulconfig.common.MyResourceLocation
 import net.minecraft.client.Minecraft
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ResourceLocation
+import org.apache.logging.log4j.LogManager
 import java.io.InputStream
+import kotlin.math.log
 
 class ForgeMinecraft : IMinecraft {
     override fun bindTexture(resourceLocation: MyResourceLocation) {
@@ -17,6 +19,24 @@ class ForgeMinecraft : IMinecraft {
     override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {
         return Minecraft.getMinecraft().resourceManager.getResource(fromMyResourceLocation(resourceLocation))
             .inputStream
+    }
+
+    override fun getLogger(label: String): MCLogger {
+        val logger = LogManager.getLogger(label)
+        return object : MCLogger {
+            override fun warn(text: String) {
+                logger.warn(text)
+            }
+
+            override fun info(text: String) {
+                logger.info(text)
+            }
+
+            override fun error(text: String, throwable: Throwable) {
+                logger.error(text, throwable)
+            }
+
+        }
     }
 
     override val isDevelopmentEnvironment: Boolean

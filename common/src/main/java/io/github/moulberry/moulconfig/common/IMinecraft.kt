@@ -1,5 +1,6 @@
 package io.github.moulberry.moulconfig.common
 
+import io.github.moulberry.moulconfig.internal.MCLogger
 import java.io.InputStream
 import java.util.*
 
@@ -10,6 +11,8 @@ import java.util.*
 interface IMinecraft {
     fun bindTexture(resourceLocation: MyResourceLocation)
     fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream
+    fun getLogger(label: String): MCLogger
+
     val isDevelopmentEnvironment: Boolean
     val defaultFontRenderer: IFontRenderer
     val keyboardConstants: IKeyboardConstants

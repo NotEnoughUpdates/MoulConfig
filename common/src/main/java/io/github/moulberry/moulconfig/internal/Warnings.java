@@ -26,14 +26,12 @@ import io.github.moulberry.moulconfig.common.IMinecraft;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 public class Warnings {
     public static boolean isDevEnv = IMinecraft.instance.isDevelopmentEnvironment();
     public static boolean shouldWarn = PropertyUtil.getBooleanWithFallback("moulconfig.warn", isDevEnv);
     public static boolean shouldCrash = shouldWarn && PropertyUtil.getBooleanWithFallback("moulconfig.warn.crash", isDevEnv);
-    public static Logger logger = LogManager.getLogManager().getLogger("MoulConfig");
+    public static MCLogger logger = IMinecraft.instance.getLogger("MoulConfig");
     public static String basePackage = GuiTextures.class.getPackage().getName() + ".";
     public static String testPackage = basePackage + "test.";
     public static HashSet<Object> warnedObjects = new HashSet<>();
@@ -57,7 +55,7 @@ public class Warnings {
             modCall = stackTraceElement;
             break;
         }
-        logger.warning("Warning: " + warningText + " at " + stackTrace[depth] + " called by " + modCall);
+        logger.warn("Warning: " + warningText + " at " + stackTrace[depth] + " called by " + modCall);
         if (shouldCrash)
             throw new RuntimeException(warningText);
     }

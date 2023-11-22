@@ -4,9 +4,11 @@ import io.github.moulberry.moulconfig.common.IFontRenderer
 import io.github.moulberry.moulconfig.common.IKeyboardConstants
 import io.github.moulberry.moulconfig.common.IMinecraft
 import io.github.moulberry.moulconfig.common.MyResourceLocation
+import io.github.moulberry.moulconfig.internal.MCLogger
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier
+import org.apache.logging.log4j.LogManager
 import java.io.InputStream
 
 
@@ -36,6 +38,23 @@ class ModernMinecraft : IMinecraft {
 
     override fun bindTexture(resourceLocation: MyResourceLocation) {
         boundTexture = fromMyResourceLocation(resourceLocation)
+    }
+
+    override fun getLogger(label: String): MCLogger {
+        val logger = LogManager.getLogger(label)
+        return object : MCLogger {
+            override fun warn(text: String) {
+                logger.warn(text)
+            }
+
+            override fun info(text: String) {
+                logger.info(text)
+            }
+
+            override fun error(text: String, throwable: Throwable) {
+                logger.error(text, throwable)
+            }
+        }
     }
 
     override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {

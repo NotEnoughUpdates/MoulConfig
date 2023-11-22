@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.8.21"
     id("gg.essential.loom") version "0.10.0.+" apply false
     id("dev.architectury.architectury-pack200") version "0.1.3"
+    id("xyz.wagyourtail.unimined") version "1.1.0-SNAPSHOT" apply false
     id("org.jetbrains.dokka") version "1.8.10"
     kotlin("plugin.lombok") version "1.8.21"
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false
@@ -35,6 +36,7 @@ allprojects {
         mavenCentral()
         maven("https://repo.nea.moe/releases")
         maven("https://repo.spongepowered.org/maven/")
+        maven("https://maven.neoforged.net/releases")
     }
     afterEvaluate {
         (tasks.findByName("dokkaHtml") as? DokkaTask)?.apply {
