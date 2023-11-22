@@ -5,6 +5,7 @@ import io.github.moulberry.moulconfig.common.IKeyboardConstants
 import io.github.moulberry.moulconfig.common.IMinecraft
 import io.github.moulberry.moulconfig.common.MyResourceLocation
 import net.minecraft.client.Minecraft
+import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ResourceLocation
 import java.io.InputStream
 
@@ -17,6 +18,9 @@ class ForgeMinecraft : IMinecraft {
         return Minecraft.getMinecraft().resourceManager.getResource(fromMyResourceLocation(resourceLocation))
             .inputStream
     }
+
+    override val isDevelopmentEnvironment: Boolean
+        get() = Launch.blackboard.get("fml.deobfuscatedEnvironment") as Boolean
 
     companion object {
         @JvmStatic

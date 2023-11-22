@@ -21,6 +21,7 @@
 package io.github.moulberry.moulconfig.internal;
 
 import io.github.moulberry.moulconfig.GuiTextures;
+import io.github.moulberry.moulconfig.common.IMinecraft;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,8 +30,9 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class Warnings {
-    public static boolean isDevEnv = false /*TODO: fix this*/;
-    public static boolean shouldWarn = Boolean.getBoolean("moulconfig.warn") || isDevEnv;
+    public static boolean isDevEnv = IMinecraft.instance.isDevelopmentEnvironment();
+    public static boolean shouldWarn = PropertyUtil.getBooleanWithFallback("moulconfig.warn", isDevEnv);
+    public static boolean shouldCrash = shouldWarn && PropertyUtil.getBooleanWithFallback("moulconfig.warn.crash", isDevEnv);
     public static Logger logger = LogManager.getLogManager().getLogger("MoulConfig");
     public static String basePackage = GuiTextures.class.getPackage().getName() + ".";
     public static String testPackage = basePackage + "test.";
@@ -50,17 +52,21 @@ public class Warnings {
         StackTraceElement modCall = null;
         for (StackTraceElement stackTraceElement : stackTrace) {
             if (i++ < depth || (stackTraceElement.getClassName().startsWith(basePackage) &&
-                    !stackTraceElement.getClassName().startsWith(testPackage)))
+                !stackTraceElement.getClassName().startsWith(testPackage)))
                 continue;
             modCall = stackTraceElement;
             break;
         }
         logger.warning("Warning: " + warningText + " at " + stackTrace[depth] + " called by " + modCall);
+        if (shouldCrash)
+            throw new RuntimeException(warningText);
+    }
+
+    public static void warn(String warningText, int depth) {
+        if (shouldWarn) warn0(warningText, depth);
     }
 
     public static void warn(String warningText) {
-        if (shouldWarn) {
-            warn0(warningText, 3);
-        }
+        warn(warningText, 4);
     }
 }

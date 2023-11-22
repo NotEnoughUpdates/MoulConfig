@@ -64,6 +64,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     private List<ProcessedOption> allOptions = new ArrayList<>();
 
     public MoulConfigEditor(MoulConfigProcessor<T> processedConfig) {
+        processedConfig.requireFinalized();
         this.openedMillis = System.currentTimeMillis();
         this.processedConfig = processedConfig;
         for (Map.Entry<String, ProcessedCategory> category : processedConfig.getAllCategories().entrySet()) {

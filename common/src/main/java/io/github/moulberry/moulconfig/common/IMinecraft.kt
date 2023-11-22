@@ -10,6 +10,7 @@ import java.util.*
 interface IMinecraft {
     fun bindTexture(resourceLocation: MyResourceLocation)
     fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream
+    val isDevelopmentEnvironment: Boolean
     val defaultFontRenderer: IFontRenderer
     val keyboardConstants: IKeyboardConstants
 

@@ -4,6 +4,7 @@ import io.github.moulberry.moulconfig.common.IFontRenderer
 import io.github.moulberry.moulconfig.common.IKeyboardConstants
 import io.github.moulberry.moulconfig.common.IMinecraft
 import io.github.moulberry.moulconfig.common.MyResourceLocation
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier
 import java.io.InputStream
@@ -29,6 +30,9 @@ class ModernMinecraft : IMinecraft {
             return Identifier(resourceLocation.root, resourceLocation.path)
         }
     }
+
+    override val isDevelopmentEnvironment: Boolean
+        get() = FabricLoader.getInstance().isDevelopmentEnvironment
 
     override fun bindTexture(resourceLocation: MyResourceLocation) {
         boundTexture = fromMyResourceLocation(resourceLocation)

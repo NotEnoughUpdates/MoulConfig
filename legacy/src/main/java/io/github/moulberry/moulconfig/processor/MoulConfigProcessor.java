@@ -27,12 +27,12 @@ import io.github.moulberry.moulconfig.annotations.ConfigOption;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.moulberry.moulconfig.internal.Warnings;
+import lombok.Getter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 public class MoulConfigProcessor<T extends Config> implements ConfigStructureReader {
 
@@ -43,6 +43,9 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     private Map<Overlay, List<ProcessedOption>> processedOverlays = new IdentityHashMap<>();
     private Stack<Integer> accordion = new Stack<>();
     private Stack<String> categoryPath = new Stack<>();
+    @Getter
+    private boolean isFinalized;
+
     private Map<Class<? extends Annotation>, BiFunction<ProcessedOption, Annotation, GuiOptionEditor>> editors = new HashMap<>();
 
     public MoulConfigProcessor(T configBaseObject) {
@@ -57,6 +60,12 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     public <A extends Annotation> void registerConfigEditor(Class<A> annotation, BiFunction<ProcessedOption, ? extends A, GuiOptionEditor> editorGenerator) {
         editors.put(annotation, (BiFunction<ProcessedOption, Annotation, GuiOptionEditor>) editorGenerator);
+    }
+
+    public void requireFinalized() {
+        if (!isFinalized) {
+            Warnings.warn("Finalization requirement on MoulConfigProcessor broken. Please first process a config", 4);
+        }
     }
 
     public List<Overlay> getAllOverlays() {
@@ -76,6 +85,21 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     @Override
     public void pushPath(String fieldPath) {
         categoryPath.push(fieldPath);
+    }
+
+    @Override
+    public void beginConfig(Class<? extends Config> configClass, Config configObject) {
+        if (editors.isEmpty()) {
+            Warnings.warn("Calling a config processor with no editors registered. Consider registering editors using BuiltinMoulConfigGuis.addProcessors or MoulConfigProcessor.withDefaults");
+        }
+        if (isFinalized) {
+            Warnings.warn("Processing a finalized config");
+        }
+    }
+
+    @Override
+    public void endConfig() {
+        isFinalized = true;
     }
 
     @Override
@@ -167,10 +191,12 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     }
 
     public LinkedHashMap<String, ProcessedCategory> getAllCategories() {
+        requireFinalized();
         return this.categories;
     }
 
     public Map<Overlay, List<ProcessedOption>> getOverlayOptions() {
+        requireFinalized();
         return processedOverlays;
     }
 }
