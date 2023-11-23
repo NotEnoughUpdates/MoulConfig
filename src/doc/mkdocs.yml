@@ -11,7 +11,7 @@ copyright: 'Copyright &copy; 2023 Linnea Gräf'
 
 
 theme:
-  name: 'material'
+  name: bootstrap386
   social:
     - type: 'github'
       link: 'https://github.com/notenoughupdates/moulconfig'
@@ -26,3 +26,11 @@ theme:
 nav:
   - Home:
       - index.md
+  - Config:
+      - config/index.md
+  - Javadocs:
+      - javadocs/index.html
+      - Common: javadocs/common/index.html
+      - Modern: javadocs/modern/index.html
+      - Legacy: javadocs/legacy/index.html
+      - Annotations: javadocs/common/io.github.moulberry.moulconfig.annotations/index.html

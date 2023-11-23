@@ -81,6 +81,22 @@ allprojects {
         }
     }
 }
+mkdocs {
+    python {
+        pip("mkdocs-bootstrap386:0.0.2")
+    }
+    strict = false
+}
+
+tasks.register("compileAllDocs", Copy::class) {
+    dependsOn(tasks.mkdocsBuild)
+    dependsOn(tasks.dokkaHtmlMultiModule)
+    destinationDir = layout.buildDirectory.dir("allDocs").get().asFile
+    from(tasks.mkdocsBuild)
+    from(tasks.dokkaHtmlMultiModule.get().outputDirectory) {
+        into("javadocs")
+    }
+}
 
 subprojects {
     if (plugins.hasPlugin("org.jetbrains.dokka"))

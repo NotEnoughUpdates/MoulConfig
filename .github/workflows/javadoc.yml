@@ -20,9 +20,9 @@ jobs:
           java-version: 17
       - name: Generate JavaDoc
         run: |
-          ./gradlew dokkaHtmlMultiModule --stacktrace
+          ./gradlew compileAllDocs --stacktrace
       - name: Upload JavaDoc
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/dokka/htmlMultiModule
+          publish_dir: ./build/allDocs
