@@ -30,7 +30,7 @@ val hash = cmd("git", "rev-parse", "--short", "HEAD")!!
 val isSnapshot = tag == null
 allprojects {
     group = "org.notenoughupdates.moulconfig"
-    version = "99.99.99"// TODO: remove  tag ?: hash
+    version = tag ?: hash
     repositories {
         mavenLocal()
         mavenCentral()
@@ -87,4 +87,10 @@ allprojects {
             }
         }
     }
+}
+subprojects {
+    if (plugins.hasPlugin("org.jetbrains.dokka"))
+        dependencies {
+            "dokkaPlugin"("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.10")
+        }
 }
