@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="MoulConfig is a config library for Minecraft mods with multi version ambitions">
+        <meta name="author" content="Linnea Gräf">
+        <link rel="canonical" href="https://notenoughupdates.org/MoulConfig/a340a7a/config/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Config GUI - MoulConfig</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/bootstrap-theme.min.css" rel="stylesheet">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.3/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="..">MoulConfig</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Home <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="..">MoulConfig</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Config <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li class="active">
+                            <a href="./">Config GUI</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Javadocs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        <li >
+                            <a href="../javadocs/index.html">None</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../javadocs/common/index.html">Common</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../javadocs/modern/index.html">Modern</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../javadocs/legacy/index.html">Legacy</a>
+                        </li>
+                    
+                        <li >
+                            <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/index.html">Annotations</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                    <li >
+                        <a rel="next" href="..">
+                            <i class="fa fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li class="disabled">
+                        <a rel="prev" >
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </li>
+                
+                <li>
+                    <a href="https://github.com/NotEnoughUpdates/MoulConfig">
+                        
+                        MoulConfig
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+                <div class="row">
+                    <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+      
+    
+        <li class="main active"><a href="#config-gui">Config GUI</a></li>
+        
+            <li><a href="#structure">Structure</a></li>
+        
+    
+    
+    </ul>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="config-gui">Config GUI</h1>
+<p>The config GUI is the main selling point of MoulConfig.</p>
+<h2 id="structure">Structure</h2>
+<p>The config structure is roughly mapped to Java classes. Each category, subcategory and accordion is its own Java object.</p>
+<p>The base class needs to extend <code>Config</code> and each field needs to be non-static. This way your config is also easily
+serializable as a Json Object. MoulConfig is however completely agnostic towards your configs save format. The only
+requirement is that instances do not get reassigned. So updating the config object after you have processed a config
+requires that config to be reprocessed (and old MoulConfig to be discarded).</p>
+<h3 id="top-level-structure">Top Level Structure</h3>
+<p>You can specify categories
+using <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/-category/index.html"><code>@Category</code></a>.
+You can even nest categories once to create subcategories. Subsubcategories however do not work.</p>
+<pre><code class="language-java">public class MyConfig extends Config {
+    @Override
+    public String getTitle() {
+        return &quot;§bMyMod Config&quot;;
+    }
+
+    @Category(name = &quot;Category Name&quot;, desc = &quot;Category Description&quot;)
+    public MyCategory myCategory = new MyCategory();
+
+    public static class MyCategory {
+        @Category(name = &quot;SubCategory&quot;, desc = &quot;Sub category description&quot;)
+        public MySubCategory subCategory = new MySubCategory();
+    }
+}
+</code></pre>
+<p>Note that even tho i sometimes use static inner classes, you can have any sort of class (even including non-static
+inner classes) as your structure.</p>
+<h3 id="inside-each-category">Inside each category</h3>
+<p>Inside each category you can specify config options
+using <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/-config-option/index.html"><code>@ConfigOption</code></a>.</p>
+<p>In addition to the config option which contains meta information like the name, you will need to add another annotation
+of your choice to specify an editor for that variable. Check out all
+the <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/index.html">annotations</a>.</p>
+<p>Make sure that you check the Javadoc on each annotation to know which type your field needs to have for it to work.</p>
+<pre><code class="language-java">public class MySubCategory {
+    @ConfigOption(name = &quot;Text Test&quot;, desc = &quot;Text Editor Test&quot;)
+    @ConfigEditorText
+    public String text = &quot;Text&quot;;
+
+    @ConfigOption(name = &quot;Number&quot;, desc = &quot;Slider test&quot;)
+    @ConfigEditorSlider(minValue = 0, maxValue = 10, minStep = 1)
+    public int slider = 0;
+
+
+    @ConfigOption(name = &quot;Key Binding&quot;, desc = &quot;Key Binding&quot;)
+    @ConfigEditorKeybind(defaultKey = Keyboard.KEY_F)
+    public int keyBoard = Keyboard.KEY_F;
+}
+</code></pre>
+<h3 id="accordions">Accordions</h3>
+<p>Sometimes just subcategories are not enough and you will want to group your options even
+further. <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/-accordion/index.html"><code>@Accordion</code>s</a>
+allow you to nest options arbitrarily deep.</p>
+<pre><code class="language-java">public class MySubCategory {
+    @ConfigOption(name = &quot;Text Test&quot;, desc = &quot;Text Editor Test&quot;)
+    @ConfigEditorText
+    public String text = &quot;Text&quot;;
+
+    @Accordion
+    @ConfigOption(name = &quot;Hehe&quot;, desc = &quot;hoho&quot;)
+    public MyAccordion myAccordion = new MyAccordion();
+
+    public static class MyAccordion {
+        @ConfigOption(name = &quot;Number&quot;, desc = &quot;Slider test&quot;)
+        @ConfigEditorSlider(minValue = 0, maxValue = 10, minStep = 1)
+        public int slider = 0;
+
+
+        @ConfigOption(name = &quot;Key Binding&quot;, desc = &quot;Key Binding&quot;)
+        @ConfigEditorKeybind(defaultKey = Keyboard.KEY_F)
+        public int keyBoard = Keyboard.KEY_F;
+    }
+}
+</code></pre>
+<h3 id="properties">Properties</h3>
+<p>Sometimes you want to listen to changes to a config variable and run some updates based on that. For that you can use
+<a href="../javadocs/common/io.github.moulberry.moulconfig.observer/-property/index.html"><code>Property&lt;T&gt;</code></a>. Check the Javadoc for
+more information on how to use Properties.</p></div>
+                </div>
+        </div>
+
+    <hr>
+    <footer class="container">
+        
+        <center>Copyright &copy; 2023 Linnea Gräf</center>
+        
+        <center>Documentation built with <a href="http://www.mkdocs.org">MkDocs</a> and <a href="http://kristopolous.github.io/BOOTSTRA.386">BOOTSTRA.386</a>.</center>
+    </footer>
+        <script src="../search/main.js"></script>
+    </body>
+</html>
