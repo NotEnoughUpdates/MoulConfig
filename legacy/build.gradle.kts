@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import xyz.wagyourtail.unimined.api.task.RemapJarTask
 
 plugins {
     idea
@@ -28,16 +29,6 @@ unimined.minecraft {
         }
     }
 }
-//loom {
-//    forge {
-//        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-//    }
-//    launchConfigs {
-//        "client" {
-//            property("moulconfig.testmod", "true")
-//        }
-//    }
-//}
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -93,12 +84,15 @@ tasks.jar {
 tasks.shadowJar {
     archiveClassifier.set("dev")
 }
-val remapJar by tasks.named("remapJar", Zip::class) {
+val remapJar by tasks.named("remapJar", RemapJarTask::class) {
     archiveClassifier.set("")
+    dependsOn(tasks.shadowJar)
+    inputFile.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
 
 val libraryJar by tasks.creating(Jar::class) {
     from(zipTree(remapJar.archiveFile))
+    dependsOn(remapJar)
     archiveClassifier.set("notest")
     exclude("io/github/moulberry/moulconfig/test/*")
     exclude("mcmod.info")

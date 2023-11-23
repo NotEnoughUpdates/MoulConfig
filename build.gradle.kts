@@ -30,7 +30,7 @@ val hash = cmd("git", "rev-parse", "--short", "HEAD")!!
 val isSnapshot = tag == null
 allprojects {
     group = "org.notenoughupdates.moulconfig"
-    version = tag ?: hash
+    version = "99.99.99"// TODO: remove  tag ?: hash
     repositories {
         mavenLocal()
         mavenCentral()
