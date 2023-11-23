@@ -12,8 +12,10 @@ kotlin = "1.8.21"
 shadow = "8.1.1"
 dokka = "1.9.10"
 unimined = "1.1.0-SNAPSHOT"
+legacyGson = "2.1"
 
 [libraries]
+legacyGson = { module = "com.google.code.gson:gson", version.ref = "legacyGson" }
 jbAnnotations = { module = "org.jetbrains:annotations", version.ref = "jbAnnotations" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }

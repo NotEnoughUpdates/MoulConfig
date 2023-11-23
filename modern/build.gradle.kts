@@ -22,12 +22,12 @@ unimined.minecraft {
     fabric {
         loader(libs.versions.fabric.loader.get())
     }
-//    runs {
-//        config("client") {
-//            this.jvmArgs.add("-Dmoulconfig.testmod=true")
-//            this.jvmArgs.add("-Dmoulconfig.warn.crash=false")
-//        }
-//    }
+    runs {
+        config("client") {
+            jvmArgs.add("-Dmoulconfig.testmod=true")
+            jvmArgs.add("-Dmoulconfig.warn.crash=false")
+        }
+    }
 }
 
 

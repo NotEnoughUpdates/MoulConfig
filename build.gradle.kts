@@ -1,8 +1,10 @@
+import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.io.ByteArrayOutputStream
 import java.net.URL
 
 plugins {
+    kotlin("jvm") version (libs.versions.kotlin.get()) apply false
     alias(libs.plugins.dokka)
 }
 
@@ -33,18 +35,16 @@ allprojects {
         maven("https://maven.neoforged.net/releases")
     }
     afterEvaluate {
-//        (tasks.findByName("dokkaHtml") as? DokkaTask)?.apply {
-//            dokkaSourceSets {
-//                "main" {
-//                    sourceLink {
-//                        println(project.path)
-//                        localDirectory.set(file("src/main/"))
-//                        remoteUrl.set(URL("https://github.com/NotEnoughUpdates/MoulConfig/blob/$hash/src/main/"))
-//                        remoteLineSuffix.set("#L")
-//                    }
-//                }
-//            }
-//        }
+        tasks.withType(AbstractDokkaLeafTask::class).configureEach {
+            dokkaSourceSets.configureEach {
+                println("Configuring $this")
+                sourceLink {
+                    localDirectory.set(project.file("src/"))
+                    remoteUrl.set(URL("https://github.com/NotEnoughUpdates/MoulConfig/blob/$hash/${project.name}/src"))
+                    remoteLineSuffix.set("#L")
+                }
+            }
+        }
         extensions.findByType<PublishingExtension>()?.apply {
             repositories {
                 if (project.hasProperty("moulconfigPassword")) {

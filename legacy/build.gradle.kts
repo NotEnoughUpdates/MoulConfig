@@ -65,19 +65,6 @@ tasks.shadowJar {
     configurations = listOf(include)
 }
 
-tasks.dokkaHtml {
-    dokkaSourceSets {
-        ("main") {
-            moduleName.set("MoulConfig-Forge")
-            sourceRoots.from(sourceSets.main.get().allSource)
-            classpath.from(tasks.compileJava.get().classpath)
-
-            includes.from(fileTree("docs") { include("*.md") })
-        }
-    }
-}
-
-
 tasks.jar {
     archiveClassifier.set("small")
 }
