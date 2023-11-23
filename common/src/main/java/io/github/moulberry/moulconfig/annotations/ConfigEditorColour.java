@@ -20,11 +20,24 @@
 
 package io.github.moulberry.moulconfig.annotations;
 
+import io.github.moulberry.moulconfig.ChromaColour;
+import io.github.moulberry.moulconfig.observer.Property;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Used for colours. The field associated with this option may only be of type {@link String}.
+ * <p>
+ * To interpret the String value see {@link ChromaColour#forLegacyString}. You can use a
+ * {@link Property Property<String>} and {@link Property#map} for more ergonomic use.
+ * To create a default value use {@link ChromaColour#special(int, int, int, int, int)}.
+ * <p>
+ * In the future, {@link ChromaColour} may also be used as a field type.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ConfigEditorColour {}
+public @interface ConfigEditorColour {
+}

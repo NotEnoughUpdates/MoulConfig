@@ -25,11 +25,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Used for buttons. The field associated with this option may only be of type {@link Runnable}.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorButton {
+    /**
+     * Deprecated feature. Use a {@link Runnable} value instead of a runnableId.
+     */
     @Deprecated
-	int runnableId() default -1;
+    int runnableId() default -1;
 
-	String buttonText() default "";
+    /**
+     * @return the text to display on the button.
+     */
+    String buttonText() default "";
 }

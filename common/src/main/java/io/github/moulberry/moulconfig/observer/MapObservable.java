@@ -22,12 +22,19 @@ package io.github.moulberry.moulconfig.observer;
 
 import java.util.function.Function;
 
+/**
+ * An observable that wraps another observable and applies a mapper function to its content.
+ *
+ * @param <T> the type of the wrapped observable
+ * @param <V> the type of the mapped observable
+ * @see Observable#map
+ */
 public class MapObservable<T, V> extends BaseObservable<V> implements Observer<T> {
     V value;
     Observable<T> root;
     Function<T, V> mapper;
 
-    public MapObservable(Observable<T> root, Function<T, V> mapper) {
+    MapObservable(Observable<T> root, Function<T, V> mapper) {
         this.root = root;
         this.mapper = mapper;
         value = mapper.apply(root.get());

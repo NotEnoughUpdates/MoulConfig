@@ -23,6 +23,13 @@ package io.github.moulberry.moulconfig;
 
 import io.github.moulberry.moulconfig.common.MyResourceLocation;
 
+import java.awt.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class GuiTextures {
     public static MyResourceLocation
         DELETE, RESET, BUTTON, BUTTON_WHITE,

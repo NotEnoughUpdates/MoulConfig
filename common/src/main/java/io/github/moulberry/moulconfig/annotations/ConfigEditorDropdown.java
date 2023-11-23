@@ -25,8 +25,18 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Used for draggable lists. The field associated with this option may only be of type {@code int} or an enum.
+ * If an {@code int} is used, {@link #values()} needs to be provided, otherwise it needs to be kept empty.
+ * <p>
+ * This option allows the user to choose one option out of the list of enums or example texts.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorDropdown {
-	String[] values() default {};
+    /**
+     * Deprecated feature, use an enum instead.
+     */
+    @Deprecated
+    String[] values() default {};
 }

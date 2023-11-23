@@ -38,11 +38,21 @@ public interface GetSetter<T> extends Supplier<T>, Consumer<T> {
      */
     void set(T newValue);
 
+    /**
+     * Bridge method for {@link Consumer}. Equivalent to {@link #set}
+     */
     @Override
     default void accept(T t) {
         set(t);
     }
 
+    /**
+     * Create a constant {@link GetSetter}. This {@link GetSetter} will always throw when {@link #set} is called.
+     *
+     * @param t   the value that this {@link GetSetter} will always return
+     * @param <T> the type of the value this {@link GetSetter} will hold
+     * @return a constant {@link GetSetter}
+     */
     static <T> GetSetter<T> constant(T t) {
         return new GetSetter<T>() {
             @Override
@@ -57,6 +67,13 @@ public interface GetSetter<T> extends Supplier<T>, Consumer<T> {
         };
     }
 
+    /**
+     * Create a floating {@link GetSetter}. This {@link GetSetter} is not backed by anything and will simply act like a normal field.
+     *
+     * @param t   the initial value
+     * @param <T> the type of the value this {@link GetSetter} will hold
+     * @return a floating {@link GetSetter}
+     */
     static <T> GetSetter<T> floating(T t) {
         return new GetSetter<T>() {
             T storage = t;

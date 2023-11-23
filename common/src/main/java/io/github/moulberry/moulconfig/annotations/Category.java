@@ -25,10 +25,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotates a field inside a {@link io.github.moulberry.moulconfig.Config} as a category.
+ * If used inside a {@link Category} it will instead turn into a subcategory. Subcategories cannot be nested.
+ * Each category (and subcategory) should be a field with a POJO as type. The fields inside the POJO will be interpreted
+ * as options in declaration order.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Category {
-	String name();
+    /**
+     * @return The name of the category
+     */
+    String name();
 
-	String desc();
+    /**
+     * @return The description / subtitle of the category
+     */
+    String desc();
 }

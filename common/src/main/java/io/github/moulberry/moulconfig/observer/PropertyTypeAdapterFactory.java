@@ -31,6 +31,12 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+/**
+ * Gson {@link TypeAdapterFactory} for creating type adapters for {@link Property Properties} so that their
+ * stored value is not wrapped into an additional dictionary during serialization.
+ *
+ * @see com.google.gson.GsonBuilder#registerTypeAdapterFactory
+ */
 public class PropertyTypeAdapterFactory implements TypeAdapterFactory {
 
     @Override

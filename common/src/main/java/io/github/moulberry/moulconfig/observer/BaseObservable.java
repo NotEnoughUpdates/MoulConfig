@@ -23,7 +23,13 @@ package io.github.moulberry.moulconfig.observer;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Base class for an {@link Observable} which takes care of the observer saving
+ */
 public abstract class BaseObservable<T> implements Observable<T> {
+    /**
+     * Set of observers that are subscribed to this state changes of this observable.
+     */
     protected Set<Observer<T>> observers = new HashSet<>();
 
     @Override
@@ -31,6 +37,12 @@ public abstract class BaseObservable<T> implements Observable<T> {
         observers.add(observer);
     }
 
+    /**
+     * Notifies observers about a change of state
+     *
+     * @param oldT the old value to report to the observers
+     * @param newT the new value to report to the observers
+     */
     protected void notifyObservers(T oldT, T newT) {
         for (Observer<T> observer : observers) {
             observer.observeChange(oldT, newT);

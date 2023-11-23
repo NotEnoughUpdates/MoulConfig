@@ -20,9 +20,28 @@
 
 package io.github.moulberry.moulconfig.observer;
 
+/**
+ * Someone who is interested in getting notified about changes to an {@link Observable}
+ *
+ * @param <T> the type of variable in whose state changes we are interested
+ */
+@FunctionalInterface
 public interface Observer<T> {
+    /**
+     * Called when the state is changed. Might be called with {@code oldValue == newValue}.
+     * Will be called after the change is reflected in {@link Observable#get()}. May or may not be
+     * called after the internal state of {@code oldValue} has been changed, in which case {@code oldValue}
+     * may not have all the same information as it had after the last call (back when it was a {@code newValue}).
+     *
+     * @param oldValue the value before this change
+     * @param newValue the value after this change
+     */
     void observeChange(T oldValue, T newValue);
 
+    /**
+     * A method to indicate whether an observer is still valid. An invalid observer may be removed
+     * from list of observers in an observables at some point.
+     */
     default boolean isValid() {
         return true;
     }

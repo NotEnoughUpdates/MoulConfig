@@ -8,9 +8,20 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * A list which allows for notifying a single observer on state change.
+ *
+ * @param <T> the type of elements of this list.
+ */
 @Data
 public class ObservableList<T> implements List<T> {
+    /**
+     * The list which actually holds the contents. Should not be accessed directly and no reference to this list should be retained when creating an {@link ObservableList}
+     */
     final List<T> delegate;
+    /**
+     * The observer which will be called when a mutating method is called on this list.
+     */
     Runnable observer;
 
     @Override
@@ -54,7 +65,10 @@ public class ObservableList<T> implements List<T> {
         return a;
     }
 
-    private void update() {
+    /**
+     * Explicitly notify the current observer of an update.
+     */
+    public void update() {
         if (observer != null)
             observer.run();
     }

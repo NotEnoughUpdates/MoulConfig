@@ -24,13 +24,31 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
+/**
+ * Used for draggable lists. The field associated with this option may only be of type {@link List List<T>}.
+ * That {@code T} may only be either an {@code int}, or an enum. If an {@code int} is used, {@link #exampleText()}
+ * needs to be provided, otherwise it needs to be kept empty.
+ * <p>
+ * This option allows the user to add options out of the list of enums or example texts, reorder them and delete elements.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorDraggableList {
-	String[] exampleText() default {};
+    /**
+     * Deprecated feature. Use an enum type instead.
+     */
+    @Deprecated
+    String[] exampleText() default {};
 
+    /**
+     * @return set to true to disable deleting items when the list only has one element left. irrelevant if you {@link #allowDeleting()} is set.
+     */
     boolean requireNonEmpty() default false;
 
-	boolean allowDeleting() default true;
+    /**
+     * @return set to false to disable deleting items from the list
+     */
+    boolean allowDeleting() default true;
 }

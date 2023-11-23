@@ -25,8 +25,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Used for keybindings. The field associated with this option may only be of type {@code int}.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorKeybind {
-	int defaultKey();
+    int defaultKey();
 }

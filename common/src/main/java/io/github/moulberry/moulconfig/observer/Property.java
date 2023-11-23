@@ -22,8 +22,19 @@ package io.github.moulberry.moulconfig.observer;
 
 import com.google.gson.annotations.Expose;
 
+/**
+ * A property is a variable which is modifiable and can have those mutations observed.
+ * When serializing a property to Json you can use {@link PropertyTypeAdapterFactory} to automatically
+ * serialize the stored value in place, instead of wrapping the value in a dictionary.
+ * <p>
+ * Whenever a config option calls for a field with type {@code T}, then a {@code Property<T>} will also work.
+ *
+ * @param <T> the type of value this Property can hold.
+ */
 public class Property<T> extends BaseObservable<T> implements GetSetter<T> {
-
+    /**
+     * The internal storage of this property
+     */
     @Expose
     T value;
 
@@ -31,6 +42,13 @@ public class Property<T> extends BaseObservable<T> implements GetSetter<T> {
         this.value = value;
     }
 
+    /**
+     * Create a Property with a given initial value.
+     *
+     * @param value the initial value of the property
+     * @param <T>   the type of the value
+     * @return a newly constructed property
+     */
     public static <T> Property<T> of(T value) {
         return new Property<>(value);
     }
@@ -40,6 +58,9 @@ public class Property<T> extends BaseObservable<T> implements GetSetter<T> {
         return value;
     }
 
+    /**
+     * Explicitly notify observers about state changes that are internal to the stored value.
+     */
     public void notifyObservers() {
         notifyObservers(value, value);
     }

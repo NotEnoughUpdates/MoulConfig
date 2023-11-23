@@ -20,14 +20,22 @@
 
 package io.github.moulberry.moulconfig.annotations;
 
+import io.github.moulberry.moulconfig.observer.Property;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Used for switches. The field associated with this option may only be of type {@code boolean}.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorBoolean {
+    /**
+     * Deprecated feature. Use {@link Property} instead.
+     */
     @Deprecated
-	int runnableId() default -1;
+    int runnableId() default -1;
 }

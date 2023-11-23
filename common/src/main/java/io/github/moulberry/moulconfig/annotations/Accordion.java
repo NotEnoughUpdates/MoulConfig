@@ -25,6 +25,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Annotates a field as an accordion when inside a {@link Category}. The field type should be a POJO which contains a set of
+ * {@link ConfigOption ConfigOptions}. The fields inside the POJO will be interpreted as options in declaration order. Those
+ * options will then be displayed inline, while being collapsible. Accordions may stack and be wrapped in each other. A
+ * field annotated with{@link Accordion} will also need to be annotated with {@link ConfigOption}.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Accordion {
