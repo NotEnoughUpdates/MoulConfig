@@ -6,21 +6,21 @@ plugins {
     idea
     java
     `maven-publish`
-    kotlin("jvm")
-    id("org.jetbrains.dokka")
-    id("com.github.johnrengelman.shadow")
-    id("xyz.wagyourtail.unimined")
-    kotlin("plugin.lombok")
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.lombok)
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.unimined)
+    alias(libs.plugins.dokka)
 }
 
 unimined.minecraft {
-    version("1.8.9")
+    version(libs.versions.mc.legacy.get())
     mappings {
         searge()
-        mcp("stable", "22-1.8.9")
+        mcp("stable", libs.versions.mcp.get())
     }
     minecraftForge {
-        loader("11.15.1.2318-1.8.9")
+        loader(libs.versions.forge.loader.get())
     }
     runs {
         config("client") {
@@ -40,9 +40,9 @@ val include by configurations.creating {
 }
 
 dependencies {
-    annotationProcessor("org.projectlombok:lombok:1.18.26")
-    compileOnly("org.projectlombok:lombok:1.18.26")
-    compileOnly("org.jetbrains:annotations:24.0.1")
+    annotationProcessor(libs.lombok)
+    compileOnly(libs.lombok)
+    compileOnly(libs.jbAnnotations)
     implementation((project(":common")))
     include(project(":common", configuration = "singleFile"))
 }

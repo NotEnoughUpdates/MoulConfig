@@ -1,8 +1,8 @@
 plugins {
     java
-    kotlin("jvm")
-    id("org.jetbrains.dokka")
-    kotlin("plugin.lombok")
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.lombok)
+    alias(libs.plugins.dokka)
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
@@ -20,12 +20,12 @@ val singleFile by configurations.creating
 artifacts {
     add(singleFile.name, tasks.jar)
 }
-tasks.dokkaHtml {
-    dokkaSourceSets {
-        ("main") {
-            moduleName.set("MoulConfig-Common")
-            sourceRoots.from(sourceSets.main.get().allSource)
-            classpath.from(tasks.compileJava.get().classpath)
-        }
-    }
-}
+//tasks.dokkaHtml {
+//    dokkaSourceSets {
+//        ("main") {
+//            moduleName.set("MoulConfig-Common")
+//            sourceRoots.from(sourceSets.main.get().allSource)
+//            classpath.from(tasks.compileJava.get().classpath)
+//        }
+//    }
+//}

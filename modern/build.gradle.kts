@@ -3,22 +3,24 @@ import xyz.wagyourtail.unimined.api.task.RemapJarTask
 plugins {
     java
     idea
-    kotlin("jvm")
-    id("com.github.johnrengelman.shadow")
     `maven-publish`
-    id("xyz.wagyourtail.unimined")
-    kotlin("plugin.lombok")
+    alias(libs.plugins.unimined)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.lombok)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.shadow)
+
 }
 
 unimined.minecraft {
-    version("1.20.2")
+    version(libs.versions.mc.modern.get())
     mappings {
         intermediary()
-        yarn(1)
+        yarn(libs.versions.yarn.build.get())
     }
 
     fabric {
-        loader("0.14.22")
+        loader(libs.versions.fabric.loader.get())
     }
 //    runs {
 //        config("client") {
@@ -34,7 +36,7 @@ java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 val shadowInclude by configurations.creating
 dependencies {
     implementation(project(":common"))
-    "modImplementation"("net.fabricmc.fabric-api:fabric-api:0.89.2+1.20.2")
+    "modImplementation"(libs.fabric.api)
     shadowInclude(project(":common", configuration = "singleFile"))
 }
 

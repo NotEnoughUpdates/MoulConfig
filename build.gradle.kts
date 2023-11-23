@@ -3,13 +3,7 @@ import java.io.ByteArrayOutputStream
 import java.net.URL
 
 plugins {
-    kotlin("jvm") version "1.8.21"
-    id("gg.essential.loom") version "0.10.0.+" apply false
-    id("dev.architectury.architectury-pack200") version "0.1.3"
-    id("xyz.wagyourtail.unimined") version "1.1.0-SNAPSHOT" apply false
-    id("org.jetbrains.dokka") version "1.8.10"
-    kotlin("plugin.lombok") version "1.8.21"
-    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
+    alias(libs.plugins.dokka)
 }
 
 
@@ -39,18 +33,18 @@ allprojects {
         maven("https://maven.neoforged.net/releases")
     }
     afterEvaluate {
-        (tasks.findByName("dokkaHtml") as? DokkaTask)?.apply {
-            dokkaSourceSets {
-                "main" {
-                    sourceLink {
-                        println(project.path)
-                        localDirectory.set(file("src/main/"))
-                        remoteUrl.set(URL("https://github.com/NotEnoughUpdates/MoulConfig/blob/$hash/src/main/"))
-                        remoteLineSuffix.set("#L")
-                    }
-                }
-            }
-        }
+//        (tasks.findByName("dokkaHtml") as? DokkaTask)?.apply {
+//            dokkaSourceSets {
+//                "main" {
+//                    sourceLink {
+//                        println(project.path)
+//                        localDirectory.set(file("src/main/"))
+//                        remoteUrl.set(URL("https://github.com/NotEnoughUpdates/MoulConfig/blob/$hash/src/main/"))
+//                        remoteLineSuffix.set("#L")
+//                    }
+//                }
+//            }
+//        }
         extensions.findByType<PublishingExtension>()?.apply {
             repositories {
                 if (project.hasProperty("moulconfigPassword")) {

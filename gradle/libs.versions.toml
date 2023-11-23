@@ -1,0 +1,27 @@
+[versions]
+mc_modern = "1.20.2"
+mc_legacy = "1.8.9"
+mcp = "22-1.8.9"
+forge_loader = "11.15.1.2318-1.8.9"
+fabric_loader = "0.14.22"
+fabric_api = "0.89.2+1.20.2"
+yarn_build = "1"
+lombok = "1.18.26"
+jbAnnotations = "24.0.1"
+kotlin = "1.8.21"
+shadow = "8.1.1"
+dokka = "1.9.10"
+unimined = "1.1.0-SNAPSHOT"
+
+[libraries]
+jbAnnotations = { module = "org.jetbrains:annotations", version.ref = "jbAnnotations" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
+
+[plugins]
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
+kotlin_jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin_lombok = { id = "org.jetbrains.kotlin.plugin.lombok", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+unimined = { id = "xyz.wagyourtail.unimined", version.ref = "unimined" }
+
