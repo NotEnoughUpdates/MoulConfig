@@ -1,29 +1,40 @@
+import xyz.wagyourtail.unimined.api.task.RemapJarTask
+
 plugins {
     java
+    idea
     kotlin("jvm")
-    id("gg.essential.loom")
     id("com.github.johnrengelman.shadow")
     `maven-publish`
+    id("xyz.wagyourtail.unimined")
+    kotlin("plugin.lombok")
 }
 
-loom {
-    launches {
-        named("client") {
-            arg("--accessToken", "{}")
-            arg("--version", "1.20")
-        }
+unimined.minecraft {
+    version("1.20.2")
+    mappings {
+        intermediary()
+        yarn(1)
     }
+
+    fabric {
+        loader("0.14.22")
+    }
+//    runs {
+//        config("client") {
+//            this.jvmArgs.add("-Dmoulconfig.testmod=true")
+//            this.jvmArgs.add("-Dmoulconfig.warn.crash=false")
+//        }
+//    }
 }
+
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
 val shadowInclude by configurations.creating
 dependencies {
-    "minecraft"("com.mojang:minecraft:1.20")
-    mappings("net.fabricmc:yarn:1.20+build.1")
     implementation(project(":common"))
-    modImplementation("net.fabricmc:fabric-loader:0.14.22")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:0.83.0+1.20")
+    "modImplementation"("net.fabricmc.fabric-api:fabric-api:0.89.2+1.20.2")
     shadowInclude(project(":common", configuration = "singleFile"))
 }
 
@@ -32,9 +43,10 @@ tasks.shadowJar {
     archiveClassifier.set("dev")
 }
 
-tasks.remapJar {
+val remapJar by tasks.named("remapJar", RemapJarTask::class) {
     archiveClassifier.set("")
-    input.set(tasks.shadowJar.flatMap { it.archiveFile })
+    dependsOn(tasks.shadowJar)
+    inputFile.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
 
 tasks.jar {
@@ -45,7 +57,7 @@ tasks.jar {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifact(tasks.remapJar) {
+            artifact(remapJar) {
                 classifier = ""
             }
             artifact(tasks.shadowJar) {

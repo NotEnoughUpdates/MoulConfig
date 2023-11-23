@@ -94,8 +94,13 @@ open class GuiComponentWrapper(
         return true
     }
 
-    override fun mouseScrolled(d: Double, e: Double, f: Double): Boolean {
-        context.root.mouseEvent(MouseEvent.Scroll(f.toFloat()), createContext())
+    override fun mouseScrolled(
+        mouseX: Double,
+        mouseY: Double,
+        horizontalAmount: Double,
+        verticalAmount: Double
+    ): Boolean {
+        context.root.mouseEvent(MouseEvent.Scroll(verticalAmount.toFloat()), createContext())
         return true
     }
 
