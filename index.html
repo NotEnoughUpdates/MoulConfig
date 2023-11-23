@@ -4,148 +4,130 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="MoulConfig is a config library for Minecraft mods with multi version ambitions">
+        
         <meta name="author" content="Linnea Gräf">
-        <link rel="canonical" href="https://notenoughupdates.org/MoulConfig/a340a7a/">
+        <link rel="canonical" href="https://notenoughupdates.org/MoulConfig/3b75ade/">
         <link rel="shortcut icon" href="img/favicon.ico">
         <title>MoulConfig - MoulConfig</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
         <link href="css/font-awesome.min.css" rel="stylesheet">
-        <link href="css/bootstrap-theme.min.css" rel="stylesheet">
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.3/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
+        <link href="css/base.css" rel="stylesheet">
+        <link href="css/codehilite.css" rel="stylesheet">
+        <link href="css/solarized-light.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
 
-        <script src="js/jquery-1.10.2.min.js"></script>
-        <script src="js/bootstrap.min.js"></script>
-        
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
     <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">MoulConfig</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown active">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Home <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="." class="dropdown-item active">MoulConfig</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Config <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="config/" class="dropdown-item">Config GUI</a>
+</li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Javadocs <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    
+<li>
+    <a href="javadocs/index.html" class="dropdown-item">Home</a>
+</li>
+                                    
+<li>
+    <a href="javadocs/common/index.html" class="dropdown-item">Common</a>
+</li>
+                                    
+<li>
+    <a href="javadocs/modern/index.html" class="dropdown-item">Modern</a>
+</li>
+                                    
+<li>
+    <a href="javadocs/legacy/index.html" class="dropdown-item">Legacy</a>
+</li>
+                                    
+<li>
+    <a href="javadocs/common/io.github.moulberry.moulconfig.annotations/index.html" class="dropdown-item">Annotations</a>
+</li>
+                                </ul>
+                            </li>
+                        </ul>
 
-        <!-- Collapsed navigation -->
-        <div class="navbar-header">
-            <!-- Expander button -->
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href=".">MoulConfig</a>
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                          <a href="./tags.html" class="nav-link">
+                            <i class="fa fa-tags"></i> Tags
+                          </a>
+                        </li>
+
+                      <!---->
+                        <!---->
+                            <!--<li class="nav-item">-->
+                                <!--<a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/master/src/doc/docs/index.md" class="nav-link">-->
+                                    <!---->
+                                    <!--Edit on MoulConfig-->
+                                    <!---->
+                                <!--</a>-->
+                            <!--</li>-->
+                        <!---->
+                      <!---->
+                    </ul>
+                </div>
+            </div>
         </div>
 
-        <!-- Expanded navigation -->
-        <div class="navbar-collapse collapse">
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-            
-            
-                <li class="dropdown active">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Home <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                    
-                        <li class="active">
-                            <a href=".">MoulConfig</a>
-                        </li>
-                    
-                    </ul>
-                </li>
-            
-            
-            
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Config <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                    
-                        <li >
-                            <a href="config/">Config GUI</a>
-                        </li>
-                    
-                    </ul>
-                </li>
-            
-            
-            
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Javadocs <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                    
-                        <li >
-                            <a href="javadocs/index.html">None</a>
-                        </li>
-                    
-                        <li >
-                            <a href="javadocs/common/index.html">Common</a>
-                        </li>
-                    
-                        <li >
-                            <a href="javadocs/modern/index.html">Modern</a>
-                        </li>
-                    
-                        <li >
-                            <a href="javadocs/legacy/index.html">Legacy</a>
-                        </li>
-                    
-                        <li >
-                            <a href="javadocs/common/io.github.moulberry.moulconfig.annotations/index.html">Annotations</a>
-                        </li>
-                    
-                    </ul>
-                </li>
-            
-            
-            </ul>
-
-            <!-- Search, Navigation and Repo links -->
-            <ul class="nav navbar-nav navbar-right">
-                    <li class="disabled">
-                        <a rel="next" >
-                            <i class="fa fa-arrow-left"></i> Previous
-                        </a>
-                    </li>
-                    <li >
-                        <a rel="prev" href="config/">
-                            Next <i class="fa fa-arrow-right"></i>
-                        </a>
-                    </li>
-                
-                <li>
-                    <a href="https://github.com/NotEnoughUpdates/MoulConfig">
-                        
-                        MoulConfig
-                    </a>
-                </li>
-                
-            </ul>
+        <div class="container col-md-8">
+              <div class="zettel">
+    
+    <div class="file-header">
+      <div class="row align-items-center">
+        <div class="col-8">
+          
         </div>
+        <div class="col-4 text-right date">
+            <a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/master/src/doc/docs/index.md" class="hidden-hyperlink">
+          
+              <span>
+                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil clickable" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                </svg>
+              </span>
+            </a>
+          
+          
+        </div>
+      </div>
     </div>
-</div>
-
-        <div class="container">
-                <div class="row">
-                    <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-      
     
-        <li class="main active"><a href="#moulconfig">MoulConfig</a></li>
-        
-            <li><a href="#installation">Installation</a></li>
-        
-            <li><a href="#usage">Usage</a></li>
-        
-    
-    
-    </ul>
-</div></div>
-                    <div class="col-md-9" role="main">
-
-<h1 id="moulconfig">MoulConfig</h1>
+    <div class="file-body">
+      <h1 id="moulconfig">MoulConfig</h1>
 <p>MoulConfig is a mod configuration GUI for Minecraft™ mods.</p>
 <p>It was originally developed by <a href="https://moulberry.codes">Moulberry</a>,
 and is now mostly maintained by <a href="https://nea.moe/">nea89</a>. The original code was available
@@ -221,17 +203,63 @@ tasks.shadowJar {
 <p>See
 the <a href="https://github.com/NotEnoughUpdates/MoulConfig/blob/master/modern/src/main/kotlin/io/github/notenoughupdates/moulconfig/test">TestMod</a>
 for usage examples, or check out the annotation
-package documentation to see the kind of config variable editors MoulConfig has built in.</p></div>
-                </div>
+package documentation to see the kind of config variable editors MoulConfig has built in.</p>
+    </div>
+    
+  </div>
         </div>
 
-    <hr>
-    <footer class="container">
-        
-        <center>Copyright &copy; 2023 Linnea Gräf</center>
-        
-        <center>Documentation built with <a href="http://www.mkdocs.org">MkDocs</a> and <a href="http://kristopolous.github.io/BOOTSTRA.386">BOOTSTRA.386</a>.</center>
-    </footer>
-        <script src="search/main.js"></script>
+        <footer class="col-md-12">
+            <hr>
+                <p>Copyright &copy; 2023 Linnea Gräf</p>
+            <p>Zettelkasten built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+
+        <div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
     </body>
 </html>
