@@ -8,10 +8,11 @@ repo_url: https://github.com/NotEnoughUpdates/MoulConfig
 edit_uri: edit/master/src/doc/docs/
 copyright: 'Copyright &copy; 2023 Linnea Gräf'
 
-
+plugins:
+  - zettelkasten
 
 theme:
-  name: bootstrap386
+  name: zettelkasten-solarized-light
   social:
     - type: 'github'
       link: 'https://github.com/notenoughupdates/moulconfig'
@@ -29,7 +30,7 @@ nav:
   - Config:
       - config/index.md
   - Javadocs:
-      - javadocs/index.html
+      - Home: javadocs/index.html
       - Common: javadocs/common/index.html
       - Modern: javadocs/modern/index.html
       - Legacy: javadocs/legacy/index.html

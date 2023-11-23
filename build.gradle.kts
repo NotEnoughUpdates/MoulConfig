@@ -83,7 +83,7 @@ allprojects {
 }
 mkdocs {
     python {
-        pip("mkdocs-bootstrap386:0.0.2")
+        pip("mkdocs-zettelkasten:0.1.9")
     }
     strict = false
 }
