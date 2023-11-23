@@ -1,0 +1,28 @@
+site_name: MoulConfig
+site_description: MoulConfig is a config library for Minecraft mods with multi version ambitions
+site_author: Linnea Gräf
+site_url: https://notenoughupdates.org/MoulConfig
+
+repo_name: MoulConfig
+repo_url: https://github.com/NotEnoughUpdates/MoulConfig
+edit_uri: edit/master/src/doc/docs/
+copyright: 'Copyright &copy; 2023 Linnea Gräf'
+
+
+
+theme:
+  name: 'material'
+  social:
+    - type: 'github'
+      link: 'https://github.com/notenoughupdates/moulconfig'
+  features:
+    - navigation.expand
+    - navigation.tabs
+    - navigation.instant
+    - navigation.indexes
+    - navigation.top
+
+
+nav:
+  - Home:
+      - index.md

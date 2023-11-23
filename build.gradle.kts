@@ -1,13 +1,12 @@
 import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
-import org.jetbrains.dokka.gradle.DokkaTask
 import java.io.ByteArrayOutputStream
 import java.net.URL
 
 plugins {
     kotlin("jvm") version (libs.versions.kotlin.get()) apply false
     alias(libs.plugins.dokka)
+    alias(libs.plugins.mkdocs)
 }
-
 
 fun cmd(vararg args: String): String? {
     val output = ByteArrayOutputStream()
@@ -82,6 +81,7 @@ allprojects {
         }
     }
 }
+
 subprojects {
     if (plugins.hasPlugin("org.jetbrains.dokka"))
         dependencies {

@@ -13,6 +13,7 @@ shadow = "8.1.1"
 dokka = "1.9.10"
 unimined = "1.1.0-SNAPSHOT"
 legacyGson = "2.1"
+mkdocs = "2.4.0"
 
 [libraries]
 legacyGson = { module = "com.google.code.gson:gson", version.ref = "legacyGson" }
@@ -21,6 +22,7 @@ lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 
 [plugins]
+mkdocs = { id = "ru.vyarus.mkdocs", version.ref = "mkdocs" }
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 kotlin_jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin_lombok = { id = "org.jetbrains.kotlin.plugin.lombok", version.ref = "kotlin" }
