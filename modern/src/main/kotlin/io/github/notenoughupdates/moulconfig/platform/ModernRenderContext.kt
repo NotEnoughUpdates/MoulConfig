@@ -40,6 +40,14 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         GL11.glScissor(l.toInt(), t.toInt(), r.toInt(), b.toInt())
     }
 
+    override fun refreshScissor() {
+        refreshScissors()
+    }
+
+    override fun disableScissor() {
+        GL11.glScissor(0, 0, window.framebufferWidth, window.framebufferHeight)
+    }
+
     override fun pushMatrix() {
         drawContext.matrices.push()
     }
@@ -66,6 +74,21 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun isKeyboardKeyDown(keyboardKey: Int): Boolean {
         return InputUtil.isKeyPressed(window.handle, keyboardKey)
+    }
+
+    override fun drawTriangles(vararg coordinates: Float) {
+        val tess = Tessellator.getInstance()
+        val buffer = tess.buffer
+        val matrix = drawContext.matrices.peek().positionMatrix
+        RenderSystem.enableBlend()
+        buffer.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION)
+
+        require(coordinates.size % 6 == 0)
+        for (i in 0 until (coordinates.size / 2)) {
+            buffer.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F).next()
+        }
+
+        tess.draw()
     }
 
     override fun drawString(
@@ -114,7 +137,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end())
     }
 
-    override fun renderDarkRect(x: Int, y: Int, width: Int, height: Int) {
+    override fun drawDarkRect(x: Int, y: Int, width: Int, height: Int, shadow: Boolean) {
         val main: Int = -0x1000000 or 0x202026
         val light = -0xcfcfca
         val dark = -0xefefea
@@ -125,6 +148,19 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         drawContext.fill(x + 1, y + 1, x + width - 1, y + height - 1, main)
         drawContext.fill(x, y, x + width, y + height, 0xa0202020.toInt())
         drawContext.drawBorder(x, y, width, height, 0xffc0c0c0.toInt())
+        // TODO: do shadow
+    }
+
+    override fun drawGradientRect(
+        zLevel: Int,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
+        startColor: Int,
+        endColor: Int
+    ) {
+        drawContext.fillGradient(RenderLayer.getGui(), left, top, right, bottom, startColor, endColor, zLevel)
     }
 
     override fun pushScissor(left: Int, top: Int, right: Int, bottom: Int) {
@@ -134,6 +170,11 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun popScissor() {
         scissors.removeLast()
+        refreshScissors()
+    }
+
+    override fun clearScissor() {
+        scissors.clear()
         refreshScissors()
     }
 

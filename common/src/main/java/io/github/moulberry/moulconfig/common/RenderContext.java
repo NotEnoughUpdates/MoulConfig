@@ -37,6 +37,60 @@ public interface RenderContext {
         popMatrix();
     }
 
+    default void drawStringCenteredScaledMaxWidth(
+        @NotNull String text,
+        @NotNull IFontRenderer fr,
+        float x, float y,
+        boolean shadow,
+        int length, int color
+    ) {
+        pushMatrix();
+        int strLength = fr.getStringWidth(text);
+        float factor = Math.min(length / (float) strLength, 1f);
+        translate(x, y, 0);
+        scale(factor, factor, 1);
+        drawString(fr, text, -strLength / 2, -fr.getHeight() / 2, color, shadow);
+        popMatrix();
+    }
+
+    default void drawVerticalLine(int x, int startY, int endY, int color) {
+        if (startY > endY) {
+            int temp = startY;
+            startY = endY;
+            endY = temp;
+        }
+        drawColoredRect(x, startY + 1, x + 1, endY, color);
+    }
+
+    default void drawHorizontalLine(int y, int startX, int endX, int color) {
+        if (startX > endX) {
+            int temp = startX;
+            startX = endX;
+            endX = temp;
+        }
+        drawColoredRect(startX, y, endX + 1, y + 1, color);
+    }
+
+
+    void drawTriangles(float... coordinates);
+
+    default void drawOpenCloseTriangle(boolean isOpen, float x, float y, float width, float height) {
+        color(1, 1, 1, 1);
+        if (isOpen) {
+            drawTriangles(
+                x, y,
+                x + width / 2, y + height,
+                x + width, y
+            );
+        } else {
+            drawTriangles(
+                x, y + height,
+                x + width, y + height / 2,
+                x, y
+            );
+        }
+    }
+
     int drawString(IFontRenderer fontRenderer, String text, int x, int y, int color, boolean shadow);
 
     void drawColoredRect(float left, float top, float right, float bottom, int color);
@@ -45,15 +99,27 @@ public interface RenderContext {
 
     void drawTexturedRect(float x, float y, float width, float height);
 
-    void renderDarkRect(int x, int y, int width, int height);
+    default void drawDarkRect(int x, int y, int width, int height) {
+        drawDarkRect(x, y, width, height, true);
+    }
+
+    void drawDarkRect(int x, int y, int width, int height, boolean shadow);
+
+    void drawGradientRect(int zLevel, int left, int top, int right, int bottom, int startColor, int endColor);
 
     void pushScissor(int left, int top, int right, int bottom);
 
     void popScissor();
+
+    void clearScissor();
 
     void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable String overlayText);
 
     void scheduleDrawTooltip(@NotNull List<String> tooltipLines);
 
     void doDrawTooltip();
+
+    void refreshScissor();
+
+    void disableScissor();
 }

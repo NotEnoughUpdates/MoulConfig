@@ -73,7 +73,7 @@ public class PanelComponent extends GuiComponent {
     @Override
     public void render(GuiImmediateContext context) {
         context.getRenderContext().pushMatrix();
-        context.getRenderContext().renderDarkRect(0, 0, getWidth(), getHeight() - 2);
+        context.getRenderContext().drawDarkRect(0, 0, getWidth(), getHeight() - 2);
         context.getRenderContext().translate(insets, insets, 0);
         element.render(getChildContext(context));
         context.getRenderContext().popMatrix();

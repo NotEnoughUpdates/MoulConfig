@@ -23,7 +23,10 @@ package io.github.moulberry.moulconfig.gui;
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.Social;
+import io.github.moulberry.moulconfig.common.IFontRenderer;
 import io.github.moulberry.moulconfig.common.IMinecraft;
+import io.github.moulberry.moulconfig.common.MyResourceLocation;
+import io.github.moulberry.moulconfig.common.RenderContext;
 import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementTextField;
 import io.github.moulberry.moulconfig.internal.*;
@@ -218,6 +221,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         long currentTime = System.currentTimeMillis();
         long delta = currentTime - openedMillis;
 
+        IMinecraft iMinecraft = IMinecraft.instance;
+        RenderContext context = new ForgeRenderContext();
+
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         int width = scaledResolution.getScaledWidth();
         int height = scaledResolution.getScaledHeight();
@@ -225,7 +231,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
         float opacityFactor = LerpUtils.sigmoidZeroOne(delta / 500f);
-        RenderUtils.drawGradientRect(0, 0, 0, width, height,
+        context.drawGradientRect(
+            0, 0, 0, width, height,
             (int) (0x80 * opacityFactor) << 24 | 0x101010,
             (int) (0x90 * opacityFactor) << 24 | 0x101010
         );
@@ -246,24 +253,26 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         } else if (delta < 300) {
             openingYSize = 5 + (int) (delta - 150) * (ySize - 5) / 150;
         }
-        RenderUtils.drawFloatingRectDark(
+        context.drawDarkRect(
             (scaledResolution.getScaledWidth() - openingXSize) / 2,
             (scaledResolution.getScaledHeight() - openingYSize) / 2,
             openingXSize, openingYSize
         );
-        GlScissorStack.clear();
-        GlScissorStack.push((scaledResolution.getScaledWidth() - openingXSize) / 2,
+        context.clearScissor();
+        context.pushScissor(
+            (scaledResolution.getScaledWidth() - openingXSize) / 2,
             (scaledResolution.getScaledHeight() - openingYSize) / 2,
             (scaledResolution.getScaledWidth() + openingXSize) / 2,
-            (scaledResolution.getScaledHeight() + openingYSize) / 2, scaledResolution
+            (scaledResolution.getScaledHeight() + openingYSize) / 2
         );
 
-        RenderUtils.drawFloatingRectDark(x + 5, y + 5, xSize - 10, 20, false);
+        context.drawDarkRect(x + 5, y + 5, xSize - 10, 20, false);
 
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-        TextRenderUtils.drawStringCenteredScaledMaxWidth(
+        IFontRenderer ifr = new ForgeFontRenderer(fr);
+        context.drawStringCenteredScaledMaxWidth(
             processedConfig.getConfigObject().getTitle(),
-            fr,
+            ifr,
             x + xSize / 2,
             y + 15,
             false,
@@ -271,7 +280,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             0xa0a0a0
         );
 
-        RenderUtils.drawFloatingRectDark(x + 4, y + 49 - 20,
+        context.drawDarkRect(
+            x + 4, y + 49 - 20,
             140, ySize - 54 + 20, false
         );
 
@@ -280,16 +290,17 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int innerRight = x + 144 - innerPadding;
         int innerTop = y + 49 + innerPadding;
         int innerBottom = y + ySize - 5 - innerPadding;
-        Gui.drawRect(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
-        Gui.drawRect(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
-        Gui.drawRect(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff28282E); //Right
-        Gui.drawRect(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff28282E); //Bottom
-        Gui.drawRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
+        context.drawColoredRect(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
+        context.drawColoredRect(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
+        context.drawColoredRect(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff28282E); //Right
+        context.drawColoredRect(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff28282E); //Bottom
+        context.drawColoredRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
 
         /// <editor-fold name="Render categories on the left">
 
-        GlScissorStack.push(0, innerTop + 1, scaledResolution.getScaledWidth(),
-            innerBottom - 1, scaledResolution
+        context.pushScissor(
+            0, innerTop + 1,
+            scaledResolution.getScaledWidth(), innerBottom - 1
         );
 
         float catBarSize = 1;
@@ -308,23 +319,23 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             var textLength = fr.getStringWidth(catName);
             var isIndented = childCategories != null || entry.getValue().parent != null;
             if (textLength > ((isIndented) ? 90 : 100)) {
-                TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
-                    fr, x + 75 + (isIndented ? 5 : 0), y + 70 + catY, false, (isIndented ? 90 : 100), -1
+                context.drawStringCenteredScaledMaxWidth(catName,
+                    ifr, x + 75 + (isIndented ? 5 : 0), y + 70 + catY, false, (isIndented ? 90 : 100), -1
                 );
             } else if (align == HorizontalAlign.CENTER) {
-                TextRenderUtils.drawStringCenteredScaledMaxWidth(catName,
-                    fr, x + 75, y + 70 + catY, false, (isIndented ? 90 : 100), -1
+                context.drawStringCenteredScaledMaxWidth(catName,
+                    ifr, x + 75, y + 70 + catY, false, (isIndented ? 90 : 100), -1
                 );
             } else if (align == HorizontalAlign.RIGHT) {
-                fr.drawString(catName, x + 75 + 50 - textLength, y + 70 + catY - fr.FONT_HEIGHT / 2, -1, false);
+                context.drawString(ifr, catName, x + 75 + 50 - textLength, y + 70 + catY - fr.FONT_HEIGHT / 2, -1, false);
             } else {
-                fr.drawString(catName, x + 75 - 50 + (isIndented ? 10 : 0), y + 70 + catY - fr.FONT_HEIGHT / 2, -1, false);
+                context.drawString(ifr, catName, x + 75 - 50 + (isIndented ? 10 : 0), y + 70 + catY - fr.FONT_HEIGHT / 2, -1, false);
             }
             if (childCategories != null) {
                 var isExpanded = showSubcategories && (isSelected || childCategories.contains(getSelectedCategory()));
-                RenderUtils.drawOpenCloseTriangle(isExpanded, x + 24.5, y + 67 + catY, 6, 6);
+                context.drawOpenCloseTriangle(isExpanded, x + 24.5F, y + 67 + catY, 6, 6);
                 if (isExpanded) {
-                    drawVerticalLine(x + 27, y + catY + 76, y + catY + 76 + ((int) childCategories.stream().filter(currentConfigEditing::containsKey).count()) * 15, 0xFF444444);
+                    context.drawVerticalLine(x + 27, y + catY + 76, y + catY + 76 + ((int) childCategories.stream().filter(currentConfigEditing::containsKey).count()) * 15, 0xFF444444);
                 }
             }
             catY += 15;
@@ -349,27 +360,27 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
         int catDist = innerBottom - innerTop - 12;
-        Gui.drawRect(innerLeft + 2, innerTop + 5, innerLeft + 7, innerBottom - 5, 0xff101010);
-        Gui.drawRect(innerLeft + 3, innerTop + 6 + (int) (catDist * catBarStart), innerLeft + 6,
+        context.drawColoredRect(innerLeft + 2, innerTop + 5, innerLeft + 7, innerBottom - 5, 0xff101010);
+        context.drawColoredRect(innerLeft + 3, innerTop + 6 + (int) (catDist * catBarStart), innerLeft + 6,
             innerTop + 6 + (int) (catDist * catBarEnd), 0xff303030
         );
 
-        GlScissorStack.pop(scaledResolution);
+        context.popScissor();
         /// </editor-fold>
 
-        TextRenderUtils.drawStringCenteredScaledMaxWidth("Categories",
-            fr, x + 75, y + 44, false, 120, 0xa368ef
+        context.drawStringCenteredScaledMaxWidth("Categories",
+            ifr, x + 75, y + 44, false, 120, 0xa368ef
         );
 
-        RenderUtils.drawFloatingRectDark(x + 149, y + 29, xSize - 154, ySize - 34, false);
+        context.drawDarkRect(x + 149, y + 29, xSize - 154, ySize - 34, false);
 
         innerLeft = x + 149 + innerPadding;
         innerRight = x + xSize - 5 - innerPadding;
         innerBottom = y + ySize - 5 - innerPadding;
 
         IMinecraft.instance.bindTexture(GuiTextures.SEARCH);
-        GlStateManager.color(1, 1, 1, 1);
-        RenderUtils.drawTexturedRect(innerRight - 20, innerTop - (20 + innerPadding) / 2 - 9, 18, 18, GL11.GL_NEAREST);
+        context.color(1, 1, 1, 1);
+        context.drawTexturedRect(innerRight - 20, innerTop - (20 + innerPadding) / 2 - 9, 18, 18);
 
         minimumSearchSize.tick();
         boolean shouldShow = !searchField.getText().trim().isEmpty() || searchField.getFocus();
@@ -383,7 +394,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         int rightStuffLen = 20;
         if (minimumSearchSize.getValue() > 1) {
-            int strLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(searchField.getText()) + 10;
+            int strLen = ifr.getStringWidth(searchField.getText()) + 10;
             if (!shouldShow) strLen = 0;
 
             int len = Math.max(strLen, minimumSearchSize.getValue());
@@ -396,19 +407,19 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
 
-            TextRenderUtils.drawStringScaledMaxWidth(cat.desc,
-                fr, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
+            context.drawStringScaledMaxWidth(cat.desc,
+                ifr, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
             );
         }
 
-        Gui.drawRect(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
-        Gui.drawRect(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
-        Gui.drawRect(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff303036); //Right
-        Gui.drawRect(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff303036); //Bottom
-        Gui.drawRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
+        context.drawColoredRect(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
+        context.drawColoredRect(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
+        context.drawColoredRect(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff303036); //Right
+        context.drawColoredRect(innerLeft + 1, innerBottom - 1, innerRight - 1, innerBottom, 0xff303036); //Bottom
+        context.drawColoredRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
 
         /// <editor-fold name="Render options on the right">
-        GlScissorStack.push(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, scaledResolution);
+        context.pushScissor(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1);
         float barSize = 1;
         int optionY = -optionsScroll.getValue();
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
@@ -422,25 +433,25 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 var titlePositionY = (innerTop + innerBottom) / 3;
                 var innerSize = innerRight - innerLeft - 40;
                 var titleScale = 2;
-                GlStateManager.pushMatrix();
-                GlStateManager.translate(titlePositionX, titlePositionY, 0);
-                TextRenderUtils.drawStringCenteredScaledMaxWidth("§7Seems like your search is found in a subcategory.", fr,
+                context.pushMatrix();
+                context.translate(titlePositionX, titlePositionY, 0);
+                context.drawStringCenteredScaledMaxWidth("§7Seems like your search is found in a subcategory.", ifr,
                     0,
                     titleScale * fr.FONT_HEIGHT,
                     true, innerSize, -1
                 );
-                TextRenderUtils.drawStringCenteredScaledMaxWidth("§7Check out the subcategories on the left.", fr,
+                context.drawStringCenteredScaledMaxWidth("§7Check out the subcategories on the left.", ifr,
                     0,
                     (titleScale + 1) * fr.FONT_HEIGHT,
                     true, innerSize, -1
                 );
-                GlStateManager.scale(titleScale, titleScale, 1);
-                TextRenderUtils.drawStringCenteredScaledMaxWidth("§7No options found.", fr,
+                context.scale(titleScale, titleScale, 1);
+                context.drawStringCenteredScaledMaxWidth("§7No options found.", ifr,
                     0,
                     0,
                     true, innerSize / titleScale, -1
                 );
-                GlStateManager.popMatrix();
+                context.popMatrix();
             }
             for (ProcessedOption option : options) {
 
@@ -486,18 +497,18 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
-        GlScissorStack.pop(scaledResolution);
-
+        context.popScissor();
         /// </editor-fold>
 
         /// <editor-fold name="Render overlays for options on the right">
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        context.disableScissor();
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
             int optionYOverlay = -optionsScroll.getValue();
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
             int optionWidthDefault = innerRight - innerLeft - 20;
 
-            GlStateManager.translate(0, 0, 10);
+            context.pushMatrix();
+            context.translate(0, 0, 10);
             GlStateManager.enableDepth();
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
@@ -542,9 +553,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 optionYOverlay += optionHeight + 5;
             }
             GlStateManager.disableDepth();
-            GlStateManager.translate(0, 0, -10);
+            context.popMatrix();
         }
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        context.refreshScissor();
         /// </editor-fold>
 
         optionsBarStart = optionsScroll.getValue() / (float) (optionY + optionsScroll.getValue());
@@ -562,8 +573,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
         int dist = innerBottom - innerTop - 12;
-        Gui.drawRect(innerRight - 10, innerTop + 5, innerRight - 5, innerBottom - 5, 0xff101010);
-        Gui.drawRect(
+        context.drawColoredRect(innerRight - 10, innerTop + 5, innerRight - 5, innerBottom - 5, 0xff101010);
+        context.drawColoredRect(
             innerRight - 9,
             innerTop + 6 + (int) (dist * optionsBarStart),
             innerRight - 6,
@@ -574,10 +585,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         List<Social> socials = processedConfig.getConfigObject().getSocials();
         for (int socialIndex = 0; socialIndex < socials.size(); socialIndex++) {
             Social social = socials.get(socialIndex);
-            Minecraft.getMinecraft().getTextureManager().bindTexture(social.getIcon());
+            iMinecraft.bindTexture(ForgeMinecraft.fromResourceLocation(social.getIcon()));
             GlStateManager.color(1, 1, 1, 1);
             int socialLeft = x + xSize - 23 - 18 * socialIndex;
-            RenderUtils.drawTexturedRect(socialLeft, y + 7, 16, 16, GL11.GL_LINEAR);
+            context.drawTexturedRect(socialLeft, y + 7, 16, 16);
 
             if (mouseX >= socialLeft && mouseX <= socialLeft + 16 &&
                 mouseY >= y + 6 && mouseY <= y + 23) {
@@ -585,13 +596,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
-        GlScissorStack.clear();
+        context.clearScissor();
 
         if (tooltipToDisplay != null) {
-            TextRenderUtils.drawHoveringText(tooltipToDisplay, mouseX, mouseY, width, height, -1, fr);
+            context.scheduleDrawTooltip(tooltipToDisplay);
         }
-
-        GlStateManager.translate(0, 0, -2);
+        context.doDrawTooltip();
     }
 
     public boolean mouseInput(int mouseX, int mouseY) {
