@@ -22,6 +22,7 @@ package io.github.moulberry.moulconfig;
 
 import io.github.moulberry.moulconfig.gui.HorizontalAlign;
 import io.github.moulberry.moulconfig.processor.ProcessedCategory;
+import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
@@ -54,6 +55,10 @@ public abstract class Config {
     }
 
     public void saveNow() {
+    }
+
+    public DescriptionRendereringBehaviour getDescriptionBehaviour(ProcessedOption option) {
+        return DescriptionRendereringBehaviour.SCALE_TEXT;
     }
 
     public boolean shouldAutoFocusSearchbar() {
