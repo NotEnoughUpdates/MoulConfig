@@ -57,6 +57,11 @@ class ModernMinecraft : IMinecraft {
         }
     }
 
+    override val mouseX: Int
+        get() = TODO("Not yet implemented")
+    override val mouseY: Int
+        get() = TODO("Not yet implemented")
+
     override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {
         return MinecraftClient.getInstance().resourceManager.getResource(fromMyResourceLocation(resourceLocation))
             .get().inputStream
@@ -66,4 +71,8 @@ class ModernMinecraft : IMinecraft {
         get() = ModernFontRenderer(MinecraftClient.getInstance().textRenderer)
     override val keyboardConstants: IKeyboardConstants
         get() = ModernKeyboardConstants
+    override val scaledWidth: Int
+        get() = TODO("Not yet implemented")
+    override val scaledHeight: Int
+        get() = TODO("Not yet implemented")
 }

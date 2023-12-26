@@ -31,11 +31,11 @@ import org.lwjgl.input.Mouse;
 import java.io.IOException;
 
 @ToString
-public class GuiScreenElementWrapperNew extends GuiScreen {
+public class GuiComponentWrapper extends GuiScreen {
     @NonNull
     public GuiContext context;
 
-    public GuiScreenElementWrapperNew(@NotNull GuiContext context) {
+    public GuiComponentWrapper(@NotNull GuiContext context) {
         this.context = context;
         context.setCloseRequestHandler(this::requestClose);
     }

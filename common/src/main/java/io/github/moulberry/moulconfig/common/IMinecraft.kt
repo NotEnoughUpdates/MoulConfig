@@ -13,9 +13,13 @@ interface IMinecraft {
     fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream
     fun getLogger(label: String): MCLogger
 
+    val mouseX: Int
+    val mouseY: Int
     val isDevelopmentEnvironment: Boolean
     val defaultFontRenderer: IFontRenderer
     val keyboardConstants: IKeyboardConstants
+    val scaledWidth: Int
+    val scaledHeight: Int
 
     companion object {
         @JvmField

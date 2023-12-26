@@ -122,4 +122,8 @@ public interface RenderContext {
     void refreshScissor();
 
     void disableScissor();
+
+    default IMinecraft getMinecraft() {
+        return IMinecraft.instance;
+    }
 }

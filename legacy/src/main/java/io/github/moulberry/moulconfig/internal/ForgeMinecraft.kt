@@ -5,11 +5,12 @@ import io.github.moulberry.moulconfig.common.IKeyboardConstants
 import io.github.moulberry.moulconfig.common.IMinecraft
 import io.github.moulberry.moulconfig.common.MyResourceLocation
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ResourceLocation
 import org.apache.logging.log4j.LogManager
+import org.lwjgl.input.Mouse
 import java.io.InputStream
-import kotlin.math.log
 
 class ForgeMinecraft : IMinecraft {
     override fun bindTexture(resourceLocation: MyResourceLocation) {
@@ -41,6 +42,27 @@ class ForgeMinecraft : IMinecraft {
 
     override val isDevelopmentEnvironment: Boolean
         get() = Launch.blackboard.get("fml.deobfuscatedEnvironment") as Boolean
+
+    override val scaledWidth
+        get(): Int = ScaledResolution(Minecraft.getMinecraft()).scaledWidth
+
+    override val scaledHeight: Int
+        get() = ScaledResolution(Minecraft.getMinecraft()).scaledHeight
+
+    override val mouseX: Int
+        get() {
+            val width = scaledWidth
+            val mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth
+            return mouseX
+
+        }
+
+    override val mouseY: Int
+        get() {
+            val height = scaledHeight
+            val mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1
+            return mouseY
+        }
 
     companion object {
         @JvmStatic

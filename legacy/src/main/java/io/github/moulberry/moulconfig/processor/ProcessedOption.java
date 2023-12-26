@@ -23,6 +23,7 @@ package io.github.moulberry.moulconfig.processor;
 
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
+import io.github.moulberry.moulconfig.observer.GetSetter;
 import io.github.moulberry.moulconfig.observer.Property;
 
 import java.lang.reflect.Field;
@@ -63,6 +64,20 @@ public class ProcessedOption {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public GetSetter<?> intoProperty() {
+        return new GetSetter<Object>() {
+            @Override
+            public Object get() {
+                return ProcessedOption.this.get();
+            }
+
+            @Override
+            public void set(Object newValue) {
+                ProcessedOption.this.set(newValue);
+            }
+        };
     }
 
     public Type getType() {

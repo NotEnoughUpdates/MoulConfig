@@ -90,12 +90,14 @@ public class SwitchComponent extends GuiComponent {
     }
 
     @Override
-    public void mouseEvent(MouseEvent event, GuiImmediateContext context) {
+    public boolean mouseEvent(MouseEvent event, GuiImmediateContext context) {
         super.mouseEvent(event, context);
-        if (!(event instanceof MouseEvent.Click)) return;
+        if (!(event instanceof MouseEvent.Click)) return false;
         var click = (MouseEvent.Click) event;
         if (context.isHovered() && click.getMouseButton() == 0 && click.getMouseState()) {
             value.set(!value.get());
+            return true;
         }
+        return false;
     }
 }

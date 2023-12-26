@@ -20,8 +20,6 @@
 
 package io.github.moulberry.moulconfig.observer;
 
-import com.google.gson.annotations.Expose;
-
 /**
  * A property is a variable which is modifiable and can have those mutations observed.
  * When serializing a property to Json you can use {@link PropertyTypeAdapterFactory} to automatically
@@ -31,15 +29,9 @@ import com.google.gson.annotations.Expose;
  *
  * @param <T> the type of value this Property can hold.
  */
-public class Property<T> extends BaseObservable<T> implements GetSetter<T> {
-    /**
-     * The internal storage of this property
-     */
-    @Expose
-    T value;
+public abstract class Property<T> extends BaseObservable<T> implements GetSetter<T> {
 
-    private Property(T value) {
-        this.value = value;
+    Property() {
     }
 
     /**
@@ -50,26 +42,39 @@ public class Property<T> extends BaseObservable<T> implements GetSetter<T> {
      * @return a newly constructed property
      */
     public static <T> Property<T> of(T value) {
-        return new Property<>(value);
+        return new PropertyImpl<>(value);
     }
 
-    @Override
-    public T get() {
-        return value;
+    /**
+     * Upgrades a {@link GetSetter} so that access through the returned {@link Property} will notify observers, with state still managed in the old {@link GetSetter}.
+     * N.B.: Changes to the provided {@link GetSetter} directly will only cause you to get notified if you already had a {@link Property}. If you want to not receive
+     * those updates, use {@link #wrap}
+     *
+     * @param getSetter the old get setter which will hold state
+     */
+    public static <T> Property<T> upgrade(GetSetter<T> getSetter) {
+        if (getSetter instanceof Property)
+            return (Property<T>) getSetter;
+        return wrap(getSetter);
+    }
+
+    /**
+     * Upgrades a {@link GetSetter} so that access through the returned {@link Property} will notify observers, with state still managed in the old {@link GetSetter}.
+     * N.B.: Changes to the provided {@link GetSetter} directly will never cause you to get notified. If you want to receive updates from the provided {@link GetSetter}
+     * if it already is a {@link Property}, use {@link #upgrade}
+     *
+     * @param getSetter the old get setter which will hold state
+     */
+    public static <T> Property<T> wrap(GetSetter<T> getSetter) {
+        return new PropertyUpgraded<>(getSetter);
     }
 
     /**
      * Explicitly notify observers about state changes that are internal to the stored value.
      */
     public void notifyObservers() {
+        T value = get();
         notifyObservers(value, value);
-    }
-
-    @Override
-    public void set(T newValue) {
-        T oldValue = this.value;
-        this.value = newValue;
-        notifyObservers(oldValue, newValue);
     }
 
 }

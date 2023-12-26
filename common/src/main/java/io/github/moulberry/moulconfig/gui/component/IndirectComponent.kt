@@ -22,12 +22,12 @@ open class IndirectComponent(
         component.get().render(context)
     }
 
-    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext) {
-        component.get().keyboardEvent(event, context)
+    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
+        return component.get().keyboardEvent(event, context)
     }
 
-    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext) {
-        component.get().mouseEvent(mouseEvent, context)
+    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
+        return component.get().mouseEvent(mouseEvent, context)
     }
 
     override fun <T : Any?> foldChildren(initial: T, visitor: BiFunction<GuiComponent, T, T>): T {

@@ -126,6 +126,16 @@ data class GuiImmediateContext(
         )
     }
 
+    /**
+     * Construct a new context, which has not been translated, but possible smaller if the arguments demand so.
+     *
+     * @param maxWidth max width of the new context. this argument will be ignored if it is larger than the current width
+     * @param maxHeight max height of the new context. this argument will be ignored if it is larger than the current height
+     */
+    fun limitSize(maxWidth: Int, maxHeight: Int): GuiImmediateContext {
+        return translated(0, 0, minOf(width, maxWidth), minOf(height, maxHeight))
+    }
+
     fun scaled(scale: Float): GuiImmediateContext {
         return GuiImmediateContext(
             renderContext,

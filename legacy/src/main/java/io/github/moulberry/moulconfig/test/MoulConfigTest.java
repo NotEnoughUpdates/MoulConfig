@@ -135,7 +135,7 @@ public class MoulConfigTest {
                 if (args.length > 0 && "gui".equals(args[0])) {
                     screenToOpen = new MoulGuiOverlayEditor(testConfigMoulConfigProcessor);
                 } else if (args.length > 0 && "testgui".equals(args[0])) {
-                    screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(
+                    screenToOpen = new GuiComponentWrapper(new GuiContext(
                         new CenterComponent(new PanelComponent(
                             new ColumnComponent(
                                 new TextComponent("Label", 80),
@@ -147,7 +147,7 @@ public class MoulConfigTest {
                     var xmlUniverse = XMLUniverse.getDefaultUniverse();
                     var gui = xmlUniverse.load(new ObjectBound(), Minecraft.getMinecraft().getResourceManager()
                         .getResource(new ResourceLocation("moulconfig:test.xml")).getInputStream());
-                    screenToOpen = new GuiScreenElementWrapperNew(new GuiContext(gui));
+                    screenToOpen = new GuiComponentWrapper(new GuiContext(gui));
                 } else {
                     screenToOpen = new GuiScreenElementWrapper(new MoulConfigEditor<>(testConfigMoulConfigProcessor));
                 }

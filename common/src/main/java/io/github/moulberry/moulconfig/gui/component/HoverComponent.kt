@@ -31,11 +31,11 @@ class HoverComponent(
 
     }
 
-    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext) {
+    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
         return child.mouseEvent(mouseEvent, context)
     }
 
-    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext) {
+    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
         return child.keyboardEvent(event, context)
     }
 }

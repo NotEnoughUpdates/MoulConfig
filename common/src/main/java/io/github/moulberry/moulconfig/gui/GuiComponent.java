@@ -121,8 +121,10 @@ public abstract class GuiComponent {
      * Called by the parent renderer.
      *
      * @param context the context in which this
+     * @return {@code true} if this event was handled, {@code false} if this event should be handled by another element
      */
-    public void mouseEvent(@NotNull MouseEvent mouseEvent,@NotNull GuiImmediateContext context) {
+    public boolean mouseEvent(@NotNull MouseEvent mouseEvent,@NotNull GuiImmediateContext context) {
+        return false;
     }
 
     /**
@@ -130,8 +132,10 @@ public abstract class GuiComponent {
      * <p>N.B.: this method is called regardless of whether this element is focused or not.</p>
      *
      * @param context the context in which this
+     * @return {@code true} if this event was handled, {@code false} if this event should be handled by another element
      */
-    public void keyboardEvent(@NotNull KeyboardEvent event,@NotNull  GuiImmediateContext context) {
+    public boolean keyboardEvent(@NotNull KeyboardEvent event,@NotNull  GuiImmediateContext context) {
+        return false;
     }
 
 }

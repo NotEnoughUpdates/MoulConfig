@@ -20,6 +20,15 @@
 
 package io.github.moulberry.moulconfig.observer;
 
+import io.github.moulberry.moulconfig.internal.Warnings;
+import lombok.SneakyThrows;
+import lombok.var;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -86,6 +95,43 @@ public interface GetSetter<T> extends Supplier<T>, Consumer<T> {
             @Override
             public void set(T newValue) {
                 storage = newValue;
+            }
+        };
+    }
+
+    /**
+     * Create a {@link GetSetter} backed by a field… This {@link GetSetter} will update to and poll from the underlying field without any buffer.
+     *
+     * @param owner the instance on which to perform the lookup. should be null for static fields
+     * @param field the field to read from and write to
+     * @return a field backed {@link GetSetter}
+     */
+    @SneakyThrows
+    static GetSetter<?> ofField(@Nullable Object owner, @NotNull Field field) {
+        field.setAccessible(true);
+        if ((owner == null) != (Modifier.isStatic(field.getModifiers()))) {
+            Warnings.warn("Field instance (" + owner + ") is mismatched with field " + field);
+        }
+        var lookup = MethodHandles.publicLookup();
+        var getter = lookup.unreflectGetter(field);
+        var setter = lookup.unreflectSetter(field);
+        if (owner != null) {
+            getter = getter.bindTo(owner);
+            setter = setter.bindTo(owner);
+        }
+        var finalGetter = getter;
+        var finalSetter = setter;
+        return new GetSetter<Object>() {
+            @SneakyThrows
+            @Override
+            public Object get() {
+                return (Object) finalGetter.invoke();
+            }
+
+            @SneakyThrows
+            @Override
+            public void set(Object newValue) {
+                finalSetter.invoke(newValue);
             }
         };
     }

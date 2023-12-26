@@ -116,19 +116,19 @@ open class TextFieldComponent(
         context.renderContext.drawColoredRect(1f, 1f, (width - 1).toFloat(), (height - 1).toFloat(), BACKGROUND_COLOR)
     }
 
-    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext) {
-        if (!editable.get()) return
-        if (!isFocused) return
+    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
+        if (!editable.get()) return false
+        if (!isFocused) return false
         if (event is KeyboardEvent.KeyPressed && event.pressed) {
-            when (event.keycode) {
+            return when (event.keycode) {
                 KeyboardConstants.left -> {
                     onDirectionalKey(context, -1)
-                    return
+                    return true
                 }
 
                 KeyboardConstants.right -> {
                     onDirectionalKey(context, 1)
-                    return
+                    return true
                 }
 
                 KeyboardConstants.home, KeyboardConstants.up -> {
@@ -139,7 +139,7 @@ open class TextFieldComponent(
                     }
                     cursor = 0
                     scrollCursorIntoView()
-                    return
+                    return true
                 }
 
                 KeyboardConstants.down, KeyboardConstants.end -> {
@@ -150,49 +150,61 @@ open class TextFieldComponent(
                     }
                     cursor = text.get().length
                     scrollCursorIntoView()
-                    return
+                    return true
                 }
 
                 KeyboardConstants.backSpace -> {
                     if (selection == -1) selection = skipCharacters(context.renderContext.isCtrlDown, -1)
                     writeText("")
-                    return
+                    return true
                 }
 
                 KeyboardConstants.delete -> {
                     if (selection == -1) selection = skipCharacters(context.renderContext.isCtrlDown, 1)
                     writeText("")
-                    return
+                    return true
                 }
 
                 KeyboardConstants.keyC -> if (context.renderContext.isCtrlDown) {
                     ClipboardUtils.copyToClipboard(getSelection())
-                    return
+                    return true
+                } else {
+                    return false
                 }
 
                 KeyboardConstants.keyX -> if (context.renderContext.isCtrlDown) {
                     ClipboardUtils.copyToClipboard(getSelection())
                     writeText("")
-                    return
+                    return true
+                } else {
+                    return false
                 }
 
                 KeyboardConstants.keyV -> if (context.renderContext.isCtrlDown) {
                     writeText(ClipboardUtils.getClipboardContent())
-                    return
+                    return true
+                } else {
+                    return false
                 }
 
                 KeyboardConstants.keyA -> if (context.renderContext.isCtrlDown) {
                     cursor = text.get().length
                     selection = 0
                     scrollCursorIntoView()
-                    return
+                    return true
+                } else {
+                    return false
                 }
 
+                else -> return false
             }
         } else if (event is KeyboardEvent.CharTyped) {
             val it = event.char
             if (it >= ' ' && it != '§' && it.code != 127)
                 writeText(it + "")
+            return true
+        } else {
+            return false
         }
     }
 
@@ -203,14 +215,15 @@ open class TextFieldComponent(
         return safeSubString(text.get(), l, r)
     }
 
-    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext) {
+    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
         super.mouseEvent(mouseEvent, context)
         if (context.isHovered && mouseEvent is Click) {
-            val (mouseButton, mouseState) = mouseEvent
-            if (mouseState && mouseButton == 0) {
+            if (mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
                 requestFocus()
+                return true
             }
         }
+        return false
     }
 
     private fun safeSubString(str: String, startIndex: Int): String {

@@ -65,13 +65,15 @@ open class SliderComponent(
         value.set(v)
     }
 
-    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext) {
+    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
         if (!context.renderContext.isMouseButtonDown(0)) clicked = false
         if (context.isHovered && mouseEvent is MouseEvent.Click && mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
             clicked = true
         }
         if (clicked) {
             setValueFromContext(context)
+            return true
         }
+        return false
     }
 }

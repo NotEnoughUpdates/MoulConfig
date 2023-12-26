@@ -24,12 +24,14 @@ import io.github.moulberry.moulconfig.gui.GuiComponent;
 import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
 import io.github.moulberry.moulconfig.gui.KeyboardEvent;
 import io.github.moulberry.moulconfig.gui.MouseEvent;
+import lombok.Getter;
 
 import java.util.function.BiFunction;
 
 /**
  * Renders an element with a floating rect.
  */
+@Getter
 public class PanelComponent extends GuiComponent {
     private final GuiComponent element;
     private final int insets;
@@ -57,35 +59,31 @@ public class PanelComponent extends GuiComponent {
         return element.getWidth() + insets * 2;
     }
 
-    public int getInsets() {
-        return insets;
-    }
-
     @Override
     public int getHeight() {
         return element.getHeight() + insets * 2 + 2;
     }
 
-    GuiImmediateContext getChildContext(GuiImmediateContext context) {
+    protected GuiImmediateContext getChildContext(GuiImmediateContext context) {
         return context.translated(insets, insets, element.getWidth(), element.getHeight());
     }
 
     @Override
     public void render(GuiImmediateContext context) {
         context.getRenderContext().pushMatrix();
-        context.getRenderContext().drawDarkRect(0, 0, getWidth(), getHeight() - 2);
+        context.getRenderContext().drawDarkRect(0, 0, context.getWidth(), context.getHeight() - 2);
         context.getRenderContext().translate(insets, insets, 0);
         element.render(getChildContext(context));
         context.getRenderContext().popMatrix();
     }
 
     @Override
-    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
-        element.keyboardEvent(event, getChildContext(context));
+    public boolean keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
+        return element.keyboardEvent(event, getChildContext(context));
     }
 
     @Override
-    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
-        element.mouseEvent(mouseEvent, getChildContext(context));
+    public boolean mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        return element.mouseEvent(mouseEvent, getChildContext(context));
     }
 }

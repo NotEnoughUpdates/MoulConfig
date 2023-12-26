@@ -79,12 +79,12 @@ public class CenterComponent extends GuiComponent {
     }
 
     @Override
-    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
-        child.keyboardEvent(event, getChildContext(context));
+    public boolean keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
+        return child.keyboardEvent(event, getChildContext(context));
     }
 
     @Override
-    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
-        child.mouseEvent(mouseEvent, getChildContext(context));
+    public boolean mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        return child.mouseEvent(mouseEvent, getChildContext(context));
     }
 }

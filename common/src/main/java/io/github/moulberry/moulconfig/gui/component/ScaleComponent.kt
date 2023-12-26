@@ -31,11 +31,11 @@ class ScaleComponent(
         context.renderContext.popMatrix()
     }
 
-    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext) {
-        child.keyboardEvent(event, context.scaled(scaleFactor.get()))
+    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
+        return child.keyboardEvent(event, context.scaled(scaleFactor.get()))
     }
 
-    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext) {
-        super.mouseEvent(mouseEvent, context.scaled(scaleFactor.get()))
+    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
+        return child.mouseEvent(mouseEvent, context.scaled(scaleFactor.get()))
     }
 }

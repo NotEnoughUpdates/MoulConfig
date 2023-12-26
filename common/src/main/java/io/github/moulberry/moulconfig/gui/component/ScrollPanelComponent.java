@@ -45,15 +45,19 @@ public class ScrollPanelComponent extends GuiComponent {
     }
 
     @Override
-    public void keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
-        child.keyboardEvent(event, context.translatedNonRendering(0, -scrollOffset, width, height));
+    public boolean keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
+        return child.keyboardEvent(event, context.translatedNonRendering(0, -scrollOffset, width, height));
     }
 
     @Override
-    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+    public boolean mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        if (child.mouseEvent(mouseEvent, context.translatedNonRendering(0, -scrollOffset, width, height))) {
+            return true;
+        }
         if (context.isHovered() && mouseEvent instanceof MouseEvent.Scroll) {
             scrollOffset = (int) Math.max(0, Math.min(scrollOffset - (((MouseEvent.Scroll) mouseEvent).getDWheel()), child.getHeight() - height));
+            return true;
         }
-        child.mouseEvent(mouseEvent, context.translatedNonRendering(0, -scrollOffset, width, height));
+        return false;
     }
 }

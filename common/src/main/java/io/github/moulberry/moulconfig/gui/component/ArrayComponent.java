@@ -84,14 +84,26 @@ public class ArrayComponent<T> extends GuiComponent {
     }
 
     @Override
-    public void mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
-        foldWithContext(context, (guiComponent, guiImmediateContext) ->
-            guiComponent.mouseEvent(mouseEvent, guiImmediateContext));
+    public boolean mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
+        // TODO: early return
+        boolean[] wasHandled = new boolean[1];
+        foldWithContext(context, (guiComponent, guiImmediateContext) -> {
+            if (guiComponent.mouseEvent(mouseEvent, guiImmediateContext)) {
+                wasHandled[0] = true;
+            }
+        });
+        return wasHandled[0];
     }
 
     @Override
-    public void keyboardEvent(KeyboardEvent keyboardEvent, GuiImmediateContext context) {
-        foldWithContext(context, (guiComponent, guiImmediateContext) ->
-            guiComponent.keyboardEvent(keyboardEvent, guiImmediateContext));
+    public boolean keyboardEvent(KeyboardEvent keyboardEvent, GuiImmediateContext context) {
+        // TODO: early return
+        boolean[] wasHandled = new boolean[1];
+        foldWithContext(context, (guiComponent, guiImmediateContext) -> {
+            if (guiComponent.keyboardEvent(keyboardEvent, guiImmediateContext)) {
+                wasHandled[0] = true;
+            }
+        });
+        return wasHandled[0];
     }
 }

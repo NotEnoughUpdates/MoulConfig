@@ -72,7 +72,7 @@ class CollapsibleComponent(
         }
     }
 
-    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext) {
+    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
         val barHeight = maxOf(title.get().height, fr.height)
 
         if (mouseEvent is MouseEvent.Click && context.translated(
@@ -84,33 +84,31 @@ class CollapsibleComponent(
         ) {
             if (mouseEvent.mouseState)
                 collapsedState.set(!collapsedState.get())
-            return
+            return true
         }
 
-        title.get().mouseEvent(
+        return title.get().mouseEvent(
             mouseEvent, context.translated(
                 iconWidth,
                 0,
                 context.width - iconWidth,
                 barHeight
             )
-        )
-        body.get().mouseEvent(
+        ) || body.get().mouseEvent(
             mouseEvent, context.translated(0, barHeight, context.width, context.height - barHeight)
         )
     }
 
-    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext) {
+    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
         val barHeight = maxOf(title.get().height, fr.height)
-        title.get().keyboardEvent(
+        return title.get().keyboardEvent(
             event, context.translated(
                 iconWidth,
                 0,
                 context.width - iconWidth,
                 barHeight
             )
-        )
-        body.get().keyboardEvent(
+        ) || body.get().keyboardEvent(
             event, context.translated(0, barHeight, context.width, context.height - barHeight)
         )
     }

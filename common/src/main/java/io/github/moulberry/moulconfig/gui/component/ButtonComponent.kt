@@ -8,18 +8,24 @@ import io.github.moulberry.moulconfig.gui.MouseEvent
 import io.github.moulberry.moulconfig.gui.MouseEvent.Click
 
 class ButtonComponent(element: GuiComponent, insets: Int, val onClick: Runnable) : PanelComponent(element, insets) {
-    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext) {
+    override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
         if (context.isHovered && mouseEvent is Click) {
             val (mouseButton, mouseState) = mouseEvent
-            if (mouseState && mouseButton == 0) onClick.run()
+            if (mouseState && mouseButton == 0) {
+                onClick.run()
+                return true
+            }
         }
+        return false
     }
 
-    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext) {
+    override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
         if (isFocused && event is KeyboardEvent.KeyPressed &&
             event.pressed && event.keycode == KeyboardConstants.enter
         ) {
             onClick.run()
-        } else super.keyboardEvent(event, context)
+            return true
+        }
+        return false
     }
 }

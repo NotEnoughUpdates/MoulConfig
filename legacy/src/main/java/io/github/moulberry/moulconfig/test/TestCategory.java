@@ -74,7 +74,7 @@ public class TestCategory {
     @Expose
     public Property<String> text2 = Property.of("Text 2");
 
-    @ConfigOption(name = "Boolean test", desc = "Toggle test")
+    @ConfigOption(name = "Boolean test", desc = "Ut iste voluptatibus qui fugiat maxime. Praesentium incidunt beatae voluptas voluptatem repudiandae. Et qui sed ea. Dolorem sit aspernatur assumenda optio sunt dolorum nemo. Quo eaque id minima enim consequatur excepturi blanditiis autem. Quae porro saepe doloribus iure optio nam quae et.")
     @ConfigEditorBoolean
     @Expose
     public boolean bool = true;
