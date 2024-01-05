@@ -23,6 +23,14 @@ class ForgeRenderContext : RenderContext {
         GlStateManager.popMatrix()
     }
 
+    override fun disableDepth() {
+        GlStateManager.disableDepth()
+    }
+
+    override fun enableDepth() {
+        GlStateManager.enableDepth()
+    }
+
     override fun translate(x: Float, y: Float, z: Float) {
         GlStateManager.translate(x, y, z)
     }

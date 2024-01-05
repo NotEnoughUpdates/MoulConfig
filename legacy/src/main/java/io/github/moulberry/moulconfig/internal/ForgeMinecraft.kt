@@ -49,6 +49,9 @@ class ForgeMinecraft : IMinecraft {
     override val scaledHeight: Int
         get() = ScaledResolution(Minecraft.getMinecraft()).scaledHeight
 
+    override val scaleFactor: Int
+        get() = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
+
     override val mouseX: Int
         get() {
             val width = scaledWidth

@@ -20,6 +20,7 @@ interface IMinecraft {
     val keyboardConstants: IKeyboardConstants
     val scaledWidth: Int
     val scaledHeight: Int
+    val scaleFactor: Int
 
     companion object {
         @JvmField

@@ -22,6 +22,14 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     data class Scissor(val left: Double, val top: Double, val right: Double, val bottom: Double)
 
+    override fun disableDepth() {
+        RenderSystem.disableDepthTest()
+    }
+
+    override fun enableDepth() {
+        RenderSystem.enableDepthTest()
+    }
+
     fun refreshScissors() {
         if (scissors.isEmpty()) {
             GL11.glScissor(0, 0, window.framebufferWidth, window.framebufferHeight)

@@ -53,6 +53,9 @@ public interface RenderContext {
         popMatrix();
     }
 
+    void disableDepth();
+    void enableDepth();
+
     default void drawVerticalLine(int x, int startY, int endY, int color) {
         if (startY > endY) {
             int temp = startY;

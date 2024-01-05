@@ -25,7 +25,6 @@ import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.Social;
 import io.github.moulberry.moulconfig.common.IFontRenderer;
 import io.github.moulberry.moulconfig.common.IMinecraft;
-import io.github.moulberry.moulconfig.common.MyResourceLocation;
 import io.github.moulberry.moulconfig.common.RenderContext;
 import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementTextField;
@@ -33,15 +32,10 @@ import io.github.moulberry.moulconfig.internal.*;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
 import io.github.moulberry.moulconfig.processor.ProcessedCategory;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
+import lombok.val;
 import lombok.var;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -224,11 +218,19 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         IMinecraft iMinecraft = IMinecraft.instance;
         RenderContext context = new ForgeRenderContext();
 
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        int width = scaledResolution.getScaledWidth();
-        int height = scaledResolution.getScaledHeight();
-        int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
-        int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
+        int width = iMinecraft.getScaledWidth();
+        int height = iMinecraft.getScaledHeight();
+        int scaleFactor = iMinecraft.getScaleFactor();
+        int mouseX = iMinecraft.getMouseX();
+        int mouseY = iMinecraft.getMouseY();
+
+        int xSize = Math.min(width - 100 / scaleFactor, 500);
+        int ySize = Math.min(width - 100 / scaleFactor, 400);
+
+        int x = (width - xSize) / 2;
+        int y = (height - ySize) / 2;
+
+        int adjScaleFactor = Math.max(2, scaleFactor);
 
         float opacityFactor = LerpUtils.sigmoidZeroOne(delta / 500f);
         context.drawGradientRect(
@@ -237,13 +239,6 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             (int) (0x90 * opacityFactor) << 24 | 0x101010
         );
 
-        int xSize = Math.min(scaledResolution.getScaledWidth() - 100 / scaledResolution.getScaleFactor(), 500);
-        int ySize = Math.min(scaledResolution.getScaledHeight() - 100 / scaledResolution.getScaleFactor(), 400);
-
-        int x = (scaledResolution.getScaledWidth() - xSize) / 2;
-        int y = (scaledResolution.getScaledHeight() - ySize) / 2;
-
-        int adjScaleFactor = Math.max(2, scaledResolution.getScaleFactor());
 
         int openingXSize = xSize;
         int openingYSize = ySize;
@@ -254,22 +249,21 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             openingYSize = 5 + (int) (delta - 150) * (ySize - 5) / 150;
         }
         context.drawDarkRect(
-            (scaledResolution.getScaledWidth() - openingXSize) / 2,
-            (scaledResolution.getScaledHeight() - openingYSize) / 2,
+            (width - openingXSize) / 2,
+            (height - openingYSize) / 2,
             openingXSize, openingYSize
         );
         context.clearScissor();
         context.pushScissor(
-            (scaledResolution.getScaledWidth() - openingXSize) / 2,
-            (scaledResolution.getScaledHeight() - openingYSize) / 2,
-            (scaledResolution.getScaledWidth() + openingXSize) / 2,
-            (scaledResolution.getScaledHeight() + openingYSize) / 2
+            (width - openingXSize) / 2,
+            (height - openingYSize) / 2,
+            (width + openingXSize) / 2,
+            (height + openingYSize) / 2
         );
 
         context.drawDarkRect(x + 5, y + 5, xSize - 10, 20, false);
 
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-        IFontRenderer ifr = new ForgeFontRenderer(fr);
+        IFontRenderer ifr = iMinecraft.getDefaultFontRenderer();
         context.drawStringCenteredScaledMaxWidth(
             processedConfig.getConfigObject().getTitle(),
             ifr,
@@ -300,7 +294,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         context.pushScissor(
             0, innerTop + 1,
-            scaledResolution.getScaledWidth(), innerBottom - 1
+            width, innerBottom - 1
         );
 
         float catBarSize = 1;
@@ -316,7 +310,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             var childCategories = childCategoryLookup.get(entry.getKey());
             var catName = processedConfig.getConfigObject().formatCategoryName(entry.getValue(), isSelected);
             var align = processedConfig.getConfigObject().alignCategory(entry.getValue(), isSelected);
-            var textLength = fr.getStringWidth(catName);
+            var textLength = ifr.getStringWidth(catName);
             var isIndented = childCategories != null || entry.getValue().parent != null;
             if (textLength > ((isIndented) ? 90 : 100)) {
                 context.drawStringCenteredScaledMaxWidth(catName,
@@ -327,9 +321,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     ifr, x + 75, y + 70 + catY, false, (isIndented ? 90 : 100), -1
                 );
             } else if (align == HorizontalAlign.RIGHT) {
-                context.drawString(ifr, catName, x + 75 + 50 - textLength, y + 70 + catY - fr.FONT_HEIGHT / 2, -1, false);
+                context.drawString(ifr, catName, x + 75 + 50 - textLength, y + 70 + catY - ifr.getHeight() / 2, -1, false);
             } else {
-                context.drawString(ifr, catName, x + 75 - 50 + (isIndented ? 10 : 0), y + 70 + catY - fr.FONT_HEIGHT / 2, -1, false);
+                context.drawString(ifr, catName, x + 75 - 50 + (isIndented ? 10 : 0), y + 70 + catY - ifr.getHeight() / 2, -1, false);
             }
             if (childCategories != null) {
                 var isExpanded = showSubcategories && (isSelected || childCategories.contains(getSelectedCategory()));
@@ -407,7 +401,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
 
-            context.drawStringScaledMaxWidth(cat.desc,
+            context.drawStringScaledMaxWidth(
+                cat.desc,
                 ifr, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
             );
         }
@@ -425,7 +420,6 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
             int optionWidthDefault = innerRight - innerLeft - 20;
-            GlStateManager.enableDepth();
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             var options = getOptionsInCategory(cat);
             if (options.isEmpty()) {
@@ -437,12 +431,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 context.translate(titlePositionX, titlePositionY, 0);
                 context.drawStringCenteredScaledMaxWidth("§7Seems like your search is found in a subcategory.", ifr,
                     0,
-                    titleScale * fr.FONT_HEIGHT,
+                    titleScale * ifr.getHeight(),
                     true, innerSize, -1
                 );
                 context.drawStringCenteredScaledMaxWidth("§7Check out the subcategories on the left.", ifr,
                     0,
-                    (titleScale + 1) * fr.FONT_HEIGHT,
+                    (titleScale + 1) * ifr.getHeight(),
                     true, innerSize, -1
                 );
                 context.scale(titleScale, titleScale, 1);
@@ -490,7 +484,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 }
                 optionY += optionHeight + 5;
             }
-            GlStateManager.disableDepth();
+            context.disableDepth();
             if (optionY > 0) {
                 barSize =
                     LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + optionsScroll.getValue()));
@@ -509,7 +503,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
             context.pushMatrix();
             context.translate(0, 0, 10);
-            GlStateManager.enableDepth();
+            context.enableDepth();
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
                 int optionWidth = optionWidthDefault;
@@ -552,7 +546,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 }
                 optionYOverlay += optionHeight + 5;
             }
-            GlStateManager.disableDepth();
+            context.disableDepth();
             context.popMatrix();
         }
         context.refreshScissor();
@@ -586,7 +580,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         for (int socialIndex = 0; socialIndex < socials.size(); socialIndex++) {
             Social social = socials.get(socialIndex);
             iMinecraft.bindTexture(ForgeMinecraft.fromResourceLocation(social.getIcon()));
-            GlStateManager.color(1, 1, 1, 1);
+            context.color(1, 1, 1, 1);
             int socialLeft = x + xSize - 23 - 18 * socialIndex;
             context.drawTexturedRect(socialLeft, y + 7, 16, 16);
 
@@ -606,17 +600,18 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
     public boolean mouseInput(int mouseX, int mouseY) {
         lastMouseX = mouseX;
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        int width = scaledResolution.getScaledWidth();
-        int height = scaledResolution.getScaledHeight();
+        val iMinecraft = IMinecraft.instance;
+        int width = iMinecraft.getScaledWidth();
+        int height = iMinecraft.getScaledHeight();
+        int scaleFactor = iMinecraft.getScaleFactor();
 
-        int xSize = Math.min(width - 100 / scaledResolution.getScaleFactor(), 500);
-        int ySize = Math.min(height - 100 / scaledResolution.getScaleFactor(), 400);
+        int xSize = Math.min(width - 100 / scaleFactor, 500);
+        int ySize = Math.min(width - 100 / scaleFactor, 400);
 
-        int x = (scaledResolution.getScaledWidth() - xSize) / 2;
-        int y = (scaledResolution.getScaledHeight() - ySize) / 2;
+        int x = (width - xSize) / 2;
+        int y = (height - ySize) / 2;
 
-        int adjScaleFactor = Math.max(2, scaledResolution.getScaleFactor());
+        int adjScaleFactor = Math.max(2, scaleFactor);
 
         int innerPadding = 20 / adjScaleFactor;
         int innerTop = y + 49 + innerPadding;
@@ -662,7 +657,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9);
 
             if (minimumSearchSize.getValue() > 1) {
-                int strLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(searchField.getText()) + 10;
+                int strLen = iMinecraft.getDefaultFontRenderer().getStringWidth(searchField.getText()) + 10;
                 int len = Math.max(strLen, minimumSearchSize.getValue());
 
                 if (mouseX >= innerRight - 25 - len && mouseX <= innerRight - 25 &&
@@ -893,12 +888,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     public boolean keyboardInput() {
-        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-        int width = scaledResolution.getScaledWidth();
+        val iMinecraft = IMinecraft.instance;
+        int width = iMinecraft.getScaledWidth();
+        int height = iMinecraft.getScaledHeight();
+        int scaleFactor = iMinecraft.getScaleFactor();
 
-        int xSize = Math.min(width - 100 / scaledResolution.getScaleFactor(), 500);
+        int xSize = Math.min(width - 100 / scaleFactor, 500);
+        int ySize = Math.min(width - 100 / scaleFactor, 400);
 
-        int adjScaleFactor = Math.max(2, scaledResolution.getScaleFactor());
+        int adjScaleFactor = Math.max(2, scaleFactor);
 
         int innerPadding = 20 / adjScaleFactor;
         int innerWidth = xSize - 154 - innerPadding * 2;
@@ -948,7 +946,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             searchField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 
             if (!searchField.getText().equals(old)) {
-                searchField.setText(Minecraft.getMinecraft().fontRendererObj.trimStringToWidth(
+                searchField.setText(IMinecraft.instance.getDefaultFontRenderer().trimStringToWidth(
                     searchField.getText(),
                     innerWidth / 2 - 20
                 ));

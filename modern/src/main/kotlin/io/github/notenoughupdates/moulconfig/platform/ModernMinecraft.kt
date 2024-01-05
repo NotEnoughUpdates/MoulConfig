@@ -75,4 +75,6 @@ class ModernMinecraft : IMinecraft {
         get() = TODO("Not yet implemented")
     override val scaledHeight: Int
         get() = TODO("Not yet implemented")
+    override val scaleFactor: Int
+        get() = TODO("Not yet implemented")
 }

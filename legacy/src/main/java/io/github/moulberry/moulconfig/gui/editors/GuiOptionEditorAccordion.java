@@ -25,12 +25,7 @@ import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 public class GuiOptionEditorAccordion extends GuiOptionEditor {
     private final int accordionId;
