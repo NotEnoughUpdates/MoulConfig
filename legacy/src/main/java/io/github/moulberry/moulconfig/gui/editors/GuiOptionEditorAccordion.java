@@ -20,14 +20,14 @@
 
 package io.github.moulberry.moulconfig.gui.editors;
 
-import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
-import io.github.moulberry.moulconfig.internal.TextRenderUtils;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
+import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
+import io.github.moulberry.moulconfig.gui.MouseEvent;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import org.lwjgl.input.Mouse;
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
-public class GuiOptionEditorAccordion extends GuiOptionEditor {
+public class GuiOptionEditorAccordion extends ComponentEditor {
     private final int accordionId;
     private boolean accordionToggled = false;
 
@@ -36,9 +36,48 @@ public class GuiOptionEditorAccordion extends GuiOptionEditor {
         this.accordionId = accordionId;
     }
 
+    private final GuiComponent delegate = new GuiComponent() {
+        @Override
+        public int getWidth() {
+            return 0;
+        }
+
+        @Override
+        public int getHeight() {
+            return 20;
+        }
+
+        @Override
+        public void render(@NotNull GuiImmediateContext context) {
+            context.getRenderContext().drawDarkRect(0, 0, context.getWidth(), context.getHeight(), true);
+            if (context.isHovered()) {
+                context.getRenderContext().drawColoredRect(0, 0, context.getWidth(), context.getHeight(), 0xFF00FF00);
+            }
+            context.getRenderContext().drawOpenCloseTriangle(accordionToggled, 6, 6, 13.5F - 6F, 13.5F - 6F);
+            context.getRenderContext().drawStringScaledMaxWidth(option.name, context.getRenderContext().getMinecraft().getDefaultFontRenderer(), 18, 6, false, context.getWidth() - 18, 0xc0c0c0);
+        }
+
+        @Override
+        public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
+            if (mouseEvent instanceof MouseEvent.Click) {
+                val click = (MouseEvent.Click) mouseEvent;
+                if (click.getMouseState() && context.isHovered() && click.getMouseButton() == 0) {
+                    accordionToggled = !accordionToggled;
+                    return true;
+                }
+            }
+            return super.mouseEvent(mouseEvent, context);
+        }
+    };
+
     @Override
     public int getHeight() {
         return 20;
+    }
+
+    @Override
+    public @NotNull GuiComponent getDelegate() {
+        return delegate;
     }
 
     public int getAccordionId() {
@@ -49,31 +88,4 @@ public class GuiOptionEditorAccordion extends GuiOptionEditor {
         return accordionToggled;
     }
 
-    @Override
-    public void render(int x, int y, int width) {
-        int height = getHeight();
-        RenderUtils.drawFloatingRectDark(x, y, width, height, true);
-
-        RenderUtils.drawOpenCloseTriangle(accordionToggled, x + 6, y + 6, 13.5 - 6, 13.5 - 6);
-
-        TextRenderUtils.drawStringScaledMaxWidth(option.name, Minecraft.getMinecraft().fontRendererObj,
-            x + 18, y + 6, false, width - 10, 0xc0c0c0
-        );
-    }
-
-    @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        if (Mouse.getEventButtonState() && mouseX > x && mouseX < x + width &&
-            mouseY > y && mouseY < y + getHeight()) {
-            accordionToggled = !accordionToggled;
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean keyboardInput() {
-        return false;
-    }
 }

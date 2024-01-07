@@ -131,6 +131,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
     @Override
     public final boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+        if (Mouse.getEventButton() == -1) return false;
         return getDelegate().mouseEvent(new MouseEvent.Click(Mouse.getEventButton(), Mouse.getEventButtonState()), getImmContext(x, y, width, getHeight()));
     }
 
