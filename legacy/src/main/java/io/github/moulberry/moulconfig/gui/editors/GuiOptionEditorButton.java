@@ -23,23 +23,24 @@ package io.github.moulberry.moulconfig.gui.editors;
 import io.github.moulberry.moulconfig.Config;
 import io.github.moulberry.moulconfig.GuiTextures;
 import io.github.moulberry.moulconfig.common.IMinecraft;
-import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
-import io.github.moulberry.moulconfig.internal.RenderUtils;
-import io.github.moulberry.moulconfig.internal.TextRenderUtils;
+import io.github.moulberry.moulconfig.gui.GuiComponent;
+import io.github.moulberry.moulconfig.gui.GuiImmediateContext;
+import io.github.moulberry.moulconfig.gui.MouseEvent;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
+import lombok.Getter;
+import lombok.val;
 import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Mouse;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public class GuiOptionEditorButton extends GuiOptionEditor {
-	private final int runnableId;
-	private String buttonText;
-	private final Config config;
+public class GuiOptionEditorButton extends ComponentEditor {
+    private final int runnableId;
+    private String buttonText;
+    private final Config config;
     private boolean isUsingRunnable;
 
-	public GuiOptionEditorButton(
+    public GuiOptionEditorButton(
         ProcessedOption option,
         int runnableId,
         String buttonText,
@@ -54,47 +55,52 @@ public class GuiOptionEditorButton extends GuiOptionEditor {
         if (this.buttonText == null) this.buttonText = "";
     }
 
-	@Override
-	public void render(int x, int y, int width) {
-		super.render(x, y, width);
-
-		int height = getHeight();
-
-		GlStateManager.color(1, 1, 1, 1);
-        IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
-		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
-
-        TextRenderUtils.drawStringCenteredScaledMaxWidth(buttonText, Minecraft.getMinecraft().fontRendererObj,
-            x + width / 6, y + height - 7 - 6,
-            false, 44, 0xFF303030
-        );
-	}
-
-	@Override
-	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-		if (Mouse.getEventButtonState()) {
-            int height = getHeight();
-            if (mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-                mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
-                if (isUsingRunnable) {
-                    ((Runnable) option.get()).run();
-                } else {
-                    config.executeRunnable(runnableId);
-                }
-                return true;
-            }
+    @Getter
+    private final GuiComponent delegate = wrapComponent(new GuiComponent() {
+        @Override
+        public int getWidth() {
+            return 48;
         }
 
-        return false;
-    }
+        @Override
+        public int getHeight() {
+            return 16;
+        }
+
+        @Override
+        public void render(@NotNull GuiImmediateContext context) {
+
+            GlStateManager.color(1, 1, 1, 1);
+            IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
+            context.getRenderContext().drawTexturedRect(0, 0, context.getWidth(), context.getHeight());
+            context.getRenderContext().drawStringCenteredScaledMaxWidth(
+                buttonText,
+                context.getRenderContext().getMinecraft().getDefaultFontRenderer(),
+                context.getWidth() / 2f, context.getHeight() / 2f,
+                false, context.getWidth() - 4, 0xFF303030
+            );
+        }
+
+        @Override
+        public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
+            if (mouseEvent instanceof MouseEvent.Click) {
+                val click = (MouseEvent.Click) mouseEvent;
+                if (click.getMouseState() && context.isHovered() && click.getMouseButton() == 0) {
+                    if (isUsingRunnable) {
+                        ((Runnable) option.get()).run();
+                    } else {
+                        config.executeRunnable(runnableId);
+                    }
+                    return true;
+                }
+            }
+            return super.mouseEvent(mouseEvent, context);
+        }
+    });
+
 
     @Override
     public boolean fulfillsSearch(String word) {
         return super.fulfillsSearch(word) || buttonText.toLowerCase(Locale.ROOT).contains(word);
-    }
-
-    @Override
-    public boolean keyboardInput() {
-        return false;
     }
 }
