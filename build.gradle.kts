@@ -22,10 +22,10 @@ fun cmd(vararg args: String): String? {
 
 val tag = cmd("git", "describe", "--tags", "HEAD")
 val hash = cmd("git", "rev-parse", "--short", "HEAD")!!
-val isSnapshot = tag == null
+val isSnapshot = tag == null || hash in tag
 allprojects {
     group = "org.notenoughupdates.moulconfig"
-    version = tag ?: hash
+    version = if (isSnapshot) "9999.9999.9999" else tag!!
     repositories {
         mavenLocal()
         mavenCentral()
@@ -46,7 +46,7 @@ allprojects {
         }
         extensions.findByType<PublishingExtension>()?.apply {
             repositories {
-                if (project.hasProperty("moulconfigPassword")) {
+                if (project.hasProperty("moulconfigPassword") && !isSnapshot) {
                     maven {
                         url = uri("https://maven.notenoughupdates.org/releases")
                         name = "moulconfig"
