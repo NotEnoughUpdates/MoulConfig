@@ -41,7 +41,7 @@
 <a class="library-name--link" href="../../../index.html">
                             MoulConfig
                     </a>            </div>
-            <div class="library-version">2.5.0
+            <div class="library-version">3.0.0-beta.1
             </div>
         </div>
         <div class="filter-section" id="filter-section">
@@ -62,7 +62,7 @@
   <div class="breadcrumbs"><a href="../../index.html">common</a><span class="delimiter">/</span><a href="../index.html">io.github.moulberry.moulconfig.observer</a><span class="delimiter">/</span><span class="current">Property</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Property</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">Property</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">T</a><span class="token operator">&gt;</span> : <a href="../-base-observable/index.html">BaseObservable</a><span class="token operator">&lt;</span><a href="../-base-observable/index.html">T</a><span class="token operator">&gt; </span>, <a href="../-get-setter/index.html">GetSetter</a><span class="token operator">&lt;</span><a href="../-get-setter/index.html">T</a><span class="token operator">&gt; </span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/NotEnoughUpdates/MoulConfig/blob/3b75ade/common/src/main/java/io/github/moulberry/moulconfig/observer/Property.java#L34">source</a>)</span></span></div><p class="paragraph">A property is a variable which is modifiable and can have those mutations observed. When serializing a property to Json you can use <a href="../-property-type-adapter-factory/index.html">PropertyTypeAdapterFactory</a> to automatically serialize the stored value in place, instead of wrapping the value in a dictionary. </p><p class="paragraph"> Whenever a config option calls for a field with type <code class="lang-kotlin">T</code>, then a <code class="lang-kotlin">Property&lt;T&gt;</code> will also work.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">class </span><a href="index.html">Property</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="index.html">T</a><span class="token operator">&gt;</span> : <a href="../-base-observable/index.html">BaseObservable</a><span class="token operator">&lt;</span><a href="../-base-observable/index.html">T</a><span class="token operator">&gt; </span>, <a href="../-get-setter/index.html">GetSetter</a><span class="token operator">&lt;</span><a href="../-get-setter/index.html">T</a><span class="token operator">&gt; </span><span class="clearfix"><span class="floating-right">(<a href="https://github.com/NotEnoughUpdates/MoulConfig/blob/e16585f/common/src/main/java/io/github/moulberry/moulconfig/observer/Property.java#L32">source</a>)</span></span></div><p class="paragraph">A property is a variable which is modifiable and can have those mutations observed. When serializing a property to Json you can use <a href="../-property-type-adapter-factory/index.html">PropertyTypeAdapterFactory</a> to automatically serialize the stored value in place, instead of wrapping the value in a dictionary. </p><p class="paragraph"> Whenever a config option calls for a field with type <code class="lang-kotlin">T</code>, then a <code class="lang-kotlin">Property&lt;T&gt;</code> will also work.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
@@ -103,13 +103,13 @@
           <div class="table-row" data-filterable-current=":common:dokkaHtmlPartial/main" data-filterable-set=":common:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-232252597%2FFunctions%2F486241981"><span>and</span><wbr><span><span>Then</span></span></a></div>
+                  <div><a href="../-get-setter/index.html#-232252597%2FFunctions%2F486241981"><span>and</span><wbr><span><span>Then</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-232252597%2FFunctions%2F486241981"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-232252597%2FFunctions%2F486241981"><span class="token function">andThen</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">after<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">Consumer</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">Consumer</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-get-setter/index.html#-232252597%2FFunctions%2F486241981"><span class="token function">andThen</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">after<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">Consumer</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">Consumer</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">T</a><span class="token operator">&gt;</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -144,17 +144,17 @@
               </div>
             </div>
           </div>
-<a data-name="-489147410%2FFunctions%2F486241981" anchor-label="get" id="-489147410%2FFunctions%2F486241981" data-filterable-set=":common:dokkaHtmlPartial/main"></a>
+<a data-name="1206187010%2FFunctions%2F486241981" anchor-label="get" id="1206187010%2FFunctions%2F486241981" data-filterable-set=":common:dokkaHtmlPartial/main"></a>
           <div class="table-row" data-filterable-current=":common:dokkaHtmlPartial/main" data-filterable-set=":common:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="get.html"><span><span>get</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-489147410%2FFunctions%2F486241981"></span>
+                  <div><a href="../-get-setter/get.html"><span><span>get</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1206187010%2FFunctions%2F486241981"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">T</a></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1353019629%2FFunctions%2F486241981"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html">T</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-get-setter/get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-get-setter/index.html">T</a></div><div class="brief ">Get the value.</div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="index.html#-1353019629%2FFunctions%2F486241981"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html">T</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -204,17 +204,47 @@
               </div>
             </div>
           </div>
-<a data-name="227864563%2FFunctions%2F486241981" anchor-label="set" id="227864563%2FFunctions%2F486241981" data-filterable-set=":common:dokkaHtmlPartial/main"></a>
+<a data-name="-1762518423%2FFunctions%2F486241981" anchor-label="ofField" id="-1762518423%2FFunctions%2F486241981" data-filterable-set=":common:dokkaHtmlPartial/main"></a>
           <div class="table-row" data-filterable-current=":common:dokkaHtmlPartial/main" data-filterable-set=":common:dokkaHtmlPartial/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="set.html"><span><span>set</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="227864563%2FFunctions%2F486241981"></span>
+                  <div><a href="../-get-setter/of-field.html"><span>of</span><wbr><span><span>Field</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1762518423%2FFunctions%2F486241981"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set.html"><span class="token function">set</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newValue<span class="token operator">: </span><a href="index.html">T</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Set the value.</div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-get-setter/of-field.html"><span class="token function">ofField</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span>owner<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>field<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Field.html">Field</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-get-setter/index.html">GetSetter</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span></div><div class="brief ">Create a <a href="../-get-setter/index.html">GetSetter</a> backed by a field… This <a href="../-get-setter/index.html">GetSetter</a> will update to and poll from the underlying field without any buffer.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1191776607%2FFunctions%2F486241981" anchor-label="set" id="1191776607%2FFunctions%2F486241981" data-filterable-set=":common:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":common:dokkaHtmlPartial/main" data-filterable-set=":common:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-get-setter/set.html"><span><span>set</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1191776607%2FFunctions%2F486241981"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="../-get-setter/set.html"><span class="token function">set</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">newValue<span class="token operator">: </span><a href="../-get-setter/index.html">T</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Set the value.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1417466089%2FFunctions%2F486241981" anchor-label="upgrade" id="-1417466089%2FFunctions%2F486241981" data-filterable-set=":common:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":common:dokkaHtmlPartial/main" data-filterable-set=":common:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="upgrade.html"><span><span>upgrade</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1417466089%2FFunctions%2F486241981"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="upgrade.html">T</a><span class="token operator">&gt; </span><a href="upgrade.html"><span class="token function">upgrade</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">getSetter<span class="token operator">: </span><a href="../-get-setter/index.html">GetSetter</a><span class="token operator">&lt;</span><a href="upgrade.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Property</a><span class="token operator">&lt;</span><a href="upgrade.html">T</a><span class="token operator">&gt;</span></div><div class="brief ">Upgrades a <a href="../-get-setter/index.html">GetSetter</a> so that access through the returned <a href="index.html">Property</a> will notify observers, with state still managed in the old <a href="../-get-setter/index.html">GetSetter</a>.</div></div></div>
                 </div>
               </div>
             </div>
@@ -234,13 +264,28 @@
               </div>
             </div>
           </div>
+<a data-name="-1584328279%2FFunctions%2F486241981" anchor-label="wrap" id="-1584328279%2FFunctions%2F486241981" data-filterable-set=":common:dokkaHtmlPartial/main"></a>
+          <div class="table-row" data-filterable-current=":common:dokkaHtmlPartial/main" data-filterable-set=":common:dokkaHtmlPartial/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="wrap.html"><span><span>wrap</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1584328279%2FFunctions%2F486241981"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common:dokkaHtmlPartial/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="wrap.html">T</a><span class="token operator">&gt; </span><a href="wrap.html"><span class="token function">wrap</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">getSetter<span class="token operator">: </span><a href="../-get-setter/index.html">GetSetter</a><span class="token operator">&lt;</span><a href="wrap.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Property</a><span class="token operator">&lt;</span><a href="wrap.html">T</a><span class="token operator">&gt;</span></div><div class="brief ">Upgrades a <a href="../-get-setter/index.html">GetSetter</a> so that access through the returned <a href="index.html">Property</a> will notify observers, with state still managed in the old <a href="../-get-setter/index.html">GetSetter</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
       <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
             </div>
         </div>

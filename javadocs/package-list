@@ -8,6 +8,7 @@ io.github.moulberry.moulconfig.common
 io.github.moulberry.moulconfig.gui
 io.github.moulberry.moulconfig.gui.component
 io.github.moulberry.moulconfig.internal
+io.github.moulberry.moulconfig.managed
 io.github.moulberry.moulconfig.observer
 io.github.moulberry.moulconfig.xml
 io.github.moulberry.moulconfig.xml.loaders
@@ -18,6 +19,7 @@ io.github.moulberry.moulconfig.gui
 io.github.moulberry.moulconfig.gui.editors
 io.github.moulberry.moulconfig.gui.elements
 io.github.moulberry.moulconfig.internal
+io.github.moulberry.moulconfig.managed
 io.github.moulberry.moulconfig.processor
 io.github.moulberry.moulconfig.test
 io.github.moulberry.moulconfig.tweaker
