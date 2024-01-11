@@ -22,6 +22,7 @@
 package io.github.moulberry.moulconfig.test;
 
 import com.google.gson.annotations.Expose;
+import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.Overlay;
 import io.github.moulberry.moulconfig.annotations.*;
 import io.github.moulberry.moulconfig.observer.Property;
@@ -94,6 +95,12 @@ public class TestCategory {
     @Expose
     @ConfigAccordionId(id = 1001)
     public String colour = "0:0:0:0:0";
+
+    @ConfigOption(name = "Color Picker ChromaColour", desc = "Color Picker test")
+    @ConfigEditorColour
+    @Expose
+    @ConfigAccordionId(id = 1001)
+    public ChromaColour chromaColour = ChromaColour.fromStaticRGB(255, 255, 255, 255);
 
     @ConfigOption(name = "Number", desc = "Slider test")
     @ConfigEditorSlider(minValue = 0, maxValue = 10, minStep = 1)

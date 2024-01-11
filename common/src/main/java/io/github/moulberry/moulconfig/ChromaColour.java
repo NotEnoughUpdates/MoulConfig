@@ -20,6 +20,7 @@
 
 package io.github.moulberry.moulconfig;
 
+import com.google.gson.annotations.Expose;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -31,23 +32,28 @@ public class ChromaColour {
     /**
      * Hue in a range from 0 to 1. For a chroma colour this is added to the time as an offset.
      */
+    @Expose
     float hue;
     /**
      * Saturation in a range from 0 to 1
      */
+    @Expose
     float saturation;
     /**
      * Brightness in a range from 0 to 1
      */
+    @Expose
     float brightness;
     /**
      * If set to 0, this indicates a static colour. If set to a value above 0, indicates the amount of milliseconds that pass until the same colour is met again.
      * This value may be saved lossy.
      */
+    @Expose
     int timeForFullRotationInMillis;
     /**
      * Alpha in a range from 0 to 255 (with 255 being fully opaque).
      */
+    @Expose
     int alpha;
 
     /**
@@ -65,6 +71,23 @@ public class ChromaColour {
         return new Color(Color.HSBtoRGB((float) (effectiveHue % 1), saturation, brightness) | (alpha << 24), true);
     }
 
+    /**
+     * Unlike {@link #getEffectiveColour(float)}, this offset does not change anything if not using an animated colour.
+     *
+     * @param offset offset the colour by a time amount in milliseconds.
+     * @return the colour, at the current time if this is a chrome colour
+     */
+    public Color getEffectiveColourWithTimeOffset(int offset) {
+        double effectiveHue;
+        if (timeForFullRotationInMillis > 0) {
+            effectiveHue = (System.currentTimeMillis() + offset) / (double) timeForFullRotationInMillis;
+        } else {
+            effectiveHue = hue;
+        }
+        return new Color(Color.HSBtoRGB((float) (effectiveHue % 1), saturation, brightness) | (alpha << 24), true);
+
+    }
+
 
     /**
      * @return the colour, at the current time if this is a chrome colour
@@ -76,8 +99,9 @@ public class ChromaColour {
     @Deprecated
     public String toLegacyString() {
         int timeInSeconds = timeForFullRotationInMillis / 1000;
-        int namedSpeed = (int) (255 - (timeInSeconds - MIN_CHROMA_SECS) * 254F / (MAX_CHROMA_SECS - MIN_CHROMA_SECS));
-        return special(namedSpeed, alpha, Color.HSBtoRGB(hue, saturation, brightness));
+        int namedSpeed =
+            timeInSeconds == 0 ? 0 : (int) (255 - (timeInSeconds - MIN_CHROMA_SECS) * 254F / (MAX_CHROMA_SECS - MIN_CHROMA_SECS));
+        return special(namedSpeed , alpha, Color.HSBtoRGB(hue, saturation, brightness));
     }
 
     @Deprecated
@@ -186,6 +210,10 @@ public class ChromaColour {
         int g = d[1];
         int b = d[0];
         return fromRGB(r, g, b, chr > 0 ? (int) (getSecondsForSpeed(chr) * 1000) : 0, a);
+    }
+
+    public static ChromaColour fromStaticRGB(int r, int g, int b, int a) {
+        return fromRGB(r, g, b, 0, a);
     }
 
     public static ChromaColour fromRGB(int r, int g, int b, int chromaSpeedMillis, int a) {

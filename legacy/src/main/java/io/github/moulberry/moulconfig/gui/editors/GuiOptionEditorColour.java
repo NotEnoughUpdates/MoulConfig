@@ -27,59 +27,86 @@ import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.gui.elements.GuiElementColour;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
+import lombok.val;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
 
+import java.lang.reflect.Type;
+
 public class GuiOptionEditorColour extends GuiOptionEditor {
-	private GuiElementColour colourElement = null;
+    private GuiElementColour colourElement = null;
+    private final boolean usesString;
 
     public GuiOptionEditorColour(ProcessedOption option) {
         super(option);
-
+        Type type = option.getType();
+        if (type.equals(String.class)) {
+            usesString = true;
+        } else if (type.equals(ChromaColour.class)) {
+            usesString = false;
+        } else {
+            throw new IllegalArgumentException("ConfigEditorColour may only be used on a String or ChromaColour field, but is used on " + option.field);
+        }
     }
 
-	@Override
-	public void render(int x, int y, int width) {
-		super.render(x, y, width);
-		int height = getHeight();
+    ChromaColour get() {
+        val value = option.get();
+        if (usesString)
+            //noinspection deprecation
+            return ChromaColour.forLegacyString((String) value);
+        return (ChromaColour) value;
+    }
 
-        int argb = ChromaColour.specialToChromaRGB((String) option.get());
+    void set(String newString) {
+        if (usesString) {
+            option.set(newString);
+        } else {
+            //noinspection deprecation
+            option.set(ChromaColour.forLegacyString(newString));
+        }
+    }
+
+    @Override
+    public void render(int x, int y, int width) {
+        super.render(x, y, width);
+        int height = getHeight();
+
+        int argb = get().getEffectiveColour().getRGB();
         int r = (argb >> 16) & 0xFF;
-		int g = (argb >> 8) & 0xFF;
-		int b = argb & 0xFF;
-		GlStateManager.color(r / 255f, g / 255f, b / 255f, 1);
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        GlStateManager.color(r / 255f, g / 255f, b / 255f, 1);
         IMinecraft.instance.bindTexture(GuiTextures.BUTTON_WHITE);
-		RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
-	}
+        RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
+    }
 
-	@Override
-	public void renderOverlay(int x, int y, int width) {
-		if (colourElement != null) {
-			colourElement.render();
-		}
-	}
+    @Override
+    public void renderOverlay(int x, int y, int width) {
+        if (colourElement != null) {
+            colourElement.render();
+        }
+    }
 
-	@Override
-	public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY) {
-		return colourElement != null && colourElement.mouseInput(mouseX, mouseY);
-	}
+    @Override
+    public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY) {
+        return colourElement != null && colourElement.mouseInput(mouseX, mouseY);
+    }
 
-	@Override
-	public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-		int height = getHeight();
+    @Override
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+        int height = getHeight();
 
-		if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0 &&
-			mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-			mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
-			colourElement = new GuiElementColour(mouseX, mouseY, (String) option.get(), option::set, () -> colourElement = null);
-		}
+        if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0 &&
+            mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
+            mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
+            colourElement = new GuiElementColour(mouseX, mouseY, get().toLegacyString(), this::set, () -> colourElement = null);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public boolean keyboardInput() {
-		return colourElement != null && colourElement.keyboardInput();
-	}
+    @Override
+    public boolean keyboardInput() {
+        return colourElement != null && colourElement.keyboardInput();
+    }
 }
