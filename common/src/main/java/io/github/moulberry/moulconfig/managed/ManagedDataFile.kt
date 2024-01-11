@@ -4,27 +4,39 @@ import java.io.File
 import java.lang.management.ManagementFactory
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.util.function.BiConsumer
 import java.util.function.Consumer
 
-class ManagedDataFile<T> internal constructor(
+open class ManagedDataFile<T> internal constructor(
     val file: File,
     val mapper: DataMapper<T>,
-    private val loadFailed: Consumer<Exception>,
-    private val saveFailed: Consumer<Exception>,
-    private val beforeLoad: Runnable,
-    private val afterLoad: Runnable,
-    private val beforeSave: Runnable,
-    private val afterSave: Runnable,
+    private val loadFailed: BiConsumer<ManagedDataFile<T>, Exception>,
+    private val saveFailed: BiConsumer<ManagedDataFile<T>, Exception>,
+    private val beforeLoad: Consumer<ManagedDataFile<T>>,
+    private val afterLoad: Consumer<ManagedDataFile<T>>,
+    private val beforeSave: Consumer<ManagedDataFile<T>>,
+    private val afterSave: Consumer<ManagedDataFile<T>>,
 ) {
+    constructor(builder: ManagedDataFileBuilder<T>) : this(
+        builder.file,
+        builder.mapper,
+        builder.loadFailed,
+        builder.saveFailed,
+        builder.beforeLoad,
+        builder.afterLoad,
+        builder.beforeSave,
+        builder.afterSave
+    )
+
     companion object {
         @JvmStatic
         @JvmOverloads
         fun <T> create(
             file: File,
-            mapper: DataMapper<T>,
+            clazz: Class<T>,
             consumer: (ManagedDataFileBuilder<T>.() -> Unit) = {}
         ): ManagedDataFile<T> {
-            return ManagedDataFileBuilder(file, mapper).apply(consumer).build()
+            return ManagedDataFile(ManagedDataFileBuilder(file, clazz).apply(consumer))
         }
     }
 
@@ -36,13 +48,17 @@ class ManagedDataFile<T> internal constructor(
     }
 
     fun reloadFromFile() {
-        beforeLoad.run()
+        beforeLoad.accept(this)
         try {
-            instance = mapper.deserialize(file.readText())
+            if (file.exists()) {
+                instance = mapper.deserialize(file.readText())
+            } else {
+                instance = mapper.createDefault()
+            }
         } catch (ex: Exception) {
-            loadFailed.accept(ex)
+            loadFailed.accept(this, ex)
         }
-        afterLoad.run()
+        afterLoad.accept(this)
     }
 
     private fun createUniqueExtraFile(identifier: String, directory: File = file.parentFile): File {
@@ -53,7 +69,7 @@ class ManagedDataFile<T> internal constructor(
     }
 
     fun saveToFile() {
-        beforeSave.run()
+        beforeSave.accept(this)
         val toSave = mapper.serialize(instance)
         val temporarySaveFile = createUniqueExtraFile("save")
         try {
@@ -66,8 +82,8 @@ class ManagedDataFile<T> internal constructor(
                 StandardCopyOption.REPLACE_EXISTING
             )
         } catch (ex: Exception) {
-            saveFailed.accept(ex)
+            saveFailed.accept(this, ex)
         }
-        afterSave.run()
+        afterSave.accept(this)
     }
 }
