@@ -63,6 +63,11 @@ public class ConfigProcessorDriver {
                 Warnings.warn("Non transient @ConfigOption without @Expose in " + categoryClass + " on field " + field);
             }
 
+            if ((field.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
+                field.setAccessible(true);
+                Warnings.warn("@ConfigOption on non public field " + field + " in " + categoryClass);
+            }
+
             ConfigOverlay annotation = field.getAnnotation(ConfigOverlay.class);
             if (annotation != null) {
                 reader.emitGuiOverlay(categoryObject, field, optionAnnotation);
@@ -138,8 +143,8 @@ public class ConfigProcessorDriver {
             Warnings.warn("@Category without @Expose in " + parent.getClass() + " on field " + categoryField);
         }
         if ((categoryField.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
+            categoryField.setAccessible(true);
             Warnings.warn("@Category on non public field " + categoryField + " in " + parent.getClass());
-            return;
         }
         var deferredSubCategories = new ArrayList<BoundField>();
         reader.beginCategory(parent, categoryField, categoryAnnotation.name(), categoryAnnotation.desc());
