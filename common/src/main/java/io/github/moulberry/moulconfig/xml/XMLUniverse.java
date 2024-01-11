@@ -10,6 +10,7 @@ import lombok.var;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
@@ -105,6 +106,8 @@ public class XMLUniverse {
     public GuiComponent load(Object bindTo, InputStream stream) {
         var factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         var builder = factory.newDocumentBuilder();
         var document = builder.parse(stream);
         Element documentElement = document.getDocumentElement();
