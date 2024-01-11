@@ -56,6 +56,11 @@ tasks.jar {
     dependsOn(tasks.processResources)
 }
 
+val sourcesJar by tasks.creating(Jar::class) {
+    from(sourceSets.main.get().allSource)
+    from(project(":common").sourceSets.getByName("main").allSource)
+    archiveClassifier.set("sources")
+}
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -64,6 +69,9 @@ publishing {
             }
             artifact(tasks.shadowJar) {
                 classifier = "named"
+            }
+            artifact(tasks["sourcesJar"]) {
+                classifier = "sources"
             }
         }
     }

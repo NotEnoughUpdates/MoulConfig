@@ -71,6 +71,11 @@ tasks.jar {
 tasks.shadowJar {
     archiveClassifier.set("dev")
 }
+val sourcesJar by tasks.creating(Jar::class) {
+    from(sourceSets.main.get().allSource)
+    from(project(":common").sourceSets.getByName("main").allSource)
+    archiveClassifier.set("sources")
+}
 val remapJar by tasks.named("remapJar", RemapJarTask::class) {
     archiveClassifier.set("")
     dependsOn(tasks.shadowJar)
@@ -93,6 +98,9 @@ publishing {
             }
             artifact(remapJar) {
                 classifier = "test"
+            }
+            artifact(tasks["sourcesJar"]) {
+                classifier = "sources"
             }
             artifact(tasks.shadowJar) {
                 classifier = "named"

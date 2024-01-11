@@ -22,11 +22,19 @@ artifacts {
     add(singleFile.name, tasks.jar)
 }
 
+val sourcesJar by tasks.creating(Jar::class) {
+    from(sourceSets.main.get().allSource)
+    archiveClassifier.set("sources")
+}
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
             artifact(tasks.jar) {
                 classifier = ""
+            }
+            artifact(sourcesJar) {
+                classifier = "sources"
             }
         }
     }
