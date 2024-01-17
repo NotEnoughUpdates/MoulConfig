@@ -86,11 +86,7 @@ public class GuiOptionEditorButton extends ComponentEditor {
             if (mouseEvent instanceof MouseEvent.Click) {
                 val click = (MouseEvent.Click) mouseEvent;
                 if (click.getMouseState() && context.isHovered() && click.getMouseButton() == 0) {
-                    if (isUsingRunnable) {
-                        ((Runnable) option.get()).run();
-                    } else {
-                        config.executeRunnable(runnableId);
-                    }
+                    onClick();
                     return true;
                 }
             }
@@ -98,6 +94,13 @@ public class GuiOptionEditorButton extends ComponentEditor {
         }
     });
 
+    public void onClick() {
+        if (isUsingRunnable) {
+            ((Runnable) option.get()).run();
+        } else {
+            config.executeRunnable(runnableId);
+        }
+    }
 
     @Override
     public boolean fulfillsSearch(String word) {

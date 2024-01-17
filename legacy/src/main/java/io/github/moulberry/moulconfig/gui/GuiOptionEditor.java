@@ -33,6 +33,7 @@ import java.util.Locale;
 public abstract class GuiOptionEditor {
     private static final int HEIGHT = 45;
     protected final ProcessedOption option;
+    public MoulConfigEditor<?> activeConfigGUI;
     private String searchDescNameCache;
 
     @ApiStatus.Internal

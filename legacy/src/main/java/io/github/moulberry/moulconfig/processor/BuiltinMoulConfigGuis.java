@@ -23,6 +23,9 @@ package io.github.moulberry.moulconfig.processor;
 
 import io.github.moulberry.moulconfig.annotations.*;
 import io.github.moulberry.moulconfig.gui.editors.*;
+import lombok.val;
+
+import java.lang.reflect.Field;
 
 public class BuiltinMoulConfigGuis {
     public static void addProcessors(MoulConfigProcessor<?> processor) {
@@ -46,5 +49,21 @@ public class BuiltinMoulConfigGuis {
             new GuiOptionEditorText(processedOption));
         processor.registerConfigEditor(ConfigEditorSlider.class, (processedOption, configEditorSlider) ->
             new GuiOptionEditorSlider(processedOption, configEditorSlider.minValue(), configEditorSlider.maxValue(), configEditorSlider.minStep()));
+        processor.registerConfigEditor(ConfigLink.class, ((option, configLink) -> {
+            Field field;
+            try {
+                field = configLink.owner().getField(configLink.field());
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+            return new GuiOptionEditorButton(option, -1, "Link", option.config) {
+                @Override
+                public void onClick() {
+                    val linkedOption = activeConfigGUI.getProcessedConfig().getOptionFromField(field);
+                    assert linkedOption != null;
+                    activeConfigGUI.goToOption(linkedOption);
+                }
+            };
+        }));
     }
 }

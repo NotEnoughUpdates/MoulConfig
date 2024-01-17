@@ -24,24 +24,28 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProcessedCategory {
-    public final String field;
     public final String name;
     public final String desc;
     public final Field reflectField;
     public final List<ProcessedOption> options = new ArrayList<>();
+    public final Map<Integer, ProcessedOption> accordionAnchors = new HashMap<>();
 
     public @Nullable String parent;
 
+    public String getIdentifier() {
+        return reflectField.toString();
+    }
 
     public ProcessedCategory(Field field, String name, String desc) {
         this(field, name, desc, null);
     }
 
     public ProcessedCategory(Field field, String name, String desc, @Nullable String parent) {
-        this.field = field.getName();
         this.reflectField = field;
         this.name = name;
         this.parent = parent;

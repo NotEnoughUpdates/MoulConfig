@@ -32,6 +32,7 @@ import io.github.moulberry.moulconfig.observer.Property;
 import io.github.moulberry.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.moulberry.moulconfig.processor.ConfigProcessorDriver;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
+import io.github.moulberry.moulconfig.processor.ProcessedOption;
 import io.github.moulberry.moulconfig.xml.Bind;
 import io.github.moulberry.moulconfig.xml.XMLUniverse;
 import lombok.SneakyThrows;
@@ -106,9 +107,9 @@ public class MoulConfigTest {
     public void init(FMLInitializationEvent event) {
         if (!Boolean.getBoolean("moulconfig.testmod")) return;
         MinecraftForge.EVENT_BUS.register(MoulConfigTest.this);
-        MoulConfigProcessor<TestConfig> testConfigMoulConfigProcessor = new MoulConfigProcessor<>(testConfig);
-        BuiltinMoulConfigGuis.addProcessors(testConfigMoulConfigProcessor);
-        ConfigProcessorDriver.processConfig(testConfig.getClass(), testConfig, testConfigMoulConfigProcessor);
+        MoulConfigProcessor<TestConfig> processor = new MoulConfigProcessor<>(testConfig);
+        BuiltinMoulConfigGuis.addProcessors(processor);
+        new ConfigProcessorDriver(processor).processConfig(testConfig);
         testConfig.testCategory.text2.whenChanged((oldValue, newValue) ->
             Minecraft.getMinecraft().thePlayer.addChatMessage(
                 new ChatComponentText("Just changed text2 from " + oldValue + " to " + newValue)));
@@ -133,7 +134,7 @@ public class MoulConfigTest {
             public void processCommand(ICommandSender sender, String[] args) {
                 sender.addChatMessage(new ChatComponentText("Mouling"));
                 if (args.length > 0 && "gui".equals(args[0])) {
-                    screenToOpen = new MoulGuiOverlayEditor(testConfigMoulConfigProcessor);
+                    screenToOpen = new MoulGuiOverlayEditor(processor);
                 } else if (args.length > 0 && "testgui".equals(args[0])) {
                     screenToOpen = new GuiComponentWrapper(new GuiContext(
                         new CenterComponent(new PanelComponent(
@@ -149,7 +150,11 @@ public class MoulConfigTest {
                         .getResource(new ResourceLocation("moulconfig:test.xml")).getInputStream());
                     screenToOpen = new GuiComponentWrapper(new GuiContext(gui));
                 } else {
-                    screenToOpen = new GuiScreenElementWrapper(new MoulConfigEditor<>(testConfigMoulConfigProcessor));
+                    MoulConfigEditor<TestConfig> gui = new MoulConfigEditor<>(processor);
+                    ProcessedOption pronouns = processor.getOptionFromField(TestCategory.class.getField("pronouns"));
+                    if (pronouns != null)
+                        gui.goToOption(pronouns);
+                    screenToOpen = new GuiScreenElementWrapper(gui);
                 }
             }
         });

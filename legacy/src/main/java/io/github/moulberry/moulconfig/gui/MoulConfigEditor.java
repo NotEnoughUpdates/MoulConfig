@@ -32,8 +32,10 @@ import io.github.moulberry.moulconfig.internal.*;
 import io.github.moulberry.moulconfig.processor.MoulConfigProcessor;
 import io.github.moulberry.moulconfig.processor.ProcessedCategory;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
+import lombok.Getter;
 import lombok.val;
 import lombok.var;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -45,9 +47,11 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     private final long openedMillis;
     private final LerpingInteger optionsScroll = new LerpingInteger(0, 150);
     private final LerpingInteger categoryScroll = new LerpingInteger(0, 150);
+    @Getter
     private final MoulConfigProcessor<T> processedConfig;
     private final LerpingInteger minimumSearchSize = new LerpingInteger(0, 150);
     private final GuiElementTextField searchField = new GuiElementTextField("", 0, 20, 0);
+    @Getter
     private String selectedCategory = null;
     private float optionsBarStart;
     private float optionsBarend;
@@ -71,6 +75,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     .add(category.getKey());
             }
         }
+        for (ProcessedOption option : allOptions) {
+            option.editor.activeConfigGUI = this;
+        }
         updateSearchResults();
     }
 
@@ -80,8 +87,59 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         return options;
     }
 
-    public String getSelectedCategory() {
-        return selectedCategory;
+    public boolean scrollOptionIntoView(ProcessedOption searchedOption, int timeToReachTargetMs) {
+        ProcessedCategory processedCategory = getCurrentlySearchedCategories().get(getSelectedCategory());
+
+        // Check we are in the right category
+        if (processedCategory != searchedOption.category) {
+            return false;
+        }
+
+        // Recursively expand accordions this option is in
+        var accordionP = searchedOption;
+        while (accordionP.accordionId >= 0) {
+            accordionP = processedCategory.accordionAnchors.get(accordionP.accordionId);
+            ((GuiOptionEditorAccordion) accordionP.editor).setToggled(true);
+        }
+
+        // If this option is an accordion, also expand that one
+        if (searchedOption.editor instanceof GuiOptionEditorAccordion) {
+            ((GuiOptionEditorAccordion) searchedOption.editor).setToggled(true);
+        }
+
+        // Iterate over all options to find the correct y value for our thingy
+        Set<Integer> activeAccordions = new HashSet<>();
+        int optionY = 0;
+        for (ProcessedOption processedOption : getOptionsInCategory(processedCategory)) {
+            val editor = processedOption.editor;
+            if (editor == null) {
+                continue;
+            }
+            if (processedOption.accordionId >= 0 && !activeAccordions.contains(processedOption.accordionId))
+                continue;
+            if (editor instanceof GuiOptionEditorAccordion) {
+                GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
+                if (accordion.getToggled()) {
+                    activeAccordions.add(accordion.getAccordionId());
+                }
+            }
+            if (processedOption == searchedOption) {
+                optionsScroll.setTimeToReachTarget(timeToReachTargetMs);
+                optionsScroll.resetTimer();
+                optionsScroll.setTarget(optionY);
+                return true;
+            }
+            optionY += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
+        }
+        return false;
+    }
+
+    public boolean setSelectedCategory(ProcessedCategory category) {
+        if (!getCurrentlySearchedCategories().containsKey(category.getIdentifier())) {
+            return false;
+        }
+        setSelectedCategory(category.getIdentifier());
+        return true;
     }
 
     private void setSelectedCategory(String category) {
@@ -604,14 +662,13 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int width = iMinecraft.getScaledWidth();
         int height = iMinecraft.getScaledHeight();
         int scaleFactor = iMinecraft.getScaleFactor();
+        int adjScaleFactor = Math.max(2, scaleFactor);
 
         int xSize = Math.min(width - 100 / scaleFactor, 500);
         int ySize = Math.min(width - 100 / scaleFactor, 400);
 
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
-
-        int adjScaleFactor = Math.max(2, scaleFactor);
 
         int innerPadding = 20 / adjScaleFactor;
         int innerTop = y + 49 + innerPadding;
@@ -973,5 +1030,21 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         } else if (Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
             processedConfig.getConfigObject().saveNow();
         }
+    }
+
+    public boolean goToOption(@NotNull ProcessedOption option) {
+        if (!setSelectedCategory(option.category)) {
+            search("");
+            if (!setSelectedCategory(option.category)) {
+                return false;
+            }
+        }
+        if (!scrollOptionIntoView(option, 200)) {
+            search("");
+            if (!scrollOptionIntoView(option, 200)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

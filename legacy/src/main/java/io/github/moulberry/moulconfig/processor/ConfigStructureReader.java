@@ -33,7 +33,7 @@ public interface ConfigStructureReader {
     default void popPath() {
     }
 
-    default void beginConfig(Class<? extends Config> configClass, Config configObject) {
+    default void beginConfig(Class<? extends Config> configClass, ConfigProcessorDriver driver, Config configObject) {
     }
 
     default void endConfig() {

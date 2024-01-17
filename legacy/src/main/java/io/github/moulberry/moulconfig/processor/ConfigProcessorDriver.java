@@ -33,12 +33,18 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class ConfigProcessorDriver {
-    private static final List<Class<? extends Annotation>> nonStoredConfigOptions = Arrays.asList(
+    private final List<Class<? extends Annotation>> nonStoredConfigOptions = Arrays.asList(
         ConfigEditorAccordion.class, ConfigEditorInfoText.class,
         ConfigEditorButton.class
     );
 
-    static int nextAnnotation = 1000000000;
+    public final ConfigStructureReader reader;
+
+    public int nextAnnotation = 1000000000;
+
+    public ConfigProcessorDriver(ConfigStructureReader reader) {
+        this.reader = reader;
+    }
 
     private static List<Field> getAllFields(Class<?> type) {
         if (type == null) return new ArrayList<>();
@@ -47,8 +53,9 @@ public class ConfigProcessorDriver {
         return fields;
     }
 
-    public static void processCategory(Object categoryObject, Class<?> categoryClass, ConfigStructureReader reader,
-                                       List<BoundField> deferredSubCategories) {
+    public void processCategory(Object categoryObject,
+                                List<BoundField> deferredSubCategories) {
+        Class<?> categoryClass = categoryObject.getClass();
         Stack<Integer> accordionStack = new Stack<>();
         Set<Integer> usedAccordionIds = new HashSet<>();
         for (Field field : getAllFields(categoryClass)) {
@@ -100,7 +107,7 @@ public class ConfigProcessorDriver {
                 try {
                     reader.pushPath(field.getName());
                     var subCategory = new ArrayList<BoundField>();
-                    processCategory(field.get(categoryObject), field.getType(), reader, subCategory);
+                    processCategory(field.get(categoryObject), subCategory);
                     if (!subCategory.isEmpty()) {
                         Warnings.warn("Cannot define sub categories inside of an accordion: " + subCategory.get(0));
                     }
@@ -130,8 +137,7 @@ public class ConfigProcessorDriver {
         }
     }
 
-    private static void processCategoryMeta(
-        ConfigStructureReader reader,
+    private void processCategoryMeta(
         Object parent,
         Field categoryField,
         Field parentField
@@ -153,7 +159,7 @@ public class ConfigProcessorDriver {
         }
         try {
             reader.pushPath(categoryField.getName());
-            processCategory(categoryField.get(parent), categoryField.getType(), reader, deferredSubCategories);
+            processCategory(categoryField.get(parent), deferredSubCategories);
             reader.popPath();
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -161,17 +167,17 @@ public class ConfigProcessorDriver {
         reader.endCategory();
         for (var subCategory : deferredSubCategories) {
             if (parentField == null) {
-                processCategoryMeta(reader, subCategory.getBoundTo(), subCategory.getField(), categoryField);
+                processCategoryMeta(subCategory.getBoundTo(), subCategory.getField(), categoryField);
             } else {
                 Warnings.warn("Found double recursive usb category at " + subCategory);
             }
         }
     }
 
-    public static void processConfig(Class<? extends Config> configClass, Config configObject, ConfigStructureReader reader) {
-        reader.beginConfig(configClass, configObject);
-        for (Field categoryField : getAllFields(configClass)) {
-            processCategoryMeta(reader, configObject, categoryField, null);
+    public void processConfig(Config configObject) {
+        reader.beginConfig(configObject.getClass(), this, configObject);
+        for (Field categoryField : getAllFields(configObject.getClass())) {
+            processCategoryMeta(configObject, categoryField, null);
         }
         reader.endConfig();
     }

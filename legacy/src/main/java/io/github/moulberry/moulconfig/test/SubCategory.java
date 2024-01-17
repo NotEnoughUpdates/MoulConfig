@@ -13,7 +13,7 @@ public class SubCategory {
         name = "Test Opt",
         desc = "com"
     )
-    public boolean w = false;
+    public boolean testOption = false;
     @ConfigAccordionId(id = 1)
     @Expose
     @ConfigOption(

@@ -64,6 +64,9 @@ public class TestCategory {
     @Expose
     public boolean infoText;
 
+    @ConfigLink(owner = SubCategory.class, field = "testOption")
+    @ConfigOption(name = "Teleporter", desc = "Click here to instantly teleport to the sub category")
+    public transient boolean linkAnchor;
 
     @ConfigOption(name = "Text Test", desc = "Text Editor Test")
     @ConfigEditorText

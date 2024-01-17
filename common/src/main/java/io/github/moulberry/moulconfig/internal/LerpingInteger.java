@@ -38,6 +38,10 @@ public class LerpingInteger {
 	}
 
 	public void tick() {
+        if (timeToReachTarget == 0) {
+            lerpValue = targetValue;
+            return;
+        }
 		int lastTimeSpent = timeSpent;
 		this.timeSpent += System.currentTimeMillis() - lastMillis;
 

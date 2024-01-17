@@ -84,5 +84,8 @@ public class GuiOptionEditorAccordion extends ComponentEditor {
     public boolean getToggled() {
         return accordionToggled;
     }
+    public void setToggled(boolean toggled) {
+        accordionToggled = toggled;
+    }
 
 }

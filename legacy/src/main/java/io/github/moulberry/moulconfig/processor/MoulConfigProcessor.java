@@ -28,6 +28,9 @@ import io.github.moulberry.moulconfig.gui.GuiOptionEditor;
 import io.github.moulberry.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.moulberry.moulconfig.internal.Warnings;
 import lombok.Getter;
+import lombok.val;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -45,8 +48,9 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     private Stack<String> categoryPath = new Stack<>();
     @Getter
     private boolean isFinalized;
-
+    private Map<Field, ProcessedOption> optionLookup = new HashMap<>();
     private Map<Class<? extends Annotation>, BiFunction<ProcessedOption, Annotation, GuiOptionEditor>> editors = new HashMap<>();
+    private ConfigProcessorDriver driver;
 
     public MoulConfigProcessor(T configBaseObject) {
         this.configBaseObject = configBaseObject;
@@ -75,7 +79,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     @Override
     public void beginCategory(Object baseObject, Field field, String name, String description) {
         currentCategory = new ProcessedCategory(field, name, description);
-        categories.put(field.toString(), currentCategory);
+        categories.put(currentCategory.getIdentifier(), currentCategory);
     }
 
     public T getConfigObject() {
@@ -88,7 +92,8 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     }
 
     @Override
-    public void beginConfig(Class<? extends Config> configClass, Config configObject) {
+    public void beginConfig(Class<? extends Config> configClass, ConfigProcessorDriver driver, Config configObject) {
+        this.driver = driver;
         if (editors.isEmpty()) {
             Warnings.warn("Calling a config processor with no editors registered. Consider registering editors using BuiltinMoulConfigGuis.addProcessors or MoulConfigProcessor.withDefaults");
         }
@@ -109,6 +114,12 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     @Override
     public void endCategory() {
+        for (ProcessedOption option : currentCategory.options) {
+            val editor = option.editor;
+            if (editor instanceof GuiOptionEditorAccordion) {
+                currentCategory.accordionAnchors.put(((GuiOptionEditorAccordion) editor).getAccordionId(), option);
+            }
+        }
         accordion.clear();
     }
 
@@ -144,6 +155,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
             currentCategory, baseObject,
             configBaseObject
         );
+        optionLookup.put(field, processedOption);
         if (!accordion.isEmpty()) {
             processedOption.accordionId = accordion.peek();
         }
@@ -170,8 +182,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         subProcessor.editors = editors;
         subProcessor.currentCategory = new ProcessedCategory(field, option.name(), option.desc());
         pushPath(field.getName());
-        //TODO: warn for category inside overlay
-        ConfigProcessorDriver.processCategory(overlay, field.getType(), subProcessor, new ArrayList<>());
+        new ConfigProcessorDriver(subProcessor).processCategory(overlay, null);
         popPath();
         processedOverlays.put(overlay, subProcessor.currentCategory.options);
     }
@@ -198,5 +209,10 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     public Map<Overlay, List<ProcessedOption>> getOverlayOptions() {
         requireFinalized();
         return processedOverlays;
+    }
+
+    public @Nullable ProcessedOption getOptionFromField(@NotNull Field field) {
+        requireFinalized();
+        return optionLookup.get(field);
     }
 }

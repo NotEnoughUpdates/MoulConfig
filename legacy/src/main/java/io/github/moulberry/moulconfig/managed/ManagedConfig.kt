@@ -60,7 +60,7 @@ class ManagedConfig<T : Config>(private val builder: ManagedConfigBuilder<T>) : 
         builder.customProcessors.forEach { (annotation, method) ->
             cast(processor, annotation, method)
         }
-        ConfigProcessorDriver.processConfig(this.instance.javaClass, this.instance, processor)
+        ConfigProcessorDriver(processor).processConfig(this.instance)
         return processor
     }
 
