@@ -10,6 +10,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -88,7 +89,7 @@ public class XMLBoundProperties {
                 throw new IllegalArgumentException("Bind target " + method + " is of the wrong type " + method.getReturnType() + " instead of " + clazz);
             if (method.getParameterCount() != 0)
                 throw new RuntimeException("Bind target " + method + " is not a pure getter");
-            MethodHandle unreflect = lookup.unreflect(method).bindTo(object);
+            var unreflect = bindSometimes(lookup.unreflect(method), method.getModifiers(), object);
             return new GetSetter<T>() {
                 @SneakyThrows
                 @Override
@@ -105,8 +106,8 @@ public class XMLBoundProperties {
         if (!TypeUtils.doesAExtendB(field.getType(), clazz))
             throw new IllegalArgumentException("Bind target " + name + " is of the wrong type " + field.getType() + " instead of " + clazz);
         field.setAccessible(true);
-        var getter = lookup.unreflectGetter(field).bindTo(object);
-        var setter = lookup.unreflectSetter(field).bindTo(object);
+        var getter = bindSometimes(lookup.unreflectGetter(field), field.getModifiers(), object);
+        var setter = bindSometimes(lookup.unreflectSetter(field), field.getModifiers(), object);
         return new GetSetter<T>() {
 
             @SneakyThrows
@@ -121,5 +122,11 @@ public class XMLBoundProperties {
                 setter.invoke(newValue);
             }
         };
+    }
+
+    private static MethodHandle bindSometimes(MethodHandle methodHandle, int modifiers, Object object) {
+        if (Modifier.isStatic(modifiers))
+            return methodHandle;
+        return methodHandle.bindTo(object);
     }
 }
