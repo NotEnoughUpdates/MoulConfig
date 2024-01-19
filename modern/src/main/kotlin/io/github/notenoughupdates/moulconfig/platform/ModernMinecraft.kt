@@ -58,9 +58,19 @@ class ModernMinecraft : IMinecraft {
     }
 
     override val mouseX: Int
-        get() = TODO("Not yet implemented")
+        get() {
+            val mouse = MinecraftClient.getInstance().mouse
+            val window = MinecraftClient.getInstance().window
+            val x = (mouse.x * window.scaledWidth.toDouble() / window.width.toDouble()).toInt()
+            return x
+        }
     override val mouseY: Int
-        get() = TODO("Not yet implemented")
+        get() {
+            val mouse = MinecraftClient.getInstance().mouse
+            val window = MinecraftClient.getInstance().window
+            val y = (mouse.y * window.scaledHeight.toDouble() / window.height.toDouble()).toInt()
+            return y
+        }
 
     override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {
         return MinecraftClient.getInstance().resourceManager.getResource(fromMyResourceLocation(resourceLocation))
@@ -72,9 +82,18 @@ class ModernMinecraft : IMinecraft {
     override val keyboardConstants: IKeyboardConstants
         get() = ModernKeyboardConstants
     override val scaledWidth: Int
-        get() = TODO("Not yet implemented")
+        get() {
+            val window = MinecraftClient.getInstance().window
+            return window.scaledWidth
+        }
     override val scaledHeight: Int
-        get() = TODO("Not yet implemented")
+        get() {
+            val window = MinecraftClient.getInstance().window
+            return window.scaledHeight
+        }
     override val scaleFactor: Int
-        get() = TODO("Not yet implemented")
+        get() {
+            val window = MinecraftClient.getInstance().window
+            return window.scaleFactor.toInt()
+        }
 }
