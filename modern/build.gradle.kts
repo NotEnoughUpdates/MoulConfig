@@ -1,4 +1,4 @@
-import xyz.wagyourtail.unimined.api.task.RemapJarTask
+import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
 plugins {
     java
@@ -36,7 +36,8 @@ java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 val shadowInclude by configurations.creating
 dependencies {
     implementation(project(":common"))
-    "modImplementation"(libs.fabric.api)
+    "modImplementation"(fabricApi.fabricModule("fabric-command-api-v2", libs.versions.fabric.api.get()))
+    "modImplementation"(fabricApi.fabricModule("fabric-resource-loader-v0", libs.versions.fabric.api.get()))
     shadowInclude(project(":common", configuration = "singleFile"))
 }
 

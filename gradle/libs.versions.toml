@@ -11,7 +11,7 @@ jbAnnotations = "24.0.1"
 kotlin = "1.8.21"
 shadow = "8.1.1"
 dokka = "1.9.10"
-unimined = "1.1.0-SNAPSHOT"
+unimined = "1.2.0-SNAPSHOT"
 legacyGson = "2.1"
 mkdocs = "2.4.0"
 

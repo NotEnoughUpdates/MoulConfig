@@ -149,13 +149,16 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         val main: Int = -0x1000000 or 0x202026
         val light = -0xcfcfca
         val dark = -0xefefea
-        drawContext.fill(x, y, x + 1, y + height, light)
-        drawContext.fill(x + 1, y, x + width, y + 1, light)
-        drawContext.fill(x + width - 1, y + 1, x + width, y + height, dark)
-        drawContext.fill(x + 1, y + height - 1, x + width - 1, y + height, dark)
-        drawContext.fill(x + 1, y + 1, x + width - 1, y + height - 1, main)
-        drawContext.fill(x, y, x + width, y + height, 0xa0202020.toInt())
-        drawContext.drawBorder(x, y, width, height, 0xffc0c0c0.toInt())
+        val shadow = true
+        drawContext.fill(x, y, x + 1, y + height, light) //Left
+        drawContext.fill(x + 1, y, x + width, y + 1, light) //Top
+        drawContext.fill(x + width - 1, y + 1, x + width, y + height, dark) //Right
+        drawContext.fill(x + 1, y + height - 1, x + width - 1, y + height, dark) //Bottom
+        drawContext.fill(x + 1, y + 1, x + width - 1, y + height - 1, main) //Middle
+        if (shadow) {
+            drawContext.fill(x + width, y + 2, x + width + 2, y + height + 2, 0x70000000) //Right shadow
+            drawContext.fill(x + 2, y + height, x + width, y + height + 2, 0x70000000) //Bottom shadow
+        }
         // TODO: do shadow
     }
 

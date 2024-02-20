@@ -10,12 +10,10 @@ import io.github.notenoughupdates.moulconfig.platform.ModernItemStack
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.MinecraftClient
 import net.minecraft.item.ItemStack
 import net.minecraft.registry.Registries
 import net.minecraft.util.Identifier
-import net.minecraft.util.math.BlockPos
 
 class FabricMain : ModInitializer {
     override fun onInitialize() {

@@ -1,5 +1,6 @@
-package io.github.moulberry.moulconfig.gui.component
+package io.github.moulberry.moulconfig.xml.loaders
 
+import io.github.moulberry.moulconfig.gui.component.PanelComponent
 import io.github.moulberry.moulconfig.xml.ChildCount
 import io.github.moulberry.moulconfig.xml.XMLContext
 import io.github.moulberry.moulconfig.xml.XMLGuiLoader

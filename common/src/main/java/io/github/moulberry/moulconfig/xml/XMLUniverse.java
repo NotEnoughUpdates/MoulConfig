@@ -1,10 +1,9 @@
 package io.github.moulberry.moulconfig.xml;
 
-import io.github.moulberry.moulconfig.ChromaColour;
 import io.github.moulberry.moulconfig.common.IMinecraft;
 import io.github.moulberry.moulconfig.common.MyResourceLocation;
 import io.github.moulberry.moulconfig.gui.GuiComponent;
-import io.github.moulberry.moulconfig.gui.component.PanelLoader;
+import io.github.moulberry.moulconfig.xml.loaders.PanelLoader;
 import io.github.moulberry.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
 import lombok.var;
