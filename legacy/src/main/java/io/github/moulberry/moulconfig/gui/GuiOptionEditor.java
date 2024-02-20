@@ -20,6 +20,7 @@
 
 package io.github.moulberry.moulconfig.gui;
 
+import io.github.moulberry.moulconfig.annotations.SearchTag;
 import io.github.moulberry.moulconfig.internal.RenderUtils;
 import io.github.moulberry.moulconfig.internal.TextRenderUtils;
 import io.github.moulberry.moulconfig.processor.ProcessedOption;
@@ -35,6 +36,7 @@ public abstract class GuiOptionEditor {
     protected final ProcessedOption option;
     public MoulConfigEditor<?> activeConfigGUI;
     private String searchDescNameCache;
+    private String searchTags = "";
 
     @ApiStatus.Internal
     public ProcessedOption getOption() {
@@ -43,9 +45,16 @@ public abstract class GuiOptionEditor {
 
     public GuiOptionEditor(ProcessedOption option) {
         this.option = option;
+        SearchTag[] annotationsByType = option.field.getAnnotationsByType(SearchTag.class);
+        for (SearchTag searchTag : annotationsByType) {
+            if (!searchTags.isEmpty()) {
+                searchTags += " ";
+            }
+            searchTags += searchTag;
+        }
     }
 
-	public void render(int x, int y, int width) {
+    public void render(int x, int y, int width) {
         int height = getHeight();
 
         FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
@@ -94,7 +103,7 @@ public abstract class GuiOptionEditor {
 
     public boolean fulfillsSearch(String word) {
         if (searchDescNameCache == null) {
-            searchDescNameCache = (option.name + option.desc).toLowerCase(Locale.ROOT);
+            searchDescNameCache = (option.name + option.desc + searchTags).toLowerCase(Locale.ROOT);
         }
         return searchDescNameCache.contains(word);
     }

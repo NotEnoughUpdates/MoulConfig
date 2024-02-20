@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.moulberry.moulconfig.annotations.Category;
 import io.github.moulberry.moulconfig.annotations.ConfigEditorBoolean;
 import io.github.moulberry.moulconfig.annotations.ConfigOption;
+import io.github.moulberry.moulconfig.annotations.SearchTag;
 
 public class TestCategoryParent {
     @Category(name = "SubCategory", desc = "Subbier Sub description")
@@ -15,5 +16,7 @@ public class TestCategoryParent {
         desc = "com111"
     )
     @ConfigEditorBoolean
+    @SearchTag("oomf")
+    @SearchTag("hannibal2")
     public boolean w = false;
 }
