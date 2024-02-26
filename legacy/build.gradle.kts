@@ -57,6 +57,10 @@ tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
 
+tasks.processResources {
+    from(project(":common").tasks.processResources)
+}
+
 tasks.withType(KotlinCompile::class) {
     this.compilerOptions {
         this.jvmTarget.set(JvmTarget.JVM_1_8)

@@ -84,7 +84,7 @@ public class XMLBoundProperties {
         if (field == null) {
             Method method = namedFunctions.get(name);
             if (method == null)
-                throw new NullPointerException("Could not find bind target for " + name + " in " + clazz);
+                throw new NullPointerException("Could not find bind target for " + name + " in " + object);
             if (!TypeUtils.doesAExtendB(method.getReturnType(), clazz))
                 throw new IllegalArgumentException("Bind target " + method + " is of the wrong type " + method.getReturnType() + " instead of " + clazz);
             if (method.getParameterCount() != 0)

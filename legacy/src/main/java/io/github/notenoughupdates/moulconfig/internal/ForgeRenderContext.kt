@@ -124,12 +124,22 @@ class ForgeRenderContext : RenderContext {
         GlStateManager.disableColorLogic()
     }
 
-    override fun drawTexturedRect(x: Float, y: Float, width: Float, height: Float) {
+    override fun drawTexturedRect(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        u1: Float,
+        v1: Float,
+        u2: Float,
+        v2: Float
+    ) {
         RenderUtils.drawTexturedRect(
             x,
             y,
             width,
             height,
+            u1, u2, v1, v2,
             GL11.GL_NEAREST
         )
     }

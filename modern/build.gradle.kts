@@ -54,6 +54,10 @@ val remapJar by tasks.named("remapJar", RemapJarTask::class) {
     inputFile.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
 
+tasks.processResources {
+    from(project(":common").tasks.processResources)
+}
+
 tasks.jar {
     archiveClassifier.set("small")
     dependsOn(tasks.processResources)

@@ -101,7 +101,11 @@ public interface RenderContext {
 
     void invertedRect(float left, float top, float right, float bottom);
 
-    void drawTexturedRect(float x, float y, float width, float height);
+    default void drawTexturedRect(float x, float y, float width, float height) {
+        drawTexturedRect(x, y, width, height, 0f, 0f, 1f, 1f);
+    }
+
+    void drawTexturedRect(float x, float y, float width, float height, float u1, float v1, float u2, float v2);
 
     default void drawDarkRect(int x, int y, int width, int height) {
         drawDarkRect(x, y, width, height, true);
