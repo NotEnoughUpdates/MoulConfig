@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.xml.loaders
 
 import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent
+import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent.DefaultBackgroundRenderer
 import io.github.notenoughupdates.moulconfig.xml.ChildCount
 import io.github.notenoughupdates.moulconfig.xml.XMLContext
 import io.github.notenoughupdates.moulconfig.xml.XMLGuiLoader
@@ -16,6 +17,13 @@ class PanelLoader : XMLGuiLoader<PanelComponent> {
         return PanelComponent(
             context.getChildFragment(
                 element
+            ),
+            context.getPropertyFromAttribute(element, QName("insets"), Int::class.java, 2),
+            context.getPropertyFromAttribute(
+                element,
+                QName("background"),
+                PanelComponent.BackgroundRenderer::class.java,
+                DefaultBackgroundRenderer.DARK_RECT
             )
         )
     }
@@ -29,6 +37,6 @@ class PanelLoader : XMLGuiLoader<PanelComponent> {
     }
 
     override fun getAttributeNames(): Map<String, Boolean> {
-        return mapOf()
+        return mapOf("insets" to false, "background" to false)
     }
 }

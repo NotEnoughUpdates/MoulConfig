@@ -3,6 +3,7 @@ package io.github.notenoughupdates.moulconfig.xml;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
+import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent;
 import io.github.notenoughupdates.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
 import lombok.var;
@@ -68,6 +69,7 @@ public class XMLUniverse {
         xmlUniverse.registerMapper(boolean.class, Boolean::valueOf);
         xmlUniverse.registerMapper(List.class, str -> Arrays.asList(str.split(";")));
         xmlUniverse.registerMapper(MyResourceLocation.class, MyResourceLocation.Companion::parse);
+        xmlUniverse.registerMapper(PanelComponent.BackgroundRenderer.class, PanelComponent.DefaultBackgroundRenderer::valueOf);
         return xmlUniverse;
     }
 

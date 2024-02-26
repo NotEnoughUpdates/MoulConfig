@@ -8,7 +8,7 @@
                       width="180"/>
             </Hover>
             <ItemStack value="@itemStack"/>
-            <Panel>
+            <Panel background="VANILLA" insets="6">
                 <Collapsible title="Test">
                     <Scale scale="10">
                         <Text text="test"/>

@@ -20,6 +20,8 @@
 
 package io.github.notenoughupdates.moulconfig.gui.component;
 
+import io.github.notenoughupdates.moulconfig.common.NinePatches;
+import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
@@ -33,20 +35,50 @@ import java.util.function.BiFunction;
  */
 @Getter
 public class PanelComponent extends GuiComponent {
+
+    public interface BackgroundRenderer {
+        void render(RenderContext renderContext, int x, int y, int width, int height);
+    }
+
+    public enum DefaultBackgroundRenderer implements BackgroundRenderer {
+        DARK_RECT {
+            @Override
+            public void render(RenderContext renderContext, int x, int y, int width, int height) {
+                renderContext.drawDarkRect(x, y, width, height);
+            }
+        },
+        BUTTON {
+            @Override
+            public void render(RenderContext renderContext, int x, int y, int width, int height) {
+                renderContext.drawNinePatch(NinePatches.INSTANCE.createButton(), x, y, width, height);
+            }
+        },
+        VANILLA {
+            @Override
+            public void render(RenderContext renderContext, int x, int y, int width, int height) {
+                renderContext.drawNinePatch(NinePatches.INSTANCE.createVanillaPanel(), x, y, width, height);
+            }
+        }
+    }
+
     private final GuiComponent element;
     private final int insets;
+    private final BackgroundRenderer backgroundRenderer;
 
     /**
-     * @param element the child element to render the panels contents
-     * @param insets  the padding size of this panel
+     * @param element            the child element to render the panels contents
+     * @param insets             the padding size of this panel
+     * @param backgroundRenderer the renderer to render the background of this panel
+     * @see DefaultBackgroundRenderer
      */
-    public PanelComponent(GuiComponent element, int insets) {
+    public PanelComponent(GuiComponent element, int insets, BackgroundRenderer backgroundRenderer) {
         this.element = element;
         this.insets = insets;
+        this.backgroundRenderer = backgroundRenderer;
     }
 
     public PanelComponent(GuiComponent element) {
-        this(element, 2);
+        this(element, 2, DefaultBackgroundRenderer.DARK_RECT);
     }
 
     @Override
@@ -65,13 +97,13 @@ public class PanelComponent extends GuiComponent {
     }
 
     protected GuiImmediateContext getChildContext(GuiImmediateContext context) {
-        return context.translated(insets, insets, element.getWidth(), element.getHeight());
+        return context.translated(insets, insets, context.getWidth() - insets * 2, context.getHeight() - insets * 2 - 2);
     }
 
     @Override
     public void render(GuiImmediateContext context) {
         context.getRenderContext().pushMatrix();
-        context.getRenderContext().drawDarkRect(0, 0, context.getWidth(), context.getHeight() - 2);
+        backgroundRenderer.render(context.getRenderContext(), 0, 0, context.getWidth(), context.getHeight() - 2);
         context.getRenderContext().translate(insets, insets, 0);
         element.render(getChildContext(context));
         context.getRenderContext().popMatrix();

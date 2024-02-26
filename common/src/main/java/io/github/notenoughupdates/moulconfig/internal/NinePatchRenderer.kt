@@ -17,6 +17,7 @@ object NinePatchRenderer : ContextualTextureRenderer<MyResourceLocation, RenderC
         u2: Float,
         v2: Float
     ) {
+        context.bindTexture(texture)
         context.drawTexturedRect(
             x.toFloat(),
             y.toFloat(),

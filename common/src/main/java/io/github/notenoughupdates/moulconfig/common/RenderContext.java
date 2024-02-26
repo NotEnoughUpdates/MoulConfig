@@ -1,5 +1,7 @@
 package io.github.notenoughupdates.moulconfig.common;
 
+import io.github.notenoughupdates.moulconfig.internal.NinePatchRenderer;
+import juuxel.libninepatch.NinePatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,6 +109,13 @@ public interface RenderContext {
 
     void drawTexturedRect(float x, float y, float width, float height, float u1, float v1, float u2, float v2);
 
+    default void drawNinePatch(NinePatch<MyResourceLocation> patch, float x, float y, int width, int height) {
+        pushMatrix();
+        translate(x, y, 0);
+        patch.draw(NinePatchRenderer.INSTANCE, this, width, height);
+        popMatrix();
+    }
+
     default void drawDarkRect(int x, int y, int width, int height) {
         drawDarkRect(x, y, width, height, true);
     }
@@ -131,7 +140,12 @@ public interface RenderContext {
 
     void disableScissor();
 
-    default IMinecraft getMinecraft() {
+
+    default @NotNull IMinecraft getMinecraft() {
         return IMinecraft.instance;
+    }
+
+    default void bindTexture(@NotNull MyResourceLocation texture) {
+        getMinecraft().bindTexture(texture);
     }
 }
