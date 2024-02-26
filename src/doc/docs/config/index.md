@@ -14,7 +14,7 @@ requires that config to be reprocessed (and old MoulConfig to be discarded).
 ### Top Level Structure
 
 You can specify categories
-using [`@Category`](../javadocs/common/io.github.moulberry.moulconfig.annotations/-category/index.html).
+using [`@Category`](../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/-category/index.html).
 You can even nest categories once to create subcategories. Subsubcategories however do not work.
 
 ```java
@@ -40,11 +40,11 @@ inner classes) as your structure.
 ### Inside each category
 
 Inside each category you can specify config options
-using [`@ConfigOption`](../javadocs/common/io.github.moulberry.moulconfig.annotations/-config-option/index.html).
+using [`@ConfigOption`](../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/-config-option/index.html).
 
 In addition to the config option which contains meta information like the name, you will need to add another annotation
 of your choice to specify an editor for that variable. Check out all
-the [annotations](../javadocs/common/io.github.moulberry.moulconfig.annotations/index.html).
+the [annotations](../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/index.html).
 
 Make sure that you check the Javadoc on each annotation to know which type your field needs to have for it to work.
 
@@ -68,7 +68,7 @@ public class MySubCategory {
 ### Accordions
 
 Sometimes just subcategories are not enough and you will want to group your options even
-further. [`@Accordion`s](../javadocs/common/io.github.moulberry.moulconfig.annotations/-accordion/index.html)
+further. [`@Accordion`s](../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/-accordion/index.html)
 allow you to nest options arbitrarily deep.
 
 ```java
@@ -97,6 +97,6 @@ public class MySubCategory {
 ### Properties
 
 Sometimes you want to listen to changes to a config variable and run some updates based on that. For that you can use
-[`Property<T>`](../javadocs/common/io.github.moulberry.moulconfig.observer/-property/index.html). Check the Javadoc for
+[`Property<T>`](../javadocs/common/io.github.notenoughupdates.moulconfig.observer/-property/index.html). Check the Javadoc for
 more information on how to use Properties.
 

@@ -14,8 +14,10 @@ dokka = "1.9.10"
 unimined = "1.2.0-SNAPSHOT"
 legacyGson = "2.1"
 mkdocs = "2.4.0"
+libninepatch = "1.2.0"
 
 [libraries]
+libninepatch = { module = "io.github.juuxel:libninepatch", version.ref = "libninepatch" }
 legacyGson = { module = "com.google.code.gson:gson", version.ref = "legacyGson" }
 jbAnnotations = { module = "org.jetbrains:annotations", version.ref = "jbAnnotations" }
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }

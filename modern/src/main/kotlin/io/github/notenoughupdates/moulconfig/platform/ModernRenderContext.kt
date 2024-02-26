@@ -2,9 +2,9 @@ package io.github.notenoughupdates.moulconfig.platform
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import io.github.moulberry.moulconfig.common.IFontRenderer
-import io.github.moulberry.moulconfig.common.IItemStack
-import io.github.moulberry.moulconfig.common.RenderContext
+import io.github.notenoughupdates.moulconfig.common.IFontRenderer
+import io.github.notenoughupdates.moulconfig.common.IItemStack
+import io.github.notenoughupdates.moulconfig.common.RenderContext
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.*

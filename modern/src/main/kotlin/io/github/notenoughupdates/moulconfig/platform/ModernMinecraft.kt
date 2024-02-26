@@ -1,10 +1,10 @@
 package io.github.notenoughupdates.moulconfig.platform
 
-import io.github.moulberry.moulconfig.common.IFontRenderer
-import io.github.moulberry.moulconfig.common.IKeyboardConstants
-import io.github.moulberry.moulconfig.common.IMinecraft
-import io.github.moulberry.moulconfig.common.MyResourceLocation
-import io.github.moulberry.moulconfig.internal.MCLogger
+import io.github.notenoughupdates.moulconfig.common.IFontRenderer
+import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
+import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
+import io.github.notenoughupdates.moulconfig.internal.MCLogger
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier

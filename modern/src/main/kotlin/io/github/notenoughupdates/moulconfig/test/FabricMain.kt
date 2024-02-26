@@ -1,12 +1,12 @@
 package io.github.notenoughupdates.moulconfig.test
 
-import io.github.moulberry.moulconfig.common.IItemStack
-import io.github.moulberry.moulconfig.gui.GuiContext
-import io.github.moulberry.moulconfig.observer.ObservableList
-import io.github.moulberry.moulconfig.xml.Bind
-import io.github.moulberry.moulconfig.xml.XMLUniverse
+import io.github.notenoughupdates.moulconfig.common.IItemStack
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
+import io.github.notenoughupdates.moulconfig.gui.GuiContext
+import io.github.notenoughupdates.moulconfig.observer.ObservableList
 import io.github.notenoughupdates.moulconfig.platform.ModernItemStack
+import io.github.notenoughupdates.moulconfig.xml.Bind
+import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
@@ -20,13 +20,20 @@ class FabricMain : ModInitializer {
         ClientCommandRegistrationCallback.EVENT.register { a, b ->
             a.register(literal("moulconfig").executes {
                 MinecraftClient.getInstance().send {
-                    val xmlUniverse = XMLUniverse.getDefaultUniverse()
+                    val xmlUniverse =
+                        XMLUniverse.getDefaultUniverse()
                     val scene = xmlUniverse.load(
                         ObjectBound(), MinecraftClient.getInstance().resourceManager.open(
                             Identifier("moulconfig:test.xml")
                         )
                     )
-                    MinecraftClient.getInstance().setScreen(GuiComponentWrapper(GuiContext(scene)))
+                    MinecraftClient.getInstance().setScreen(
+                        GuiComponentWrapper(
+                            GuiContext(
+                                scene
+                            )
+                        )
+                    )
                 }
                 0
             })
@@ -38,7 +45,8 @@ class FabricMain : ModInitializer {
         var slider: Float = 0F
 
         @field:Bind
-        var data: ObservableList<IItemStack> = ObservableList(mutableListOf())
+        var data: ObservableList<IItemStack> =
+            ObservableList(mutableListOf())
 
         @field:Bind
         var search: String = ""

@@ -1,7 +1,7 @@
 package io.github.notenoughupdates.moulconfig.platform
 
-import io.github.moulberry.moulconfig.common.IItemStack
-import io.github.moulberry.moulconfig.common.MyResourceLocation
+import io.github.notenoughupdates.moulconfig.common.IItemStack
+import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.ItemStack

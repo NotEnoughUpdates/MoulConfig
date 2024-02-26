@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
 import java.io.ByteArrayOutputStream
 import java.net.URL
@@ -5,6 +6,7 @@ import java.net.URL
 plugins {
     kotlin("jvm") version (libs.versions.kotlin.get()) apply false
     alias(libs.plugins.dokka)
+    alias(libs.plugins.shadow) apply false
     alias(libs.plugins.mkdocs)
 }
 
@@ -43,6 +45,9 @@ allprojects {
                     remoteLineSuffix.set("#L")
                 }
             }
+        }
+        tasks.withType(ShadowJar::class).configureEach {
+            relocate("juuxel.libninepatch", "io.github.notenoughupdates.moulconfig.deps.libninepatch")
         }
         extensions.findByType<PublishingExtension>()?.apply {
             repositories {

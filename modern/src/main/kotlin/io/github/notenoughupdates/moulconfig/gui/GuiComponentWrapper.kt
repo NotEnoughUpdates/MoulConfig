@@ -1,6 +1,5 @@
 package io.github.notenoughupdates.moulconfig.gui
 
-import io.github.moulberry.moulconfig.gui.*
 import io.github.notenoughupdates.moulconfig.platform.ModernRenderContext
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext

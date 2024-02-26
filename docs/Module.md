@@ -58,13 +58,13 @@ loom {
 tasks.shadowJar {
     // Make sure to relocate MoulConfig to avoid version clashes with other mods
     configurations = listOf(shadowModImpl)
-    relocate("io.github.moulberry.moulconfig", "my.mod.deps.moulconfig")
+    relocate("io.github.notenoughupdates.moulconfig", "my.mod.deps.moulconfig")
 }
 ```
 
 ## Usage
 
-See the [TestMod](io.github.moulberry.moulconfig.test.MoulConfigTest) for usage examples, or check out the annotation
+See the [TestMod](io.github.notenoughupdates.moulconfig.test.MoulConfigTest) for usage examples, or check out the annotation
 package documentation to see the kind of config variable editors MoulConfig has built in.
 
 [neurepo]: https://maven.notenoughupdates.org/#/

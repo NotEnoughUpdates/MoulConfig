@@ -39,6 +39,8 @@ dependencies {
     "modImplementation"(fabricApi.fabricModule("fabric-command-api-v2", libs.versions.fabric.api.get()))
     "modImplementation"(fabricApi.fabricModule("fabric-resource-loader-v0", libs.versions.fabric.api.get()))
     shadowInclude(project(":common", configuration = "singleFile"))
+    implementation(libs.libninepatch)
+    shadowInclude(libs.libninepatch)
 }
 
 tasks.shadowJar {

@@ -1,6 +1,6 @@
 package io.github.notenoughupdates.moulconfig.platform
 
-import io.github.moulberry.moulconfig.common.IFontRenderer
+import io.github.notenoughupdates.moulconfig.common.IFontRenderer
 import net.minecraft.client.font.TextRenderer
 import net.minecraft.client.util.ChatMessages
 import net.minecraft.text.Text

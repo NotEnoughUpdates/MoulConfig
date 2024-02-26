@@ -34,4 +34,4 @@ nav:
       - Common: javadocs/common/index.html
       - Modern: javadocs/modern/index.html
       - Legacy: javadocs/legacy/index.html
-      - Annotations: javadocs/common/io.github.moulberry.moulconfig.annotations/index.html
+      - Annotations: javadocs/common/io.github.notenoughupdates.moulconfig.annotations/index.html

@@ -15,6 +15,7 @@ dependencies {
     annotationProcessor(libs.lombok)
     compileOnly(libs.lombok)
     compileOnly(libs.jbAnnotations)
+    implementation(libs.libninepatch)
     implementation(libs.legacyGson)
 }
 val singleFile by configurations.creating

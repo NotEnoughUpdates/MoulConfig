@@ -1,6 +1,6 @@
 package io.github.notenoughupdates.moulconfig.platform
 
-import io.github.moulberry.moulconfig.common.IKeyboardConstants
+import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
 import net.minecraft.client.util.InputUtil
 
 object ModernKeyboardConstants : IKeyboardConstants {

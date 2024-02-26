@@ -44,6 +44,8 @@ dependencies {
     compileOnly(libs.lombok)
     compileOnly(libs.jbAnnotations)
     implementation((project(":common")))
+    implementation(libs.libninepatch)
+    include(libs.libninepatch)
     include(project(":common", configuration = "singleFile"))
 }
 

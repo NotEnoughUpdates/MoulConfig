@@ -19,7 +19,7 @@ and for the gui library, while modern only supports the gui library.
 On 1.8.9 Forge you will need to shadow MoulConfig like any other mod dependency. It is *highly* recommended that
 you relocate MoulConfig to another package, since our internals do not obey any backwards compatibility guarantees.
 In order to get resources loaded in your development environment is is recommended that you also make use of the
-`io.github.moulberry.moulconfig.tweaker.DevelopmentResourceTweaker`. Do not specify this tweaker in your JAR manifest,
+`io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker`. Do not specify this tweaker in your JAR manifest,
 *only* as a command line argument during development time. See a snippet on how to use MoulConfig with architectury loom
 below:
 
@@ -44,7 +44,7 @@ dependencies {
 loom {
     launchConfigs {
         "client" {
-            arg("--tweakClass", "io.github.moulberry.moulconfig.tweaker.DevelopmentResourceTweaker")
+            arg("--tweakClass", "io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker")
         }
     }
 }
@@ -52,7 +52,7 @@ loom {
 tasks.shadowJar {
     // Make sure to relocate MoulConfig to avoid version clashes with other mods
     configurations = listOf(shadowModImpl)
-    relocate("io.github.moulberry.moulconfig", "my.mod.deps.moulconfig")
+    relocate("io.github.notenoughupdates.moulconfig", "my.mod.deps.moulconfig")
 }
 ```
 
@@ -80,7 +80,7 @@ dependencies {
 tasks.shadowJar {
     // Make sure to relocate MoulConfig to avoid version clashes with other mods
     configurations = listOf(shadowModImpl)
-    relocate("io.github.moulberry.moulconfig", "my.mod.deps.moulconfig")
+    relocate("io.github.notenoughupdates.moulconfig", "my.mod.deps.moulconfig")
 }
 ```
 
