@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         <meta name="author" content="Linnea Gräf">
-        <link rel="canonical" href="https://notenoughupdates.org/MoulConfig/3.0.0-beta.3/config/">
+        <link rel="canonical" href="https://notenoughupdates.org/MoulConfig/3.0.0-beta.4/config/">
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Config GUI - MoulConfig</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -74,7 +74,7 @@
 </li>
                                     
 <li>
-    <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/index.html" class="dropdown-item">Annotations</a>
+    <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/index.html" class="dropdown-item">Annotations</a>
 </li>
                                 </ul>
                             </li>
@@ -137,7 +137,7 @@ requirement is that instances do not get reassigned. So updating the config obje
 requires that config to be reprocessed (and old MoulConfig to be discarded).</p>
 <h3 id="top-level-structure">Top Level Structure</h3>
 <p>You can specify categories
-using <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/-category/index.html"><code>@Category</code></a>.
+using <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/-category/index.html"><code>@Category</code></a>.
 You can even nest categories once to create subcategories. Subsubcategories however do not work.</p>
 <pre><code class="language-java">public class MyConfig extends Config {
     @Override
@@ -158,10 +158,10 @@ You can even nest categories once to create subcategories. Subsubcategories howe
 inner classes) as your structure.</p>
 <h3 id="inside-each-category">Inside each category</h3>
 <p>Inside each category you can specify config options
-using <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/-config-option/index.html"><code>@ConfigOption</code></a>.</p>
+using <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/-config-option/index.html"><code>@ConfigOption</code></a>.</p>
 <p>In addition to the config option which contains meta information like the name, you will need to add another annotation
 of your choice to specify an editor for that variable. Check out all
-the <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/index.html">annotations</a>.</p>
+the <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/index.html">annotations</a>.</p>
 <p>Make sure that you check the Javadoc on each annotation to know which type your field needs to have for it to work.</p>
 <pre><code class="language-java">public class MySubCategory {
     @ConfigOption(name = &quot;Text Test&quot;, desc = &quot;Text Editor Test&quot;)
@@ -180,7 +180,7 @@ the <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/index
 </code></pre>
 <h3 id="accordions">Accordions</h3>
 <p>Sometimes just subcategories are not enough and you will want to group your options even
-further. <a href="../javadocs/common/io.github.moulberry.moulconfig.annotations/-accordion/index.html"><code>@Accordion</code>s</a>
+further. <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/-accordion/index.html"><code>@Accordion</code>s</a>
 allow you to nest options arbitrarily deep.</p>
 <pre><code class="language-java">public class MySubCategory {
     @ConfigOption(name = &quot;Text Test&quot;, desc = &quot;Text Editor Test&quot;)
@@ -205,7 +205,7 @@ allow you to nest options arbitrarily deep.</p>
 </code></pre>
 <h3 id="properties">Properties</h3>
 <p>Sometimes you want to listen to changes to a config variable and run some updates based on that. For that you can use
-<a href="../javadocs/common/io.github.moulberry.moulconfig.observer/-property/index.html"><code>Property&lt;T&gt;</code></a>. Check the Javadoc for
+<a href="../javadocs/common/io.github.notenoughupdates.moulconfig.observer/-property/index.html"><code>Property&lt;T&gt;</code></a>. Check the Javadoc for
 more information on how to use Properties.</p>
     </div>
     
