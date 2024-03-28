@@ -2,17 +2,18 @@ package io.github.notenoughupdates.moulconfig.platform
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import io.github.notenoughupdates.moulconfig.common.IFontRenderer
-import io.github.notenoughupdates.moulconfig.common.IItemStack
-import io.github.notenoughupdates.moulconfig.common.RenderContext
+import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.common.RenderContext.TextureFilter
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.render.*
+import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
 import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
+import java.awt.image.BufferedImage
 import java.util.*
 
 class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
@@ -28,6 +29,39 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun enableDepth() {
         RenderSystem.enableDepthTest()
+    }
+
+    fun NativeImageBackedTexture.setData(img: BufferedImage) {
+        for (i in (0 until img.width)) {
+            for (j in (0 until img.height)) {
+                val argb = img.getRGB(i, j)
+                val b = (argb and 0xFF) shl 16
+                val r = (argb and 0xFF0000) shr 16
+                val aAndG = argb and 0xFF00FF00.toInt()
+                // Nice ABGR, nerd
+                image!!.setColor(i, j, b or r or aAndG)
+            }
+        }
+    }
+    override fun generateDynamicTexture(img: BufferedImage): DynamicTextureReference {
+        val texture = NativeImageBackedTexture(img.width, img.height, true)
+        texture.setData(img)
+        texture.upload()
+        val res = MinecraftClient.getInstance().textureManager
+            .registerDynamicTexture("moulconfig", texture)
+        return object : DynamicTextureReference() {
+            override fun update(bufferedImage: BufferedImage) {
+                texture.setData(img)
+                texture.upload()
+            }
+
+            override val identifier: MyResourceLocation
+                get() = ModernMinecraft.fromIdentifier(res)
+
+            override fun doDestroy() {
+                MinecraftClient.getInstance().textureManager.destroyTexture(res)
+            }
+        }
     }
 
     fun refreshScissors() {
@@ -100,8 +134,8 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun drawString(
-        fontRenderer: IFontRenderer?,
-        text: String?,
+        fontRenderer: IFontRenderer,
+        text: String,
         x: Int,
         y: Int,
         color: Int,
@@ -130,6 +164,16 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         BufferRenderer.drawWithGlobalProgram(buffer.end())
         RenderSystem.disableColorLogicOp()
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+    }
+
+    override fun setTextureMinMagFilter(textureFilter: TextureFilter) {
+        // TODO bind texture first
+        val filter = when (textureFilter) {
+            TextureFilter.LINEAR -> GL11.GL_LINEAR
+            TextureFilter.NEAREST -> GL11.GL_NEAREST
+        }
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)
     }
 
     override fun drawTexturedRect(

@@ -23,4 +23,5 @@ interface IKeyboardConstants {
     val keyC: Int
     val keyX: Int
     val keyV: Int
+    val keyN: Int
 }

@@ -107,4 +107,7 @@ public abstract class GuiOptionEditor {
         }
         return searchDescNameCache.contains(word);
     }
+
+    public void setGuiContext(GuiContext guiContext) {
+    }
 }

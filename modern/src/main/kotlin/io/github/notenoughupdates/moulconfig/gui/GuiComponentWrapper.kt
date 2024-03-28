@@ -32,7 +32,7 @@ open class GuiComponentWrapper(
             0, 0,
             window.scaledWidth,
             window.scaledHeight,
-            x, y, x, y
+            x, y, x, y, x.toFloat(), y.toFloat()
         )
     }
 

@@ -5,6 +5,7 @@ import juuxel.libninepatch.NinePatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 public interface RenderContext {
@@ -59,6 +60,14 @@ public interface RenderContext {
 
     void enableDepth();
 
+
+    /**
+     * Dynamically load a buffered image into a minecraft bindable texture. The returned resource location must be destroyed.
+     *
+     * @return a resource location that can be used with {@link #bindTexture}
+     */
+    @NotNull DynamicTextureReference generateDynamicTexture(@NotNull BufferedImage image);
+
     default void drawVerticalLine(int x, int startY, int endY, int color) {
         if (startY > endY) {
             int temp = startY;
@@ -97,7 +106,7 @@ public interface RenderContext {
         }
     }
 
-    int drawString(IFontRenderer fontRenderer, String text, int x, int y, int color, boolean shadow);
+    int drawString(@NotNull IFontRenderer fontRenderer, @NotNull String text, int x, int y, int color, boolean shadow);
 
     void drawColoredRect(float left, float top, float right, float bottom, int color);
 
@@ -109,7 +118,25 @@ public interface RenderContext {
 
     void drawTexturedRect(float x, float y, float width, float height, float u1, float v1, float u2, float v2);
 
-    default void drawNinePatch(NinePatch<MyResourceLocation> patch, float x, float y, int width, int height) {
+
+    enum TextureFilter {
+        /**
+         * Smoothly interpolate between pixels
+         */
+        LINEAR,
+        /**
+         * Do not interpolate between pixels (pixelated upscaling).
+         */
+        NEAREST;
+    }
+
+    /**
+     * Set the texture min and mag filter which dictate how an image is upscaled / interpolated.
+     * Affects the {@link #bindTexture currently bound texture}.
+     */
+    void setTextureMinMagFilter(@NotNull TextureFilter filter);
+
+    default void drawNinePatch(@NotNull NinePatch<@NotNull MyResourceLocation> patch, float x, float y, int width, int height) {
         pushMatrix();
         translate(x, y, 0);
         patch.draw(NinePatchRenderer.INSTANCE, this, width, height);

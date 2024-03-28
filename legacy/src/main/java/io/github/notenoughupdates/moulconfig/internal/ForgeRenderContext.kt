@@ -1,18 +1,18 @@
 package io.github.notenoughupdates.moulconfig.internal
 
-import io.github.notenoughupdates.moulconfig.common.IFontRenderer
-import io.github.notenoughupdates.moulconfig.common.IItemStack
-import io.github.notenoughupdates.moulconfig.common.RenderContext
+import io.github.notenoughupdates.moulconfig.common.*
 import io.github.notenoughupdates.moulconfig.forge.ForgeItemStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
+import java.awt.image.BufferedImage
 
 class ForgeRenderContext : RenderContext {
     override fun pushMatrix() {
@@ -29,6 +29,38 @@ class ForgeRenderContext : RenderContext {
 
     override fun enableDepth() {
         GlStateManager.enableDepth()
+    }
+
+    override fun generateDynamicTexture(image: BufferedImage): DynamicTextureReference {
+        val texture = DynamicTexture(image)
+        val res = Minecraft.getMinecraft().textureManager.getDynamicTextureLocation("moulconfig", texture)
+
+        return object : DynamicTextureReference() {
+            override val identifier: MyResourceLocation
+                get() = ForgeMinecraft.fromResourceLocation(res)
+
+            override fun update(bufferedImage: BufferedImage) {
+                bufferedImage.getRGB(
+                    0, 0, bufferedImage.width, bufferedImage.height,
+                    texture.textureData, 0, bufferedImage.width
+                )
+                texture.updateDynamicTexture()
+            }
+
+            override fun doDestroy() {
+                Minecraft.getMinecraft().textureManager.deleteTexture(res)
+            }
+        }
+    }
+
+    override fun setTextureMinMagFilter(textureFilter: RenderContext.TextureFilter) {
+        val filter = when (textureFilter) {
+            RenderContext.TextureFilter.LINEAR -> GL11.GL_LINEAR
+            RenderContext.TextureFilter.NEAREST -> GL11.GL_NEAREST
+        }
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)
+
     }
 
     override fun translate(x: Float, y: Float, z: Float) {

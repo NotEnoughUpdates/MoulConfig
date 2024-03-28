@@ -2,17 +2,17 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.DescriptionRendereringBehaviour;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
-import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
-import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
-import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
-import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
+import io.github.notenoughupdates.moulconfig.gui.*;
 import io.github.notenoughupdates.moulconfig.gui.component.CenterComponent;
 import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent;
 import io.github.notenoughupdates.moulconfig.internal.ForgeRenderContext;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
+import lombok.Getter;
+import lombok.val;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.util.List;
@@ -24,8 +24,22 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
     public abstract @NotNull GuiComponent getDelegate();
 
+    private @Nullable GuiComponent overlay;
+    @Getter
+    private int overlayX, overlayY;
+
+    public void closeOverlay() {
+        this.overlay = null;
+    }
+
+    public void openOverlay(GuiComponent overlay, int overlayX, int overlayY) {
+        this.overlay = overlay;
+        this.overlayX = overlayX;
+        this.overlayY = overlayY;
+    }
+
     public @Nullable GuiComponent getOverlayDelegate() {
-        return null;
+        return overlay;
     }
 
     public GuiImmediateContext getImmContext(
@@ -39,7 +53,9 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             instance.getMouseX() - x,
             instance.getMouseY() - y,
             instance.getMouseX(),
-            instance.getMouseY()
+            instance.getMouseY(),
+            (float) instance.getMouseXHF() - x,
+            (float) instance.getMouseYHF() - y
         );
     }
 
@@ -129,19 +145,52 @@ public abstract class ComponentEditor extends GuiOptionEditor {
         return Math.max(getDelegate().getHeight(), super.getHeight());
     }
 
+    private int lastRenderX, lastRenderY, lastRenderWidth, lastRenderHeight;
+
     @Override
     public final boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        if (Mouse.getEventButton() == -1) return false;
+        if (Mouse.getEventButton() == -1) {
+            return getDelegate().mouseEvent(new MouseEvent.Move(Mouse.getEventDX(), Mouse.getEventDY()), getImmContext(x, y, width, getHeight()));
+        }
         return getDelegate().mouseEvent(new MouseEvent.Click(Mouse.getEventButton(), Mouse.getEventButtonState()), getImmContext(x, y, width, getHeight()));
     }
 
     @Override
     public final boolean keyboardInput() {
-        return false; // TODO: handle keyboard input here
+        val ctx = getImmContext(lastRenderX, lastRenderY, lastRenderWidth, lastRenderHeight);
+        val overlay = getOverlayDelegate();
+        if (overlay != null) {
+            overlay.foldRecursive((Void) null, (comp, _void) -> {
+                comp.setContext(getDelegate().getContext());
+                return _void;
+            });
+            if (Keyboard.getEventKeyState())
+                if (overlay.keyboardEvent(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()), ctx))
+                    return true;
+            if (overlay.keyboardEvent(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), Keyboard.getEventKeyState()), ctx))
+                return true;
+        }
+        if (Keyboard.getEventKeyState())
+            if (getDelegate().keyboardEvent(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()), ctx))
+                return true;
+        if (getDelegate().keyboardEvent(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), Keyboard.getEventKeyState()), ctx))
+            return true;
+        return false;
+    }
+
+    @Override
+    public void setGuiContext(GuiContext guiContext) {
+        getDelegate().setContext(guiContext);
     }
 
     @Override
     public final void render(int x, int y, int width) {
+        // TODO: remove this
+        lastRenderX = x;
+        lastRenderY = y;
+        lastRenderWidth = width;
+        lastRenderHeight = getHeight();
+
         var context = getImmContext(x, y, width, getHeight());
         context.getRenderContext().pushMatrix();
         context.getRenderContext().translate(context.getRenderOffsetX(), context.getRenderOffsetY(), 0);
@@ -151,13 +200,28 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
     @Override
     public final boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY) {
-        if (getOverlayDelegate() == null) return false;
-        return getOverlayDelegate().mouseEvent(new MouseEvent.Click(Mouse.getEventButton(), Mouse.getEventButtonState()), getImmContext(x, y, width, getOverlayDelegate().getHeight()));
+        if (overlay == null) return false;
+        overlay.foldRecursive((Void) null, (comp, _void) -> {
+            comp.setContext(getDelegate().getContext());
+            return _void;
+        });
+        if (Mouse.getEventButton() == -1) {
+            return overlay.mouseEvent(new MouseEvent.Move(Mouse.getEventDX(), Mouse.getEventDY()),
+                getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight()));
+        }
+        return overlay.mouseEvent(new MouseEvent.Click(Mouse.getEventButton(), Mouse.getEventButtonState()),
+            getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight()));
     }
 
     @Override
     public final void renderOverlay(int x, int y, int width) {
-        if (getOverlayDelegate() == null) return;
-        getOverlayDelegate().render(getImmContext(x, y, width, getOverlayDelegate().getHeight()));
+        if (overlay == null) return;
+        overlay.foldRecursive((Void) null, (comp, _void) -> {
+            comp.setContext(getDelegate().getContext());
+            return _void;
+        });
+        val ctx = getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight());
+        ctx.getRenderContext().translate(overlayX, overlayY, 0);
+        overlay.render(ctx);
     }
 }

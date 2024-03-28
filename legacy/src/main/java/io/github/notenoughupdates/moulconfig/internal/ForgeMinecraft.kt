@@ -57,12 +57,23 @@ class ForgeMinecraft : IMinecraft {
             val width = scaledWidth
             val mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth
             return mouseX
-
         }
 
     override val mouseY: Int
         get() {
             val height = scaledHeight
+            val mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1
+            return mouseY
+        }
+    override val mouseXHF: Double
+        get() {
+            val width = ScaledResolution(Minecraft.getMinecraft()).scaledWidth_double
+            val mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth
+            return mouseX
+        }
+    override val mouseYHF: Double
+        get() {
+            val height = ScaledResolution(Minecraft.getMinecraft()).scaledHeight_double
             val mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1
             return mouseY
         }

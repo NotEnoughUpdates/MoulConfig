@@ -46,7 +46,8 @@ public class GuiComponentWrapper extends GuiScreen {
         return new GuiImmediateContext(
             new ForgeRenderContext(), 0, 0,
             width, height,
-            x, y, x, y
+            x, y, x, y,
+            x, y
         );
     }
 
@@ -87,7 +88,7 @@ public class GuiComponentWrapper extends GuiScreen {
         ForgeRenderContext frc = new ForgeRenderContext();
         context.getRoot().render(new GuiImmediateContext(
             frc,
-            0, 0, width, height, mouseX, mouseY, mouseX, mouseY
+            0, 0, width, height, mouseX, mouseY, mouseX, mouseY , mouseX, mouseY
         ));
         frc.doDrawTooltip();
     }

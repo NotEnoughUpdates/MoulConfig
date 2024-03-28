@@ -169,7 +169,7 @@ public class ConfigProcessorDriver {
             if (parentField == null) {
                 processCategoryMeta(subCategory.getBoundTo(), subCategory.getField(), categoryField);
             } else {
-                Warnings.warn("Found double recursive usb category at " + subCategory);
+                Warnings.warn("Found double recursive sub category at " + subCategory);
             }
         }
     }

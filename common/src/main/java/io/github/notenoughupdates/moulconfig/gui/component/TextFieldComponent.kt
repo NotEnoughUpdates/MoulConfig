@@ -10,20 +10,21 @@ import io.github.notenoughupdates.moulconfig.gui.MouseEvent
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent.Click
 import io.github.notenoughupdates.moulconfig.internal.ClipboardUtils
 import io.github.notenoughupdates.moulconfig.observer.GetSetter
+import java.util.function.Supplier
 import kotlin.math.max
 import kotlin.math.min
 
 open class TextFieldComponent(
     val text: GetSetter<String>,
     private val width: Int,
-    val editable: GetSetter<Boolean> = GetSetter.constant(true),
+    val editable: Supplier<Boolean> = GetSetter.constant(true),
     val suggestion: String = "",
     val font: IFontRenderer = IMinecraft.instance.defaultFontRenderer,
 ) : GuiComponent() {
-    var cursor = 0
-    var selection = -1
-    var scrollOffset = 0
-    var visibleText: String? = null
+    private var cursor = 0
+    private var selection = -1
+    private var scrollOffset = 0
+    private var visibleText: String? = null
     override fun getWidth(): Int {
         return width
     }
@@ -54,7 +55,7 @@ open class TextFieldComponent(
 
     override fun render(context: GuiImmediateContext) {
         validateCursor()
-        checkScrollOffset()
+        checkScrollOffset() // TODO: read width from context.
         visibleText = font.trimStringToWidth(safeSubString(text.get(), scrollOffset), width - TEXT_PADDING_X * 2)
         renderBox(context)
         renderText(context, visibleText!!)
@@ -204,9 +205,12 @@ open class TextFieldComponent(
             }
         } else if (event is KeyboardEvent.CharTyped) {
             val it = event.char
-            if (it >= ' ' && it != '§' && it.code != 127)
+            var anyWritten = false
+            if (it >= ' ' && it != '§' && it.code != 127) {
                 writeText(it + "")
-            return true
+                anyWritten = true
+            }
+            return anyWritten
         } else {
             return false
         }

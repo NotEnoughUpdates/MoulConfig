@@ -22,20 +22,19 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import io.github.notenoughupdates.moulconfig.GuiTextures;
-import io.github.notenoughupdates.moulconfig.common.IMinecraft;
-import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
-import io.github.notenoughupdates.moulconfig.gui.elements.GuiElementColour;
-import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
+import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
+import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
+import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
+import io.github.notenoughupdates.moulconfig.gui.elements.ColorSelectComponent;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import lombok.val;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Mouse;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 
-public class GuiOptionEditorColour extends GuiOptionEditor {
-    private GuiElementColour colourElement = null;
+public class GuiOptionEditorColour extends ComponentEditor {
     private final boolean usesString;
+    GuiComponent component;
 
     public GuiOptionEditorColour(ProcessedOption option) {
         super(option);
@@ -47,6 +46,42 @@ public class GuiOptionEditorColour extends GuiOptionEditor {
         } else {
             throw new IllegalArgumentException("ConfigEditorColour may only be used on a String or ChromaColour field, but is used on " + option.field);
         }
+        component = wrapComponent(new GuiComponent() {
+            @Override
+            public int getWidth() {
+                return 48;
+            }
+
+            @Override
+            public int getHeight() {
+                return 16;
+            }
+
+            @Override
+            public void render(@NotNull GuiImmediateContext context) {
+                int argb = get().getEffectiveColour().getRGB();
+                int r = (argb >> 16) & 0xFF;
+                int g = (argb >> 8) & 0xFF;
+                int b = argb & 0xFF;
+                context.getRenderContext().color(r / 255f, g / 255f, b / 255f, 1);
+                context.getRenderContext().bindTexture(GuiTextures.BUTTON_WHITE);
+                context.getRenderContext().drawTexturedRect(0f, 0f, context.getWidth(), context.getHeight());
+            }
+
+            @Override
+            public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
+                if (mouseEvent instanceof MouseEvent.Click) {
+                    val click = ((MouseEvent.Click) mouseEvent);
+                    if (click.getMouseState() && click.getMouseButton() == 0 && context.isHovered()) {
+                        openOverlay(new ColorSelectComponent(0, 0, get().toLegacyString(), newString -> set(newString), () -> {
+                            closeOverlay();
+                        }), context.getAbsoluteMouseX(), context.getAbsoluteMouseY());
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     ChromaColour get() {
@@ -66,47 +101,10 @@ public class GuiOptionEditorColour extends GuiOptionEditor {
         }
     }
 
-    @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
-        int height = getHeight();
-
-        int argb = get().getEffectiveColour().getRGB();
-        int r = (argb >> 16) & 0xFF;
-        int g = (argb >> 8) & 0xFF;
-        int b = argb & 0xFF;
-        GlStateManager.color(r / 255f, g / 255f, b / 255f, 1);
-        IMinecraft.instance.bindTexture(GuiTextures.BUTTON_WHITE);
-        RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
-    }
 
     @Override
-    public void renderOverlay(int x, int y, int width) {
-        if (colourElement != null) {
-            colourElement.render();
-        }
+    public @NotNull GuiComponent getDelegate() {
+        return component;
     }
 
-    @Override
-    public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY) {
-        return colourElement != null && colourElement.mouseInput(mouseX, mouseY);
-    }
-
-    @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        int height = getHeight();
-
-        if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0 &&
-            mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-            mouseY > y + height - 7 - 14 && mouseY < y + height - 7 + 2) {
-            colourElement = new GuiElementColour(mouseX, mouseY, get().toLegacyString(), this::set, () -> colourElement = null);
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean keyboardInput() {
-        return colourElement != null && colourElement.keyboardInput();
-    }
 }

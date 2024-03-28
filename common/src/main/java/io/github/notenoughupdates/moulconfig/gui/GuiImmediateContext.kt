@@ -24,7 +24,7 @@ import io.github.notenoughupdates.moulconfig.common.RenderContext
 /**
  * A context containing the constraints of a gui elements, as well as the state of the user interface, relative to that gui element.
  */
-data class GuiImmediateContext(
+data class GuiImmediateContext constructor(
     val renderContext: RenderContext,
 
     /**
@@ -66,6 +66,16 @@ data class GuiImmediateContext(
      * The position of the mouse, relative to the root element.
      */
     val absoluteMouseY: Int,
+
+    /**
+     * The position of the mouse, relative to this gui element in as high of a resolution as possible.
+     */
+    val mouseXHF: Float,
+
+    /**
+     * The position of the mouse, relative to this gui element in as high of a resolution as possible.
+     */
+    val mouseYHF: Float,
 ) {
     val isHovered: Boolean
         /**
@@ -85,7 +95,8 @@ data class GuiImmediateContext(
             renderContext,
             renderOffsetX - xBleed, renderOffsetY - yBleed, width + 2 * xBleed, height + 2 * yBleed,
             mouseX + xBleed, mouseY + yBleed,
-            absoluteMouseX, absoluteMouseY
+            absoluteMouseX, absoluteMouseY,
+            mouseXHF, mouseYHF
         )
     }
 
@@ -107,7 +118,9 @@ data class GuiImmediateContext(
             mouseX - xOffset,
             mouseY - yOffset,
             absoluteMouseX,
-            absoluteMouseY
+            absoluteMouseY,
+            mouseXHF - xOffset,
+            mouseYHF - yOffset
         )
     }
 
@@ -122,7 +135,9 @@ data class GuiImmediateContext(
     fun translatedNonRendering(xOffset: Int, yOffset: Int, width: Int, height: Int): GuiImmediateContext {
         return GuiImmediateContext(
             renderContext, renderOffsetX, renderOffsetY, width, height, mouseX - xOffset, mouseY - yOffset,
-            absoluteMouseX, absoluteMouseY
+            absoluteMouseX, absoluteMouseY,
+            mouseXHF,
+            mouseYHF
         )
     }
 
@@ -142,7 +157,9 @@ data class GuiImmediateContext(
             renderOffsetX, renderOffsetY,
             (width / scale).toInt(), (height / scale).toInt(),
             ((mouseX - renderOffsetX) * scale).toInt(), ((mouseY - renderOffsetY) * scale).toInt(),
-            absoluteMouseX, absoluteMouseY
+            absoluteMouseX, absoluteMouseY,
+            ((mouseXHF - renderOffsetX) * scale),
+            ((mouseYHF - renderOffsetY) * scale),
         )
     }
 }

@@ -38,4 +38,6 @@ object ModernKeyboardConstants : IKeyboardConstants {
         get() = InputUtil.GLFW_KEY_X
     override val keyV: Int
         get() = InputUtil.GLFW_KEY_V
+    override val keyN: Int
+        get() = InputUtil.GLFW_KEY_N
 }

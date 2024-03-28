@@ -71,6 +71,10 @@ class ModernMinecraft : IMinecraft {
             val y = (mouse.y * window.scaledHeight.toDouble() / window.height.toDouble()).toInt()
             return y
         }
+    override val mouseXHF: Double
+        get() = TODO("Not yet implemented")
+    override val mouseYHF: Double
+        get() = TODO("Not yet implemented")
 
     override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {
         return MinecraftClient.getInstance().resourceManager.getResource(fromMyResourceLocation(resourceLocation))

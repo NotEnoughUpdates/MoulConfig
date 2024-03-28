@@ -38,4 +38,6 @@ object ForgeKeyboardConstants : IKeyboardConstants {
         get() = Keyboard.KEY_X
     override val keyV: Int
         get() = Keyboard.KEY_V
+    override val keyN: Int
+        get() = Keyboard.KEY_N
 }

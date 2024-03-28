@@ -26,6 +26,7 @@ import io.github.notenoughupdates.moulconfig.Social;
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
+import io.github.notenoughupdates.moulconfig.gui.component.MetaComponent;
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.notenoughupdates.moulconfig.gui.elements.GuiElementTextField;
 import io.github.notenoughupdates.moulconfig.internal.*;
@@ -520,6 +521,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 if (editor == null) {
                     continue;
                 }
+                editor.setGuiContext(guiContext);
                 if (editor instanceof GuiOptionEditorAccordion) {
                     GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                     if (accordion.getToggled()) {
@@ -577,6 +579,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 if (editor == null) {
                     continue;
                 }
+                editor.setGuiContext(guiContext);
                 if (editor instanceof GuiOptionEditorAccordion) {
                     GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                     if (accordion.getToggled()) {
@@ -655,6 +658,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         }
         context.doDrawTooltip();
     }
+
+    private GuiContext guiContext = new GuiContext(new MetaComponent());
 
     public boolean mouseInput(int mouseX, int mouseY) {
         lastMouseX = mouseX;
@@ -783,6 +788,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         if (editor == null) {
                             continue;
                         }
+                        editor.setGuiContext(guiContext);
                         if (editor instanceof GuiOptionEditorAccordion) {
                             GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                             if (accordion.getToggled()) {
@@ -866,6 +872,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 if (editor == null) {
                     continue;
                 }
+                editor.setGuiContext(guiContext);
                 if (editor instanceof GuiOptionEditorAccordion) {
                     GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                     if (accordion.getToggled()) {
@@ -914,6 +921,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     if (editor == null) {
                         continue;
                     }
+                    editor.setGuiContext(guiContext);
                     if (editor instanceof GuiOptionEditorAccordion) {
                         GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                         if (accordion.getToggled()) {
@@ -973,6 +981,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 if (editor == null) {
                     continue;
                 }
+                editor.setGuiContext(guiContext);
                 if (editor instanceof GuiOptionEditorAccordion) {
                     GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                     if (accordion.getToggled()) {
