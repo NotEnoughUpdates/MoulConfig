@@ -13,6 +13,12 @@ plugins {
     alias(libs.plugins.dokka)
 }
 
+tasks.withType(JavaCompile::class) {
+    this.javaCompiler.set(javaToolchains.compilerFor {
+        this.languageVersion.set(JavaLanguageVersion.of(8))
+    })
+}
+
 unimined.minecraft {
     version(libs.versions.mc.legacy.get())
     mappings {
