@@ -283,7 +283,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int mouseY = iMinecraft.getMouseY();
 
         int xSize = Math.min(width - 100 / scaleFactor, 500);
-        int ySize = Math.min(width - 100 / scaleFactor, 400);
+        int ySize = Math.min(height - 100 / scaleFactor, 400);
 
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
@@ -665,7 +665,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int adjScaleFactor = Math.max(2, scaleFactor);
 
         int xSize = Math.min(width - 100 / scaleFactor, 500);
-        int ySize = Math.min(width - 100 / scaleFactor, 400);
+        int ySize = Math.min(height - 100 / scaleFactor, 400);
 
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
@@ -951,7 +951,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int scaleFactor = iMinecraft.getScaleFactor();
 
         int xSize = Math.min(width - 100 / scaleFactor, 500);
-        int ySize = Math.min(width - 100 / scaleFactor, 400);
+        int ySize = Math.min(height - 100 / scaleFactor, 400);
 
         int adjScaleFactor = Math.max(2, scaleFactor);
 
