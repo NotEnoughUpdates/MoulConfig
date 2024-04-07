@@ -6,7 +6,7 @@ plugins {
     `maven-publish`
     alias(libs.plugins.unimined)
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.lombok)
+//    alias(libs.plugins.kotlin.lombok)
     alias(libs.plugins.dokka)
     alias(libs.plugins.shadow)
 
