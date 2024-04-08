@@ -290,8 +290,10 @@ public class ColorSelectComponent extends GuiComponent {
             );
         if (opacitySlider)
             renderContext.drawColoredRect(
-                5 + 64 + 5 + valueOffset, 5 + 64 - c.getAlpha() / 4,
-                5 + 64 + valueOffset + opacityOffset, 5 + 64 - c.getAlpha() / 4 - 1, 0xFF000000
+                5 + 64 + 5 + valueOffset,
+                5 + 64 - c.getAlpha() / 4 - 1,
+                5 + 64 + valueOffset + opacityOffset,
+                5 + 64 - c.getAlpha() / 4, 0xFF000000
             );
         if (chromaSpeed > 0) {
             renderContext.drawColoredRect(
