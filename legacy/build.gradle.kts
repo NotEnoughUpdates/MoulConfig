@@ -107,7 +107,7 @@ val libraryJar by tasks.creating(Jar::class) {
     from(zipTree(remapJar.archiveFile))
     dependsOn(remapJar)
     archiveClassifier.set("notest")
-    exclude("io/github/moulberry/moulconfig/test/*")
+    exclude("io/github/notenoughupdates/moulconfig/test/*")
     exclude("mcmod.info")
 }
 
