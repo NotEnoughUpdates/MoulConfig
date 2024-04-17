@@ -20,7 +20,9 @@
 
 package io.github.notenoughupdates.moulconfig.gui;
 
+import io.github.notenoughupdates.moulconfig.DescriptionRendereringBehaviour;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
+import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import lombok.var;
@@ -52,10 +54,6 @@ public abstract class GuiOptionEditor {
         }
     }
 
-    @Deprecated
-    protected void render(int x, int y, int width) {
-    }
-
     public void render(RenderContext context, int x, int y, int width) {
         int height = getHeight();
 
@@ -69,17 +67,18 @@ public abstract class GuiOptionEditor {
 
         float scale = 1;
         List<String> lines;
+        int descriptionHeight = option.config.getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : getHeight();
         while (true) {
             lines = fr.splitText(option.desc, (int) (width * 2 / 3 / scale - 10));
-            if (lines.size() * scale * (fr.getHeight() + 1) + 10 < getHeight())
+            if (lines.size() * scale * (fr.getHeight() + 1) + 10 < descriptionHeight)
                 break;
             scale -= 1 / 8f;
             if (scale < 1 / 16f) break;
         }
         context.pushMatrix();
-        context.translate(5 + width / 3, 5, 0);
+        context.translate(x + 5 + width / 3, y + 5, 0);
         context.scale(scale, scale, 1);
-        context.translate(0, ((getHeight() - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F, 0);
+        context.translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F, 0);
         for (String line : lines) {
             context.drawString(fr, line, 0, 0, 0xc0c0c0, false);
             context.translate(0, fr.getHeight() + 1, 0);
@@ -88,7 +87,10 @@ public abstract class GuiOptionEditor {
     }
 
     public int getHeight() {
-        return HEIGHT;
+        if (option.config.getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
+            return HEIGHT;
+        var fr = IMinecraft.instance.getDefaultFontRenderer();
+        return Math.max(45, fr.splitText(option.desc, 250 * 2 / 3 - 10).size() * (fr.getHeight() + 1) + 10);
     }
 
     @Deprecated
@@ -113,6 +115,7 @@ public abstract class GuiOptionEditor {
         return false;
     }
 
+    // TODO: add RenderContext
     public void renderOverlay(int x, int y, int width) {
     }
 

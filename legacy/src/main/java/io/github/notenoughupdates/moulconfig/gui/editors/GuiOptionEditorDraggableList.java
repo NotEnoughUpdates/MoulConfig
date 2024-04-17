@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
@@ -122,8 +123,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
+    public void render(RenderContext renderContext, int x, int y, int width) {
+        super.render(renderContext, x, y, width);
         int height = getHeight();
 
         GlStateManager.color(1, 1, 1, 1);

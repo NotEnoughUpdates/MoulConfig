@@ -20,6 +20,7 @@
 
 package io.github.notenoughupdates.moulconfig.gui.editors;
 
+import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
@@ -62,8 +63,8 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
     }
 
     @Override
-    public void render(int x, int y, int width) {
-        super.render(x, y, width);
+    public void render(RenderContext renderContext, int x, int y, int width) {
+        super.render(renderContext, x, y, width);
         if (!open) {
             int height = getHeight();
 

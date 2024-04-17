@@ -2,6 +2,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.DescriptionRendereringBehaviour;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.*;
 import io.github.notenoughupdates.moulconfig.gui.component.CenterComponent;
 import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public abstract class ComponentEditor extends GuiOptionEditor {
+    private static final int HEIGHT = 45;
     protected ComponentEditor(ProcessedOption option) {
         super(option);
     }
@@ -40,11 +42,11 @@ public abstract class ComponentEditor extends GuiOptionEditor {
     }
 
     public GuiImmediateContext getImmContext(
-        int x, int y, int width, int height
+        int x, int y, int width, int height, RenderContext renderContext
     ) {
         IMinecraft instance = IMinecraft.instance;
         return new GuiImmediateContext(
-            IMinecraft.instance.provideTopLevelRenderContext(),
+            renderContext,
             x, y,
             width, height,
             instance.getMouseX() - x,
@@ -112,9 +114,10 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             var fr = minecraft.getDefaultFontRenderer();
             float scale = 1;
             List<String> lines;
+            int descriptionHeight = option.config.getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : context.getHeight();
             while (true) {
                 lines = fr.splitText(option.desc, (int) (width * 2 / 3 / scale - 10));
-                if (lines.size() * scale * (fr.getHeight() + 1) + 10 < context.getHeight())
+                if (lines.size() * scale * (fr.getHeight() + 1) + 10 < descriptionHeight)
                     break;
                 scale -= 1 / 8f;
                 if (scale < 1 / 16f) break;
@@ -122,7 +125,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             context.getRenderContext().pushMatrix();
             context.getRenderContext().translate(5 + width / 3, 5, 0);
             context.getRenderContext().scale(scale, scale, 1);
-            context.getRenderContext().translate(0, ((context.getHeight() - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F, 0);
+            context.getRenderContext().translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F, 0);
             for (String line : lines) {
                 context.getRenderContext().drawString(fr, line, 0, 0, 0xc0c0c0, false);
                 context.getRenderContext().translate(0, fr.getHeight() + 1, 0);
@@ -146,12 +149,12 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
     @Override
     public final boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
-        return getDelegate().mouseEvent(mouseEvent, getImmContext(x, y, width, getHeight()));
+        return getDelegate().mouseEvent(mouseEvent, getImmContext(x, y, width, getHeight(), IMinecraft.instance.provideTopLevelRenderContext()));
     }
 
     @Override
     public final boolean keyboardInput(KeyboardEvent keyboardEvent) {
-        val ctx = getImmContext(lastRenderX, lastRenderY, lastRenderWidth, lastRenderHeight);
+        val ctx = getImmContext(lastRenderX, lastRenderY, lastRenderWidth, lastRenderHeight, IMinecraft.instance.provideTopLevelRenderContext());
         val overlay = getOverlayDelegate();
         if (overlay != null) {
             overlay.foldRecursive((Void) null, (comp, _void) -> {
@@ -172,14 +175,14 @@ public abstract class ComponentEditor extends GuiOptionEditor {
     }
 
     @Override
-    public final void render(int x, int y, int width) {
+    public final void render(RenderContext renderContext, int x, int y, int width) {
         // TODO: remove this
         lastRenderX = x;
         lastRenderY = y;
         lastRenderWidth = width;
         lastRenderHeight = getHeight();
 
-        var context = getImmContext(x, y, width, getHeight());
+        var context = getImmContext(x, y, width, getHeight(), renderContext);
         context.getRenderContext().pushMatrix();
         context.getRenderContext().translate(context.getRenderOffsetX(), context.getRenderOffsetY(), 0);
         getDelegate().render(context);
@@ -193,7 +196,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             comp.setContext(getDelegate().getContext());
             return _void;
         });
-        return overlay.mouseEvent(event, getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight()));
+        return overlay.mouseEvent(event, getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), IMinecraft.instance.provideTopLevelRenderContext()));
     }
 
     @Override
@@ -203,7 +206,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             comp.setContext(getDelegate().getContext());
             return _void;
         });
-        val ctx = getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight());
+        val ctx = getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), IMinecraft.instance.provideTopLevelRenderContext());
         ctx.getRenderContext().translate(overlayX, overlayY, 0);
         overlay.render(ctx);
     }

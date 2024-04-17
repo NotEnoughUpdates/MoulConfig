@@ -22,6 +22,7 @@
 package io.github.notenoughupdates.moulconfig.processor;
 
 import io.github.notenoughupdates.moulconfig.annotations.*;
+import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.editors.*;
 import lombok.val;
 
@@ -53,5 +54,6 @@ public class BuiltinMoulConfigGuis {
                 }
             };
         }));
+        IMinecraft.instance.addExtraBuiltinConfigProcessors(processor);
     }
 }
