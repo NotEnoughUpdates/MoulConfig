@@ -81,6 +81,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             option.editor.activeConfigGUI = this;
         }
         updateSearchResults();
+        searchField.setContext(guiContext);
     }
 
     private List<ProcessedOption> getOptionsInCategory(ProcessedCategory cat) {
@@ -437,7 +438,6 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         context.drawTexturedRect(innerRight - 20, innerTop - (20 + innerPadding) / 2 - 9, 18, 18);
 
         minimumSearchSize.tick();
-        searchField.setContext(guiContext);
         boolean shouldShow = !searchFieldContent.get().trim().isEmpty() || searchField.isFocused();
         if (shouldShow && minimumSearchSize.getTarget() < 30) {
             minimumSearchSize.setTarget(30);

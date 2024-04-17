@@ -16,7 +16,7 @@ import kotlin.math.min
 
 open class TextFieldComponent(
     val text: GetSetter<String>,
-    private val width: Int,
+    private val preferredWidth: Int,
     val editable: Supplier<Boolean> = GetSetter.constant(true),
     val suggestion: String = "",
     val font: IFontRenderer = IMinecraft.instance.defaultFontRenderer,
@@ -26,14 +26,14 @@ open class TextFieldComponent(
     private var scrollOffset = 0
     private var visibleText: String? = null
     override fun getWidth(): Int {
-        return width
+        return preferredWidth
     }
 
     override fun getHeight(): Int {
         return 14
     }
 
-    open fun scrollCursorIntoView() {
+    open fun scrollCursorIntoView(width: Int) {
         validateCursor()
         if (scrollOffset > cursor) scrollOffset = cursor
         if (scrollOffset < cursor &&
@@ -44,10 +44,10 @@ open class TextFieldComponent(
         ) {
             scrollOffset = cursor
         }
-        checkScrollOffset()
+        checkScrollOffset(width)
     }
 
-    open fun checkScrollOffset() {
+    open fun checkScrollOffset(width: Int) {
         val text = text.get()
         val rightMostScrollOffset = text.length - font.trimStringToWidth(text, width - TEXT_PADDING_X * 2, true).length
         scrollOffset = max(0, min(rightMostScrollOffset, scrollOffset))
@@ -55,8 +55,8 @@ open class TextFieldComponent(
 
     override fun render(context: GuiImmediateContext) {
         validateCursor()
-        checkScrollOffset() // TODO: read width from context.
-        visibleText = font.trimStringToWidth(safeSubString(text.get(), scrollOffset), width - TEXT_PADDING_X * 2)
+        checkScrollOffset(context.width)
+        visibleText = font.trimStringToWidth(safeSubString(text.get(), scrollOffset), context.width - TEXT_PADDING_X * 2)
         renderBox(context)
         renderText(context, visibleText!!)
         if (text.get().isEmpty() && !isFocused) {
@@ -113,8 +113,8 @@ open class TextFieldComponent(
 
     private fun renderBox(context: GuiImmediateContext) {
         val borderColor = if (isFocused) BORDER_COLOR_SELECTED else BORDER_COLOR_UNSELECTED
-        context.renderContext.drawColoredRect(0f, 0f, width.toFloat(), height.toFloat(), borderColor)
-        context.renderContext.drawColoredRect(1f, 1f, (width - 1).toFloat(), (height - 1).toFloat(), BACKGROUND_COLOR)
+        context.renderContext.drawColoredRect(0f, 0f, context.width.toFloat(), height.toFloat(), borderColor)
+        context.renderContext.drawColoredRect(1f, 1f, (context.width - 1).toFloat(), (height - 1).toFloat(), BACKGROUND_COLOR)
     }
 
     override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
@@ -139,7 +139,7 @@ open class TextFieldComponent(
                         selection = -1
                     }
                     cursor = 0
-                    scrollCursorIntoView()
+                    scrollCursorIntoView(context.width)
                     return true
                 }
 
@@ -150,19 +150,19 @@ open class TextFieldComponent(
                         selection = -1
                     }
                     cursor = text.get().length
-                    scrollCursorIntoView()
+                    scrollCursorIntoView(context.width)
                     return true
                 }
 
                 KeyboardConstants.backSpace -> {
                     if (selection == -1) selection = skipCharacters(context.renderContext.isCtrlDown, -1)
-                    writeText("")
+                    writeText("", context.width)
                     return true
                 }
 
                 KeyboardConstants.delete -> {
                     if (selection == -1) selection = skipCharacters(context.renderContext.isCtrlDown, 1)
-                    writeText("")
+                    writeText("", context.width)
                     return true
                 }
 
@@ -179,14 +179,14 @@ open class TextFieldComponent(
                     ClipboardUtils.copyToClipboard(
                         getSelection()
                     )
-                    writeText("")
+                    writeText("", context.width)
                     return true
                 } else {
                     return false
                 }
 
                 KeyboardConstants.keyV -> if (context.renderContext.isCtrlDown) {
-                    writeText(ClipboardUtils.getClipboardContent())
+                    writeText(ClipboardUtils.getClipboardContent(), context.width)
                     return true
                 } else {
                     return false
@@ -195,7 +195,7 @@ open class TextFieldComponent(
                 KeyboardConstants.keyA -> if (context.renderContext.isCtrlDown) {
                     cursor = text.get().length
                     selection = 0
-                    scrollCursorIntoView()
+                    scrollCursorIntoView(context.width)
                     return true
                 } else {
                     return false
@@ -207,7 +207,7 @@ open class TextFieldComponent(
             val it = event.char
             var anyWritten = false
             if (it >= ' ' && it != '§' && it.code != 127) {
-                writeText(it + "")
+                writeText(it + "", context.width)
                 anyWritten = true
             }
             return anyWritten
@@ -245,7 +245,7 @@ open class TextFieldComponent(
         )
     }
 
-    fun writeText(s: String) {
+    fun writeText(s: String, width: Int) {
         val t = text.get()
         if (selection == -1) {
             text.set(safeSubString(t, 0, cursor) + s + safeSubString(t, cursor))
@@ -257,7 +257,7 @@ open class TextFieldComponent(
             cursor = l + s.length
             selection = -1
         }
-        scrollCursorIntoView()
+        scrollCursorIntoView(width)
     }
 
     open fun onDirectionalKey(context: GuiImmediateContext, i: Int) {
@@ -275,7 +275,7 @@ open class TextFieldComponent(
                 cursor = skipCharacters(context.renderContext.isCtrlDown, i)
             }
         }
-        scrollCursorIntoView()
+        scrollCursorIntoView(context.width)
     }
 
     private fun skipCharacters(skipWords: Boolean, i: Int): Int {
