@@ -310,8 +310,8 @@ open class TextFieldComponent(
     companion object {
         private const val TEXT_PADDING_X = 2
         private const val BACKGROUND_COLOR = -0x1000000
-        private const val BORDER_COLOR_SELECTED = -0x60
-        private const val BORDER_COLOR_UNSELECTED = -0x5f5f60
+        private const val BORDER_COLOR_SELECTED = 0xFF00FF00.toInt()
+        private const val BORDER_COLOR_UNSELECTED = 0xFFFFFFFF.toInt()
         private const val ENABLED_COLOR = -0x1f1f20
         private const val SUGGESTION_COLOR = -0x7f7f80
         private const val DISABLED_COLOR = -0x8f8f90
