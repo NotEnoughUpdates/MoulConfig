@@ -56,11 +56,19 @@ open class TextFieldComponent(
     override fun render(context: GuiImmediateContext) {
         validateCursor()
         checkScrollOffset(context.width)
-        visibleText = font.trimStringToWidth(safeSubString(text.get(), scrollOffset), context.width - TEXT_PADDING_X * 2)
+        visibleText =
+            font.trimStringToWidth(safeSubString(text.get(), scrollOffset), context.width - TEXT_PADDING_X * 2)
         renderBox(context)
         renderText(context, visibleText!!)
         if (text.get().isEmpty() && !isFocused) {
-            context.renderContext.drawString(font, suggestion, TEXT_PADDING_X, TEXT_PADDING_Y, SUGGESTION_COLOR, false)
+            context.renderContext.drawString(
+                font,
+                suggestion,
+                TEXT_PADDING_X,
+                context.height / 2 - font.height / 2,
+                SUGGESTION_COLOR,
+                false
+            )
         }
         if (isFocused) {
             renderCursor(context)
@@ -86,7 +94,7 @@ open class TextFieldComponent(
             (TEXT_PADDING_X + leftPos).toFloat(),
             TEXT_PADDING_Y.toFloat(),
             (TEXT_PADDING_X + rightPos).toFloat(),
-            (height - TEXT_PADDING_Y).toFloat()
+            (context.height - TEXT_PADDING_Y).toFloat()
         )
     }
 
@@ -101,20 +109,29 @@ open class TextFieldComponent(
             (TEXT_PADDING_X + cursorOffset).toFloat(),
             TEXT_PADDING_Y.toFloat(),
             (TEXT_PADDING_X + cursorOffset + 1).toFloat(),
-            (height - TEXT_PADDING_Y).toFloat(),
+            (context.height - TEXT_PADDING_Y).toFloat(),
             CURSOR_COLOR
         )
     }
 
     private fun renderText(context: GuiImmediateContext, visibleText: String) {
         val textColor = if (editable.get()) ENABLED_COLOR else DISABLED_COLOR
-        context.renderContext.drawString(font, visibleText, TEXT_PADDING_X, TEXT_PADDING_Y, textColor, true)
+        context.renderContext.drawString(
+            font, visibleText, TEXT_PADDING_X,
+            context.height / 2 - font.height / 2, textColor, true
+        )
     }
 
     private fun renderBox(context: GuiImmediateContext) {
         val borderColor = if (isFocused) BORDER_COLOR_SELECTED else BORDER_COLOR_UNSELECTED
-        context.renderContext.drawColoredRect(0f, 0f, context.width.toFloat(), height.toFloat(), borderColor)
-        context.renderContext.drawColoredRect(1f, 1f, (context.width - 1).toFloat(), (height - 1).toFloat(), BACKGROUND_COLOR)
+        context.renderContext.drawColoredRect(0f, 0f, context.width.toFloat(), context.height.toFloat(), borderColor)
+        context.renderContext.drawColoredRect(
+            1f,
+            1f,
+            (context.width - 1).toFloat(),
+            (context.height - 1).toFloat(),
+            BACKGROUND_COLOR
+        )
     }
 
     override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
