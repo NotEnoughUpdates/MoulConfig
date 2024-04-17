@@ -21,6 +21,7 @@
 package io.github.notenoughupdates.moulconfig.gui;
 
 import net.minecraft.client.gui.GuiScreen;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
@@ -43,13 +44,23 @@ public class GuiScreenElementWrapper extends GuiScreen {
         super.handleMouseInput();
         int i = Mouse.getEventX() * this.width / this.mc.displayWidth;
         int j = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-        element.mouseInput(i, j);
+        if (Mouse.getEventButton() != -1) {
+            element.mouseInput(i, j, new MouseEvent.Click(Mouse.getEventButton(), Mouse.getEventButtonState()));
+        }
+        if (Mouse.getEventDWheel() != 0) {
+            element.mouseInput(i, j, new MouseEvent.Scroll((float) Mouse.getEventDWheel()));
+        }
+        if (Mouse.getEventDX() != 0 || Mouse.getEventDY() != 0) {
+            element.mouseInput(i, j, new MouseEvent.Move((float) Mouse.getEventDX(), (float) Mouse.getEventDY()));
+        }
     }
 
     @Override
     public void handleKeyboardInput() throws IOException {
-        if (!element.keyboardInput()) {
-            super.handleKeyboardInput();
-        }
+        if (Keyboard.getEventKeyState())
+            if (element.keyboardInput(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()))) return;
+        if (element.keyboardInput(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), Keyboard.getEventKeyState())))
+            return;
+        super.handleKeyboardInput();
     }
 }

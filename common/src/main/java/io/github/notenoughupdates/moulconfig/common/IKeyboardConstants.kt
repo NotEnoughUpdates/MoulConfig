@@ -11,6 +11,7 @@ interface IKeyboardConstants {
     val ctrlRight: Int
     val shiftLeft: Int
     val shiftRight: Int
+    val escape: Int
     val enter: Int
     val delete: Int
     val up: Int
@@ -24,4 +25,5 @@ interface IKeyboardConstants {
     val keyX: Int
     val keyV: Int
     val keyN: Int
+    val keyF: Int
 }

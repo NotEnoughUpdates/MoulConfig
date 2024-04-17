@@ -52,6 +52,4 @@ public interface ConfigStructureReader {
 
     void emitOption(Object baseObject, Field field, ConfigOption option);
 
-    void emitGuiOverlay(Object baseObject, Field field, ConfigOption option);
-
 }

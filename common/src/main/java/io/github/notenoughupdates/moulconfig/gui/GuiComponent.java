@@ -62,6 +62,25 @@ public abstract class GuiComponent {
     }
 
     /**
+     * Unfocus this element only if this element is selected.
+     */
+    public void blur() {
+        if (context.getFocusedElement() == this)
+            context.setFocusedElement(null);
+    }
+
+    /**
+     * {@link #requestFocus Focuses} or {@link #blur blurs} this element depending on {@code shouldFocus}
+     */
+    public void setFocus(boolean shouldFocus) {
+        if (shouldFocus) {
+            requestFocus();
+        } else {
+            blur();
+        }
+    }
+
+    /**
      * Test if this element is focused.
      *
      * @return true if this is focused directly, and has no focused child

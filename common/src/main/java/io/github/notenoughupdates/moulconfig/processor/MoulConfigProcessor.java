@@ -22,7 +22,6 @@
 package io.github.notenoughupdates.moulconfig.processor;
 
 import io.github.notenoughupdates.moulconfig.Config;
-import io.github.notenoughupdates.moulconfig.Overlay;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorAccordion;
@@ -41,9 +40,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     private final T configBaseObject;
     private final LinkedHashMap<String, ProcessedCategory> categories = new LinkedHashMap<>();
-    private final List<Overlay> overlays = new ArrayList<>();
     private ProcessedCategory currentCategory;
-    private Map<Overlay, List<ProcessedOption>> processedOverlays = new IdentityHashMap<>();
     private Stack<Integer> accordion = new Stack<>();
     private Stack<String> categoryPath = new Stack<>();
     @Getter
@@ -70,10 +67,6 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         if (!isFinalized) {
             Warnings.warn("Finalization requirement on MoulConfigProcessor broken. Please first process a config", 4);
         }
-    }
-
-    public List<Overlay> getAllOverlays() {
-        return overlays;
     }
 
     @Override
@@ -167,26 +160,6 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         currentCategory.parent = field.toString();
     }
 
-    @Override
-    public void emitGuiOverlay(Object baseObject, Field field, ConfigOption option) {
-        Overlay overlay;
-        try {
-            overlay = (Overlay) field.get(baseObject);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        overlays.add(overlay);
-        if (processedOverlays.containsKey(overlay)) return;
-        MoulConfigProcessor<T> subProcessor = new MoulConfigProcessor<>(configBaseObject);
-        subProcessor.processedOverlays = processedOverlays;
-        subProcessor.editors = editors;
-        subProcessor.currentCategory = new ProcessedCategory(field, option.name(), option.desc());
-        pushPath(field.getName());
-        new ConfigProcessorDriver(subProcessor).processCategory(overlay, null);
-        popPath();
-        processedOverlays.put(overlay, subProcessor.currentCategory.options);
-    }
-
     protected GuiOptionEditor createOptionGui(ProcessedOption processedOption, Field field, ConfigOption option) {
         for (Map.Entry<Class<? extends Annotation>, BiFunction<ProcessedOption, Annotation, GuiOptionEditor>> entry :
             editors.entrySet()) {
@@ -204,11 +177,6 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     public LinkedHashMap<String, ProcessedCategory> getAllCategories() {
         requireFinalized();
         return this.categories;
-    }
-
-    public Map<Overlay, List<ProcessedOption>> getOverlayOptions() {
-        requireFinalized();
-        return processedOverlays;
     }
 
     public @Nullable ProcessedOption getOptionFromField(@NotNull Field field) {

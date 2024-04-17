@@ -26,7 +26,6 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.Social;
 import io.github.notenoughupdates.moulconfig.annotations.Category;
 import io.github.notenoughupdates.moulconfig.gui.HorizontalAlign;
-import io.github.notenoughupdates.moulconfig.internal.ForgeMinecraft;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
@@ -59,7 +58,7 @@ public class TestConfig extends Config {
 
     @Override
     public List<Social> getSocials() {
-        return Arrays.asList(Social.forLink("Go to Discord", ForgeMinecraft.fromMyResourceLocation(GuiTextures.RESET), "https://discord.gg/moulberry"));
+        return Arrays.asList(Social.forLink("Go to Discord", GuiTextures.RESET, "https://discord.gg/moulberry"));
     }
 
     @Override

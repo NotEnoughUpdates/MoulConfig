@@ -1,14 +1,18 @@
 package io.github.notenoughupdates.moulconfig.internal
 
-import io.github.notenoughupdates.moulconfig.common.IFontRenderer
-import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
-import io.github.notenoughupdates.moulconfig.common.IMinecraft
-import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
+import io.github.notenoughupdates.moulconfig.annotations.*
+import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.gui.editors.*
+import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.event.ClickEvent
 import net.minecraft.launchwrapper.Launch
+import net.minecraft.util.ChatComponentText
+import net.minecraft.util.ChatStyle
 import net.minecraft.util.ResourceLocation
 import org.apache.logging.log4j.LogManager
+import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.io.InputStream
 
@@ -40,6 +44,60 @@ class ForgeMinecraft : IMinecraft {
         }
     }
 
+    override fun addExtraBuiltinConfigProcessors(processor: MoulConfigProcessor<*>) {
+        processor.registerConfigEditor(
+            ConfigEditorKeybind::class.java
+        ) { processedOption, keybind: ConfigEditorKeybind ->
+            GuiOptionEditorKeybind(
+                processedOption,
+                keybind.defaultKey
+            )
+        }
+        processor.registerConfigEditor(
+            ConfigEditorInfoText::class.java
+        ) { processedOption, configEditorInfoText: ConfigEditorInfoText ->
+            GuiOptionEditorInfoText(
+                processedOption,
+                configEditorInfoText.infoTitle
+            )
+        }
+        processor.registerConfigEditor(
+            ConfigEditorDropdown::class.java
+        ) { processedOption, configEditorDropdown: ConfigEditorDropdown ->
+            GuiOptionEditorDropdown(
+                processedOption,
+                configEditorDropdown.values
+            )
+        }
+        processor.registerConfigEditor(
+            ConfigEditorDraggableList::class.java
+        ) { processedOption, configEditorDraggableList: ConfigEditorDraggableList ->
+            GuiOptionEditorDraggableList(
+                processedOption,
+                configEditorDraggableList.exampleText,
+                configEditorDraggableList.allowDeleting,
+                configEditorDraggableList.requireNonEmpty
+            )
+        }
+        processor.registerConfigEditor(
+            ConfigEditorText::class.java
+        ) { processedOption, configEditorText: ConfigEditorText? ->
+            GuiOptionEditorText(
+                processedOption
+            )
+        }
+        processor.registerConfigEditor(
+            ConfigEditorSlider::class.java
+        ) { processedOption, configEditorSlider: ConfigEditorSlider ->
+            GuiOptionEditorSlider(
+                processedOption,
+                configEditorSlider.minValue,
+                configEditorSlider.maxValue,
+                configEditorSlider.minStep
+            )
+        }
+    }
+
     override val isDevelopmentEnvironment: Boolean
         get() = Launch.blackboard.get("fml.deobfuscatedEnvironment") as Boolean
 
@@ -51,6 +109,35 @@ class ForgeMinecraft : IMinecraft {
 
     override val scaleFactor: Int
         get() = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
+
+    override fun sendClickableChatMessage(message: String, action: String, type: ClickType) {
+        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
+            ChatComponentText(message)
+                .setChatStyle(
+                    ChatStyle()
+                        .setChatClickEvent(
+                            ClickEvent(
+                                when (type) {
+                                    ClickType.OPEN_LINK -> ClickEvent.Action.OPEN_URL
+                                    ClickType.RUN_COMMAND -> ClickEvent.Action.RUN_COMMAND
+                                }, action
+                            )
+                        )
+                )
+        )
+    }
+
+    override fun isMouseButtonDown(mouseButton: Int): Boolean {
+        return Mouse.isButtonDown(mouseButton)
+    }
+
+    override fun isKeyboardKeyDown(keyboardKey: Int): Boolean {
+        return Keyboard.isKeyDown(keyboardKey)
+    }
+
+    override fun provideTopLevelRenderContext(): RenderContext {
+        return ForgeRenderContext()
+    }
 
     override val mouseX: Int
         get() {

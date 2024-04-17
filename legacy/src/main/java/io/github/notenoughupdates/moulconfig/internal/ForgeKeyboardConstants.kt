@@ -14,6 +14,9 @@ object ForgeKeyboardConstants : IKeyboardConstants {
         get() = Keyboard.KEY_LSHIFT
     override val shiftRight: Int
         get() = Keyboard.KEY_RSHIFT
+    override val escape: Int
+        get() = Keyboard.KEY_ESCAPE
+
     override val enter: Int
         get() = Keyboard.KEY_RETURN
     override val delete: Int
@@ -40,4 +43,6 @@ object ForgeKeyboardConstants : IKeyboardConstants {
         get() = Keyboard.KEY_V
     override val keyN: Int
         get() = Keyboard.KEY_N
+    override val keyF: Int
+        get() = Keyboard.KEY_F
 }

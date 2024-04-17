@@ -21,6 +21,7 @@
 package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
@@ -189,7 +190,7 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
     }
 
     @Override
-    public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY) {
+    public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
         int height = getHeight();
 
         int left = x + width / 6 - 40;

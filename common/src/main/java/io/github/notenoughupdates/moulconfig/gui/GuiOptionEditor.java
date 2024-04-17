@@ -21,14 +21,12 @@
 package io.github.notenoughupdates.moulconfig.gui;
 
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
-import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
-import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
+import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
+import lombok.var;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.List;
 import java.util.Locale;
 
 public abstract class GuiOptionEditor {
@@ -54,47 +52,64 @@ public abstract class GuiOptionEditor {
         }
     }
 
-    public void render(int x, int y, int width) {
+    @Deprecated
+    protected void render(int x, int y, int width) {
+    }
+
+    public void render(RenderContext context, int x, int y, int width) {
         int height = getHeight();
 
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-        RenderUtils.drawFloatingRectDark(x, y, width, height, true);
-        TextRenderUtils.drawStringCenteredScaledMaxWidth(option.name,
+        var minecraft = context.getMinecraft();
+        var fr = minecraft.getDefaultFontRenderer();
+
+        context.drawDarkRect(x, y, width, height, true);
+        context.drawStringCenteredScaledMaxWidth(option.name,
             fr, x + width / 6, y + 13, true, width / 3 - 10, 0xc0c0c0
         );
 
-        int maxLines = 5;
         float scale = 1;
-        int lineCount = fr.listFormattedStringToWidth(option.desc, width * 2 / 3 - 10).size();
-
-        if (lineCount <= 0) return;
-
-        float paraHeight = 9 * lineCount - 1;
-
-        while (paraHeight >= HEIGHT - 10) {
+        List<String> lines;
+        while (true) {
+            lines = fr.splitText(option.desc, (int) (width * 2 / 3 / scale - 10));
+            if (lines.size() * scale * (fr.getHeight() + 1) + 10 < getHeight())
+                break;
             scale -= 1 / 8f;
-            lineCount = fr.listFormattedStringToWidth(option.desc, (int) (width * 2 / 3 / scale - 10)).size();
-            paraHeight = (int) (9 * scale * lineCount - 1 * scale);
+            if (scale < 1 / 16f) break;
         }
-
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(x + 5 + width / 3f, y + HEIGHT / 2f - paraHeight / 2, 0);
-        GlStateManager.scale(scale, scale, 1);
-
-        fr.drawSplitString(option.desc, 0, 0, (int) (width * 2 / 3 / scale - 10), 0xc0c0c0);
-
-        GlStateManager.popMatrix();
+        context.pushMatrix();
+        context.translate(5 + width / 3, 5, 0);
+        context.scale(scale, scale, 1);
+        context.translate(0, ((getHeight() - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F, 0);
+        for (String line : lines) {
+            context.drawString(fr, line, 0, 0, 0xc0c0c0, false);
+            context.translate(0, fr.getHeight() + 1, 0);
+        }
+        context.popMatrix();
     }
 
     public int getHeight() {
         return HEIGHT;
     }
 
-    public abstract boolean mouseInput(int x, int y, int width, int mouseX, int mouseY);
+    @Deprecated
+    protected boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+        return false;
+    }
 
-    public abstract boolean keyboardInput();
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
+        return this.mouseInput(x, y, width, mouseX, mouseY);
+    }
 
-    public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY) {
+    @Deprecated
+    protected boolean keyboardInput() {
+        return false;
+    }
+
+    public boolean keyboardInput(KeyboardEvent event) {
+        return keyboardInput();
+    }
+
+    public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
         return false;
     }
 

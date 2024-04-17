@@ -74,33 +74,6 @@ public class MoulConfigTest {
         }
     }
 
-    @SubscribeEvent
-    public void onRenderOverlay(RenderGameOverlayEvent event) {
-        if (event.type == RenderGameOverlayEvent.ElementType.TEXT) {
-            TestCategory.TestOverlay o = testConfig.testCategory.testOverlay;
-            GlStateManager.pushMatrix();
-            o.transform();
-            RenderUtils.drawFloatingRect(0, 0, o.getWidth(), o.getHeight());
-            int mx = Mouse.getX();
-            int my = Minecraft.getMinecraft().displayHeight - Mouse.getY() - 1;
-            ChromaColour c = ChromaColour.forLegacyString(testConfig.testCategory.colour);
-            RenderUtils.drawGradientRect(
-                0, 10, 10, 40, 40, c.getEffectiveColour().getRGB(), c.getEffectiveColour(10).getRGB()
-            );
-            FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
-            fontRendererObj.drawSplitString(
-                "Global Mouse X: " + mx + "\n" +
-                    "Global Mouse X: " + my + "\n" +
-                    "Local Mouse X: " + o.realWorldXToLocalX(mx) + "\n" +
-                    "Local Mouse Y: " + o.realWorldYToLocalY(my) + "\n" +
-                    "Width: " + o.getWidth() + "\n" +
-                    "Height: " + o.getHeight(),
-                1, 1, o.getWidth(), 0xFFFFFFFF
-            );
-            GlStateManager.popMatrix();
-        }
-    }
-
     public static TestConfig testConfig = new TestConfig();
 
     @Mod.EventHandler
@@ -133,9 +106,7 @@ public class MoulConfigTest {
             @Override
             public void processCommand(ICommandSender sender, String[] args) {
                 sender.addChatMessage(new ChatComponentText("Mouling"));
-                if (args.length > 0 && "gui".equals(args[0])) {
-                    screenToOpen = new MoulGuiOverlayEditor(processor);
-                } else if (args.length > 0 && "testgui".equals(args[0])) {
+                if (args.length > 0 && "testgui".equals(args[0])) {
                     screenToOpen = new GuiComponentWrapper(new GuiContext(
                         new CenterComponent(new PanelComponent(
                             new ColumnComponent(

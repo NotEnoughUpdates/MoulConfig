@@ -75,12 +75,6 @@ public class ConfigProcessorDriver {
                 Warnings.warn("@ConfigOption on non public field " + field + " in " + categoryClass);
             }
 
-            ConfigOverlay annotation = field.getAnnotation(ConfigOverlay.class);
-            if (annotation != null) {
-                reader.emitGuiOverlay(categoryObject, field, optionAnnotation);
-                if (!annotation.displayInline()) continue;
-            }
-
             ConfigAccordionId parentAccordion = field.getAnnotation(ConfigAccordionId.class);
             if (parentAccordion == null) {
                 while (!accordionStack.isEmpty()) {

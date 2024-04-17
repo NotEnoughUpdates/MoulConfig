@@ -20,12 +20,11 @@
 
 package io.github.notenoughupdates.moulconfig.gui;
 
-import net.minecraft.client.gui.Gui;
 
-public abstract class GuiElement extends Gui {
+public abstract class GuiElement {
     public abstract void render();
 
-    public abstract boolean mouseInput(int mouseX, int mouseY);
+    public abstract boolean mouseInput(int mouseX, int mouseY, MouseEvent event);
 
-    public abstract boolean keyboardInput();
+    public abstract boolean keyboardInput(KeyboardEvent event);
 }

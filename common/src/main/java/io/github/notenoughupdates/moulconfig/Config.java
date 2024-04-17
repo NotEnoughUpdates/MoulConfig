@@ -23,7 +23,6 @@ package io.github.notenoughupdates.moulconfig;
 import io.github.notenoughupdates.moulconfig.gui.HorizontalAlign;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedCategory;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
-import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +37,11 @@ public abstract class Config {
 
     public String formatCategoryName(ProcessedCategory category, boolean isSelected) {
         if (isSelected) {
-            return EnumChatFormatting.DARK_AQUA.toString() + EnumChatFormatting.UNDERLINE + category.name;
+            return "§b§n" + category.name;
         } else if (category.parent == null) {
-            return EnumChatFormatting.GRAY + category.name;
+            return "§7" + category.name;
         } else {
-            return EnumChatFormatting.DARK_GRAY + category.name;
+            return "§8" + category.name;
         }
     }
 

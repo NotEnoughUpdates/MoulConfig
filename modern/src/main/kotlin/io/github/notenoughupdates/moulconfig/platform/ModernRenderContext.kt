@@ -43,6 +43,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
             }
         }
     }
+
     override fun generateDynamicTexture(img: BufferedImage): DynamicTextureReference {
         val texture = NativeImageBackedTexture(img.width, img.height, true)
         texture.setData(img)

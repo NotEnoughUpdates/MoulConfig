@@ -20,11 +20,9 @@
 
 package io.github.notenoughupdates.moulconfig;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.event.ClickEvent;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.ResourceLocation;
+import io.github.notenoughupdates.moulconfig.common.ClickType;
+import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
 
 import java.awt.*;
 import java.net.URI;
@@ -34,7 +32,7 @@ import java.util.List;
 
 public abstract class Social {
 
-    public static Social forLink(String name, ResourceLocation icon, String link) {
+    public static Social forLink(String name, MyResourceLocation icon, String link) {
         try {
             return new URLSocial(name, new URI(link), icon);
         } catch (URISyntaxException e) {
@@ -46,14 +44,14 @@ public abstract class Social {
 
     public abstract List<String> getTooltip();
 
-    public abstract ResourceLocation getIcon();
+    public abstract MyResourceLocation getIcon();
 
     private static class URLSocial extends Social {
         private final String name;
         private final URI url;
-        private final ResourceLocation icon;
+        private final MyResourceLocation icon;
 
-        private URLSocial(String name, URI url, ResourceLocation icon) {
+        private URLSocial(String name, URI url, MyResourceLocation icon) {
             this.name = name;
             this.url = url;
             this.icon = icon;
@@ -64,9 +62,7 @@ public abstract class Social {
             try {
                 Desktop.getDesktop().browse(url);
             } catch (Exception e) {
-                ChatComponentText text = new ChatComponentText("Click here to open " + name);
-                text.setChatStyle(new ChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.toString())));
-                Minecraft.getMinecraft().thePlayer.addChatMessage(text);
+                IMinecraft.instance.sendClickableChatMessage("Click here to open " + name, url.toString(), ClickType.OPEN_LINK);
             }
         }
 
@@ -76,7 +72,7 @@ public abstract class Social {
         }
 
         @Override
-        public ResourceLocation getIcon() {
+        public MyResourceLocation getIcon() {
             return icon;
         }
     }

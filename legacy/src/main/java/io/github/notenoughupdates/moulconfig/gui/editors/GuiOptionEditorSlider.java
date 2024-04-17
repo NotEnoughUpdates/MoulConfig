@@ -39,6 +39,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;/*
 
 
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.gui.elements.GuiElementSlider;
 import io.github.notenoughupdates.moulconfig.gui.elements.GuiElementTextField;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
@@ -117,7 +118,7 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
     }
 
     @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
         int height = getHeight();
 
         int fullWidth = Math.min(width / 3 - 10, 80);
@@ -127,7 +128,7 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
         slider.x = x + width / 6 - fullWidth / 2;
         slider.y = y + height - 7 - 14;
         slider.width = sliderWidth;
-        if (slider.mouseInput(mouseX, mouseY)) {
+        if (slider.mouseInput(mouseX, mouseY, mouseEvent)) {
             textField.unfocus();
             return true;
         }

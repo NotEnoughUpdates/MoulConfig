@@ -18,7 +18,7 @@
  *
  */
 
-package io.github.notenoughupdates.moulconfig.gui.elements;
+package io.github.notenoughupdates.moulconfig.gui.component;
 
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import io.github.notenoughupdates.moulconfig.GuiTextures;
@@ -29,14 +29,11 @@ import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
-import io.github.notenoughupdates.moulconfig.gui.component.TextFieldComponent;
 import io.github.notenoughupdates.moulconfig.internal.DrawContextExt;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 import lombok.val;
-import net.minecraft.util.EnumChatFormatting;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -180,7 +177,6 @@ public class ColorSelectComponent extends GuiComponent {
         // TODO cache this image if parameters havent changed.
         BufferedImage bufferedImage = new BufferedImage(288, 288, BufferedImage.TYPE_INT_ARGB);
         float borderRadius = 0.05f;
-        if (Keyboard.isKeyDown(Keyboard.KEY_N)) borderRadius = 0;
         for (int x = -16; x < 272; x++) {
             for (int y = -16; y < 272; y++) {
                 float radius = (float) Math.sqrt(((x - 128) * (x - 128) + (y - 128) * (y - 128)) / 16384f);
@@ -316,7 +312,7 @@ public class ColorSelectComponent extends GuiComponent {
 
         DrawContextExt.drawStringCenteredScalingDownWithMaxWidth(
             renderContext,
-            EnumChatFormatting.GRAY.toString() + Math.round(hsv[2] * 100),
+            "§7" + Math.round(hsv[2] * 100),
             5 + 64 + 5 + 5 - (Math.round(hsv[2] * 100) == 100 ? 1 : 0),
             5 + 64 + 5 + 5,
             13,
@@ -327,7 +323,7 @@ public class ColorSelectComponent extends GuiComponent {
         if (opacitySlider) {
             DrawContextExt.drawStringCenteredScalingDownWithMaxWidth(
                 renderContext,
-                EnumChatFormatting.GRAY.toString() + Math.round(c.getAlpha() / 255f * 100) + "",
+                "§7" + Math.round(c.getAlpha() / 255f * 100) + "",
                 5 + 64 + 5 + valueOffset + 5,
                 5 + 64 + 5 + 5,
                 13,
@@ -338,7 +334,7 @@ public class ColorSelectComponent extends GuiComponent {
         if (chromaSpeed > 0) {
             DrawContextExt.drawStringCenteredScalingDownWithMaxWidth(
                 renderContext,
-                EnumChatFormatting.GRAY.toString() +
+                "§7" +
                     (int) ChromaColour.getSecondsForSpeed(chromaSpeed) + "s",
                 5 + 64 + 5 + valueOffset + opacityOffset + 6,
                 5 + 64 + 5 + 5,

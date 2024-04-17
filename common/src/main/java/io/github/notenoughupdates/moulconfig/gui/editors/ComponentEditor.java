@@ -5,15 +5,12 @@ import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.*;
 import io.github.notenoughupdates.moulconfig.gui.component.CenterComponent;
 import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent;
-import io.github.notenoughupdates.moulconfig.internal.ForgeRenderContext;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import lombok.Getter;
 import lombok.val;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import java.util.List;
 
@@ -47,7 +44,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
     ) {
         IMinecraft instance = IMinecraft.instance;
         return new GuiImmediateContext(
-            new ForgeRenderContext(),
+            IMinecraft.instance.provideTopLevelRenderContext(),
             x, y,
             width, height,
             instance.getMouseX() - x,
@@ -148,15 +145,12 @@ public abstract class ComponentEditor extends GuiOptionEditor {
     private int lastRenderX, lastRenderY, lastRenderWidth, lastRenderHeight;
 
     @Override
-    public final boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        if (Mouse.getEventButton() == -1) {
-            return getDelegate().mouseEvent(new MouseEvent.Move(Mouse.getEventDX(), Mouse.getEventDY()), getImmContext(x, y, width, getHeight()));
-        }
-        return getDelegate().mouseEvent(new MouseEvent.Click(Mouse.getEventButton(), Mouse.getEventButtonState()), getImmContext(x, y, width, getHeight()));
+    public final boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
+        return getDelegate().mouseEvent(mouseEvent, getImmContext(x, y, width, getHeight()));
     }
 
     @Override
-    public final boolean keyboardInput() {
+    public final boolean keyboardInput(KeyboardEvent keyboardEvent) {
         val ctx = getImmContext(lastRenderX, lastRenderY, lastRenderWidth, lastRenderHeight);
         val overlay = getOverlayDelegate();
         if (overlay != null) {
@@ -164,16 +158,10 @@ public abstract class ComponentEditor extends GuiOptionEditor {
                 comp.setContext(getDelegate().getContext());
                 return _void;
             });
-            if (Keyboard.getEventKeyState())
-                if (overlay.keyboardEvent(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()), ctx))
-                    return true;
-            if (overlay.keyboardEvent(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), Keyboard.getEventKeyState()), ctx))
+            if (overlay.keyboardEvent(keyboardEvent, ctx))
                 return true;
         }
-        if (Keyboard.getEventKeyState())
-            if (getDelegate().keyboardEvent(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()), ctx))
-                return true;
-        if (getDelegate().keyboardEvent(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), Keyboard.getEventKeyState()), ctx))
+        if (getDelegate().keyboardEvent(keyboardEvent, ctx))
             return true;
         return false;
     }
@@ -199,18 +187,13 @@ public abstract class ComponentEditor extends GuiOptionEditor {
     }
 
     @Override
-    public final boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY) {
+    public final boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY, MouseEvent event) {
         if (overlay == null) return false;
         overlay.foldRecursive((Void) null, (comp, _void) -> {
             comp.setContext(getDelegate().getContext());
             return _void;
         });
-        if (Mouse.getEventButton() == -1) {
-            return overlay.mouseEvent(new MouseEvent.Move(Mouse.getEventDX(), Mouse.getEventDY()),
-                getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight()));
-        }
-        return overlay.mouseEvent(new MouseEvent.Click(Mouse.getEventButton(), Mouse.getEventButtonState()),
-            getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight()));
+        return overlay.mouseEvent(event, getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight()));
     }
 
     @Override

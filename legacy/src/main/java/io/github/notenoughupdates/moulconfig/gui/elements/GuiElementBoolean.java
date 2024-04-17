@@ -42,6 +42,8 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
 import io.github.notenoughupdates.moulconfig.gui.GuiElement;
+import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
+import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import net.minecraft.client.renderer.GlStateManager;
@@ -136,7 +138,7 @@ public class GuiElementBoolean extends GuiElement {
     }
 
     @Override
-    public boolean mouseInput(int mouseX, int mouseY) {
+    public boolean mouseInput(int mouseX, int mouseY, MouseEvent mouseEvent) {
         if (mouseX > x - clickRadius && mouseX < x + xSize + clickRadius &&
             mouseY > y - clickRadius && mouseY < y + ySize + clickRadius) {
             if (Mouse.getEventButton() == 0) {
@@ -153,7 +155,7 @@ public class GuiElementBoolean extends GuiElement {
     }
 
     @Override
-    public boolean keyboardInput() {
+    public boolean keyboardInput(KeyboardEvent keyboardEvent) {
         return false;
     }
 }

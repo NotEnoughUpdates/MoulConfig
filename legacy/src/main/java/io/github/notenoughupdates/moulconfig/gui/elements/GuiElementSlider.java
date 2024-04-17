@@ -23,6 +23,8 @@ package io.github.notenoughupdates.moulconfig.gui.elements;
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.GuiElement;
+import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
+import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -107,7 +109,7 @@ public class GuiElementSlider extends GuiElement {
     }
 
     @Override
-    public boolean mouseInput(int mouseX, int mouseY) {
+    public boolean mouseInput(int mouseX, int mouseY, MouseEvent mouseEvent) {
         if (!Mouse.isButtonDown(0)) {
             clicked = false;
         }
@@ -135,7 +137,7 @@ public class GuiElementSlider extends GuiElement {
     }
 
     @Override
-    public boolean keyboardInput() {
+    public boolean keyboardInput(KeyboardEvent keyboardEvent) {
         return false;
     }
 }

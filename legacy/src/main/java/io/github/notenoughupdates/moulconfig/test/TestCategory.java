@@ -23,7 +23,6 @@ package io.github.notenoughupdates.moulconfig.test;
 
 import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.ChromaColour;
-import io.github.notenoughupdates.moulconfig.Overlay;
 import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.observer.Property;
 import net.minecraft.client.Minecraft;
@@ -36,19 +35,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class TestCategory {
-
-    @Accordion
-    @Expose
-    @ConfigOverlay
-    @ConfigOption(name = "Overlay", desc = "Overlayering")
-    public TestOverlay testOverlay = new TestOverlay();
-
-    public static class TestOverlay extends Overlay {
-        @Override
-        public String getName() {
-            return "Test overlay";
-        }
-    }
 
     @ConfigEditorButton(buttonText = "RUN!")
     @Expose

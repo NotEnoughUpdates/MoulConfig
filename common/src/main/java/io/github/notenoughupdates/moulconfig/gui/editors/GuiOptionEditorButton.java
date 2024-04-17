@@ -29,7 +29,6 @@ import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import lombok.Getter;
 import lombok.val;
-import net.minecraft.client.renderer.GlStateManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -70,7 +69,7 @@ public class GuiOptionEditorButton extends ComponentEditor {
         @Override
         public void render(@NotNull GuiImmediateContext context) {
 
-            GlStateManager.color(1, 1, 1, 1);
+            context.getRenderContext().color(1, 1, 1, 1);
             IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
             context.getRenderContext().drawTexturedRect(0, 0, context.getWidth(), context.getHeight());
             context.getRenderContext().drawStringCenteredScaledMaxWidth(
