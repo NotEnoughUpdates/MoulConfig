@@ -57,10 +57,10 @@ public class GuiScreenElementWrapper extends GuiScreen {
 
     @Override
     public void handleKeyboardInput() throws IOException {
-        if (Keyboard.getEventKeyState())
-            if (element.keyboardInput(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()))) return;
         if (element.keyboardInput(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), Keyboard.getEventKeyState())))
             return;
+        if (Keyboard.getEventKeyState() && !Character.isISOControl(Keyboard.getEventCharacter()))
+            if (element.keyboardInput(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()))) return;
         super.handleKeyboardInput();
     }
 }

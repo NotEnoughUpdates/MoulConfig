@@ -1027,20 +1027,19 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             if (!searchField.isFocused() && (!processedConfig.getConfigObject().shouldAutoFocusSearchbar())) {
                 searchField.setFocus(true);
             }
+        }
 
-            String old = searchFieldContent.get();
-            searchField.keyboardEvent(event,
-                new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, 0, 0, 0, 0, 0F, 0F));
+        String old = searchFieldContent.get();
+        searchField.keyboardEvent(event,
+            new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, 0, 0, 0, 0, 0F, 0F));
 
-            if (!searchFieldContent.get().equals(old)) {
-                searchFieldContent.set(IMinecraft.instance.getDefaultFontRenderer().trimStringToWidth(
-                    searchFieldContent.get(),
-                    innerWidth / 2 - 20
-                ));
-                updateSearchResults();
-                return true;
-            }
-
+        if (!searchFieldContent.get().equals(old)) {
+            searchFieldContent.set(IMinecraft.instance.getDefaultFontRenderer().trimStringToWidth(
+                searchFieldContent.get(),
+                innerWidth / 2 - 20
+            ));
+            updateSearchResults();
+            return true;
         }
 
         return false;
