@@ -1,15 +1,13 @@
 package io.github.notenoughupdates.moulconfig.managed
 
 import io.github.notenoughupdates.moulconfig.Config
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor
-import io.github.notenoughupdates.moulconfig.gui.GuiScreenElementWrapper
 import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor
 import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiScreen
 import java.io.File
 import java.util.function.BiFunction
 import java.util.function.Consumer
@@ -80,12 +78,8 @@ class ManagedConfig<T : Config>(private val builder: ManagedConfigBuilder<T>) :
         return MoulConfigEditor(processor)
     }
 
-    fun getGui(): GuiScreen {
-        return GuiScreenElementWrapper(getEditor())
-    }
-
     fun openConfigGui() {
-        Minecraft.getMinecraft().displayGuiScreen(getGui())
+        IMinecraft.instance.openWrappedScreen(getEditor())
     }
 }
 

@@ -4,6 +4,7 @@ import io.github.notenoughupdates.moulconfig.common.IItemStack
 import io.github.notenoughupdates.moulconfig.gui.CloseEventListener
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
+import io.github.notenoughupdates.moulconfig.managed.ManagedConfig
 import io.github.notenoughupdates.moulconfig.observer.ObservableList
 import io.github.notenoughupdates.moulconfig.platform.ModernItemStack
 import io.github.notenoughupdates.moulconfig.xml.Bind
@@ -15,12 +16,20 @@ import net.minecraft.block.Blocks
 import net.minecraft.client.MinecraftClient
 import net.minecraft.item.ItemStack
 import net.minecraft.util.Identifier
+import java.io.File
 import java.util.*
 
 class FabricMain : ModInitializer {
     override fun onInitialize() {
+        val config = ManagedConfig.create(File("config/moulconfig/test.json"), TestConfig::class.java)
         ClientCommandRegistrationCallback.EVENT.register { a, b ->
             a.register(literal("moulconfig").executes {
+                MinecraftClient.getInstance().send {
+                    config.openConfigGui()
+                }
+                0
+            })
+            a.register(literal("moulconfigxml").executes {
                 MinecraftClient.getInstance().send {
                     val xmlUniverse =
                         XMLUniverse.getDefaultUniverse()

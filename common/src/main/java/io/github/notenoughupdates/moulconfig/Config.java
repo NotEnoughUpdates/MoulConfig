@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Config {
+    @Deprecated
     public void executeRunnable(int runnableId) {
     }
 

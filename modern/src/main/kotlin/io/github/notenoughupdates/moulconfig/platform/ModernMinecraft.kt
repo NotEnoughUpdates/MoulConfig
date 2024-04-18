@@ -1,11 +1,13 @@
 package io.github.notenoughupdates.moulconfig.platform
 
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.gui.*
 import io.github.notenoughupdates.moulconfig.internal.MCLogger
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.Text
@@ -116,6 +118,18 @@ class ModernMinecraft : IMinecraft {
     }
 
     override fun addExtraBuiltinConfigProcessors(processor: MoulConfigProcessor<*>) {
+    }
+
+    fun displayGuiScreen(gui: Screen) {
+        MinecraftClient.getInstance().setScreen(gui)
+    }
+
+    override fun openWrappedScreen(gui: GuiElement) {
+        displayGuiScreen(GuiElementWrapper(gui))
+    }
+
+    override fun openWrappedScreen(gui: GuiComponent) {
+        displayGuiScreen(GuiComponentWrapper(GuiContext(gui)))
     }
 
     override fun sendClickableChatMessage(message: String, action: String, type: ClickType) {

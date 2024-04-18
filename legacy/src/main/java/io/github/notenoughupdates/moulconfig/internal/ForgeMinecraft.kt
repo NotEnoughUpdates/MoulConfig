@@ -2,9 +2,11 @@ package io.github.notenoughupdates.moulconfig.internal
 
 import io.github.notenoughupdates.moulconfig.annotations.*
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.gui.*
 import io.github.notenoughupdates.moulconfig.gui.editors.*
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.event.ClickEvent
 import net.minecraft.launchwrapper.Launch
@@ -137,6 +139,19 @@ class ForgeMinecraft : IMinecraft {
 
     override fun provideTopLevelRenderContext(): RenderContext {
         return ForgeRenderContext()
+    }
+
+    fun openScreen(gui: GuiScreen) {
+        Minecraft.getMinecraft().displayGuiScreen(gui)
+    }
+
+    override fun openWrappedScreen(gui: GuiElement) {
+        openScreen(GuiScreenElementWrapper(gui))
+    }
+
+    // TODO: gui context?
+    override fun openWrappedScreen(gui: GuiComponent) {
+        openScreen(GuiComponentWrapper(GuiContext(gui)))
     }
 
     override val mouseX: Int

@@ -55,11 +55,12 @@ open class GuiComponentWrapper(
     }
 
     override fun charTyped(c: Char, i: Int): Boolean {
-        context.root.keyboardEvent(KeyboardEvent.CharTyped(c), createContext())
-        return true
+        return context.root.keyboardEvent(KeyboardEvent.CharTyped(c), createContext())
     }
 
     override fun keyPressed(i: Int, j: Int, k: Int): Boolean {
+        if (context.root.keyboardEvent(KeyboardEvent.KeyPressed(i, true), createContext()))
+            return true
         if (i == 256) {
             if (context.focusedElement != null) {
                 context.focusedElement = null
@@ -68,13 +69,11 @@ open class GuiComponentWrapper(
             }
             return true
         }
-        context.root.keyboardEvent(KeyboardEvent.KeyPressed(i, true), createContext())
-        return true
+        return false
     }
 
     override fun keyReleased(i: Int, j: Int, k: Int): Boolean {
-        context.root.keyboardEvent(KeyboardEvent.KeyPressed(i, false), createContext())
-        return true
+        return context.root.keyboardEvent(KeyboardEvent.KeyPressed(i, false), createContext())
     }
 
     override fun mouseMoved(d: Double, e: Double) {
@@ -87,13 +86,11 @@ open class GuiComponentWrapper(
     }
 
     override fun mouseClicked(d: Double, e: Double, i: Int): Boolean {
-        context.root.mouseEvent(MouseEvent.Click(i, true), createContext())
-        return true
+        return context.root.mouseEvent(MouseEvent.Click(i, true), createContext())
     }
 
     override fun mouseReleased(d: Double, e: Double, i: Int): Boolean {
-        context.root.mouseEvent(MouseEvent.Click(i, false), createContext())
-        return true
+        return context.root.mouseEvent(MouseEvent.Click(i, false), createContext())
     }
 
     override fun mouseScrolled(
@@ -102,8 +99,7 @@ open class GuiComponentWrapper(
         horizontalAmount: Double,
         verticalAmount: Double
     ): Boolean {
-        context.root.mouseEvent(MouseEvent.Scroll(verticalAmount.toFloat()), createContext())
-        return true
+        return context.root.mouseEvent(MouseEvent.Scroll(verticalAmount.toFloat()), createContext())
     }
 
     override fun mouseDragged(d: Double, e: Double, i: Int, f: Double, g: Double): Boolean {

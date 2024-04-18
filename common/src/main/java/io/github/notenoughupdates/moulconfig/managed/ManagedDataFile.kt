@@ -43,7 +43,7 @@ open class ManagedDataFile<T> internal constructor(
     var instance: T = mapper.createDefault()
 
     init {
-        file.parentFile.mkdirs()
+        file.absoluteFile.parentFile.mkdirs()
         reloadFromFile()
     }
 
