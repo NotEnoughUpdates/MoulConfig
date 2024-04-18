@@ -14,6 +14,8 @@ object ModernKeyboardConstants : IKeyboardConstants {
         get() = InputUtil.GLFW_KEY_LEFT_SHIFT
     override val shiftRight: Int
         get() = InputUtil.GLFW_KEY_RIGHT_SHIFT
+    override val escape: Int
+        get() = InputUtil.GLFW_KEY_ESCAPE
     override val enter: Int
         get() = InputUtil.GLFW_KEY_ENTER
     override val delete: Int
@@ -40,4 +42,6 @@ object ModernKeyboardConstants : IKeyboardConstants {
         get() = InputUtil.GLFW_KEY_V
     override val keyN: Int
         get() = InputUtil.GLFW_KEY_N
+    override val keyF: Int
+        get() = InputUtil.GLFW_KEY_F
 }

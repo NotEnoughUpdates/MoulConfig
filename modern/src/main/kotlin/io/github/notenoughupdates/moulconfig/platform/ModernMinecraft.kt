@@ -1,14 +1,17 @@
 package io.github.notenoughupdates.moulconfig.platform
 
-import io.github.notenoughupdates.moulconfig.common.IFontRenderer
-import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
-import io.github.notenoughupdates.moulconfig.common.IMinecraft
-import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
+import io.github.notenoughupdates.moulconfig.common.*
 import io.github.notenoughupdates.moulconfig.internal.MCLogger
+import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.util.InputUtil
+import net.minecraft.text.ClickEvent
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
+import org.lwjgl.glfw.GLFW
 import java.io.InputStream
 
 
@@ -57,24 +60,27 @@ class ModernMinecraft : IMinecraft {
         }
     }
 
+    val window get() = MinecraftClient.getInstance().window
+
     override val mouseX: Int
+        get() = mouseXHF.toInt()
+    override val mouseY: Int
+        get() = mouseYHF.toInt()
+
+    override val mouseXHF: Double
         get() {
             val mouse = MinecraftClient.getInstance().mouse
             val window = MinecraftClient.getInstance().window
-            val x = (mouse.x * window.scaledWidth.toDouble() / window.width.toDouble()).toInt()
+            val x = (mouse.x * window.scaledWidth.toDouble() / window.width.toDouble())
             return x
         }
-    override val mouseY: Int
+    override val mouseYHF: Double
         get() {
             val mouse = MinecraftClient.getInstance().mouse
             val window = MinecraftClient.getInstance().window
-            val y = (mouse.y * window.scaledHeight.toDouble() / window.height.toDouble()).toInt()
+            val y = (mouse.y * window.scaledHeight.toDouble() / window.height.toDouble())
             return y
         }
-    override val mouseXHF: Double
-        get() = TODO("Not yet implemented")
-    override val mouseYHF: Double
-        get() = TODO("Not yet implemented")
 
     override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {
         return MinecraftClient.getInstance().resourceManager.getResource(fromMyResourceLocation(resourceLocation))
@@ -100,4 +106,38 @@ class ModernMinecraft : IMinecraft {
             val window = MinecraftClient.getInstance().window
             return window.scaleFactor.toInt()
         }
+
+    override fun isMouseButtonDown(mouseButton: Int): Boolean {
+        return GLFW.glfwGetMouseButton(window.handle, mouseButton) == GLFW.GLFW_PRESS
+    }
+
+    override fun isKeyboardKeyDown(keyboardKey: Int): Boolean {
+        return InputUtil.isKeyPressed(window.handle, keyboardKey)
+    }
+
+    override fun addExtraBuiltinConfigProcessors(processor: MoulConfigProcessor<*>) {
+    }
+
+    override fun sendClickableChatMessage(message: String, action: String, type: ClickType) {
+        MinecraftClient.getInstance().inGameHud.chatHud.addMessage(Text.literal(message).styled {
+            it.withClickEvent(
+                ClickEvent(
+                    when (type) {
+                        ClickType.OPEN_LINK -> ClickEvent.Action.OPEN_URL
+                        ClickType.RUN_COMMAND -> ClickEvent.Action.RUN_COMMAND
+                    },
+                    action
+                )
+            )
+        })
+    }
+
+    override fun provideTopLevelRenderContext(): RenderContext {
+        return ModernRenderContext(
+            DrawContext(
+                MinecraftClient.getInstance(),
+                MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
+            )
+        )
+    }
 }

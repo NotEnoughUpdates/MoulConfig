@@ -3,3 +3,4 @@
 run/
 build/
 .gradle/
+.env

@@ -26,6 +26,7 @@ unimined.minecraft {
         config("client") {
             jvmArgs.add("-Dmoulconfig.testmod=true")
             jvmArgs.add("-Dmoulconfig.warn.crash=false")
+            env.putAll(parseEnvFile(file(".env")))
         }
     }
 }
