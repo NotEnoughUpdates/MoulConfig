@@ -122,6 +122,7 @@ public class MoulConfigTest {
                     screenToOpen = new GuiComponentWrapper(new GuiContext(gui));
                 } else {
                     MoulConfigEditor<TestConfig> gui = new MoulConfigEditor<>(processor);
+                    gui.setSearchFunction((editor, word) -> editor.fulfillsSearch(word.replace("blahaj", "editor")));
                     ProcessedOption pronouns = processor.getOptionFromField(TestCategory.class.getField("pronouns"));
                     if (pronouns != null)
                         gui.goToOption(pronouns);
