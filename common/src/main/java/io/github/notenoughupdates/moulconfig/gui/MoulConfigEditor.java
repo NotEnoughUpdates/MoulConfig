@@ -36,11 +36,14 @@ import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedCategory;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.val;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -60,6 +63,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     private int lastMouseX = 0;
     private int keyboardScrollXCutoff = 0;
     private boolean showSubcategories = true;
+
+    @Setter
+    private BiPredicate<GuiOptionEditor, String> searchFunction = GuiOptionEditor::fulfillsSearch;
 
     private LinkedHashMap<String, ProcessedCategory> currentlyVisibleCategories;
     private Set<ProcessedOption> currentlyVisibleOptions;
@@ -202,7 +208,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         if (!toSearch.isEmpty()) {
             Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
             for (String word : toSearch.split(" +")) {
-                matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !it.editor.fulfillsSearch(word)));
+                matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !searchFunction.test(it.editor, word)));
             }
 
             HashSet<ProcessedCategory> directlyMatchedCategories = new HashSet<>(processedConfig.getAllCategories().values());
@@ -1077,4 +1083,5 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         }
         return true;
     }
+
 }
