@@ -65,7 +65,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     private boolean showSubcategories = true;
 
     @Setter
-    private BiPredicate<GuiOptionEditor, String> searchFunction = GuiOptionEditor::fulfillsSearch;
+    private SearchFunction searchFunction = GuiOptionEditor::fulfillsSearch;
 
     private LinkedHashMap<String, ProcessedCategory> currentlyVisibleCategories;
     private Set<ProcessedOption> currentlyVisibleOptions;
@@ -208,7 +208,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         if (!toSearch.isEmpty()) {
             Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
             for (String word : toSearch.split(" +")) {
-                matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !searchFunction.test(it.editor, word)));
+                matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !searchFunction.fulfillsSearch(it.editor, word)));
             }
 
             HashSet<ProcessedCategory> directlyMatchedCategories = new HashSet<>(processedConfig.getAllCategories().values());
