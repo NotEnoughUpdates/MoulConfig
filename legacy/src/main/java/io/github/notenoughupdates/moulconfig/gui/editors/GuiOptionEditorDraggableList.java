@@ -289,8 +289,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
             mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
             if (trashHoverTime < 0 && canDeleteRightNow()) trashHoverTime = System.currentTimeMillis();
-        } else {
-            if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
+        } else if (!canDeleteRightNow()){
+            trashHoverTime = Long.MAX_VALUE;
+        } else if (trashHoverTime > 0) {
+            trashHoverTime = -System.currentTimeMillis();
         }
 
         if (Mouse.getEventButtonState()) {
