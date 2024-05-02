@@ -464,6 +464,10 @@ public class ColorSelectComponent extends GuiComponent {
 
     @Override
     public boolean keyboardEvent(@NotNull KeyboardEvent event, @NotNull GuiImmediateContext context) {
+        if (event instanceof KeyboardEvent.KeyPressed && ((KeyboardEvent.KeyPressed) event).getKeycode() == 1) {
+            this.closeCallback.run();
+            return true;
+        }
         return componentHexField.keyboardEvent(event, context.translated(5 + 8, 5 + 64 + 5, 48, 10));
     }
 
