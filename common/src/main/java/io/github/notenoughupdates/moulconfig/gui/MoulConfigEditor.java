@@ -328,7 +328,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             (height + openingYSize) / 2
         );
 
-        context.drawDarkRect(x + 5, y + 5, xSize - 10, 20, false);
+        context.drawDarkRect(x + 4, y + 5, xSize - 9, 20, false);
 
         IFontRenderer ifr = iMinecraft.getDefaultFontRenderer();
         context.drawStringCenteredScaledMaxWidth(
