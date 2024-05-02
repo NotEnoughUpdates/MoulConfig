@@ -24,6 +24,7 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
@@ -327,7 +328,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             if (activeText.size() < exampleText.size() &&
                 mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
                 mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
-                dropdownOpen = !dropdownOpen;
+                dropdownOpen = true;
                 dragOffsetX = mouseX;
                 dragOffsetY = mouseY;
                 return true;
@@ -371,6 +372,15 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
+        if (mouseEvent instanceof MouseEvent.Scroll) {
+            this.dropdownOpen = false;
+            return false;
+        }
+        return super.mouseInput(x, y, width, mouseX, mouseY, mouseEvent);
     }
 
     @Override
