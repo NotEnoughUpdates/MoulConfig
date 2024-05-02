@@ -346,7 +346,7 @@ public class ColorSelectComponent extends GuiComponent {
 
         renderContext.pushMatrix();
         renderContext.translate(5 + 8, 5 + 64 + 5, 0);
-        componentHexField.render(context.translated(5 + 8, 5 + 64 + 5, 48, 10));
+        componentHexField.render(context.translated(5 + 8, 5 + 64 + 5, 48, 12));
         renderContext.popMatrix();
     }
 
