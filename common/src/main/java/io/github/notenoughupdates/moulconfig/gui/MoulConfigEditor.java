@@ -1016,7 +1016,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                if (ContextAware.wrapErrorWithContext(editor, editor::keyboardInput)) {
+                if (ContextAware.wrapErrorWithContext(editor, ()-> editor.keyboardInput(event))) {
                     return true;
                 }
             }
