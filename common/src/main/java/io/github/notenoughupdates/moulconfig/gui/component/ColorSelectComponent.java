@@ -453,7 +453,13 @@ public class ColorSelectComponent extends GuiComponent {
             updateOnMouseMovement(context);
             return true;
         }
-        return componentHexField.mouseEvent(mouseEvent, context.translated(5 + 8, 5 + 64 + 5, 48, 10)) || context.isHovered();
+
+        if (mouseEvent instanceof MouseEvent.Scroll) {
+            this.closeCallback.run();
+            return true;
+        }
+
+        return componentHexField.mouseEvent(mouseEvent, context.translated(5 + 8, 5 + 64 + 5, 48, 12)) || context.isHovered();
     }
 
     @Override
