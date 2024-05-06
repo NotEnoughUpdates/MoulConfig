@@ -82,7 +82,9 @@ public class MoulConfigTest {
         MinecraftForge.EVENT_BUS.register(MoulConfigTest.this);
         MoulConfigProcessor<TestConfig> processor = new MoulConfigProcessor<>(testConfig);
         BuiltinMoulConfigGuis.addProcessors(processor);
-        new ConfigProcessorDriver(processor).processConfig(testConfig);
+        ConfigProcessorDriver driver = new ConfigProcessorDriver(processor);
+        driver.checkExpose = false;
+        driver.processConfig(testConfig);
         testConfig.testCategory.text2.whenChanged((oldValue, newValue) ->
             Minecraft.getMinecraft().thePlayer.addChatMessage(
                 new ChatComponentText("Just changed text2 from " + oldValue + " to " + newValue)));

@@ -7,6 +7,7 @@ import java.util.function.BiFunction
 
 class ManagedConfigBuilder<T>(file: File, clazz: Class<T>) : ManagedDataFileBuilder<T>(file, clazz) {
     var useDefaultProcessors = true
+    var checkExpose = true
     internal val customProcessors =
         mutableListOf<Pair<Class<out Annotation>, BiFunction<ProcessedOption, Annotation, GuiOptionEditor>>>()
 
