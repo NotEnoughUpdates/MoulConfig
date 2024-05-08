@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
@@ -30,6 +31,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -243,7 +245,13 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
     }
 
     @Override
-    public boolean keyboardInput() {
-        return false;
+    public boolean keyboardInput(KeyboardEvent event) {
+        if (event instanceof KeyboardEvent.KeyPressed) {
+            int key = ((KeyboardEvent.KeyPressed) event).getKeycode();
+            if (key == Keyboard.KEY_UP || key == Keyboard.KEY_DOWN) {
+                open = false;
+            }
+        }
+        return super.keyboardInput(event);
     }
 }

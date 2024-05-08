@@ -24,6 +24,7 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
@@ -36,6 +37,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -394,7 +396,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     @Override
-    public boolean keyboardInput() {
-        return false;
+    public boolean keyboardInput(KeyboardEvent event) {
+        if (event instanceof KeyboardEvent.KeyPressed) {
+            int key = ((KeyboardEvent.KeyPressed) event).getKeycode();
+            if (key == Keyboard.KEY_UP || key == Keyboard.KEY_DOWN) {
+                dropdownOpen = false;
+            }
+        }
+        return super.keyboardInput(event);
     }
 }
