@@ -1061,7 +1061,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             target.setTimeToReachTarget(50);
             target.resetTimer();
             if (target.getTarget() >= 0) {
-                target.setTarget(target.getTarget() - 5);
+                target.setTarget(Math.max(0, target.getTarget() - 5));
             }
         } else if (IMinecraft.instance.isKeyboardKeyDown(IMinecraft.instance.getKeyboardConstants().getEscape())) {
             processedConfig.getConfigObject().saveNow();
