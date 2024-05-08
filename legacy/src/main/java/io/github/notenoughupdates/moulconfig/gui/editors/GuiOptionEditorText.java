@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.gui.elements.GuiElementTextField;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import net.minecraft.client.Minecraft;
@@ -59,6 +60,15 @@ public class GuiOptionEditorText extends GuiOptionEditor {
     }
 
     @Override
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
+        if (mouseEvent instanceof MouseEvent.Move) {
+            textField.mouseMoved(mouseX, mouseY);
+            return false;
+        }
+        return super.mouseInput(x, y, width, mouseX, mouseY, mouseEvent);
+    }
+
+    @Override
     public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
         int height = getHeight();
 
@@ -76,10 +86,15 @@ public class GuiOptionEditorText extends GuiOptionEditor {
         int textFieldY = y + height - 7 - 14;
         textField.setSize(fullWidth, 16);
 
-        if (Mouse.getEventButtonState() && (Mouse.getEventButton() == 0 || Mouse.getEventButton() == 1)) {
+        if ((Mouse.getEventButton() == 0 || Mouse.getEventButton() == 1)) {
             if (mouseX > textFieldX && mouseX < textFieldX + fullWidth &&
                 mouseY > textFieldY && mouseY < textFieldY + 16) {
-                textField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+                if (Mouse.getEventButtonState()) {
+                    textField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+                } else {
+                    textField.mouseUnclicked(mouseX, mouseY, Mouse.getEventButton());
+                }
+
                 return true;
             }
             textField.unfocus();

@@ -59,6 +59,8 @@ public class GuiElementTextField {
     private String masterStarUnicode = "";
     private int customTextColour = 0xffffffff;
 
+    private boolean dragging = false;
+
     private final GuiTextField textField = new GuiTextField(0, Minecraft.getMinecraft().fontRendererObj,
         0, 0, 0, 0
     );
@@ -236,11 +238,26 @@ public class GuiElementTextField {
         return cursorIndex;
     }
 
+    public void mouseMoved(int mouseX, int mouseY) {
+        if (this.dragging && this.focus) {
+            int selection = textField.getSelectionEnd();
+            textField.setCursorPosition(getCursorPos(mouseX, mouseY));
+            textField.setSelectionPos(selection);
+        }
+    }
+
+    public void mouseUnclicked(int mouseX, int mouseY, int mouseButton) {
+        if (mouseButton == 0) {
+            this.dragging = false;
+        }
+    }
+
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (mouseButton == 1) {
             textField.setText("");
         } else {
             textField.setCursorPosition(getCursorPos(mouseX, mouseY));
+            this.dragging = true;
         }
         focus = true;
     }
@@ -254,7 +271,7 @@ public class GuiElementTextField {
         return StringUtils.cleanColour(str).length();
     }
 
-    public void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+    public void mouseClickMove(int mouseX, int mouseY) {
         if (focus) {
             textField.setSelectionPos(getCursorPos(mouseX, mouseY));
         }
