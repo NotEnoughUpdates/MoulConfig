@@ -173,6 +173,15 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
     }
 
     @Override
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
+        if (mouseEvent instanceof MouseEvent.Scroll) {
+            open = false;
+            return false;
+        }
+        return super.mouseInput(x, y, width, mouseX, mouseY, mouseEvent);
+    }
+
+    @Override
     public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
         int height = getHeight();
 
