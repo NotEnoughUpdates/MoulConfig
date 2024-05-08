@@ -188,7 +188,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 Minecraft.getMinecraft().fontRendererObj.drawString(
                     "≡",
                     x + 10,
-                    y + 50 + yOff + ySize / 2 - 4,
+                    y + 49 + yOff + ySize / 2 - 4,
                     0xffffff,
                     true
                 );
@@ -276,7 +276,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
             Minecraft.getMinecraft().fontRendererObj.drawString("\u2261",
                 dragOffsetX + mouseX,
-                dragOffsetY + mouseY + ySize / 2 - 4, 0xffffff, true
+                dragOffsetY - 1 + mouseY + ySize / 2 - 4, 0xffffff, true
             );
         }
     }
