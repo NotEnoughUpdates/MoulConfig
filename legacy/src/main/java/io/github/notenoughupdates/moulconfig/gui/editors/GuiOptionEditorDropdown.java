@@ -129,17 +129,17 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
             int dropdownHeight = 13 + 12 * values.length;
 
             int main = 0xff202026;
-            int blue = 0xff2355ad;
+            int outlineColour = 0xffffffff;
 
             GlStateManager.pushMatrix();
             GL11.glTranslated(0, 0, 100);
-            Gui.drawRect(left, top, left + 1, top + dropdownHeight, blue); //Left
-            Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, blue); //Top
-            Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, blue); //Right
-            Gui.drawRect(left + 1, top + dropdownHeight - 1, left + dropdownWidth - 1, top + dropdownHeight, blue); //Bottom
+            Gui.drawRect(left, top, left + 1, top + dropdownHeight, outlineColour); //Left
+            Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, outlineColour); //Top
+            Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, outlineColour); //Right
+            Gui.drawRect(left + 1, top + dropdownHeight - 1, left + dropdownWidth - 1, top + dropdownHeight, outlineColour); //Bottom
             Gui.drawRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
 
-            Gui.drawRect(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, blue); //Bar
+            Gui.drawRect(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, outlineColour); //Bar
             int dropdownY = 13;
             for (String option : values) {
                 if (option.isEmpty()) {
