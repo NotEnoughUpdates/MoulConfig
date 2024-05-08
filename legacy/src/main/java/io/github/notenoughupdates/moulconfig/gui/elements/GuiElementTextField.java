@@ -29,6 +29,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.util.regex.Matcher;
@@ -260,10 +261,12 @@ public class GuiElementTextField {
             this.dragging = true;
         }
         focus = true;
+        Keyboard.enableRepeatEvents(true);
     }
 
     public void unfocus() {
         focus = false;
+        Keyboard.enableRepeatEvents(false);
         textField.setSelectionPos(textField.getCursorPosition());
     }
 
