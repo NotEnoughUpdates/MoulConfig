@@ -42,6 +42,8 @@ public class ConfigProcessorDriver {
 
     public int nextAnnotation = 1000000000;
 
+    public boolean checkExpose = true;
+
     public ConfigProcessorDriver(ConfigStructureReader reader) {
         this.reader = reader;
     }
@@ -64,7 +66,7 @@ public class ConfigProcessorDriver {
             }
             ConfigOption optionAnnotation = field.getAnnotation(ConfigOption.class);
             if (optionAnnotation == null) continue;
-            if (field.getAnnotation(Expose.class) == null
+            if (checkExpose && field.getAnnotation(Expose.class) == null
                 && (field.getModifiers() & Modifier.TRANSIENT) == 0
                 && nonStoredConfigOptions.stream().noneMatch(field::isAnnotationPresent)) {
                 Warnings.warn("Non transient @ConfigOption without @Expose in " + categoryClass + " on field " + field);
@@ -139,7 +141,7 @@ public class ConfigProcessorDriver {
         Category categoryAnnotation = categoryField.getAnnotation(Category.class);
 
         if (categoryAnnotation == null) return;
-        if (categoryField.getAnnotation(Expose.class) == null) {
+        if (checkExpose && categoryField.getAnnotation(Expose.class) == null) {
             Warnings.warn("@Category without @Expose in " + parent.getClass() + " on field " + categoryField);
         }
         if ((categoryField.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {

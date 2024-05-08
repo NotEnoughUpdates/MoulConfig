@@ -55,6 +55,9 @@ public abstract class Config {
     }
 
     public void saveNow() {
+        for (Runnable saveRunnable : saveRunnables) {
+            saveRunnable.run();
+        }
     }
 
     public DescriptionRendereringBehaviour getDescriptionBehaviour(ProcessedOption option) {
@@ -68,4 +71,6 @@ public abstract class Config {
     public boolean shouldSearchCategoryNames() {
         return true;
     }
+
+    public transient List<Runnable> saveRunnables = new ArrayList<>();
 }

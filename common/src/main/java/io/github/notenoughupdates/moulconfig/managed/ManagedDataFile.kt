@@ -58,8 +58,11 @@ open class ManagedDataFile<T> internal constructor(
         } catch (ex: Exception) {
             loadFailed.accept(this, ex)
         }
+        injectIntoInstance()
         afterLoad.accept(this)
     }
+
+    open fun injectIntoInstance() {}
 
     private fun createUniqueExtraFile(identifier: String, directory: File = file.parentFile): File {
         val jvmHash = ManagementFactory.getRuntimeMXBean().name.hashCode()

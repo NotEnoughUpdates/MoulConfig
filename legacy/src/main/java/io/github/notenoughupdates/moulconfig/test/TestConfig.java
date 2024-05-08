@@ -35,10 +35,8 @@ import java.util.List;
 
 public class TestConfig extends Config {
     @Category(name = "Test Category", desc = "Test Description")
-    @Expose
     public TestCategory testCategory = new TestCategory();
     @Category(name = "Parent category", desc = "pArenting")
-    @Expose
     public TestCategoryParent parent = new TestCategoryParent();
 
     @Override

@@ -29,11 +29,13 @@ class ManagedConfig<T : Config>(private val builder: ManagedConfigBuilder<T>) :
             return ManagedConfig(ManagedConfigBuilder(file, clazz).apply(consumer))
         }
     }
-    // TODO: enforce the save callback, somehow
 
     lateinit var processor: MoulConfigProcessor<T>
         private set
 
+    override fun injectIntoInstance() {
+        instance.saveRunnables?.add(this::saveToFile)
+    }
 
     fun rebuildConfigProcessor() {
         rebuildConfigProcessor(builder)
@@ -70,7 +72,9 @@ class ManagedConfig<T : Config>(private val builder: ManagedConfigBuilder<T>) :
         builder.customProcessors.forEach { (annotation, method) ->
             cast(processor, annotation, method)
         }
-        ConfigProcessorDriver(processor).processConfig(this.instance)
+        val driver = ConfigProcessorDriver(processor)
+        driver.checkExpose = builder.checkExpose
+        driver.processConfig(this.instance)
         return processor
     }
 
