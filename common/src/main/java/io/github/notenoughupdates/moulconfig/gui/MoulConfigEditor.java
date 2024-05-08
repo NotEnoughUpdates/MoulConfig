@@ -478,7 +478,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
             context.drawStringScaledMaxWidth(
                 cat.desc,
-                ifr, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
+                ifr, innerLeft + 1, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
             );
         }
 
