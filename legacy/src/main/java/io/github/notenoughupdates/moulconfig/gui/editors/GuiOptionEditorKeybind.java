@@ -63,7 +63,7 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
         TextRenderUtils.drawStringCenteredScaledMaxWidth(text,
             Minecraft.getMinecraft().fontRendererObj,
             x + width / 6, y + height - 7 - 6,
-            false, 40, 0xFF303030
+            false, 38, 0xFF303030
         );
 
         int resetX = x + width / 6 - 24 + 48 + 3;
