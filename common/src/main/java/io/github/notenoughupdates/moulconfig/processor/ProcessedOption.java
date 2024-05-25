@@ -30,7 +30,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class ProcessedOption {
+public class ProcessedOption {// TODO: replace with interface
     public final String name;
     public final String desc;
     public final Field field;
