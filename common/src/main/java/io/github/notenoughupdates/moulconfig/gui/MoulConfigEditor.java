@@ -715,6 +715,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int categoryBarStartX = x + innerPadding + 7;
         int categoryBarEndX = x + innerPadding + 12;
         keyboardScrollXCutoff = innerLeft - 10;
+        int mouseButton = mouseEvent instanceof MouseEvent.Click ? ((MouseEvent.Click) mouseEvent).getMouseButton() : -1;
         boolean mouseState = mouseEvent instanceof MouseEvent.Click && ((MouseEvent.Click) mouseEvent).getMouseState();
         if (mouseState) {
             if ((mouseY < optionsBarStartY || mouseY > optionsBarEndY) &&
@@ -731,9 +732,16 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 categoryScroll.setTarget(mouseY - innerTop);
                 return true;
             }
-
-            searchField.setFocus(mouseX >= innerRight - 20 && mouseX <= innerRight - 2 &&
+            boolean searchIconFocus = (mouseX >= innerRight - 20 && mouseX <= innerRight - 2 &&
                 mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9);
+
+
+            searchField.setFocus(searchIconFocus);
+
+            if (searchIconFocus && mouseButton == 1) {
+                searchField.getText().set("");
+                updateSearchResults();
+            }
 
             if (minimumSearchSize.getValue() > 1) {
                 int strLen = iMinecraft.getDefaultFontRenderer().getStringWidth(searchFieldContent.get()) + 10;
@@ -741,6 +749,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
                 if (mouseX >= innerRight - 25 - len && mouseX <= innerRight - 25 &&
                     mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9) {
+
+                    if (mouseButton == 1) {
+                        searchField.getText().set("");
+                        updateSearchResults();
+                    }
+
                     String old = searchFieldContent.get();
                     searchField.mouseEvent(mouseEvent,
                         new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, mouseX, mouseY, mouseX, mouseY, 0F, 0F)
@@ -1016,7 +1030,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                if (ContextAware.wrapErrorWithContext(editor, ()-> editor.keyboardInput(event))) {
+                if (ContextAware.wrapErrorWithContext(editor, () -> editor.keyboardInput(event))) {
                     return true;
                 }
             }

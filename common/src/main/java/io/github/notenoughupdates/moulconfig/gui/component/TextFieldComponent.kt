@@ -249,7 +249,7 @@ open class TextFieldComponent(
         checkScrollOffset(context.width)
         updateVisibleText(context.width)
         if (context.isHovered && mouseEvent is Click) {
-            if (mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
+            if (mouseEvent.mouseState) {
                 requestFocus()
                 return true
             }
