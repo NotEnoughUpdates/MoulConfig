@@ -328,7 +328,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             (height + openingYSize) / 2
         );
 
-        context.drawDarkRect(x + 5, y + 5, xSize - 10, 20, false);
+        context.drawDarkRect(x + 4, y + 5, xSize - 9, 20, false);
 
         IFontRenderer ifr = iMinecraft.getDefaultFontRenderer();
         context.drawStringCenteredScaledMaxWidth(
@@ -478,7 +478,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
             context.drawStringScaledMaxWidth(
                 cat.desc,
-                ifr, innerLeft + 5, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
+                ifr, innerLeft + 1, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
             );
         }
 
@@ -1016,7 +1016,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                if (ContextAware.wrapErrorWithContext(editor, editor::keyboardInput)) {
+                if (ContextAware.wrapErrorWithContext(editor, ()-> editor.keyboardInput(event))) {
                     return true;
                 }
             }
@@ -1061,7 +1061,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             target.setTimeToReachTarget(50);
             target.resetTimer();
             if (target.getTarget() >= 0) {
-                target.setTarget(target.getTarget() - 5);
+                target.setTarget(Math.max(0, target.getTarget() - 5));
             }
         } else if (IMinecraft.instance.isKeyboardKeyDown(IMinecraft.instance.getKeyboardConstants().getEscape())) {
             processedConfig.getConfigObject().saveNow();

@@ -24,17 +24,21 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
+import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
+import kotlin.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumChatFormatting;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -49,6 +53,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private final boolean requireNonEmpty;
     private Object currentDragging = null;
     private int dragStartIndex = -1;
+
+    private Pair<Integer, Integer> lastMousePosition = null;
 
     private long trashHoverTime = -1;
 
@@ -146,8 +152,18 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         }
 
         if (canDeleteRightNow()) {
+            int deleteX = x + width / 6 + 27;
+            int deleteY = y + 45 - 7 - 13;
             IMinecraft.instance.bindTexture(GuiTextures.DELETE);
-            RenderUtils.drawTexturedRect(x + width / 6 + 27, y + 45 - 7 - 13, 11, 14, GL11.GL_NEAREST);
+            RenderUtils.drawTexturedRect(deleteX, deleteY, 11, 14, GL11.GL_NEAREST);
+            // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
+            if (lastMousePosition != null && currentDragging == null &&
+                lastMousePosition.getFirst() >= deleteX && lastMousePosition.getFirst() < deleteX + 11 &&
+                lastMousePosition.getSecond() >= deleteY && lastMousePosition.getSecond() < deleteY + 14) {
+                renderContext.scheduleDrawTooltip(Collections.singletonList(
+                    "§cDelete Item"
+                ));
+            }
         }
 
         Gui.drawRect(x + 5, y + 45, x + width - 5, y + height - 5, 0xffdddddd);
@@ -172,7 +188,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 Minecraft.getMinecraft().fontRendererObj.drawString(
                     "≡",
                     x + 10,
-                    y + 50 + yOff + ySize / 2 - 4,
+                    y + 49 + yOff + ySize / 2 - 4,
                     0xffffff,
                     true
                 );
@@ -260,13 +276,14 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
             Minecraft.getMinecraft().fontRendererObj.drawString("\u2261",
                 dragOffsetX + mouseX,
-                dragOffsetY + mouseY + ySize / 2 - 4, 0xffffff, true
+                dragOffsetY - 1 + mouseY + ySize / 2 - 4, 0xffffff, true
             );
         }
     }
 
     @Override
     public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+        lastMousePosition = new Pair<>(mouseX, mouseY);
         if (!Mouse.getEventButtonState() && !dropdownOpen &&
             dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
             mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
@@ -288,8 +305,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
             mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
             if (trashHoverTime < 0 && canDeleteRightNow()) trashHoverTime = System.currentTimeMillis();
-        } else {
-            if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
+        } else if (!canDeleteRightNow()){
+            trashHoverTime = Long.MAX_VALUE;
+        } else if (trashHoverTime > 0) {
+            trashHoverTime = -System.currentTimeMillis();
         }
 
         if (Mouse.getEventButtonState()) {
@@ -327,7 +346,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             if (activeText.size() < exampleText.size() &&
                 mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
                 mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
-                dropdownOpen = !dropdownOpen;
+                dropdownOpen = true;
                 dragOffsetX = mouseX;
                 dragOffsetY = mouseY;
                 return true;
@@ -374,6 +393,15 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     @Override
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
+        if (mouseEvent instanceof MouseEvent.Scroll) {
+            this.dropdownOpen = false;
+            return false;
+        }
+        return super.mouseInput(x, y, width, mouseX, mouseY, mouseEvent);
+    }
+
+    @Override
     public boolean fulfillsSearch(String word) {
         if (exampleTextConcat == null) {
             exampleTextConcat = String.join("", exampleText.values()).toLowerCase(Locale.ROOT);
@@ -382,7 +410,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     @Override
-    public boolean keyboardInput() {
-        return false;
+    public boolean keyboardInput(KeyboardEvent event) {
+        if (event instanceof KeyboardEvent.KeyPressed) {
+            int key = ((KeyboardEvent.KeyPressed) event).getKeycode();
+            if (key == Keyboard.KEY_UP || key == Keyboard.KEY_DOWN) {
+                dropdownOpen = false;
+            }
+        }
+        return super.keyboardInput(event);
     }
 }

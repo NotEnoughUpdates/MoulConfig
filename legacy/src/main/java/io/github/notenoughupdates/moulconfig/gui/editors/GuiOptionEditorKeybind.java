@@ -28,15 +28,20 @@ import io.github.notenoughupdates.moulconfig.internal.KeybindHelper;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
+import kotlin.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Collections;
+
 public class GuiOptionEditorKeybind extends GuiOptionEditor {
     private final int defaultKeyCode;
     private boolean editingKeycode;
+
+    private Pair<Integer, Integer> lastMousePosition = null;
 
     public GuiOptionEditorKeybind(ProcessedOption option, int defaultKeyCode) {
         super(option);
@@ -58,16 +63,28 @@ public class GuiOptionEditorKeybind extends GuiOptionEditor {
         TextRenderUtils.drawStringCenteredScaledMaxWidth(text,
             Minecraft.getMinecraft().fontRendererObj,
             x + width / 6, y + height - 7 - 6,
-            false, 40, 0xFF303030
+            false, 38, 0xFF303030
         );
+
+        int resetX = x + width / 6 - 24 + 48 + 3;
+        int resetY = y + height - 7 - 14 + 3;
 
         IMinecraft.instance.bindTexture(GuiTextures.RESET);
         GlStateManager.color(1, 1, 1, 1);
-        RenderUtils.drawTexturedRect(x + width / 6 - 24 + 48 + 3, y + height - 7 - 14 + 3, 10, 11, GL11.GL_NEAREST);
+        RenderUtils.drawTexturedRect(resetX, resetY, 10, 11, GL11.GL_NEAREST);
+        // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
+        if (lastMousePosition != null &&
+            lastMousePosition.getFirst() >= resetX && lastMousePosition.getFirst() < resetX + 10 &&
+            lastMousePosition.getSecond() >= resetY && lastMousePosition.getSecond() < resetY + 11) {
+            renderContext.scheduleDrawTooltip(Collections.singletonList(
+                "§cReset to Default"
+            ));
+        }
     }
 
     @Override
     public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+        lastMousePosition = new Pair<>(mouseX, mouseY);
         if (Mouse.getEventButtonState() && Mouse.getEventButton() != -1 && editingKeycode) {
             editingKeycode = false;
             option.set(Mouse.getEventButton() - 100);

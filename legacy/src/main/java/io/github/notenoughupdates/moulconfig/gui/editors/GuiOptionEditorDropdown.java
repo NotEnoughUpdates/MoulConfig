@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
@@ -30,6 +31,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -127,17 +129,17 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
             int dropdownHeight = 13 + 12 * values.length;
 
             int main = 0xff202026;
-            int blue = 0xff2355ad;
+            int outlineColour = 0xffffffff;
 
             GlStateManager.pushMatrix();
             GL11.glTranslated(0, 0, 100);
-            Gui.drawRect(left, top, left + 1, top + dropdownHeight, blue); //Left
-            Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, blue); //Top
-            Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, blue); //Right
-            Gui.drawRect(left + 1, top + dropdownHeight - 1, left + dropdownWidth - 1, top + dropdownHeight, blue); //Bottom
+            Gui.drawRect(left, top, left + 1, top + dropdownHeight, outlineColour); //Left
+            Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, outlineColour); //Top
+            Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, outlineColour); //Right
+            Gui.drawRect(left + 1, top + dropdownHeight - 1, left + dropdownWidth - 1, top + dropdownHeight, outlineColour); //Bottom
             Gui.drawRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
 
-            Gui.drawRect(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, blue); //Bar
+            Gui.drawRect(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, outlineColour); //Bar
             int dropdownY = 13;
             for (String option : values) {
                 if (option.isEmpty()) {
@@ -170,6 +172,15 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
             );
             GlStateManager.popMatrix();
         }
+    }
+
+    @Override
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
+        if (mouseEvent instanceof MouseEvent.Scroll) {
+            open = false;
+            return false;
+        }
+        return super.mouseInput(x, y, width, mouseX, mouseY, mouseEvent);
     }
 
     @Override
@@ -234,7 +245,13 @@ public class GuiOptionEditorDropdown extends GuiOptionEditor {
     }
 
     @Override
-    public boolean keyboardInput() {
-        return false;
+    public boolean keyboardInput(KeyboardEvent event) {
+        if (event instanceof KeyboardEvent.KeyPressed) {
+            int key = ((KeyboardEvent.KeyPressed) event).getKeycode();
+            if (key == Keyboard.KEY_UP || key == Keyboard.KEY_DOWN) {
+                open = false;
+            }
+        }
+        return super.keyboardInput(event);
     }
 }

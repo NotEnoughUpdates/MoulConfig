@@ -157,6 +157,10 @@ public class GuiOptionEditorSlider extends GuiOptionEditor {
     @Override
     public boolean keyboardInput() {
         if (Keyboard.getEventKeyState() && textField.getFocus()) {
+            if (Keyboard.getEventKey() == Keyboard.KEY_ESCAPE) {
+                textField.unfocus();
+                return true;
+            }
             textField.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
 
             try {

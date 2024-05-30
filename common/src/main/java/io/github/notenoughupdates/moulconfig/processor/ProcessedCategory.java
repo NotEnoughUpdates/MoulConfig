@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProcessedCategory {
+public class ProcessedCategory { // TODO: replace with interface
     public final String name;
     public final String desc;
     public final Field reflectField;
