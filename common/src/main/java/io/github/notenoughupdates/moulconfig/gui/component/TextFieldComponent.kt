@@ -243,7 +243,7 @@ open class TextFieldComponent(
     override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
         super.mouseEvent(mouseEvent, context)
         if (context.isHovered && mouseEvent is Click) {
-            if (mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
+            if (mouseEvent.mouseState) {
                 requestFocus()
                 return true
             }
