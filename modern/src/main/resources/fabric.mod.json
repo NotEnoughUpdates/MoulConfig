@@ -2,9 +2,17 @@
   "id": "moulconfig",
   "schemaVersion": 1,
   "version": "1.0.0",
+  "name": "Moulconfig",
   "entrypoints": {
     "main": [
       "io.github.notenoughupdates.moulconfig.test.FabricMain"
     ]
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ]
+    }
   }
 }

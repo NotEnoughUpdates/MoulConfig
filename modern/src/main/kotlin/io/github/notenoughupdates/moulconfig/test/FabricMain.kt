@@ -21,6 +21,7 @@ import java.util.*
 
 class FabricMain : ModInitializer {
     override fun onInitialize() {
+        if (System.getProperty("moulconfig.testmod") != "true") return
         val config = ManagedConfig.create(File("config/moulconfig/test.json"), TestConfig::class.java)
         ClientCommandRegistrationCallback.EVENT.register { a, b ->
             a.register(literal("moulconfig").executes {
