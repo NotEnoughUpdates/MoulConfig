@@ -15,7 +15,7 @@ class XSDGenerator(val universe: XMLUniverse) {
         .newDocumentBuilder()
         .newDocument()
     val XMLNS_XML_SCHEMA: String = "http://www.w3.org/2001/XMLSchema"
-    val root = document.createElementNS(XMLNS_XML_SCHEMA, "schema")
+    val root: Element = document.createElementNS(XMLNS_XML_SCHEMA, "schema")
         .also {
             it.prefix = "xs"
             it.setAttribute(
@@ -56,6 +56,11 @@ class XSDGenerator(val universe: XMLUniverse) {
         }
     }
 
+    fun createChild(base: Element, nameSpace: String, local: String): Element {
+        return base.createChild(nameSpace, local)
+    }
+
+    @JvmName("createChildInternal")
     private fun Element.createChild(nameSpace: String, local: String): Element {
         val newElement = document.createElementNS(nameSpace, local)
         if (nameSpace == XMLNS_XML_SCHEMA)
@@ -111,6 +116,10 @@ class XSDGenerator(val universe: XMLUniverse) {
     }
 
     fun writeType(type: XMLGuiLoader<*>) {
+        type.emitXSDType(this, root)
+    }
+
+    fun emitBasicType(type: XMLGuiLoader.Basic<*>): Element {
         val typeNode = root.createChild(XMLNS_XML_SCHEMA, "complexType")
         typeNode.setAttribute("name", type.name.localPart)
         val complexContent = typeNode.createChild(XMLNS_XML_SCHEMA, "complexContent")
@@ -129,5 +138,6 @@ class XSDGenerator(val universe: XMLUniverse) {
             if (required)
                 attribute.setAttribute("use", "required")
         }
+        return typeNode
     }
 }

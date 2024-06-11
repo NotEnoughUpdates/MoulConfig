@@ -9,11 +9,26 @@ import javax.xml.namespace.QName;
 import java.util.Map;
 
 public interface XMLGuiLoader<T extends GuiComponent> {
-    @NotNull T createInstance(@NotNull XMLContext<?> context, @NotNull Element element);
+    @NotNull
+    T createInstance(@NotNull XMLContext<?> context, @NotNull Element element);
 
-    @NotNull QName getName();
+    @NotNull
+    QName getName();
 
-    @NotNull ChildCount getChildCount();
+    @NotNull
+    Element emitXSDType(@NotNull XSDGenerator generator, @NotNull Element root);
 
-    @NotNull @Unmodifiable Map<String, Boolean> getAttributeNames();
+    interface Basic<T extends GuiComponent> extends XMLGuiLoader<T> {
+        @NotNull
+        ChildCount getChildCount();
+
+        @NotNull
+        @Unmodifiable
+        Map<String, Boolean> getAttributeNames();
+
+        @Override
+        default @NotNull Element emitXSDType(@NotNull XSDGenerator generator, @NotNull Element root) {
+            return generator.emitBasicType(this);
+        }
+    }
 }

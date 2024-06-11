@@ -9,7 +9,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class TextFieldLoader : XMLGuiLoader<TextFieldComponent?> {
+class TextFieldLoader : XMLGuiLoader.Basic<TextFieldComponent?> {
     override fun createInstance(context: XMLContext<*>, element: Element): TextFieldComponent {
         return TextFieldComponent(
             context.getPropertyFromAttribute(element, QName("value"), String::class.java)!!,

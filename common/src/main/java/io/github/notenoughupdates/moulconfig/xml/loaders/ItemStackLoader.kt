@@ -9,7 +9,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class ItemStackLoader : XMLGuiLoader<ItemStackComponent> {
+class ItemStackLoader : XMLGuiLoader.Basic<ItemStackComponent> {
     override fun createInstance(context: XMLContext<*>, element: Element): ItemStackComponent {
         return ItemStackComponent(
             context.getPropertyFromAttribute(element, QName("value"), IItemStack::class.java)!!

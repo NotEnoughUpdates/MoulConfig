@@ -16,6 +16,32 @@
                 </Collapsible>
             </Panel>
             <Row>
+                <Tabs>
+                    <Tab>
+                        <Tab.Header>
+                            <Text text="Tab A"/>
+                        </Tab.Header>
+                        <Tab.Body>
+                            <Panel background="TRANSPARENT" insets="10">
+                                <Center>
+                                    <TextField value="@textField" width="100"/>
+                                </Center>
+                            </Panel>
+                        </Tab.Body>
+                    </Tab>
+                    <Tab>
+                        <Tab.Header>
+                            <Text text="Tab B"/>
+                        </Tab.Header>
+                        <Tab.Body>
+                            <Panel background="TRANSPARENT" insets="10">
+                                <Center>
+                                    <Text text="@textField" width="120"/>
+                                </Center>
+                            </Panel>
+                        </Tab.Body>
+                    </Tab>
+                </Tabs>
                 <Text text="Option A" width="80"/>
                 <Switch
                         value="@value"

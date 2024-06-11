@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class ArrayLoader implements XMLGuiLoader<GuiComponent> {
+public class ArrayLoader implements XMLGuiLoader.Basic<GuiComponent> {
     @Override
     public @NotNull GuiComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         GetSetter<ObservableList> list = context.getPropertyFromAttribute(element, new QName("data"), ObservableList.class);

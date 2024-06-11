@@ -32,7 +32,7 @@ public class GuiTextures {
         SLIDER_BUTTON,
         COLOUR_SELECTOR_DOT, COLOUR_SELECTOR_BAR, COLOUR_SELECTOR_BAR_ALPHA, COLOUR_SELECTOR_CHROMA,
         COLOUR_PICKER_INTERNAL, COLOUR_PICKER_INTERNAL_VALUE, COLOUR_PICKER_INTERNAL_OPACITY,
-        SEARCH, VANILLA_PANEL;
+        SEARCH, VANILLA_PANEL, VANILLA_TAB_SELECTED, VANILLA_TAB_UNSELECTED;
 
     private static MyResourceLocation root;
 
@@ -72,6 +72,8 @@ public class GuiTextures {
         COLOUR_PICKER_INTERNAL_OPACITY = r("internal/colourpicker_opacity");
         SEARCH = r("search.png");
         VANILLA_PANEL = r("vanilla_panel.png");
+        VANILLA_TAB_SELECTED = r("vanilla_tab_selected.png");
+        VANILLA_TAB_UNSELECTED = r("vanilla_tab_unselected.png");
     }
 
 

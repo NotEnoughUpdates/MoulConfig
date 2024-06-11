@@ -8,7 +8,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class CenterLoader : XMLGuiLoader<CenterComponent> {
+class CenterLoader : XMLGuiLoader.Basic<CenterComponent> {
     override fun createInstance(
         context: XMLContext<*>,
         element: Element

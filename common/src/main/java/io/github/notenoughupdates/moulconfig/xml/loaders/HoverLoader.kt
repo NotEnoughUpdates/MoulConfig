@@ -9,7 +9,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class HoverLoader : XMLGuiLoader<HoverComponent> {
+class HoverLoader : XMLGuiLoader.Basic<HoverComponent> {
     override fun createInstance(context: XMLContext<*>, element: Element): HoverComponent {
         val list = context.getPropertyFromAttribute(element, QName("lines"), List::class.java)!!
         return HoverComponent(

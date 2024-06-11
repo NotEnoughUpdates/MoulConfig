@@ -9,7 +9,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class IndirectLoader : XMLGuiLoader<IndirectComponent> {
+class IndirectLoader : XMLGuiLoader.Basic<IndirectComponent> {
     override fun createInstance(context: XMLContext<*>, element: Element): IndirectComponent {
         return IndirectComponent(
             context.getPropertyFromAttribute(

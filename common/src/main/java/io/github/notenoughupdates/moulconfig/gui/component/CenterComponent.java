@@ -40,7 +40,7 @@ public class CenterComponent extends GuiComponent {
 
     @Override
     public int getWidth() {
-        return child.getHeight();
+        return child.getWidth();
     }
 
     @Override

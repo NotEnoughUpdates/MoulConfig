@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class RowLoader implements XMLGuiLoader<RowComponent> {
+public class RowLoader implements XMLGuiLoader.Basic<RowComponent> {
     @Override
     public @NotNull RowComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         return new RowComponent(context.getChildFragments(element));

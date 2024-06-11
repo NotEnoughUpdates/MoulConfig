@@ -9,7 +9,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class FragmentLoader : XMLGuiLoader<GuiComponent> {
+class FragmentLoader : XMLGuiLoader.Basic<GuiComponent> {
     override fun createInstance(context: XMLContext<*>, element: Element): GuiComponent {
         val location = context.getPropertyFromAttribute(element, QName("value"), MyResourceLocation::class.java)!!.get()
         val bind = context.getPropertyFromAttribute(element, QName("bind"), Any::class.java)?.get() ?: element

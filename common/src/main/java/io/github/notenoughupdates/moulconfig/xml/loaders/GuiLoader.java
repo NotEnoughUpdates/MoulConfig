@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class GuiLoader implements XMLGuiLoader<CenterComponent> {
+public class GuiLoader implements XMLGuiLoader.Basic<CenterComponent> {
     @Override
     public @NotNull CenterComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         return new CenterComponent(new PanelComponent(context.getChildFragment(element)));

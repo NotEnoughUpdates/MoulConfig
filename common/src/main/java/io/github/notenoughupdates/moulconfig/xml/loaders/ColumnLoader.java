@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class ColumnLoader implements XMLGuiLoader<ColumnComponent> {
+public class ColumnLoader implements XMLGuiLoader.Basic<ColumnComponent> {
     @Override
     public @NotNull ColumnComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         return new ColumnComponent(context.getChildFragments(element));

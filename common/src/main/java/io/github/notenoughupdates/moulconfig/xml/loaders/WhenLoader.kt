@@ -8,7 +8,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class WhenLoader : XMLGuiLoader<WhenComponent> {
+class WhenLoader : XMLGuiLoader.Basic<WhenComponent> {
     override fun createInstance(context: XMLContext<*>, element: Element): WhenComponent {
         val fragments = context.getChildFragments(element)
         require(fragments.size == 2)

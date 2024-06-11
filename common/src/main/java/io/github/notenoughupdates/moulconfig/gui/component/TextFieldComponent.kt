@@ -53,11 +53,16 @@ open class TextFieldComponent(
         scrollOffset = max(0, min(rightMostScrollOffset, scrollOffset))
     }
 
+    fun updateVisibleText(width: Int) {
+        visibleText =
+            font.trimStringToWidth(safeSubString(text.get(), scrollOffset), width - TEXT_PADDING_X * 2)
+
+    }
+
     override fun render(context: GuiImmediateContext) {
         validateCursor()
         checkScrollOffset(context.width)
-        visibleText =
-            font.trimStringToWidth(safeSubString(text.get(), scrollOffset), context.width - TEXT_PADDING_X * 2)
+        updateVisibleText(context.width)
         renderBox(context)
         renderText(context, visibleText!!)
         if (text.get().isEmpty() && !isFocused) {
@@ -242,6 +247,8 @@ open class TextFieldComponent(
 
     override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
         super.mouseEvent(mouseEvent, context)
+        checkScrollOffset(context.width)
+        updateVisibleText(context.width)
         if (context.isHovered && mouseEvent is Click) {
             if (mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
                 requestFocus()

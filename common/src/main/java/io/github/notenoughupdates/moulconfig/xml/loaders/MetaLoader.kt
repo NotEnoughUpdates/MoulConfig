@@ -9,7 +9,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class MetaLoader : XMLGuiLoader<MetaComponent> {
+class MetaLoader : XMLGuiLoader.Basic<MetaComponent> {
     override fun createInstance(context: XMLContext<*>, element: Element): MetaComponent {
         val beforeClose =
             context.getPropertyFromAttribute(element, QName("beforeClose"), CloseEventListener.CloseAction::class.java)

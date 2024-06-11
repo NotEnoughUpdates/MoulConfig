@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class ScrollPanelLoader implements XMLGuiLoader<ScrollPanelComponent> {
+public class ScrollPanelLoader implements XMLGuiLoader.Basic<ScrollPanelComponent> {
     @Override
     public @NotNull ScrollPanelComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         return new ScrollPanelComponent(

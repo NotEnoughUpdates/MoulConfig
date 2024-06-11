@@ -58,6 +58,11 @@ public class PanelComponent extends GuiComponent {
             public void render(RenderContext renderContext, int x, int y, int width, int height) {
                 renderContext.drawNinePatch(NinePatches.INSTANCE.createVanillaPanel(), x, y, width, height);
             }
+        },
+        TRANSPARENT {
+            @Override
+            public void render(RenderContext renderContext, int x, int y, int width, int height) {
+            }
         }
     }
 

@@ -9,7 +9,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class SpacerLoader : XMLGuiLoader<SpacerComponent> {
+class SpacerLoader : XMLGuiLoader.Basic<SpacerComponent> {
     override fun createInstance(context: XMLContext<*>, element: Element): SpacerComponent {
         return SpacerComponent(
             context.getPropertyFromAttribute(element, QName("width"), Int::class.java) ?: GetSetter.constant(0),

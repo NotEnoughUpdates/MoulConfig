@@ -11,7 +11,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class BasicCollapsibleLoader : XMLGuiLoader<CollapsibleComponent> {
+class BasicCollapsibleLoader : XMLGuiLoader.Basic<CollapsibleComponent> {
     override fun createInstance(context: XMLContext<*>, element: Element): CollapsibleComponent {
         val state = context.getPropertyFromAttribute(element, QName("value"), Boolean::class.java)
             ?: GetSetter.floating(true)

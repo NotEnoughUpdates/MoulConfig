@@ -1,10 +1,18 @@
 package io.github.notenoughupdates.moulconfig.test
 
 import io.github.notenoughupdates.moulconfig.common.IItemStack
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.gui.CloseEventListener
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
+import io.github.notenoughupdates.moulconfig.gui.component.CenterComponent
+import io.github.notenoughupdates.moulconfig.gui.component.HoverComponent
+import io.github.notenoughupdates.moulconfig.gui.component.ItemStackComponent
+import io.github.notenoughupdates.moulconfig.gui.component.TabComponent
+import io.github.notenoughupdates.moulconfig.gui.component.TextComponent
+import io.github.notenoughupdates.moulconfig.gui.component.TextFieldComponent
 import io.github.notenoughupdates.moulconfig.managed.ManagedConfig
+import io.github.notenoughupdates.moulconfig.observer.GetSetter
 import io.github.notenoughupdates.moulconfig.observer.ObservableList
 import io.github.notenoughupdates.moulconfig.platform.ModernItemStack
 import io.github.notenoughupdates.moulconfig.xml.Bind
@@ -15,9 +23,11 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.block.Blocks
 import net.minecraft.client.MinecraftClient
 import net.minecraft.item.ItemStack
+import net.minecraft.item.Items
 import net.minecraft.util.Identifier
 import java.io.File
-import java.util.*
+import java.util.Arrays
+import java.util.Random
 
 class FabricMain : ModInitializer {
     override fun onInitialize() {

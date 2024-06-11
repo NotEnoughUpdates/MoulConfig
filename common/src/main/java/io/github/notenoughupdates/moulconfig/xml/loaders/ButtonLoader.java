@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class ButtonLoader implements XMLGuiLoader<ButtonComponent> {
+public class ButtonLoader implements XMLGuiLoader.Basic<ButtonComponent> {
     @Override
     public @NotNull ButtonComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         return new ButtonComponent(

@@ -9,7 +9,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class PanelLoader : XMLGuiLoader<PanelComponent> {
+class PanelLoader : XMLGuiLoader.Basic<PanelComponent> {
     override fun createInstance(
         context: XMLContext<*>,
         element: Element

@@ -15,7 +15,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class TextLoader implements XMLGuiLoader<TextComponent> {
+public class TextLoader implements XMLGuiLoader.Basic<TextComponent> {
     @Override
     public @NotNull TextComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         var string = context.getPropertyFromAttribute(element, new QName("text"), String.class);

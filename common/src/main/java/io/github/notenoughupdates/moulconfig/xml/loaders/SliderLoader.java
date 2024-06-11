@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class SliderLoader implements XMLGuiLoader<SliderComponent> {
+public class SliderLoader implements XMLGuiLoader.Basic<SliderComponent> {
     @Override
     public @NotNull SliderComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         return new SliderComponent(

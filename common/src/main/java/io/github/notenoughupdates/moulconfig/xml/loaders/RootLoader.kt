@@ -8,7 +8,7 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
 import javax.xml.namespace.QName
 
-class RootLoader : XMLGuiLoader<GuiComponent> {
+class RootLoader : XMLGuiLoader.Basic<GuiComponent> {
     override fun createInstance(
         context: XMLContext<*>,
         element: Element

@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
 import java.util.Map;
 
-public class SwitchLoader implements XMLGuiLoader<SwitchComponent> {
+public class SwitchLoader implements XMLGuiLoader.Basic<SwitchComponent> {
     @Override
     public @NotNull SwitchComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
         var value = context.getPropertyFromAttribute(element, new QName("value"), Boolean.class);
