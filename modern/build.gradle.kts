@@ -21,6 +21,7 @@ unimined.minecraft {
 
 	fabric {
 		loader(libs.versions.fabric.loader.get())
+		accessWidener(project.file("src/main/resources/moulconfig.accesswidener"))
 	}
 	runs {
 		config("client") {
@@ -71,7 +72,7 @@ val sourcesJar by tasks.creating(Jar::class) {
 }
 
 
-tasks.withType(Jar::class){
+tasks.withType(Jar::class) {
 	this.filesMatching(listOf("fabric.mod.json")) {
 		filter {
 			if (it.contains("FabricMain")) ""

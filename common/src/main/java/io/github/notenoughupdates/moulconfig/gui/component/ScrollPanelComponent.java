@@ -33,29 +33,28 @@ public class ScrollPanelComponent extends GuiComponent {
 
     @Override
     public void render(GuiImmediateContext context) {
-        context.getRenderContext().pushMatrix();
         var x = context.getRenderOffsetX();
         var y = context.getRenderOffsetY();
-
-        context.getRenderContext().pushScissor(x, y, x + width, y + height);
+        context.getRenderContext().pushScissor(x, y, x + context.getWidth(), y + context.getHeight());
+        context.getRenderContext().pushMatrix();
         context.getRenderContext().translate(0, -scrollOffset, 0);
-        child.render(context.translatedNonRendering(0, -scrollOffset, width, height));
-        context.getRenderContext().popScissor();
+        child.render(context.translatedNonRendering(0, -scrollOffset, context.getWidth(), context.getHeight()));
         context.getRenderContext().popMatrix();
+        context.getRenderContext().popScissor();
     }
 
     @Override
     public boolean keyboardEvent(KeyboardEvent event, GuiImmediateContext context) {
-        return child.keyboardEvent(event, context.translatedNonRendering(0, -scrollOffset, width, height));
+        return child.keyboardEvent(event, context.translatedNonRendering(0, -scrollOffset, context.getWidth(), context.getHeight()));
     }
 
     @Override
     public boolean mouseEvent(MouseEvent mouseEvent, GuiImmediateContext context) {
-        if (child.mouseEvent(mouseEvent, context.translatedNonRendering(0, -scrollOffset, width, height))) {
+        if (child.mouseEvent(mouseEvent, context.translatedNonRendering(0, -scrollOffset, context.getWidth(), context.getHeight()))) {
             return true;
         }
         if (context.isHovered() && mouseEvent instanceof MouseEvent.Scroll) {
-            scrollOffset = (int) Math.max(0, Math.min(scrollOffset - (((MouseEvent.Scroll) mouseEvent).getDWheel()), child.getHeight() - height));
+            scrollOffset = (int) Math.max(0, Math.min(scrollOffset - (((MouseEvent.Scroll) mouseEvent).getDWheel() * 15), child.getHeight() - height));
             return true;
         }
         return false;

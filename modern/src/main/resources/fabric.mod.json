@@ -14,5 +14,6 @@
         "library"
       ]
     }
-  }
+  },
+  "accessWidener": "moulconfig.accesswidener"
 }

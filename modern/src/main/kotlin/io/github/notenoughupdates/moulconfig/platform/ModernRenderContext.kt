@@ -2,11 +2,20 @@ package io.github.notenoughupdates.moulconfig.platform
 
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.common.DynamicTextureReference
+import io.github.notenoughupdates.moulconfig.common.IFontRenderer
+import io.github.notenoughupdates.moulconfig.common.IItemStack
+import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
+import io.github.notenoughupdates.moulconfig.common.RenderContext
 import io.github.notenoughupdates.moulconfig.common.RenderContext.TextureFilter
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.render.*
+import net.minecraft.client.render.BufferRenderer
+import net.minecraft.client.render.GameRenderer
+import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.render.Tessellator
+import net.minecraft.client.render.VertexFormat
+import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
@@ -14,15 +23,10 @@ import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.awt.image.BufferedImage
-import java.util.*
 
 class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     val mouse = MinecraftClient.getInstance().mouse
     val window = MinecraftClient.getInstance().window
-    val scissors = Stack<Scissor>()
-
-    data class Scissor(val left: Double, val top: Double, val right: Double, val bottom: Double)
-
     override fun disableDepth() {
         RenderSystem.disableDepthTest()
     }
@@ -65,30 +69,13 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         }
     }
 
-    fun refreshScissors() {
-        if (scissors.isEmpty()) {
-            GL11.glScissor(0, 0, window.framebufferWidth, window.framebufferHeight)
-            return
-        }
-        var l = 0.0
-        var t = 0.0
-        var r = window.framebufferWidth * window.scaleFactor
-        var b = window.framebufferHeight * window.scaleFactor
-        for (frame in scissors) {
-            l = l.coerceAtLeast(frame.left * window.scaleFactor)
-            t = t.coerceAtLeast(frame.top * window.scaleFactor)
-            r = r.coerceAtMost(frame.right * window.scaleFactor)
-            b = b.coerceAtMost(frame.bottom * window.scaleFactor)
-        }
-        GL11.glScissor(l.toInt(), t.toInt(), r.toInt(), b.toInt())
-    }
 
     override fun refreshScissor() {
-        refreshScissors()
+        drawContext.setScissor(drawContext.scissorStack.stack.peekLast())
     }
 
     override fun disableScissor() {
-        GL11.glScissor(0, 0, window.framebufferWidth, window.framebufferHeight)
+        drawContext.setScissor(null)
     }
 
     override fun pushMatrix() {
@@ -229,18 +216,16 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun pushScissor(left: Int, top: Int, right: Int, bottom: Int) {
-        scissors.add(Scissor(left.toDouble(), top.toDouble(), right.toDouble(), bottom.toDouble()))
-        refreshScissors()
+        drawContext.enableScissor(left, top, right, bottom)
     }
 
     override fun popScissor() {
-        scissors.removeLast()
-        refreshScissors()
+        drawContext.disableScissor()
     }
 
     override fun clearScissor() {
-        scissors.clear()
-        refreshScissors()
+        drawContext.scissorStack.stack.clear();
+        drawContext.setScissor(null)
     }
 
     override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: String?) {
