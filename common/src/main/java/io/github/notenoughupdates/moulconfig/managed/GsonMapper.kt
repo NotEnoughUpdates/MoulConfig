@@ -9,6 +9,7 @@ class GsonMapper<T>(val clazz: Class<T>) : DataMapper<T> {
     val gsonBuilder = GsonBuilder()
         .registerTypeAdapterFactory(PropertyTypeAdapterFactory())
         .registerTypeAdapter(ChromaColour::class.java, LegacyStringChromaColourTypeAdapter(true))
+        .excludeFieldsWithoutExposeAnnotation()
     private val gson by lazy { gsonBuilder.create() }
     override fun serialize(value: T): String {
         return gson.toJson(value)
