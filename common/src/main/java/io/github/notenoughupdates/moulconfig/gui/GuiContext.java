@@ -42,6 +42,13 @@ public class GuiContext {
     public List<FloatingGuiElement> floatingWindows = new ArrayList<>();
     public Runnable closeRequestHandler;
 
+    public void setFocusedElement(GuiComponent focusedElement) {
+        GuiComponent oldElement = this.focusedElement;
+        if (oldElement != null)
+            oldElement.onLostFocus();
+        this.focusedElement = focusedElement;
+    }
+
     public GuiContext(GuiComponent root) {
         this.root = root;
         root.foldRecursive((Void) null, (guiElementNew, _void) -> {

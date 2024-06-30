@@ -99,8 +99,7 @@ public abstract class GuiComponent {
     }
 
     /**
-     * This method is called by the gui context when an element loses focus. This includes a child element losing focus,
-     * but not if another child element becomes focused.
+     * This method is called by the gui context when an element loses focus. This does only get called if this element specifically was {@link #isFocused() focused}.
      */
     public void onLostFocus() {
     }
