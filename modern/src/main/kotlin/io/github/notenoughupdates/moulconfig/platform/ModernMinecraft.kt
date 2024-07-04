@@ -1,7 +1,16 @@
 package io.github.notenoughupdates.moulconfig.platform
 
-import io.github.notenoughupdates.moulconfig.common.*
-import io.github.notenoughupdates.moulconfig.gui.*
+import io.github.notenoughupdates.moulconfig.common.ClickType
+import io.github.notenoughupdates.moulconfig.common.IFontRenderer
+import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
+import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
+import io.github.notenoughupdates.moulconfig.common.RenderContext
+import io.github.notenoughupdates.moulconfig.gui.GuiComponent
+import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
+import io.github.notenoughupdates.moulconfig.gui.GuiContext
+import io.github.notenoughupdates.moulconfig.gui.GuiElement
+import io.github.notenoughupdates.moulconfig.gui.GuiElementWrapper
 import io.github.notenoughupdates.moulconfig.internal.MCLogger
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.fabricmc.loader.api.FabricLoader
@@ -130,6 +139,14 @@ class ModernMinecraft : IMinecraft {
 
     override fun openWrappedScreen(gui: GuiComponent) {
         displayGuiScreen(GuiComponentWrapper(GuiContext(gui)))
+    }
+
+    override fun copyToClipboard(string: String) {
+        MinecraftClient.getInstance().keyboard.clipboard = string
+    }
+
+    override fun copyFromClipboard(): String {
+        return MinecraftClient.getInstance().keyboard.clipboard ?: ""
     }
 
     override fun sendClickableChatMessage(message: String, action: String, type: ClickType) {

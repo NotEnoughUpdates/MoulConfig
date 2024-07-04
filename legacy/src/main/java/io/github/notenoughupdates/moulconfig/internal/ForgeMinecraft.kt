@@ -1,9 +1,28 @@
 package io.github.notenoughupdates.moulconfig.internal
 
-import io.github.notenoughupdates.moulconfig.annotations.*
-import io.github.notenoughupdates.moulconfig.common.*
-import io.github.notenoughupdates.moulconfig.gui.*
-import io.github.notenoughupdates.moulconfig.gui.editors.*
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
+import io.github.notenoughupdates.moulconfig.common.ClickType
+import io.github.notenoughupdates.moulconfig.common.IFontRenderer
+import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
+import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
+import io.github.notenoughupdates.moulconfig.common.RenderContext
+import io.github.notenoughupdates.moulconfig.gui.GuiComponent
+import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
+import io.github.notenoughupdates.moulconfig.gui.GuiContext
+import io.github.notenoughupdates.moulconfig.gui.GuiElement
+import io.github.notenoughupdates.moulconfig.gui.GuiScreenElementWrapper
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorDraggableList
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorDropdown
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorInfoText
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorKeybind
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorSlider
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorText
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -16,6 +35,9 @@ import net.minecraft.util.ResourceLocation
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.StringSelection
 import java.io.InputStream
 
 class ForgeMinecraft : IMinecraft {
@@ -152,6 +174,24 @@ class ForgeMinecraft : IMinecraft {
     // TODO: gui context?
     override fun openWrappedScreen(gui: GuiComponent) {
         openScreen(GuiComponentWrapper(GuiContext(gui)))
+    }
+
+    override fun copyToClipboard(string: String) {
+        try {
+            Toolkit.getDefaultToolkit()
+                .systemClipboard
+                .setContents(StringSelection(string), null)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun copyFromClipboard(): String {
+        return try {
+            Toolkit.getDefaultToolkit().systemClipboard.getContents(null).getTransferData(DataFlavor.stringFlavor) as String
+        } catch (e: Exception) {
+            null
+        } ?: ""
     }
 
     override val mouseX: Int

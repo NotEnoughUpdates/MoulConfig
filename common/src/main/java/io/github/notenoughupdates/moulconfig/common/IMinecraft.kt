@@ -47,6 +47,10 @@ interface IMinecraft {
     fun openWrappedScreen(gui: GuiElement)
     fun openWrappedScreen(gui: GuiComponent)
 
+    fun copyToClipboard(string: String)
+    fun copyFromClipboard(): String
+
+
     companion object {
         @JvmField
         val instance: IMinecraft = ServiceLoader.load(IMinecraft::class.java).also { it.reload() }.first()

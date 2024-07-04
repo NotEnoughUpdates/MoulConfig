@@ -8,7 +8,6 @@ import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent.Click
-import io.github.notenoughupdates.moulconfig.internal.ClipboardUtils
 import io.github.notenoughupdates.moulconfig.observer.GetSetter
 import java.util.function.Supplier
 import kotlin.math.max
@@ -189,7 +188,7 @@ open class TextFieldComponent(
                 }
 
                 KeyboardConstants.keyC -> if (context.renderContext.isCtrlDown) {
-                    ClipboardUtils.copyToClipboard(
+                    IMinecraft.instance.copyToClipboard(
                         getSelection()
                     )
                     return true
@@ -198,7 +197,7 @@ open class TextFieldComponent(
                 }
 
                 KeyboardConstants.keyX -> if (context.renderContext.isCtrlDown) {
-                    ClipboardUtils.copyToClipboard(
+                    IMinecraft.instance.copyToClipboard(
                         getSelection()
                     )
                     writeText("", context.width)
@@ -208,7 +207,7 @@ open class TextFieldComponent(
                 }
 
                 KeyboardConstants.keyV -> if (context.renderContext.isCtrlDown) {
-                    writeText(ClipboardUtils.getClipboardContent(), context.width)
+                    writeText(IMinecraft.instance.copyFromClipboard(), context.width)
                     return true
                 } else {
                     return false
