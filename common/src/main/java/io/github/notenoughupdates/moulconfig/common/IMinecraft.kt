@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.common
 
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent
+import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
 import io.github.notenoughupdates.moulconfig.internal.MCLogger
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
@@ -45,7 +46,10 @@ interface IMinecraft {
     @Deprecated("This context will be at the top level, not providing any of the useful translations and scalings that might be needed to render properly. Use with care.")
     fun provideTopLevelRenderContext(): RenderContext
     fun openWrappedScreen(gui: GuiElement)
-    fun openWrappedScreen(gui: GuiComponent)
+    fun openWrappedScreen(gui: GuiContext)
+    fun openWrappedScreen(gui: GuiComponent) {
+        openWrappedScreen(GuiContext(gui))
+    }
 
     fun copyToClipboard(string: String)
     fun copyFromClipboard(): String

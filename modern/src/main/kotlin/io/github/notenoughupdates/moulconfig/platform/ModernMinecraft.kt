@@ -6,7 +6,6 @@ import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
 import io.github.notenoughupdates.moulconfig.common.RenderContext
-import io.github.notenoughupdates.moulconfig.gui.GuiComponent
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
@@ -137,8 +136,8 @@ class ModernMinecraft : IMinecraft {
         displayGuiScreen(GuiElementWrapper(gui))
     }
 
-    override fun openWrappedScreen(gui: GuiComponent) {
-        displayGuiScreen(GuiComponentWrapper(GuiContext(gui)))
+    override fun openWrappedScreen(gui: GuiContext) {
+        displayGuiScreen(GuiComponentWrapper(gui))
     }
 
     override fun copyToClipboard(string: String) {

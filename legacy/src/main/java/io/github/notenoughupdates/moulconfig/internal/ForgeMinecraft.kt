@@ -171,9 +171,8 @@ class ForgeMinecraft : IMinecraft {
         openScreen(GuiScreenElementWrapper(gui))
     }
 
-    // TODO: gui context?
-    override fun openWrappedScreen(gui: GuiComponent) {
-        openScreen(GuiComponentWrapper(GuiContext(gui)))
+    override fun openWrappedScreen(gui: GuiContext) {
+        openScreen(GuiComponentWrapper(gui))
     }
 
     override fun copyToClipboard(string: String) {
