@@ -108,17 +108,16 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun drawTriangles(vararg coordinates: Float) {
         val tess = Tessellator.getInstance()
-        val buffer = tess.buffer
+        val buffer = tess.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION)
         val matrix = drawContext.matrices.peek().positionMatrix
         RenderSystem.enableBlend()
-        buffer.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION)
 
         require(coordinates.size % 6 == 0)
         for (i in 0 until (coordinates.size / 2)) {
             buffer.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F).next()
         }
 
-        tess.draw()
+        BufferRenderer.drawWithGlobalProgram(buffer.end())
     }
 
     override fun drawString(
@@ -138,13 +137,12 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun invertedRect(left: Float, top: Float, right: Float, bottom: Float) {
         val tess = Tessellator.getInstance()
-        val buffer = tess.buffer
+        val buffer = tess.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION)
         val matrix = drawContext.matrices.peek().positionMatrix
-        RenderSystem.setShaderColor(0F, 0F, 1f, 1f)
+        RenderSystem.setShaderColor(1F, 1F, 1f, 1f)
         RenderSystem.setShader(GameRenderer::getPositionProgram)
         RenderSystem.enableColorLogicOp()
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE)
-        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION)
         buffer.vertex(matrix, left, bottom, 0F).next()
         buffer.vertex(matrix, right, bottom, 0F).next()
         buffer.vertex(matrix, right, top, 0F).next()
@@ -177,8 +175,8 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         RenderSystem.setShaderTexture(0, ModernMinecraft.boundTexture!!)
         RenderSystem.setShader(GameRenderer::getPositionTexProgram)
         val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
-        val bufferBuilder = Tessellator.getInstance().buffer
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE)
+        val bufferBuilder = Tessellator.getInstance()
+            .begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE)
         bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1).next()
         bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(u1, v2).next()
         bufferBuilder.vertex(matrix4f, x + width, y + height, 0f).texture(u2, v2).next()

@@ -3,13 +3,15 @@ package io.github.notenoughupdates.moulconfig.platform
 import io.github.notenoughupdates.moulconfig.common.IItemStack
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.item.TooltipContext
+import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.registry.Registries
+import net.minecraft.world.World
 
 class ModernItemStack private constructor(val backing: ItemStack) : IItemStack {
     override fun getLore(): List<String> {
-        return backing.getTooltip(MinecraftClient.getInstance().player, TooltipContext.BASIC).map { it.string }
+        return backing.getTooltip(Item.TooltipContext.create(null as World?), MinecraftClient.getInstance().player, TooltipType.BASIC).map { it.string }
     }
 
     override fun getDisplayName(): String {

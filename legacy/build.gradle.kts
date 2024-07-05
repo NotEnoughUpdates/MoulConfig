@@ -37,10 +37,6 @@ unimined.minecraft {
             this.jvmArgs.remove("-XX:MaxGCPauseMillis=50")
             this.jvmArgs.remove("-XX:G1ReservePercent=20")
             this.jvmArgs.remove("-XX:G1HeapRegionSize=32M")
-            this.env.put(
-                "LD_LIBRARY_PATH",
-                ":/nix/store/agp6lqznayysqvqkx4k1ggr8n1rsyi8c-gcc-13.2.0-lib/lib:/nix/store/ldi0rb00gmbdg6915lhch3k3b3ib460z-libXcursor-1.2.2/lib:/nix/store/8xbbv82pabjcbj30vrna4gcz4g9q97z4-libXrandr-1.5.4/lib:/nix/store/smrb2g0addhgahkfjjl3k8rfd30gdc29-libXxf86vm-1.1.5/lib:/nix/store/lpqy1z1h8li6h3cp9ax6vifl71dks1ff-libglvnd-1.7.0/lib"
-            )
         }
     }
 }

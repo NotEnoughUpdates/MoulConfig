@@ -46,7 +46,7 @@ class FabricMain : ModInitializer {
                         XMLUniverse.getDefaultUniverse()
                     val scene = xmlUniverse.load(
                         ObjectBound(), MinecraftClient.getInstance().resourceManager.open(
-                            Identifier("moulconfig:test.xml")
+                            Identifier.of("moulconfig:test.xml")
                         )
                     )
                     MinecraftClient.getInstance().setScreen(

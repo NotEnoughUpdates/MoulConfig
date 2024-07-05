@@ -42,7 +42,7 @@ class ModernMinecraft : IMinecraft {
         }
 
         fun fromMyResourceLocation(resourceLocation: MyResourceLocation): Identifier {
-            return Identifier(resourceLocation.root, resourceLocation.path)
+            return Identifier.of(resourceLocation.root, resourceLocation.path)
         }
     }
 
