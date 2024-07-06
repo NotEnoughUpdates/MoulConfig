@@ -70,10 +70,10 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
         @Override
         public int getHeight() {
-            if (option.config.getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
+            if (option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
                 return super.getHeight();
             var fr = IMinecraft.instance.getDefaultFontRenderer();
-            return Math.max(45, fr.splitText(option.desc, 250 * 2 / 3 - 10).size() * (fr.getHeight() + 1) + 10);
+            return Math.max(45, fr.splitText(option.getDescription(), 250 * 2 / 3 - 10).size() * (fr.getHeight() + 1) + 10);
         }
 
         @Override
@@ -104,7 +104,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             var minecraft = context.getRenderContext().getMinecraft();
             var fr = minecraft.getDefaultFontRenderer();
             context.getRenderContext().drawStringCenteredScaledMaxWidth(
-                option.name, fr, width / 6, 13, true, width / 3 - 10, 0xc0c0c0
+                option.getName(), fr, width / 6, 13, true, width / 3 - 10, 0xc0c0c0
             );
         }
 
@@ -114,9 +114,9 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             var fr = minecraft.getDefaultFontRenderer();
             float scale = 1;
             List<String> lines;
-            int descriptionHeight = option.config.getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : context.getHeight();
+            int descriptionHeight = option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : context.getHeight();
             while (true) {
-                lines = fr.splitText(option.desc, (int) (width * 2 / 3 / scale - 10));
+                lines = fr.splitText(option.getDescription(), (int) (width * 2 / 3 / scale - 10));
                 if (lines.size() * scale * (fr.getHeight() + 1) + 10 < descriptionHeight)
                     break;
                 scale -= 1 / 8f;

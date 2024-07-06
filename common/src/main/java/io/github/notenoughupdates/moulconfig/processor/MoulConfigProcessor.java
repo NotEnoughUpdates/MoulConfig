@@ -108,7 +108,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     @Override
     public void endCategory() {
         for (ProcessedOption option : currentCategory.options) {
-            val editor = option.editor;
+            val editor = option.getEditor();
             if (editor instanceof GuiOptionEditorAccordion) {
                 currentCategory.accordionAnchors.put(((GuiOptionEditorAccordion) editor).getAccordionId(), option);
             }
@@ -119,6 +119,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
     @Override
     public void beginAccordion(Object baseObject, Field field, ConfigOption option, int id) {
         ProcessedOption processedOption = createProcessedOption(baseObject, field, option);
+        // TODO: expose setter in subclass
         processedOption.editor = new GuiOptionEditorAccordion(processedOption, id);
         currentCategory.options.add(processedOption);
         this.accordion.push(id);

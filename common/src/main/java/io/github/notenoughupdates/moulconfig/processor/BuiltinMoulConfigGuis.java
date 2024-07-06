@@ -31,9 +31,9 @@ import java.lang.reflect.Field;
 public class BuiltinMoulConfigGuis {
     public static void addProcessors(MoulConfigProcessor<?> processor) {
         processor.registerConfigEditor(ConfigEditorButton.class, (processedOption, configEditorButton) ->
-            new GuiOptionEditorButton(processedOption, configEditorButton.runnableId(), configEditorButton.buttonText(), processedOption.config));
+            new GuiOptionEditorButton(processedOption, configEditorButton.runnableId(), configEditorButton.buttonText(), processedOption.getConfig()));
         processor.registerConfigEditor(ConfigEditorBoolean.class, (processedOption, configEditorBoolean) ->
-            new GuiOptionEditorBoolean(processedOption, configEditorBoolean.runnableId(), processedOption.config));
+            new GuiOptionEditorBoolean(processedOption, configEditorBoolean.runnableId(), processedOption.getConfig()));
         processor.registerConfigEditor(ConfigEditorAccordion.class, (processedOption, accordion) ->
             new GuiOptionEditorAccordion(processedOption, accordion.id()));
         processor.registerConfigEditor(ConfigEditorColour.class, (processedOption, configEditorColour) ->
@@ -45,7 +45,7 @@ public class BuiltinMoulConfigGuis {
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);
             }
-            return new GuiOptionEditorButton(option, -1, "Link", option.config) {
+            return new GuiOptionEditorButton(option, -1, "Link", option.getConfig()) {
                 @Override
                 public void onClick() {
                     val linkedOption = activeConfigGUI.getProcessedConfig().getOptionFromField(field);

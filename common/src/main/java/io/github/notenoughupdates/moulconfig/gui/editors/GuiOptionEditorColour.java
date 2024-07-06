@@ -44,7 +44,7 @@ public class GuiOptionEditorColour extends ComponentEditor {
         } else if (type.equals(ChromaColour.class)) {
             usesString = false;
         } else {
-            throw new IllegalArgumentException("ConfigEditorColour may only be used on a String or ChromaColour field, but is used on " + option.field);
+            throw new IllegalArgumentException("ConfigEditorColour may only be used on a String or ChromaColour field, but is used on " + option.getCodeLocation());
         }
         component = wrapComponent(new GuiComponent() {
             @Override

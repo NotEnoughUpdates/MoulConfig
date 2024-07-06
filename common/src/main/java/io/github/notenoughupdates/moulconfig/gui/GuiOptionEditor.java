@@ -28,6 +28,7 @@ import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import lombok.var;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Locale;
 
@@ -45,8 +46,7 @@ public abstract class GuiOptionEditor {
 
     public GuiOptionEditor(ProcessedOption option) {
         this.option = option;
-        SearchTag[] annotationsByType = option.field.getAnnotationsByType(SearchTag.class);
-        for (SearchTag searchTag : annotationsByType) {
+        for (SearchTag searchTag : option.getSearchTags()) {
             if (!searchTags.isEmpty()) {
                 searchTags += " ";
             }
@@ -61,15 +61,15 @@ public abstract class GuiOptionEditor {
         var fr = minecraft.getDefaultFontRenderer();
 
         context.drawDarkRect(x, y, width, height, true);
-        context.drawStringCenteredScaledMaxWidth(option.name,
+        context.drawStringCenteredScaledMaxWidth(option.getName(),
             fr, x + width / 6, y + 13, true, width / 3 - 10, 0xc0c0c0
         );
 
         float scale = 1;
         List<String> lines;
-        int descriptionHeight = option.config.getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : getHeight();
+        int descriptionHeight = option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : getHeight();
         while (true) {
-            lines = fr.splitText(option.desc, (int) (width * 2 / 3 / scale - 10));
+            lines = fr.splitText(option.getDescription(), (int) (width * 2 / 3 / scale - 10));
             if (lines.size() * scale * (fr.getHeight() + 1) + 10 < descriptionHeight)
                 break;
             scale -= 1 / 8f;
@@ -87,10 +87,10 @@ public abstract class GuiOptionEditor {
     }
 
     public int getHeight() {
-        if (option.config.getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
+        if (option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
             return HEIGHT;
         var fr = IMinecraft.instance.getDefaultFontRenderer();
-        return Math.max(45, fr.splitText(option.desc, 250 * 2 / 3 - 10).size() * (fr.getHeight() + 1) + 10);
+        return Math.max(45, fr.splitText(option.getDescription(), 250 * 2 / 3 - 10).size() * (fr.getHeight() + 1) + 10);
     }
 
     @Deprecated
@@ -121,7 +121,7 @@ public abstract class GuiOptionEditor {
 
     public boolean fulfillsSearch(String word) {
         if (searchDescNameCache == null) {
-            searchDescNameCache = (option.name + option.desc + searchTags).toLowerCase(Locale.ROOT);
+            searchDescNameCache = (option.getName() + option.getDescription() + searchTags).toLowerCase(Locale.ROOT);
         }
         return searchDescNameCache.contains(word);
     }

@@ -84,7 +84,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
         for (ProcessedOption option : allOptions) {
-            option.editor.activeConfigGUI = this;
+            option.getEditor().activeConfigGUI = this;
         }
         updateSearchResults();
         searchField.setContext(guiContext);
@@ -100,31 +100,31 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         ProcessedCategory processedCategory = getCurrentlySearchedCategories().get(getSelectedCategory());
 
         // Check we are in the right category
-        if (processedCategory != searchedOption.category) {
+        if (processedCategory != searchedOption.getCategory()) {
             return false;
         }
 
         // Recursively expand accordions this option is in
         var accordionP = searchedOption;
-        while (accordionP.accordionId >= 0) {
-            accordionP = processedCategory.accordionAnchors.get(accordionP.accordionId);
-            ((GuiOptionEditorAccordion) accordionP.editor).setToggled(true);
+        while (accordionP.getAccordionId() >= 0) {
+            accordionP = processedCategory.accordionAnchors.get(accordionP.getAccordionId());
+            ((GuiOptionEditorAccordion) accordionP.getEditor()).setToggled(true);
         }
 
         // If this option is an accordion, also expand that one
-        if (searchedOption.editor instanceof GuiOptionEditorAccordion) {
-            ((GuiOptionEditorAccordion) searchedOption.editor).setToggled(true);
+        if (searchedOption.getEditor() instanceof GuiOptionEditorAccordion) {
+            ((GuiOptionEditorAccordion) searchedOption.getEditor()).setToggled(true);
         }
 
         // Iterate over all options to find the correct y value for our thingy
         Set<Integer> activeAccordions = new HashSet<>();
         int optionY = 0;
         for (ProcessedOption processedOption : getOptionsInCategory(processedCategory)) {
-            val editor = processedOption.editor;
+            val editor = processedOption.getEditor();
             if (editor == null) {
                 continue;
             }
-            if (processedOption.accordionId >= 0 && !activeAccordions.contains(processedOption.accordionId))
+            if (processedOption.getAccordionId() >= 0 && !activeAccordions.contains(processedOption.getAccordionId()))
                 continue;
             if (editor instanceof GuiOptionEditorAccordion) {
                 GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
@@ -168,19 +168,19 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         Set<ProcessedOption> nextRound = new HashSet<>();
 
         for (ProcessedOption option : lastRound) {
-            if (option.accordionId >= 0 && upwards) {
-                for (ProcessedOption accordion : option.category.options) {
+            if (option.getAccordionId() >= 0 && upwards) {
+                for (ProcessedOption accordion : option.getCategory().options) {
                     if (accordion == option) continue;
-                    if (!(accordion.editor instanceof GuiOptionEditorAccordion)) continue;
-                    if (((GuiOptionEditorAccordion) accordion.editor).getAccordionId() == option.accordionId) {
+                    if (!(accordion.getEditor() instanceof GuiOptionEditorAccordion)) continue;
+                    if (((GuiOptionEditorAccordion) accordion.getEditor()).getAccordionId() == option.getAccordionId()) {
                         nextRound.add(accordion);
                     }
                 }
             }
-            if (option.editor instanceof GuiOptionEditorAccordion && !upwards) {
-                int parentId = ((GuiOptionEditorAccordion) option.editor).getAccordionId();
-                for (ProcessedOption potentialChild : option.category.options) {
-                    if (potentialChild.accordionId == parentId) {
+            if (option.getEditor() instanceof GuiOptionEditorAccordion && !upwards) {
+                int parentId = ((GuiOptionEditorAccordion) option.getEditor()).getAccordionId();
+                for (ProcessedOption potentialChild : option.getCategory().options) {
+                    if (potentialChild.getAccordionId() == parentId) {
                         nextRound.add(potentialChild);
                     }
                 }
@@ -208,7 +208,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         if (!toSearch.isEmpty()) {
             Set<ProcessedOption> matchingOptions = new HashSet<>(allOptions);
             for (String word : toSearch.split(" +")) {
-                matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.editor, () -> !searchFunction.fulfillsSearch(it.editor, word)));
+                matchingOptions.removeIf(it -> ContextAware.wrapErrorWithContext(it.getEditor(), () -> !searchFunction.fulfillsSearch(it.getEditor(), word)));
             }
 
             HashSet<ProcessedCategory> directlyMatchedCategories = new HashSet<>(processedConfig.getAllCategories().values());
@@ -239,7 +239,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
             currentlyVisibleOptions = matchingOptionsAndDependencies;
 
-            Set<ProcessedCategory> visibleCategories = matchingOptionsAndDependencies.stream().map(it -> it.category).collect(Collectors.toSet());
+            Set<ProcessedCategory> visibleCategories = matchingOptionsAndDependencies.stream().map(it -> it.getCategory()).collect(Collectors.toSet());
             Set<ProcessedCategory> parentCategories = visibleCategories.stream()
                 .filter(it -> it.parent != null).map(it -> processedConfig.getAllCategories().get(it.parent))
                 .filter(Objects::nonNull).collect(Collectors.toSet());
@@ -525,15 +525,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             for (ProcessedOption option : options) {
 
                 int optionWidth = optionWidthDefault;
-                if (option.accordionId >= 0) {
-                    if (!activeAccordions.containsKey(option.accordionId)) {
+                if (option.getAccordionId() >= 0) {
+                    if (!activeAccordions.containsKey(option.getAccordionId())) {
                         continue;
                     }
-                    int accordionDepth = activeAccordions.get(option.accordionId);
+                    int accordionDepth = activeAccordions.get(option.getAccordionId());
                     optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
                 }
 
-                GuiOptionEditor editor = option.editor;
+                GuiOptionEditor editor = option.getEditor();
                 if (editor == null) {
                     continue;
                 }
@@ -542,8 +542,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                     if (accordion.getToggled()) {
                         int accordionDepth = 0;
-                        if (option.accordionId >= 0) {
-                            accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                        if (option.getAccordionId() >= 0) {
+                            accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
                         }
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
@@ -583,15 +583,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
                 int optionWidth = optionWidthDefault;
-                if (option.accordionId >= 0) {
-                    if (!activeAccordions.containsKey(option.accordionId)) {
+                if (option.getAccordionId() >= 0) {
+                    if (!activeAccordions.containsKey(option.getAccordionId())) {
                         continue;
                     }
-                    int accordionDepth = activeAccordions.get(option.accordionId);
+                    int accordionDepth = activeAccordions.get(option.getAccordionId());
                     optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
                 }
 
-                GuiOptionEditor editor = option.editor;
+                GuiOptionEditor editor = option.getEditor();
                 if (editor == null) {
                     continue;
                 }
@@ -600,8 +600,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                     if (accordion.getToggled()) {
                         int accordionDepth = 0;
-                        if (option.accordionId >= 0) {
-                            accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                        if (option.getAccordionId() >= 0) {
+                            accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
                         }
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
@@ -800,13 +800,13 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                     HashMap<Integer, Integer> activeAccordions = new HashMap<>();
                     for (ProcessedOption option : getOptionsInCategory(cat)) {
-                        if (option.accordionId >= 0) {
-                            if (!activeAccordions.containsKey(option.accordionId)) {
+                        if (option.getAccordionId() >= 0) {
+                            if (!activeAccordions.containsKey(option.getAccordionId())) {
                                 continue;
                             }
                         }
 
-                        GuiOptionEditor editor = option.editor;
+                        GuiOptionEditor editor = option.getEditor();
                         if (editor == null) {
                             continue;
                         }
@@ -815,8 +815,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                             GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                             if (accordion.getToggled()) {
                                 int accordionDepth = 0;
-                                if (option.accordionId >= 0) {
-                                    accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                                if (option.getAccordionId() >= 0) {
+                                    accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
                                 }
                                 activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                             }
@@ -882,15 +882,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
                 int optionWidth = optionWidthDefault;
-                if (option.accordionId >= 0) {
-                    if (!activeAccordions.containsKey(option.accordionId)) {
+                if (option.getAccordionId() >= 0) {
+                    if (!activeAccordions.containsKey(option.getAccordionId())) {
                         continue;
                     }
-                    int accordionDepth = activeAccordions.get(option.accordionId);
+                    int accordionDepth = activeAccordions.get(option.getAccordionId());
                     optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
                 }
 
-                GuiOptionEditor editor = option.editor;
+                GuiOptionEditor editor = option.getEditor();
                 if (editor == null) {
                     continue;
                 }
@@ -899,8 +899,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                     if (accordion.getToggled()) {
                         int accordionDepth = 0;
-                        if (option.accordionId >= 0) {
-                            accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                        if (option.getAccordionId() >= 0) {
+                            accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
                         }
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
@@ -932,15 +932,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 HashMap<Integer, Integer> activeAccordions = new HashMap<>();
                 for (ProcessedOption option : getOptionsInCategory(cat)) {
                     int optionWidth = optionWidthDefault;
-                    if (option.accordionId >= 0) {
-                        if (!activeAccordions.containsKey(option.accordionId)) {
+                    if (option.getAccordionId() >= 0) {
+                        if (!activeAccordions.containsKey(option.getAccordionId())) {
                             continue;
                         }
-                        int accordionDepth = activeAccordions.get(option.accordionId);
+                        int accordionDepth = activeAccordions.get(option.getAccordionId());
                         optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
                     }
 
-                    GuiOptionEditor editor = option.editor;
+                    GuiOptionEditor editor = option.getEditor();
                     if (editor == null) {
                         continue;
                     }
@@ -949,8 +949,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                         if (accordion.getToggled()) {
                             int accordionDepth = 0;
-                            if (option.accordionId >= 0) {
-                                accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                            if (option.getAccordionId() >= 0) {
+                                accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
                             }
                             activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                         }
@@ -995,13 +995,13 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
-                if (option.accordionId >= 0) {
-                    if (!activeAccordions.containsKey(option.accordionId)) {
+                if (option.getAccordionId() >= 0) {
+                    if (!activeAccordions.containsKey(option.getAccordionId())) {
                         continue;
                     }
                 }
 
-                GuiOptionEditor editor = option.editor;
+                GuiOptionEditor editor = option.getEditor();
                 if (editor == null) {
                     continue;
                 }
@@ -1010,8 +1010,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                     if (accordion.getToggled()) {
                         int accordionDepth = 0;
-                        if (option.accordionId >= 0) {
-                            accordionDepth = activeAccordions.get(option.accordionId) + 1;
+                        if (option.getAccordionId() >= 0) {
+                            accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
                         }
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
@@ -1069,9 +1069,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     public boolean goToOption(@NotNull ProcessedOption option) {
-        if (!setSelectedCategory(option.category)) {
+        if (!setSelectedCategory(option.getCategory())) {
             search("");
-            if (!setSelectedCategory(option.category)) {
+            if (!setSelectedCategory(option.getCategory())) {
                 return false;
             }
         }

@@ -107,7 +107,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         String str = exampleText.get(forObject);
         if (str == null) {
             str = "<unknown " + forObject + ">";
-            Warnings.warnOnce("Could not find draggable list object for " + forObject + " on option " + option.field, forObject, option);
+            Warnings.warnOnce("Could not find draggable list object for " + forObject + " on option " + option.getCodeLocation(), forObject, option);
         }
         return str;
     }
@@ -154,7 +154,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         if (canDeleteRightNow()) {
             int deleteX = x + width / 6 + 27;
             int deleteY = y + 45 - 7 - 13;
-            IMinecraft.instance.bindTexture(GuiTextures.DELETE);
+            renderContext.bindTexture(GuiTextures.DELETE);
             RenderUtils.drawTexturedRect(deleteX, deleteY, 11, 14, GL11.GL_NEAREST);
             // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
             if (lastMousePosition != null && currentDragging == null &&

@@ -13,7 +13,7 @@ public class ContextAware {
         try {
             return runnable.run();
         } catch (Exception e) {
-            throw new ContextualException(e, (editor != null && editor.getOption() != null) ? editor.getOption().field : null);
+            throw new ContextualException(e, (editor != null && editor.getOption() != null) ? editor.getOption().getCodeLocation() : null);
         }
     }
 
@@ -21,7 +21,7 @@ public class ContextAware {
         try {
             return runnable.run();
         } catch (Exception e) {
-            throw new ContextualException(e, field);
+            throw new ContextualException(e, field.toString());
         }
     }
 
@@ -31,8 +31,8 @@ public class ContextAware {
     }
 
     public static class ContextualException extends RuntimeException {
-        public ContextualException(Exception exception, Field field) {
-            super("Editor at field " + (field == null ? "<null>" : field) + " crashed: " + exception.getMessage(), exception);
+        public ContextualException(Exception exception, String codeLocation) {
+            super("Editor at " + (codeLocation == null ? "<unknown code location>" : codeLocation) + " crashed: " + exception.getMessage(), exception);
         }
     }
 }

@@ -22,7 +22,9 @@
 package io.github.notenoughupdates.moulconfig.processor;
 
 import io.github.notenoughupdates.moulconfig.Config;
+import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 import io.github.notenoughupdates.moulconfig.observer.Property;
 
@@ -31,16 +33,23 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class ProcessedOption {// TODO: replace with interface
-    public final String name;
-    public final String desc;
-    public final Field field;
-    public final String path;
-    public final ProcessedCategory category;
+    private final String name;
+    private final String desc;
+    private final Field field;
+    private final String path;
+    private final ProcessedCategory category;
     private final Object container;
-    public GuiOptionEditor editor;
-    public int accordionId = -1;
-    public boolean isProperty;
-    public Config config;
+    GuiOptionEditor editor;
+    int accordionId = -1;
+    private boolean isProperty;
+    private Config config;
+
+    /**
+     * @return a string identifying the position in code where this option was declared, intended for debugging purposes only
+     */
+    public String getCodeLocation() {
+        return field.toString();
+    }
 
     public ProcessedOption(String name, String desc, String path, Field field, ProcessedCategory category, Object container, Config config) {
         this.name = name;
@@ -51,6 +60,51 @@ public class ProcessedOption {// TODO: replace with interface
         this.field = field;
         this.container = container;
         this.isProperty = field.getType() == Property.class;
+    }
+
+    public SearchTag[] getSearchTags() {
+        return field.getAnnotationsByType(SearchTag.class);
+    }
+
+    private GuiOptionEditorAccordion owningAccordion;
+
+    public GuiOptionEditorAccordion getOwningAccordion() {
+        if (owningAccordion == null && getAccordionId() >= 0) {
+            owningAccordion = getCategory()
+                .options
+                .stream()
+                .map(ProcessedOption::getEditor)
+                .filter(it -> it instanceof GuiOptionEditorAccordion)
+                .map(it -> (GuiOptionEditorAccordion) it)
+                .filter(it -> it.getAccordionId() == getAccordionId())
+                .findAny()
+                .orElse(null);
+        }
+        return owningAccordion;
+    }
+
+    public int getAccordionId() {
+        return accordionId;
+    }
+
+    public GuiOptionEditor getEditor() {
+        return editor;
+    }
+
+    public ProcessedCategory getCategory() {
+        return category;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return desc;
+    }
+
+    public Config getConfig() {
+        return config;
     }
 
     public Object get() {
