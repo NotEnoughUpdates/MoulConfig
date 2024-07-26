@@ -85,8 +85,7 @@ public class TextComponent extends GuiComponent {
             int length = fontRenderer.getStringWidth(line);
             if (length > context.getWidth()) {
                 context.getRenderContext().drawStringScaledMaxWidth(line, fontRenderer, 2, 2, shadow, context.getWidth(), -1);
-            }
-            switch (alignment) {
+            } else switch (alignment) {
                 case LEFT:
                     context.getRenderContext().drawString(fontRenderer, line, 2, 2, -1, shadow);
                     break;
