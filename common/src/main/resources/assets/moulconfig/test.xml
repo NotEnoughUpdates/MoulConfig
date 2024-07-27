@@ -23,9 +23,9 @@
                         </Tab.Header>
                         <Tab.Body>
                             <Panel background="TRANSPARENT" insets="10">
-                                <Center>
+                                <Align horizontal="RIGHT" vertical="BOTTOM">
                                     <TextField value="@textField" width="100"/>
-                                </Center>
+                                </Align>
                             </Panel>
                         </Tab.Body>
                     </Tab>

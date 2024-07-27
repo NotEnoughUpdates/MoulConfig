@@ -3,6 +3,8 @@ package io.github.notenoughupdates.moulconfig.xml;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
+import io.github.notenoughupdates.moulconfig.gui.HorizontalAlign;
+import io.github.notenoughupdates.moulconfig.gui.VerticalAlign;
 import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent;
 import io.github.notenoughupdates.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
@@ -56,6 +58,7 @@ public class XMLUniverse {
         xmlUniverse.registerLoader(new WhenLoader());
         xmlUniverse.registerLoader(new PanelLoader());
         xmlUniverse.registerLoader(new MetaLoader());
+        xmlUniverse.registerLoader(new AlignLoader());
         xmlUniverse.registerLoader(new TabsLoader());
         xmlUniverse.registerMapper(String.class, Function.identity());
         xmlUniverse.registerMapper(Integer.class, Integer::valueOf);
@@ -71,6 +74,8 @@ public class XMLUniverse {
         xmlUniverse.registerMapper(List.class, str -> Arrays.asList(str.split(";")));
         xmlUniverse.registerMapper(MyResourceLocation.class, MyResourceLocation.Companion::parse);
         xmlUniverse.registerMapper(PanelComponent.BackgroundRenderer.class, PanelComponent.DefaultBackgroundRenderer::valueOf);
+        xmlUniverse.registerMapper(HorizontalAlign.class, HorizontalAlign::valueOf);
+        xmlUniverse.registerMapper(VerticalAlign.class, VerticalAlign::valueOf);
         return xmlUniverse;
     }
 
