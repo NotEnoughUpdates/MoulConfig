@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.Color;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -25,10 +26,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class XMLUniverse {
+    public static String MOULCONFIG_XML_NS = "http://notenoughupdates.org/moulconfig";
     Map<QName, XMLGuiLoader<?>> guiElements = new HashMap<>();
     Map<Class<?>, Function<String, ?>> objectMappers = new HashMap<>();
     Map<Class<?>, XMLBoundProperties> propertiesMap = new HashMap<>();
-    public static String MOULCONFIG_XML_NS = "http://notenoughupdates.org/moulconfig";
 
     public static QName qName(String localPart) {
         return new QName(MOULCONFIG_XML_NS, localPart);
@@ -76,6 +77,7 @@ public class XMLUniverse {
         xmlUniverse.registerMapper(PanelComponent.BackgroundRenderer.class, PanelComponent.DefaultBackgroundRenderer::valueOf);
         xmlUniverse.registerMapper(HorizontalAlign.class, HorizontalAlign::valueOf);
         xmlUniverse.registerMapper(VerticalAlign.class, VerticalAlign::valueOf);
+        xmlUniverse.registerMapper(Color.class, str -> str.startsWith("#") ? new Color((int) Long.parseLong(str.substring(1), 16), str.length() == 9) : new Color(Integer.parseInt(str), true));
         return xmlUniverse;
     }
 
