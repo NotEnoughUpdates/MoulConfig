@@ -105,6 +105,12 @@ public abstract class GuiComponent {
     }
 
     /**
+     * This method is called by the gui context when an element gains focus. This does only get called if this element specifically is being {@link #isFocused() focused}.
+     */
+    public void onGainedFocus() {
+    }
+
+    /**
      * Walk the scene tree of this gui element, including children of children.
      * By default, the visitor is called with only this element.
      *

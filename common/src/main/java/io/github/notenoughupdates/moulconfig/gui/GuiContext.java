@@ -43,9 +43,12 @@ public class GuiContext {
     public Runnable closeRequestHandler;
 
     public void setFocusedElement(GuiComponent focusedElement) {
+        if (this.focusedElement == focusedElement) return;
         GuiComponent oldElement = this.focusedElement;
         if (oldElement != null)
             oldElement.onLostFocus();
+        if (focusedElement != null)
+            focusedElement.onGainedFocus();
         this.focusedElement = focusedElement;
     }
 
