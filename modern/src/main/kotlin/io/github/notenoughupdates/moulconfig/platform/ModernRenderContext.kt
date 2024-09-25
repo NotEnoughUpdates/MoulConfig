@@ -107,6 +107,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun drawTriangles(vararg coordinates: Float) {
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram)
         val tess = Tessellator.getInstance()
         val buffer = tess.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION)
         val matrix = drawContext.matrices.peek().positionMatrix
