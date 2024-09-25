@@ -31,6 +31,12 @@ public abstract class ComponentEditor extends GuiOptionEditor {
         this.overlay = null;
     }
 
+    public boolean isOverlayOpen() {
+        return overlay != null;
+    }
+
+    // TODO: close overlay on scroll
+
     public void openOverlay(GuiComponent overlay, int overlayX, int overlayY) {
         this.overlay = overlay;
         this.overlayX = overlayX;

@@ -16,7 +16,7 @@ dependencies {
     compileOnly(libs.lombok)
     compileOnly(libs.jbAnnotations)
     implementation(libs.libninepatch)
-    implementation(libs.legacyGson)
+    compileOnly(libs.legacyGson)
 }
 val singleFile by configurations.creating
 artifacts {

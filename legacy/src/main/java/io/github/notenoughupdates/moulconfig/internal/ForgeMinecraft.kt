@@ -1,7 +1,6 @@
 package io.github.notenoughupdates.moulconfig.internal
 
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
@@ -12,13 +11,11 @@ import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
 import io.github.notenoughupdates.moulconfig.common.RenderContext
-import io.github.notenoughupdates.moulconfig.gui.GuiComponent
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
 import io.github.notenoughupdates.moulconfig.gui.GuiScreenElementWrapper
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorDraggableList
-import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorDropdown
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorInfoText
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorKeybind
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorSlider
@@ -83,14 +80,6 @@ class ForgeMinecraft : IMinecraft {
             GuiOptionEditorInfoText(
                 processedOption,
                 configEditorInfoText.infoTitle
-            )
-        }
-        processor.registerConfigEditor(
-            ConfigEditorDropdown::class.java
-        ) { processedOption, configEditorDropdown: ConfigEditorDropdown ->
-            GuiOptionEditorDropdown(
-                processedOption,
-                configEditorDropdown.values
             )
         }
         processor.registerConfigEditor(
