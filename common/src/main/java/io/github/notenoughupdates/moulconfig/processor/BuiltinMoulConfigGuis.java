@@ -38,6 +38,8 @@ public class BuiltinMoulConfigGuis {
             new GuiOptionEditorAccordion(processedOption, accordion.id()));
         processor.registerConfigEditor(ConfigEditorColour.class, (processedOption, configEditorColour) ->
             new GuiOptionEditorColour(processedOption));
+        processor.registerConfigEditor(ConfigEditorDropdown.class, (processedOption, configEditorDropdown) ->
+            new GuiOptionEditorDropdown(processedOption, configEditorDropdown.values()));
         processor.registerConfigEditor(ConfigLink.class, ((option, configLink) -> {
             Field field;
             try {
