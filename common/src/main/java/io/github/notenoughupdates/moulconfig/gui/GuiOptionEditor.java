@@ -62,7 +62,7 @@ public abstract class GuiOptionEditor {
 
         context.drawDarkRect(x, y, width, height, true);
         context.drawStringCenteredScaledMaxWidth(option.getName(),
-            fr, x + width / 6, y + 13, true, width / 3 - 10, 0xc0c0c0
+                                                 fr, x + width / 6, y + 13, true, width / 3 - 10, 0xc0c0c0
         );
 
         float scale = 1;
@@ -115,7 +115,14 @@ public abstract class GuiOptionEditor {
         return false;
     }
 
-    // TODO: add RenderContext
+    public void renderOverlay(RenderContext renderContext, int x, int y, int width) {
+        this.renderOverlay(x, y, width);
+    }
+
+    /**
+     * Use {@link #renderOverlay(RenderContext, int, int, int)} instead.
+     */
+    @Deprecated
     public void renderOverlay(int x, int y, int width) {
     }
 

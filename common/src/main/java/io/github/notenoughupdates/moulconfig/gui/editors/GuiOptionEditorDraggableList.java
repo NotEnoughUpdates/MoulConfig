@@ -22,29 +22,19 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.KeyboardConstants;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
-import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
-import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.TypeUtils;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import kotlin.Pair;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.EnumChatFormatting;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
+import lombok.var;
 
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
@@ -66,18 +56,18 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private String exampleTextConcat;
 
     public GuiOptionEditorDraggableList(
-        ProcessedOption option,
-        String[] exampleText,
-        boolean enableDeleting
+            ProcessedOption option,
+            String[] exampleText,
+            boolean enableDeleting
     ) {
         this(option, exampleText, enableDeleting, false);
     }
 
     public GuiOptionEditorDraggableList(
-        ProcessedOption option,
-        String[] exampleText,
-        boolean enableDeleting,
-        boolean requireNonEmpty
+            ProcessedOption option,
+            String[] exampleText,
+            boolean enableDeleting,
+            boolean requireNonEmpty
     ) {
         super(option);
 
@@ -85,10 +75,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         this.activeText = (List) option.get();
         this.requireNonEmpty = requireNonEmpty;
 
-        Type elementType = TypeUtils.resolveRawType(((ParameterizedType) option.getType()).getActualTypeArguments()[0]);
+        Class<?> elementType = TypeUtils.resolveRawType(((ParameterizedType) option.getType()).getActualTypeArguments()[0]);
 
-        if (Enum.class.isAssignableFrom((Class<?>) elementType)) {
-            Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) ((ParameterizedType) option.getType()).getActualTypeArguments()[0];
+        if (Enum.class.isAssignableFrom(elementType)) {
+            Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) elementType;
             enumConstants = enumType.getEnumConstants();
             for (int i = 0; i < enumConstants.length; i++) {
                 this.exampleText.put(enumConstants[i], enumConstants[i].toString());
@@ -133,42 +123,45 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     public void render(RenderContext renderContext, int x, int y, int width) {
         super.render(renderContext, x, y, width);
         int height = getHeight();
+        var fr = IMinecraft.instance.getDefaultFontRenderer();
 
-        GlStateManager.color(1, 1, 1, 1);
+        renderContext.color(1, 1, 1, 1);
         IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
-        RenderUtils.drawTexturedRect(x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
+        renderContext.drawTexturedRect(x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
 
-        TextRenderUtils.drawStringCenteredScaledMaxWidth("Add", Minecraft.getMinecraft().fontRendererObj,
-            x + width / 6, y + 45 - 7 - 6,
-            false, 44, 0xFF303030
+        renderContext.drawStringCenteredScaledMaxWidth("Add", fr,
+                                                       x + width / 6, y + 45 - 7 - 6,
+                                                       false, 44, 0xFF303030
         );
 
-        long currentTime = System.currentTimeMillis();
-        if (trashHoverTime < 0) {
-            float greenBlue = LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f);
-            GlStateManager.color(1, greenBlue, greenBlue, 1);
-        } else {
-            float greenBlue = LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
-            GlStateManager.color(1, greenBlue, greenBlue, 1);
-        }
-
         if (canDeleteRightNow()) {
+            long currentTime = System.currentTimeMillis();
+            if (trashHoverTime < 0) {
+                float greenBlue = LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f);
+                renderContext.color(1, greenBlue, greenBlue, 1);
+            } else {
+                float greenBlue = LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
+                renderContext.color(1, greenBlue, greenBlue, 1);
+            }
             int deleteX = x + width / 6 + 27;
             int deleteY = y + 45 - 7 - 13;
             renderContext.bindTexture(GuiTextures.DELETE);
-            RenderUtils.drawTexturedRect(deleteX, deleteY, 11, 14, GL11.GL_NEAREST);
+            renderContext.setTextureMinMagFilter(RenderContext.TextureFilter.NEAREST);
+            renderContext.drawTexturedRect(deleteX, deleteY, 11, 14);
             // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
             if (lastMousePosition != null && currentDragging == null &&
-                lastMousePosition.getFirst() >= deleteX && lastMousePosition.getFirst() < deleteX + 11 &&
-                lastMousePosition.getSecond() >= deleteY && lastMousePosition.getSecond() < deleteY + 14) {
+                    lastMousePosition.getFirst() >= deleteX && lastMousePosition.getFirst() < deleteX + 11 &&
+                    lastMousePosition.getSecond() >= deleteY && lastMousePosition.getSecond() < deleteY + 14 &&
+                    !dropdownOpen) {
                 renderContext.scheduleDrawTooltip(Collections.singletonList(
-                    "§cDelete Item"
+                        "§cDelete Item"
                 ));
             }
+            renderContext.color(1, 1, 1, 1);
         }
 
-        Gui.drawRect(x + 5, y + 45, x + width - 5, y + height - 5, 0xffdddddd);
-        Gui.drawRect(x + 6, y + 46, x + width - 6, y + height - 6, 0xff000000);
+        renderContext.drawColoredRect(x + 5, y + 45, x + width - 5, y + height - 5, 0xffdddddd);
+        renderContext.drawColoredRect(x + 6, y + 46, x + width - 6, y + height - 6, 0xff000000);
 
         int i = 0;
         int yOff = 0;
@@ -182,16 +175,17 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             if (i++ != dragStartIndex) {
                 for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
                     String line = multilines[multilineIndex];
-                    TextRenderUtils.drawStringScaledMaxWidth(line + EnumChatFormatting.RESET, Minecraft.getMinecraft().fontRendererObj,
-                        x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
+                    renderContext.drawStringScaledMaxWidth(line + "§r", fr,
+                                                           x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
                     );
                 }
-                Minecraft.getMinecraft().fontRendererObj.drawString(
-                    "≡",
-                    x + 10,
-                    y + 49 + yOff + ySize / 2 - 4,
-                    0xffffff,
-                    true
+                renderContext.drawString(
+                        fr,
+                        "≡",
+                        x + 10,
+                        y + 49 + yOff + ySize / 2 - 4,
+                        0xffffff,
+                        true
                 );
             }
 
@@ -200,13 +194,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     @Override
-    public void renderOverlay(int x, int y, int width) {
-        super.renderOverlay(x, y, width);
+    public void renderOverlay(RenderContext context, int x, int y, int width) {
+        super.renderOverlay(context, x, y, width);
+        var fr = IMinecraft.instance.getDefaultFontRenderer();
         if (dropdownOpen) {
             List<Object> remaining = new ArrayList<>(exampleText.keySet());
             remaining.removeAll(activeText);
 
-            FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
             int dropdownWidth = Math.min(width / 2 - 10, 150);
             int left = dragOffsetX;
             int top = dragOffsetY;
@@ -215,17 +209,17 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
             int main = 0xff202026;
             int outline = 0xff404046;
-            Gui.drawRect(left, top, left + 1, top + dropdownHeight, outline); //Left
-            Gui.drawRect(left + 1, top, left + dropdownWidth, top + 1, outline); //Top
-            Gui.drawRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, outline); //Right
-            Gui.drawRect(
-                left + 1,
-                top + dropdownHeight - 1,
-                left + dropdownWidth - 1,
-                top + dropdownHeight,
-                outline
+            context.drawColoredRect(left, top, left + 1, top + dropdownHeight, outline); //Left
+            context.drawColoredRect(left + 1, top, left + dropdownWidth, top + 1, outline); //Top
+            context.drawColoredRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, outline); //Right
+            context.drawColoredRect(
+                    left + 1,
+                    top + dropdownHeight - 1,
+                    left + dropdownWidth - 1,
+                    top + dropdownHeight,
+                    outline
             ); //Bottom
-            Gui.drawRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
+            context.drawColoredRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
 
             int dropdownY = -1;
             for (Object indexObject : remaining) {
@@ -233,8 +227,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 if (str.isEmpty()) {
                     str = "<NONE>";
                 }
-                TextRenderUtils.drawStringScaledMaxWidth(str.replaceAll("(\n.*)+", " ..."),
-                    fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
+                context.drawStringScaledMaxWidth(str.replaceAll("(\n.*)+", " ..."),
+                                                 fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
                 );
                 dropdownY += 12;
             }
@@ -251,44 +245,48 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
             if (opacity < 20) return;
 
-            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-            int mouseX = Mouse.getX() * scaledResolution.getScaledWidth() / Minecraft.getMinecraft().displayWidth;
-            int mouseY = scaledResolution.getScaledHeight() -
-                Mouse.getY() * scaledResolution.getScaledHeight() / Minecraft.getMinecraft().displayHeight - 1;
+            int mouseX = IMinecraft.instance.getMouseX();
+            int mouseY = IMinecraft.instance.getMouseY();
 
             String str = getExampleText(currentDragging);
             String[] multilines = str.split("\n");
 
-            GlStateManager.enableBlend();
+            // TODO: context.enableBlend();
             for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
                 String line = multilines[multilineIndex];
-                TextRenderUtils.drawStringScaledMaxWidth(
-                    line + EnumChatFormatting.RESET,
-                    Minecraft.getMinecraft().fontRendererObj,
-                    dragOffsetX + mouseX + 10,
-                    dragOffsetY + mouseY + multilineIndex * 10,
-                    true,
-                    width - 20,
-                    0xffffff | (opacity << 24)
+                context.drawStringScaledMaxWidth(
+                        line + "§r",
+                        fr,
+                        dragOffsetX + mouseX + 10,
+                        dragOffsetY + mouseY + multilineIndex * 10,
+                        true,
+                        width - 20,
+                        0xffffff | (opacity << 24)
                 );
             }
 
             int ySize = multilines.length * 10;
 
-            Minecraft.getMinecraft().fontRendererObj.drawString("\u2261",
-                dragOffsetX + mouseX,
-                dragOffsetY - 1 + mouseY + ySize / 2 - 4, 0xffffff, true
+            context.drawString(fr, "≡",
+                               dragOffsetX + mouseX,
+                               dragOffsetY - 1 + mouseY + ySize / 2 - 4, 0xffffff, true
             );
         }
     }
 
     @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
+    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
         lastMousePosition = new Pair<>(mouseX, mouseY);
-        if (!Mouse.getEventButtonState() && !dropdownOpen &&
-            dragStartIndex >= 0 && Mouse.getEventButton() == 0 &&
-            mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
-            mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
+        if (mouseEvent instanceof MouseEvent.Scroll) {
+            this.dropdownOpen = false;
+            return false;
+        }
+        var click = mouseEvent instanceof MouseEvent.Click ? (MouseEvent.Click) mouseEvent : null;
+        if (click != null &&
+                !click.getMouseState() && !dropdownOpen &&
+                dragStartIndex >= 0 && click.getMouseButton() == 0 &&
+                mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
+                mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
             if (canDeleteRightNow()) {
                 activeText.remove(dragStartIndex);
                 saveChanges();
@@ -298,21 +296,21 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             return false;
         }
 
-        if (!Mouse.isButtonDown(0) || dropdownOpen) {
+        if (!IMinecraft.instance.isMouseButtonDown(0) || dropdownOpen) {
             currentDragging = null;
             dragStartIndex = -1;
             if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
         } else if (currentDragging != null &&
-            mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
-            mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
+                mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
+                mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
             if (trashHoverTime < 0 && canDeleteRightNow()) trashHoverTime = System.currentTimeMillis();
-        } else if (!canDeleteRightNow()){
+        } else if (!canDeleteRightNow()) {
             trashHoverTime = Long.MAX_VALUE;
         } else if (trashHoverTime > 0) {
             trashHoverTime = -System.currentTimeMillis();
         }
 
-        if (Mouse.getEventButtonState()) {
+        if (click != null && click.getMouseState()) {
             int height = getHeight();
 
             if (dropdownOpen) {
@@ -326,7 +324,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 int dropdownHeight = -1 + 12 * remaining.size();
 
                 if (mouseX > left && mouseX < left + dropdownWidth &&
-                    mouseY > top && mouseY < top + dropdownHeight) {
+                        mouseY > top && mouseY < top + dropdownHeight) {
                     int dropdownY = -1;
                     for (Object objectIndex : remaining) {
                         if (mouseY < top + dropdownY + 12) {
@@ -345,17 +343,17 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             }
 
             if (activeText.size() < exampleText.size() &&
-                mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-                mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
+                    mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
+                    mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
                 dropdownOpen = true;
                 dragOffsetX = mouseX;
                 dragOffsetY = mouseY;
                 return true;
             }
 
-            if (Mouse.getEventButton() == 0 &&
-                mouseX > x + 5 && mouseX < x + width - 5 &&
-                mouseY > y + 45 && mouseY < y + height - 6) {
+            if (click.getMouseButton() == 0 &&
+                    mouseX > x + 5 && mouseX < x + width - 5 &&
+                    mouseY > y + 45 && mouseY < y + height - 6) {
                 int yOff = 0;
                 int i = 0;
                 for (Object objectIndex : activeText) {
@@ -373,7 +371,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                     i++;
                 }
             }
-        } else if (Mouse.getEventButton() == -1 && currentDragging != null) {
+        } else if (mouseEvent instanceof MouseEvent.Move && currentDragging != null) {
             int yOff = 0;
             int i = 0;
             for (Object objectIndex : activeText) {
@@ -394,15 +392,6 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
-        if (mouseEvent instanceof MouseEvent.Scroll) {
-            this.dropdownOpen = false;
-            return false;
-        }
-        return super.mouseInput(x, y, width, mouseX, mouseY, mouseEvent);
-    }
-
-    @Override
     public boolean fulfillsSearch(String word) {
         if (exampleTextConcat == null) {
             exampleTextConcat = String.join("", exampleText.values()).toLowerCase(Locale.ROOT);
@@ -414,7 +403,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     public boolean keyboardInput(KeyboardEvent event) {
         if (event instanceof KeyboardEvent.KeyPressed) {
             int key = ((KeyboardEvent.KeyPressed) event).getKeycode();
-            if (key == Keyboard.KEY_UP || key == Keyboard.KEY_DOWN) {
+            if (key == KeyboardConstants.INSTANCE.getUp() || key == KeyboardConstants.INSTANCE.getDown()) {
                 dropdownOpen = false;
             }
         }
