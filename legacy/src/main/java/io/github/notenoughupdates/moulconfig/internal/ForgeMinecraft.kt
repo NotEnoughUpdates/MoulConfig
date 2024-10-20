@@ -1,7 +1,6 @@
 package io.github.notenoughupdates.moulconfig.internal
 
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
@@ -16,7 +15,6 @@ import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
 import io.github.notenoughupdates.moulconfig.gui.GuiScreenElementWrapper
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorDraggableList
-import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorInfoText
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorKeybind
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorSlider
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorText
@@ -72,14 +70,6 @@ class ForgeMinecraft : IMinecraft {
             GuiOptionEditorKeybind(
                 processedOption,
                 keybind.defaultKey
-            )
-        }
-        processor.registerConfigEditor(
-            ConfigEditorInfoText::class.java
-        ) { processedOption, configEditorInfoText: ConfigEditorInfoText ->
-            GuiOptionEditorInfoText(
-                processedOption,
-                configEditorInfoText.infoTitle
             )
         }
         processor.registerConfigEditor(

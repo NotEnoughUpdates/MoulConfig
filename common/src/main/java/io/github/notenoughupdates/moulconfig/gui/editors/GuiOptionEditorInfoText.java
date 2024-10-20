@@ -20,17 +20,16 @@
 
 package io.github.notenoughupdates.moulconfig.gui.editors;
 
-import io.github.notenoughupdates.moulconfig.common.RenderContext;
-import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
-import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
+import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
+import io.github.notenoughupdates.moulconfig.gui.component.TextComponent;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public class GuiOptionEditorInfoText extends GuiOptionEditor {
+public class GuiOptionEditorInfoText extends ComponentEditor {
     private String infoTitle;
+    GuiComponent component;
 
     public GuiOptionEditorInfoText(ProcessedOption option, String infoTitle) {
         super(option);
@@ -40,33 +39,14 @@ public class GuiOptionEditorInfoText extends GuiOptionEditor {
     }
 
     @Override
-    public void render(RenderContext renderContext, int x, int y, int width) {
-        super.render(renderContext, x, y, width);
-
-        int height = getHeight();
-
-        GlStateManager.color(1, 1, 1, 1);
-
-        if (infoTitle != null) {
-            TextRenderUtils.drawStringCenteredScaledMaxWidth(infoTitle, Minecraft.getMinecraft().fontRendererObj,
-                x + width / 6, y + height - 7 - 6,
-                false, 44, 0xFF303030
-            );
-        }
+    public @NotNull GuiComponent getDelegate() {
+        if (component == null)
+            component = wrapComponent(new TextComponent(infoTitle, 100, TextComponent.TextAlignment.CENTER));
+        return component;
     }
 
     @Override
     public boolean fulfillsSearch(String word) {
         return super.fulfillsSearch(word) || (infoTitle != null && infoTitle.toLowerCase(Locale.ROOT).contains(word));
-    }
-
-    @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        return false;
-    }
-
-    @Override
-    public boolean keyboardInput() {
-        return false;
     }
 }

@@ -1,9 +1,6 @@
 package io.github.notenoughupdates.moulconfig.test
 
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
-import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
+import io.github.notenoughupdates.moulconfig.annotations.*
 import io.github.notenoughupdates.moulconfig.observer.Property
 
 class TestCategoryA {
@@ -52,4 +49,10 @@ class TestCategoryA {
     @ConfigOption(name = "Slider", desc = "Between 1 and 5")
     @ConfigEditorSlider(minValue = 1F, maxValue = 5f, minStep = 1F)
     var minimumTitle: Int = 1
+
+    @ConfigOption(name = "Info Box", desc = "Shows important info to the user")
+    @ConfigEditorInfoText(
+        infoTitle = "§cAlert",
+    )
+    var notice: String = ""
 }
