@@ -177,7 +177,10 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
     @Override
     public void setGuiContext(GuiContext guiContext) {
-        getDelegate().setContext(guiContext);
+        getDelegate().foldRecursive((Void) null, (comp, _void)-> {
+            comp.setContext(guiContext);
+            return _void;
+        });
     }
 
     @Override

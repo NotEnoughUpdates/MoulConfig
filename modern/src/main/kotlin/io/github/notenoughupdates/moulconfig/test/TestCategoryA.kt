@@ -55,4 +55,8 @@ class TestCategoryA {
         infoTitle = "§cAlert",
     )
     var notice: String = ""
+
+    @ConfigOption(name = "Text Box", desc = "Lets you put strings.")
+    @ConfigEditorText
+    var customText: Property<String> = Property.of("abc")
 }
