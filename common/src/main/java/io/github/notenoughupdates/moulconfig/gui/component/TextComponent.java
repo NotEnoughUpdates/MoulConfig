@@ -48,6 +48,9 @@ public class TextComponent extends GuiComponent {
     private List<String> lastSplit;
     private static final Pattern colorPattern = Pattern.compile("§[a-f0-9r]");
 
+    public TextComponent(String string, int width, TextAlignment alignment) {
+        this(IMinecraft.instance.getDefaultFontRenderer(), () -> string, width, alignment, false, false);
+    }
 
     public TextComponent(String string, int width) {
         this(IMinecraft.instance.getDefaultFontRenderer(), () -> string, width, TextAlignment.LEFT, false, false);
