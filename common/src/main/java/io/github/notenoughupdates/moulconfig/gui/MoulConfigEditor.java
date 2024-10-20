@@ -614,6 +614,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     int finalOptionWidth = optionWidth;
                     ContextAware.wrapErrorWithContext(editor, () -> {
                         editor.renderOverlay(
+                            context,
                             finalX,
                             finalY,
                             finalOptionWidth

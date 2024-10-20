@@ -209,13 +209,13 @@ public abstract class ComponentEditor extends GuiOptionEditor {
     }
 
     @Override
-    public final void renderOverlay(int x, int y, int width) {
+    public final void renderOverlay(RenderContext context, int x, int y, int width) {
         if (overlay == null) return;
         overlay.foldRecursive((Void) null, (comp, _void) -> {
             comp.setContext(getDelegate().getContext());
             return _void;
         });
-        val ctx = getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), IMinecraft.instance.provideTopLevelRenderContext());
+        val ctx = getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), context);
         ctx.getRenderContext().translate(overlayX, overlayY, 0);
         overlay.render(ctx);
     }
