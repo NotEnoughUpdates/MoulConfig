@@ -44,6 +44,8 @@ public class BuiltinMoulConfigGuis {
             new GuiOptionEditorSlider(processedOption, configEditorSlider.minValue(), configEditorSlider.maxValue(), configEditorSlider.minStep()));
         processor.registerConfigEditor(ConfigEditorInfoText.class, (processedOption, configEditorInfoText) ->
             new GuiOptionEditorInfoText(processedOption, configEditorInfoText.infoTitle()));
+        processor.registerConfigEditor(ConfigEditorText.class, (processedOption, configEditorText) ->
+            new GuiOptionEditorText(processedOption));
         processor.registerConfigEditor(ConfigLink.class, ((option, configLink) -> {
             Field field;
             try {
