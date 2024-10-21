@@ -3,8 +3,8 @@ package io.github.notenoughupdates.moulconfig.test
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.*
 import io.github.notenoughupdates.moulconfig.observer.Property
+import org.lwjgl.glfw.GLFW
 import java.util.*
-import kotlin.collections.ArrayList
 
 class TestCategoryA {
     @ConfigOption(name = "Test Option", desc = "Test toggle")
@@ -90,4 +90,9 @@ class TestCategoryA {
             return str
         }
     }
+
+    @Expose
+    @ConfigOption(name = "Keybind", desc = "The Number One")
+    @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_1)
+    var slot1: Int = GLFW.GLFW_KEY_1
 }

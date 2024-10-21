@@ -162,6 +162,10 @@ class ModernMinecraft : IMinecraft {
         })
     }
 
+    override fun getKeyName(keyCode: Int): String {
+        return ModernKeybindHelper.getKeyName(keyCode)
+    }
+
     override fun provideTopLevelRenderContext(): RenderContext {
         return ModernRenderContext(
             DrawContext(

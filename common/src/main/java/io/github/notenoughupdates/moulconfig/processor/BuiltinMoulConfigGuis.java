@@ -43,7 +43,8 @@ public class BuiltinMoulConfigGuis {
                 processedOption,
                 configEditorDropdown.values()
             ));
-
+        processor.registerConfigEditor(ConfigEditorKeybind.class, (processedOption, keybind) ->
+            new GuiOptionEditorKeybind(processedOption, keybind.defaultKey()));
         processor.registerConfigEditor(ConfigEditorSlider.class, (processedOption, configEditorSlider) ->
             new GuiOptionEditorSlider(processedOption, configEditorSlider.minValue(), configEditorSlider.maxValue(), configEditorSlider.minStep()));
         processor.registerConfigEditor(ConfigEditorInfoText.class, (processedOption, configEditorInfoText) ->

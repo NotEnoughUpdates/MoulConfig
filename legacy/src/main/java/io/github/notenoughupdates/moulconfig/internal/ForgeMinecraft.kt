@@ -130,6 +130,10 @@ class ForgeMinecraft : IMinecraft {
         )
     }
 
+    override fun getKeyName(keyCode: Int): String {
+        return KeybindHelper.getKeyName(keyCode)
+    }
+
     override fun isMouseButtonDown(mouseButton: Int): Boolean {
         return Mouse.isButtonDown(mouseButton)
     }

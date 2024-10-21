@@ -37,6 +37,8 @@ interface IMinecraft {
 
     fun sendClickableChatMessage(message: String, action: String, type: ClickType)
 
+    fun getKeyName(keyCode: Int): String
+
     /**
      * This is a method to provide a render context. Note that constructing this context directly will potentially give
      * you an incorrect render state, leading to visual glitches. Depending on your platform, this might also require
