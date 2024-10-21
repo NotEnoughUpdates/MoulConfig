@@ -35,7 +35,6 @@ public class GuiOptionEditorInfoText extends ComponentEditor {
         super(option);
 
         this.infoTitle = infoTitle;
-        if (this.infoTitle != null && this.infoTitle.isEmpty()) this.infoTitle = null;
     }
 
     @Override
