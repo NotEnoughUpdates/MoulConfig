@@ -72,7 +72,6 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                 if (click.getMouseState() && click.getMouseButton() != -1 && editingKeycode) {
                     editingKeycode = false;
                     int mouseButton = click.getMouseButton();
-                    System.out.println(mouseButton);
                     option.set(mouseButton);
                     return true;
                 }
@@ -82,7 +81,7 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                     int width = getHeight();
                     int mouseX = context.getMouseX();
                     int mouseY = context.getMouseY();
-                    if (mouseX > width / 6 - 24 && mouseX < width / 6 + 24 &&
+                    if (mouseX > width / 6 - 24 && mouseX < width / 6 + 16 &&
                         mouseY > height - 7 - 14 && mouseY < height - 7 + 2) {
                         editingKeycode = true;
                         return true;
