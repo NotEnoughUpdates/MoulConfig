@@ -66,6 +66,7 @@ public class GuiOptionEditorColour extends ComponentEditor {
                 context.getRenderContext().color(r / 255f, g / 255f, b / 255f, 1);
                 context.getRenderContext().bindTexture(GuiTextures.BUTTON_WHITE);
                 context.getRenderContext().drawTexturedRect(0f, 0f, context.getWidth(), context.getHeight());
+                context.getRenderContext().color(1, 1, 1, 1);
             }
 
             @Override
