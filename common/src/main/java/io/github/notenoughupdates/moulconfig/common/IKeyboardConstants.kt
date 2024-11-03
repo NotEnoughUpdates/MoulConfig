@@ -12,6 +12,7 @@ interface IKeyboardConstants {
     val shiftLeft: Int
     val shiftRight: Int
     val escape: Int
+    val none: Int
     val enter: Int
     val delete: Int
     val up: Int

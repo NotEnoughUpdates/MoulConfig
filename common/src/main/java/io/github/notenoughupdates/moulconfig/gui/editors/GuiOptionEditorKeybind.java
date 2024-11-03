@@ -1,13 +1,17 @@
 package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.KeyboardConstants;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
+import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
+import lombok.var;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -18,6 +22,8 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
 
     public GuiOptionEditorKeybind(ProcessedOption option, int defaultKeyCode) {
         super(option);
+        if (option.getType() != int.class && option.getType() != Integer.class)
+            Warnings.warn(ConfigEditorKeybind.class + " can only be applied to int properties.");
 
         component = wrapComponent(new GuiComponent() {
             @Override
@@ -37,22 +43,22 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                 int width = getWidth();
 
                 renderContext.color(1, 1, 1, 1);
-                IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
+                renderContext.bindTexture(GuiTextures.BUTTON);
                 renderContext.drawTexturedRect(width / 6 - 24, height - 7 - 14, 48, 16);
 
 
                 String keyName = IMinecraft.instance.getKeyName((int) option.get());
                 String text = editingKeycode ? "> " + keyName + " <" : keyName;
                 renderContext.drawStringCenteredScaledMaxWidth(text,
-                    IMinecraft.instance.getDefaultFontRenderer(),
-                    width / 6, height - 7 - 6,
-                    false, 38, 0xFF303030
+                                                               IMinecraft.instance.getDefaultFontRenderer(),
+                                                               width / 6, height - 7 - 6,
+                                                               false, 38, 0xFF303030
                 );
 
                 int resetX = width / 6 - 24 + 48 + 3;
                 int resetY = height - 7 - 14 + 3;
 
-                IMinecraft.instance.bindTexture(GuiTextures.RESET);
+                renderContext.bindTexture(GuiTextures.RESET);
                 renderContext.color(1, 1, 1, 1);
                 renderContext.drawTexturedRect(resetX, resetY, 10, 11);
                 int mouseX = context.getMouseX();
@@ -72,7 +78,7 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                 if (click.getMouseState() && click.getMouseButton() != -1 && editingKeycode) {
                     editingKeycode = false;
                     int mouseButton = click.getMouseButton();
-                    option.set(mouseButton);
+                    option.set(mouseButton); // TODO: make this distinct. This is also different from the way 1.8.9 handles those keybindings, so this class is incompatible right now. A "proper" way to do this would be to make a Keybinding class that stores both the button and whether this is a mouse or keyboard button, with some version specific helpers to test if an event matches.
                     return true;
                 }
 
@@ -97,19 +103,17 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
             }
 
             @Override
-            public boolean keyboardEvent(KeyboardEvent keyboardEvent, GuiImmediateContext context) {
-                boolean wasKeyPressedEvent = keyboardEvent instanceof KeyboardEvent.KeyPressed;
-                if (wasKeyPressedEvent) {
+            public boolean keyboardEvent(@NotNull KeyboardEvent keyboardEvent, @NotNull GuiImmediateContext context) {
+                if (keyboardEvent instanceof KeyboardEvent.KeyPressed) {
+                    var keyPressed = (KeyboardEvent.KeyPressed) keyboardEvent;
                     if (editingKeycode) {
-                        KeyboardEvent.KeyPressed keyPressed = (KeyboardEvent.KeyPressed) keyboardEvent;
+                        if (keyPressed.getPressed()) return true;
                         editingKeycode = false;
-                        int keyCode = -1;
                         int keycode = keyPressed.getKeycode();
-                        if (keycode != 256 /* GLFW_KEY_ESCAPE*/ && keycode != 0) {
-                            keyCode = keycode;
+                        if (keycode == KeyboardConstants.INSTANCE.getEscape() && keycode == 0) {
+                            keycode = KeyboardConstants.INSTANCE.getNone();
                         }
-                        //if (keyCode > 256) keyCode = 0;
-                        option.set(keyCode);
+                        option.set(keycode);
                         return true;
                     } else {
                         return false;
