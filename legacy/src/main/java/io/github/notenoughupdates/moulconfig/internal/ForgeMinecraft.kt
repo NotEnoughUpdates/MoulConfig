@@ -15,9 +15,9 @@ import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
 import io.github.notenoughupdates.moulconfig.gui.GuiScreenElementWrapper
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorDraggableList
-import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorKeybind
-import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorSlider
-import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorText
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorKeybindL
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorSliderL
+import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorTextL
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -67,32 +67,22 @@ class ForgeMinecraft : IMinecraft {
         processor.registerConfigEditor(
             ConfigEditorKeybind::class.java
         ) { processedOption, keybind: ConfigEditorKeybind ->
-            GuiOptionEditorKeybind(
-                processedOption,
-                keybind.defaultKey
-            )
-        }
-        processor.registerConfigEditor(
-            ConfigEditorDraggableList::class.java
-        ) { processedOption, configEditorDraggableList: ConfigEditorDraggableList ->
-            GuiOptionEditorDraggableList(
-                processedOption,
-                configEditorDraggableList.exampleText,
-                configEditorDraggableList.allowDeleting,
-                configEditorDraggableList.requireNonEmpty
-            )
+	        GuiOptionEditorKeybindL(
+		        processedOption,
+		        keybind.defaultKey
+	        )
         }
         processor.registerConfigEditor(
             ConfigEditorText::class.java
         ) { processedOption, configEditorText: ConfigEditorText? ->
-            GuiOptionEditorText(
+            GuiOptionEditorTextL(
                 processedOption
             )
         }
         processor.registerConfigEditor(
             ConfigEditorSlider::class.java
         ) { processedOption, configEditorSlider: ConfigEditorSlider ->
-            GuiOptionEditorSlider(
+            GuiOptionEditorSliderL(
                 processedOption,
                 configEditorSlider.minValue,
                 configEditorSlider.maxValue,

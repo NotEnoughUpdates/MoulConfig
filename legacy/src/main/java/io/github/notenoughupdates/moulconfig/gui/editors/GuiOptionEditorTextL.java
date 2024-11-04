@@ -29,10 +29,10 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-public class GuiOptionEditorText extends GuiOptionEditor {
+public class GuiOptionEditorTextL extends GuiOptionEditor {
     private final GuiElementTextField textField;
 
-    public GuiOptionEditorText(ProcessedOption option) {
+    public GuiOptionEditorTextL(ProcessedOption option) {
         super(option);
 
         textField = new GuiElementTextField((String) option.get(), 0);

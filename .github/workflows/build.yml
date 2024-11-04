@@ -15,4 +15,4 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Execute Gradle tests
-        run: ./gradlew test
+        run: ./gradlew test assemble

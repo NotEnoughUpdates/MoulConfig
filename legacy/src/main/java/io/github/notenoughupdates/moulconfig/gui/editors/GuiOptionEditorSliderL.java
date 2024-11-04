@@ -48,11 +48,11 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-public class GuiOptionEditorSlider extends GuiOptionEditor {
+public class GuiOptionEditorSliderL extends GuiOptionEditor {
     private final GuiElementSlider slider;
     private final GuiElementTextField textField;
 
-    public GuiOptionEditorSlider(ProcessedOption option, float minValue, float maxValue, float minStep) {
+    public GuiOptionEditorSliderL(ProcessedOption option, float minValue, float maxValue, float minStep) {
         super(option);
         if (minStep < 0) minStep = 0.01f;
 

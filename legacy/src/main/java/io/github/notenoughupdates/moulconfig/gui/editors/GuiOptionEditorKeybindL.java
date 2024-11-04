@@ -37,13 +37,13 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Collections;
 
-public class GuiOptionEditorKeybind extends GuiOptionEditor {
+public class GuiOptionEditorKeybindL extends GuiOptionEditor {
     private final int defaultKeyCode;
     private boolean editingKeycode;
 
     private Pair<Integer, Integer> lastMousePosition = null;
 
-    public GuiOptionEditorKeybind(ProcessedOption option, int defaultKeyCode) {
+    public GuiOptionEditorKeybindL(ProcessedOption option, int defaultKeyCode) {
         super(option);
         this.defaultKeyCode = defaultKeyCode;
     }
