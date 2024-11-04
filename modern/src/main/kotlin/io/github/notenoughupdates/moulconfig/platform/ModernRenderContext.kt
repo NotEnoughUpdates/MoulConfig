@@ -1,6 +1,5 @@
 package io.github.notenoughupdates.moulconfig.platform
 
-import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import io.github.notenoughupdates.moulconfig.common.DynamicTextureReference
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer
@@ -9,22 +8,56 @@ import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
 import io.github.notenoughupdates.moulconfig.common.RenderContext
 import io.github.notenoughupdates.moulconfig.common.RenderContext.TextureFilter
 import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gl.ShaderProgramKeys
 import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.render.BufferRenderer
-import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.Tessellator
+import net.minecraft.client.render.RenderPhase
 import net.minecraft.client.render.VertexFormat
 import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
+import net.minecraft.util.Identifier
+import net.minecraft.util.TriState
+import net.minecraft.util.Util
 import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.awt.image.BufferedImage
 
 class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
+    companion object {
+        val RL = RenderLayer.of(
+            "moulconfig_inverted_rect",
+            VertexFormats.POSITION,
+            VertexFormat.DrawMode.QUADS,
+            RenderLayer.DEFAULT_BUFFER_SIZE,
+            false,
+            false,
+            RenderLayer.MultiPhaseParameters.builder()
+                .program(RenderPhase.POSITION_PROGRAM)
+                .colorLogic(RenderPhase.OR_REVERSE)
+                .build(false)
+        )
+        val COLORED_TRIANGLES = Util.memoize { it: Identifier ->
+            RenderLayer.of(
+                "mc_triangles",
+                VertexFormats.POSITION_COLOR,
+                VertexFormat.DrawMode.TRIANGLES,
+                RenderLayer.DEFAULT_BUFFER_SIZE,
+                false,
+                false,
+                RenderLayer.MultiPhaseParameters.builder()
+                    // TODO: import mipmap settings
+                    .texture(RenderPhase.Texture(it, TriState.DEFAULT, false))
+                    .program(RenderPhase.ShaderProgram(ShaderProgramKeys.POSITION_TEX_COLOR))
+                    .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+                    .depthTest(RenderPhase.LEQUAL_DEPTH_TEST)
+                    .build(false)
+            )
+        }
+    }
+
     val mouse = MinecraftClient.getInstance().mouse
     val window = MinecraftClient.getInstance().window
     override fun disableDepth() {
@@ -39,11 +72,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         for (i in (0 until img.width)) {
             for (j in (0 until img.height)) {
                 val argb = img.getRGB(i, j)
-                val b = (argb and 0xFF) shl 16
-                val r = (argb and 0xFF0000) shr 16
-                val aAndG = argb and 0xFF00FF00.toInt()
-                // Nice ABGR, nerd
-                image!!.setColor(i, j, b or r or aAndG)
+                image!!.setColorArgb(i, j, argb)
             }
         }
     }
@@ -94,8 +123,16 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         drawContext.matrices.scale(x, y, z)
     }
 
+    var tintR = 1F
+    var tintG = 1F
+    var tintB = 1F
+    var tintA = 1F
+
     override fun color(r: Float, g: Float, b: Float, a: Float) {
-        drawContext.setShaderColor(r, g, b, a)
+        tintR = r
+        tintG = g
+        tintB = b
+        tintA = a
     }
 
     override fun isMouseButtonDown(mouseButton: Int): Boolean {
@@ -106,19 +143,20 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         return InputUtil.isKeyPressed(window.handle, keyboardKey)
     }
 
+
     override fun drawTriangles(vararg coordinates: Float) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram)
-        val tess = Tessellator.getInstance()
-        val buffer = tess.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION)
-        val matrix = drawContext.matrices.peek().positionMatrix
-        RenderSystem.enableBlend()
-
         require(coordinates.size % 6 == 0)
-        for (i in 0 until (coordinates.size / 2)) {
-            buffer.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F).next()
-        }
+        RenderSystem.enableBlend()
+        drawContext.draw {
+            val buf = it.getBuffer(COLORED_TRIANGLES.apply(ModernMinecraft.boundTexture))
+            val matrix = drawContext.matrices.peek().positionMatrix
 
-        BufferRenderer.drawWithGlobalProgram(buffer.end())
+            for (i in 0 until (coordinates.size / 2)) {
+                buf.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F)
+                    .color(tintA, tintR, tintG, tintB).next()
+            }
+        }
+        RenderSystem.disableBlend()
     }
 
     override fun drawString(
@@ -137,20 +175,14 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun invertedRect(left: Float, top: Float, right: Float, bottom: Float) {
-        val tess = Tessellator.getInstance()
-        val buffer = tess.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION)
-        val matrix = drawContext.matrices.peek().positionMatrix
-        RenderSystem.setShaderColor(1F, 1F, 1f, 1f)
-        RenderSystem.setShader(GameRenderer::getPositionProgram)
-        RenderSystem.enableColorLogicOp()
-        RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE)
-        buffer.vertex(matrix, left, bottom, 0F).next()
-        buffer.vertex(matrix, right, bottom, 0F).next()
-        buffer.vertex(matrix, right, top, 0F).next()
-        buffer.vertex(matrix, left, top, 0F).next()
-        BufferRenderer.drawWithGlobalProgram(buffer.end())
-        RenderSystem.disableColorLogicOp()
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+        drawContext.draw {
+            val matrix = drawContext.matrices.peek().positionMatrix
+            val buffer = it.getBuffer(RL)
+            buffer.vertex(matrix, left, bottom, 0F).next()
+            buffer.vertex(matrix, right, bottom, 0F).next()
+            buffer.vertex(matrix, right, top, 0F).next()
+            buffer.vertex(matrix, left, top, 0F).next()
+        }
     }
 
     override fun setTextureMinMagFilter(textureFilter: TextureFilter) {
@@ -173,16 +205,18 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         u2: Float,
         v2: Float
     ) {
-        RenderSystem.setShaderTexture(0, ModernMinecraft.boundTexture!!)
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram)
-        val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
-        val bufferBuilder = Tessellator.getInstance()
-            .begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE)
-        bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1).next()
-        bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(u1, v2).next()
-        bufferBuilder.vertex(matrix4f, x + width, y + height, 0f).texture(u2, v2).next()
-        bufferBuilder.vertex(matrix4f, x + width, y, 0F).texture(u2, v1).next()
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end())
+        drawContext.draw {
+            val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
+            val bufferBuilder = it.getBuffer(RenderLayer.getGuiTextured(ModernMinecraft.boundTexture!!))
+            bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1)
+                .color(tintA, tintG, tintB, tintA).next()
+            bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(u1, v2)
+                .color(tintA, tintG, tintB, tintA).next()
+            bufferBuilder.vertex(matrix4f, x + width, y + height, 0f).texture(u2, v2)
+                .color(tintA, tintG, tintB, tintA).next()
+            bufferBuilder.vertex(matrix4f, x + width, y, 0F).texture(u2, v1)
+                .color(tintA, tintG, tintB, tintA).next()
+        }
     }
 
     override fun drawDarkRect(x: Int, y: Int, width: Int, height: Int, shadow: Boolean) {
@@ -230,7 +264,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: String?) {
         val item = (itemStack as ModernItemStack).backing
         drawContext.drawItem(item, x, y)
-        drawContext.drawItemInSlot(
+        drawContext.drawStackOverlay(
             MinecraftClient.getInstance().textRenderer,
             item,
             x,
