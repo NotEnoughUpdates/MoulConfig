@@ -39,7 +39,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
                 .colorLogic(RenderPhase.OR_REVERSE)
                 .build(false)
         )
-        val COLORED_TRIANGLES = Util.memoize { it: Identifier ->
+        val COLORED_TRIANGLES =
             RenderLayer.of(
                 "mc_triangles",
                 VertexFormats.POSITION_COLOR,
@@ -49,13 +49,11 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
                 false,
                 RenderLayer.MultiPhaseParameters.builder()
                     // TODO: import mipmap settings
-                    .texture(RenderPhase.Texture(it, TriState.DEFAULT, false))
-                    .program(RenderPhase.ShaderProgram(ShaderProgramKeys.POSITION_TEX_COLOR))
+                    .program(RenderPhase.ShaderProgram(ShaderProgramKeys.POSITION_COLOR))
                     .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
                     .depthTest(RenderPhase.LEQUAL_DEPTH_TEST)
                     .build(false)
             )
-        }
     }
 
     val mouse = MinecraftClient.getInstance().mouse
@@ -148,7 +146,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         require(coordinates.size % 6 == 0)
         RenderSystem.enableBlend()
         drawContext.draw {
-            val buf = it.getBuffer(COLORED_TRIANGLES.apply(ModernMinecraft.boundTexture))
+            val buf = it.getBuffer(COLORED_TRIANGLES)
             val matrix = drawContext.matrices.peek().positionMatrix
 
             for (i in 0 until (coordinates.size / 2)) {

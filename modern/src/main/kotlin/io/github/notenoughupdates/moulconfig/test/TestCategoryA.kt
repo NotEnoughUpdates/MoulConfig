@@ -1,10 +1,18 @@
 package io.github.notenoughupdates.moulconfig.test
 
 import com.google.gson.annotations.Expose
-import io.github.notenoughupdates.moulconfig.annotations.*
+import io.github.notenoughupdates.moulconfig.annotations.Accordion
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.observer.Property
 import org.lwjgl.glfw.GLFW
-import java.util.*
+import java.util.Arrays
 
 class TestCategoryA {
     @ConfigOption(name = "Test Option", desc = "Test toggle")
@@ -29,14 +37,21 @@ class TestCategoryA {
     }
 
 
-    @ConfigOption(name = "Number Dropdown", desc = "0, 1, 2, 3")
-    @ConfigEditorDropdown(values = ["0", "1", "2", "3"])
-    var numberDropdown: Int = 0
+    @Accordion
+    @ConfigOption(name = "Accordion", desc = "")
+    var accordion = AccordionClass()
+
+    class AccordionClass() {
+
+        @ConfigOption(name = "Number Dropdown", desc = "0, 1, 2, 3")
+        @ConfigEditorDropdown(values = ["0", "1", "2", "3"])
+        var numberDropdown: Int = 0
 
 
-    @ConfigOption(name = "Enum Dropdown", desc = "1, 2, 3, 4")
-    @ConfigEditorDropdown
-    var enumDropdown: Property<DropdownEnum> = Property.of(DropdownEnum.FOUR)
+        @ConfigOption(name = "Enum Dropdown", desc = "1, 2, 3, 4")
+        @ConfigEditorDropdown
+        var enumDropdown: Property<DropdownEnum> = Property.of(DropdownEnum.FOUR)
+    }
 
     enum class DropdownEnum(private val label: String) {
         ONE("1"),
@@ -44,6 +59,7 @@ class TestCategoryA {
         THREE("3"),
         FOUR("4"),
         ;
+
         override fun toString(): String {
             return label
         }
@@ -65,7 +81,7 @@ class TestCategoryA {
 
     @ConfigOption(name = "Draggable List", desc = "§eDrag text to change the order of the list.")
     @ConfigEditorDraggableList(
-        exampleText = ["abc", "dec", "blah","surel it works really cool and great :))"]
+        exampleText = ["abc", "dec", "blah", "surel it works really cool and great :))"]
     )
     var draggableList: List<Int> = ArrayList(mutableListOf(0, 1, 2, 3))
 
