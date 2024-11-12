@@ -64,8 +64,10 @@ public class BuiltinMoulConfigGuis {
             return new GuiOptionEditorButton(option, -1, "Link", option.getConfig()) {
                 @Override
                 public void onClick() {
-                    val linkedOption = activeConfigGUI.getProcessedConfig().getOptionFromField(field);
-                    assert linkedOption != null;
+                    val linkedOption = activeConfigGUI.getOptionFromField(field);
+                    if (linkedOption == null) {
+                        throw new NullPointerException("No ProcessedOption.Field present for " + field);
+                    }
                     activeConfigGUI.goToOption(linkedOption);
                 }
             };

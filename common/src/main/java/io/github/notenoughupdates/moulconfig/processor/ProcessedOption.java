@@ -55,6 +55,10 @@ public interface ProcessedOption extends HasDebugLocation {
 
     void explicitNotifyChange();
 
+    interface HasField {
+        Field getField();
+    }
+
     default GetSetter<?> intoProperty() {
         return new GetSetter<Object>() {
             @Override

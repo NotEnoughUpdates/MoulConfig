@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class ProcessedOptionImpl implements ProcessedOption {
+public class ProcessedOptionImpl implements ProcessedOption, ProcessedOption.HasField {
     final String name;
     final String desc;
     final Field field;
@@ -145,4 +145,8 @@ public class ProcessedOptionImpl implements ProcessedOption {
         }
     }
 
+    @Override
+    public Field getField() {
+        return field;
+    }
 }
