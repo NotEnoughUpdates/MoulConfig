@@ -21,34 +21,23 @@
 package io.github.notenoughupdates.moulconfig.processor;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProcessedCategory { // TODO: replace with interface
-    public final String name;
-    public final String desc;
-    public final Field reflectField;
-    public final List<ProcessedOption> options = new ArrayList<>();
-    public final Map<Integer, ProcessedOption> accordionAnchors = new HashMap<>();
+public interface ProcessedCategory extends HasDebugLocation {
+    String getDisplayName();
 
-    public @Nullable String parent;
+    String getDescription();
 
-    public String getIdentifier() {
-        return reflectField.toString();
-    }
+    String getIdentifier();
 
-    public ProcessedCategory(Field field, String name, String desc) {
-        this(field, name, desc, null);
-    }
+    @Nullable String getParentCategoryId();
 
-    public ProcessedCategory(Field field, String name, String desc, @Nullable String parent) {
-        this.reflectField = field;
-        this.name = name;
-        this.parent = parent;
-        this.desc = desc;
-    }
+    @Unmodifiable
+    List<ProcessedOption> getOptions();
+
+    @Unmodifiable
+    Map<Integer, ProcessedOption> getAccordionAnchors();
 }

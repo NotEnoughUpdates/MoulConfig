@@ -67,7 +67,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     @Setter
     private SearchFunction searchFunction = GuiOptionEditor::fulfillsSearch;
 
-    private LinkedHashMap<String, ProcessedCategory> currentlyVisibleCategories;
+    private LinkedHashMap<String, ? extends ProcessedCategory> currentlyVisibleCategories;
     private Set<ProcessedOption> currentlyVisibleOptions;
     private Map<String, Set<String>> childCategoryLookup = new HashMap<>();
     private List<ProcessedOption> allOptions = new ArrayList<>();
@@ -76,10 +76,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         processedConfig.requireFinalized();
         this.openedMillis = System.currentTimeMillis();
         this.processedConfig = processedConfig;
-        for (Map.Entry<String, ProcessedCategory> category : processedConfig.getAllCategories().entrySet()) {
-            allOptions.addAll(category.getValue().options);
-            if (category.getValue().parent != null) {
-                childCategoryLookup.computeIfAbsent(category.getValue().parent, ignored -> new HashSet<>())
+        for (Map.Entry<String, ? extends ProcessedCategory> category : processedConfig.getAllCategories().entrySet()) {
+            allOptions.addAll(category.getValue().getOptions());
+            if (category.getValue().getParentCategoryId() != null) {
+                childCategoryLookup.computeIfAbsent(category.getValue().getParentCategoryId(), ignored -> new HashSet<>())
                     .add(category.getKey());
             }
         }
@@ -91,7 +91,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     private List<ProcessedOption> getOptionsInCategory(ProcessedCategory cat) {
-        List<ProcessedOption> options = new ArrayList<>(cat.options);
+        List<ProcessedOption> options = new ArrayList<>(cat.getOptions());
         options.removeIf(it -> !currentlyVisibleOptions.contains(it));
         return options;
     }
@@ -107,7 +107,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         // Recursively expand accordions this option is in
         var accordionP = searchedOption;
         while (accordionP.getAccordionId() >= 0) {
-            accordionP = processedCategory.accordionAnchors.get(accordionP.getAccordionId());
+            accordionP = processedCategory.getAccordionAnchors().get(accordionP.getAccordionId());
             ((GuiOptionEditorAccordion) accordionP.getEditor()).setToggled(true);
         }
 
@@ -169,7 +169,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         for (ProcessedOption option : lastRound) {
             if (option.getAccordionId() >= 0 && upwards) {
-                for (ProcessedOption accordion : option.getCategory().options) {
+                for (ProcessedOption accordion : option.getCategory().getOptions()) {
                     if (accordion == option) continue;
                     if (!(accordion.getEditor() instanceof GuiOptionEditorAccordion)) continue;
                     if (((GuiOptionEditorAccordion) accordion.getEditor()).getAccordionId() == option.getAccordionId()) {
@@ -179,7 +179,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
             if (option.getEditor() instanceof GuiOptionEditorAccordion && !upwards) {
                 int parentId = ((GuiOptionEditorAccordion) option.getEditor()).getAccordionId();
-                for (ProcessedOption potentialChild : option.getCategory().options) {
+                for (ProcessedOption potentialChild : option.getCategory().getOptions()) {
                     if (potentialChild.getAccordionId() == parentId) {
                         nextRound.add(potentialChild);
                     }
@@ -201,7 +201,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         if (recalculateOptionUniverse) {
             allOptions.clear();
             for (ProcessedCategory category : processedConfig.getAllCategories().values()) {
-                allOptions.addAll(category.options);
+                allOptions.addAll(category.getOptions());
             }
         }
         String toSearch = searchFieldContent.get().trim().toLowerCase(Locale.ROOT);
@@ -214,14 +214,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             HashSet<ProcessedCategory> directlyMatchedCategories = new HashSet<>(processedConfig.getAllCategories().values());
             if (!processedConfig.getConfigObject().shouldSearchCategoryNames()) directlyMatchedCategories.clear();
             for (String word : toSearch.split(" +")) {
-                directlyMatchedCategories.removeIf(it -> ContextAware.wrapErrorWithContext(it.reflectField,
-                    () -> !(it.name.toLowerCase(Locale.ROOT).contains(word) || it.desc.toLowerCase(Locale.ROOT).contains(word))));
+                directlyMatchedCategories.removeIf(it -> ContextAware.wrapErrorWithContext(it,
+                    () -> !(it.getDisplayName().toLowerCase(Locale.ROOT).contains(word)
+                        || it.getDescription().toLowerCase(Locale.ROOT).contains(word))));
             }
 
             Set<ProcessedOption> matchingOptionsAndDependencies = new HashSet<>();
 
             var childCategoriesOfDirectlyMatched = directlyMatchedCategories.stream()
-                .flatMap(it -> childCategoryLookup.getOrDefault(it.name, Collections.emptySet()).stream())
+                .flatMap(it -> childCategoryLookup.getOrDefault(it.getIdentifier(), Collections.emptySet()).stream())
                 .map(processedConfig.getAllCategories()::get)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -230,8 +231,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             // No search propagation needed if category is matched.
             // Add them directly to the final visible option set.
             for (ProcessedCategory directCategory : directlyMatchedCategories) {
-                matchingOptionsAndDependencies.addAll(directCategory.options);
-                directCategory.options.forEach(matchingOptions::remove);
+                matchingOptionsAndDependencies.addAll(directCategory.getOptions());
+                directCategory.getOptions().forEach(matchingOptions::remove);
             }
 
             propagateSearchinessForAccordions(matchingOptionsAndDependencies, matchingOptions, true);
@@ -239,9 +240,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
             currentlyVisibleOptions = matchingOptionsAndDependencies;
 
-            Set<ProcessedCategory> visibleCategories = matchingOptionsAndDependencies.stream().map(it -> it.getCategory()).collect(Collectors.toSet());
+            Set<ProcessedCategory> visibleCategories = matchingOptionsAndDependencies
+                .stream()
+                .map(ProcessedOption::getCategory).collect(Collectors.toSet());
             Set<ProcessedCategory> parentCategories = visibleCategories.stream()
-                .filter(it -> it.parent != null).map(it -> processedConfig.getAllCategories().get(it.parent))
+                .filter(it -> it.getParentCategoryId() != null)
+                .map(it -> processedConfig.getAllCategories().get(it.getParentCategoryId()))
                 .filter(Objects::nonNull).collect(Collectors.toSet());
             visibleCategories.addAll(parentCategories);
             LinkedHashMap<String, ProcessedCategory> matchingCategories = new LinkedHashMap<>(processedConfig.getAllCategories());
@@ -254,21 +258,21 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     public LinkedHashMap<String, ProcessedCategory> getCurrentlyVisibleCategories() {
-        var newHashes = new LinkedHashMap<>(currentlyVisibleCategories);
+        var newHashes = new LinkedHashMap<String, ProcessedCategory>(currentlyVisibleCategories);
         newHashes.entrySet().removeIf(it -> {
-            if (it.getValue().parent == null) return false;
+            if (it.getValue().getParentCategoryId() == null) return false;
             if (!showSubcategories) return true;
-            if (it.getValue().parent.equals(getSelectedCategory())) return false;
+            if (it.getValue().getParentCategoryId().equals(getSelectedCategory())) return false;
             var processedCategory = currentlyVisibleCategories.get(getSelectedCategory());
             if (processedCategory == null) return true;
             //noinspection RedundantIfStatement
-            if (it.getValue().parent.equals(processedCategory.parent)) return false;
+            if (it.getValue().getParentCategoryId().equals(processedCategory.getParentCategoryId())) return false;
             return true;
         });
         return newHashes;
     }
 
-    public LinkedHashMap<String, ProcessedCategory> getCurrentlySearchedCategories() {
+    public LinkedHashMap<String, ? extends ProcessedCategory> getCurrentlySearchedCategories() {
         return currentlyVisibleCategories;
     }
 
@@ -378,7 +382,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             var catName = processedConfig.getConfigObject().formatCategoryName(entry.getValue(), isSelected);
             var align = processedConfig.getConfigObject().alignCategory(entry.getValue(), isSelected);
             var textLength = ifr.getStringWidth(catName);
-            var isIndented = childCategories != null || entry.getValue().parent != null;
+            var isIndented = childCategories != null || entry.getValue().getParentCategoryId() != null;
             if (textLength > ((isIndented) ? 90 : 100)) {
                 context.drawStringCenteredScaledMaxWidth(catName,
                     ifr, x + 75 + (isIndented ? 5 : 0), y + 70 + catY, false, (isIndented ? 90 : 100), -1
@@ -477,7 +481,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
 
             context.drawStringScaledMaxWidth(
-                cat.desc,
+                cat.getDescription(),
                 ifr, innerLeft + 1, y + 40, true, innerRight - innerLeft - rightStuffLen - 10, 0xb0b0b0
             );
         }
@@ -865,7 +869,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     if (mouseX >= x + 5 && mouseX <= x + 145 &&
                         mouseY >= y + 70 + catY - 7 && mouseY <= y + 70 + catY + 7) {
                         if (entry.getKey().equals(getSelectedCategory())) {
-                            if (entry.getValue().parent == null)
+                            if (entry.getValue().getParentCategoryId() == null)
                                 showSubcategories = !showSubcategories;
                         } else {
                             showSubcategories = true;

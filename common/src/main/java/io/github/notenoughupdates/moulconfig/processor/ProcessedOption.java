@@ -71,7 +71,7 @@ public class ProcessedOption {// TODO: replace with interface
     public GuiOptionEditorAccordion getOwningAccordion() {
         if (owningAccordion == null && getAccordionId() >= 0) {
             owningAccordion = getCategory()
-                .options
+                .getOptions()
                 .stream()
                 .map(ProcessedOption::getEditor)
                 .filter(it -> it instanceof GuiOptionEditorAccordion)

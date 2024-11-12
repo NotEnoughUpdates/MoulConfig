@@ -39,8 +39,8 @@ import java.util.function.BiFunction;
 public class MoulConfigProcessor<T extends Config> implements ConfigStructureReader {
 
     private final T configBaseObject;
-    private final LinkedHashMap<String, ProcessedCategory> categories = new LinkedHashMap<>();
-    private ProcessedCategory currentCategory;
+    private final LinkedHashMap<String, ProcessedCategoryImpl> categories = new LinkedHashMap<>();
+    private ProcessedCategoryImpl currentCategory;
     private Stack<Integer> accordion = new Stack<>();
     private Stack<String> categoryPath = new Stack<>();
     @Getter
@@ -71,7 +71,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     @Override
     public void beginCategory(Object baseObject, Field field, String name, String description) {
-        currentCategory = new ProcessedCategory(field, name, description);
+        currentCategory = new ProcessedCategoryImpl(field, name, description);
         categories.put(currentCategory.getIdentifier(), currentCategory);
     }
 
@@ -175,7 +175,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         return null;
     }
 
-    public LinkedHashMap<String, ProcessedCategory> getAllCategories() {
+    public LinkedHashMap<String, ? extends ProcessedCategory> getAllCategories() {
         requireFinalized();
         return this.categories;
     }

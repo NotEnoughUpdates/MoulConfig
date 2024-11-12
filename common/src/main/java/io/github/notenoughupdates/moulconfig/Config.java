@@ -38,11 +38,11 @@ public abstract class Config {
 
     public String formatCategoryName(ProcessedCategory category, boolean isSelected) {
         if (isSelected) {
-            return "§b§n" + category.name;
-        } else if (category.parent == null) {
-            return "§7" + category.name;
+            return "§b§n" + category.getDisplayName();
+        } else if (category.getParentCategoryId() == null) {
+            return "§7" + category.getDisplayName();
         } else {
-            return "§8" + category.name;
+            return "§8" + category.getDisplayName();
         }
     }
 

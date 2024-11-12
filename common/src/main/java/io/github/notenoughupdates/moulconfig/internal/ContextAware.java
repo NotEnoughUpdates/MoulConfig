@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.internal;
 
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
+import io.github.notenoughupdates.moulconfig.processor.HasDebugLocation;
 
 import java.lang.reflect.Field;
 
@@ -18,10 +19,14 @@ public class ContextAware {
     }
 
     public static <T> T wrapErrorWithContext(Field field, ContextAwareRunnable<T> runnable) {
+        return wrapErrorWithContext(field::toString, runnable);
+    }
+
+    public static <T> T wrapErrorWithContext(HasDebugLocation field, ContextAwareRunnable<T> runnable) {
         try {
             return runnable.run();
         } catch (Exception e) {
-            throw new ContextualException(e, field.toString());
+            throw new ContextualException(e, field.getDebugDeclarationLocation());
         }
     }
 
