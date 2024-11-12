@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://notenoughupdates.org/MoulConfig/3.0.0/</loc>
-         <lastmod>2024-11-04</lastmod>
+         <loc>https://notenoughupdates.org/MoulConfig/3.1.0/</loc>
+         <lastmod>2024-11-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://notenoughupdates.org/MoulConfig/3.0.0/config/</loc>
-         <lastmod>2024-11-04</lastmod>
+         <loc>https://notenoughupdates.org/MoulConfig/3.1.0/config/</loc>
+         <lastmod>2024-11-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
