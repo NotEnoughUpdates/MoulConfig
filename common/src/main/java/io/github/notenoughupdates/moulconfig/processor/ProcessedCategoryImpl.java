@@ -63,4 +63,9 @@ public class ProcessedCategoryImpl implements ProcessedCategory {
         this.parent = parent;
         this.desc = desc;
     }
+
+    @Override
+    public String toString() {
+        return "ProcessedCategory {" + getIdentifier() + "}";
+    }
 }

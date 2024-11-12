@@ -20,9 +20,14 @@
 
 package io.github.notenoughupdates.moulconfig.processor;
 
+import io.github.notenoughupdates.moulconfig.Config;
+import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
+import io.github.notenoughupdates.moulconfig.internal.Warnings;
+import lombok.var;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,4 +45,28 @@ public interface ProcessedCategory extends HasDebugLocation {
 
     @Unmodifiable
     Map<Integer, ProcessedOption> getAccordionAnchors();
+
+    /**
+     * Collect a list of categories into a map that can be used by {@link MoulConfigEditor#MoulConfigEditor(LinkedHashMap, Config)}.
+     * Also checks that all ids are unique and all categories with a parent are ordered correctly
+     */
+    static <T extends ProcessedCategory> @Unmodifiable LinkedHashMap<String, T> collect(Iterable<T> categories) {
+        var map = new LinkedHashMap<String, T>();
+        String lastParentId = null;
+        for (T category : categories) {
+            if (map.containsKey(category.getIdentifier())) {
+                Warnings.warn("Category list contains multiple categories with identifier " + category.getIdentifier());
+            }
+            if (category.getParentCategoryId() == null) {
+                lastParentId = category.getParentCategoryId();
+            } else {
+              if (!category.getParentCategoryId().equals(lastParentId)) {
+                  Warnings.warn("Out of order child category " + category + " has parent with id " + category.getParentCategoryId() + " but the last parent was " + lastParentId);
+              }
+            }
+            map.put(category.getIdentifier(), category);
+        }
+        return map;
+    }
+
 }
