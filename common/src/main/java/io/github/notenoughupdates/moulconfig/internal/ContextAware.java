@@ -1,6 +1,5 @@
 package io.github.notenoughupdates.moulconfig.internal;
 
-import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.processor.HasDebugLocation;
 
 import java.lang.reflect.Field;
@@ -10,23 +9,15 @@ import java.lang.reflect.Field;
  */
 public class ContextAware {
 
-    public static <T> T wrapErrorWithContext(GuiOptionEditor editor, ContextAwareRunnable<T> runnable) {
-        try {
-            return runnable.run();
-        } catch (Exception e) {
-            throw new ContextualException(e, (editor != null && editor.getOption() != null) ? editor.getOption().getCodeLocation() : null);
-        }
-    }
-
     public static <T> T wrapErrorWithContext(Field field, ContextAwareRunnable<T> runnable) {
         return wrapErrorWithContext(field::toString, runnable);
     }
 
-    public static <T> T wrapErrorWithContext(HasDebugLocation field, ContextAwareRunnable<T> runnable) {
+    public static <T> T wrapErrorWithContext(HasDebugLocation debugLocation, ContextAwareRunnable<T> runnable) {
         try {
             return runnable.run();
         } catch (Exception e) {
-            throw new ContextualException(e, field.getDebugDeclarationLocation());
+            throw new ContextualException(e, debugLocation != null ? debugLocation.getDebugDeclarationLocation() : null);
         }
     }
 

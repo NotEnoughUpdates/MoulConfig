@@ -32,95 +32,30 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class ProcessedOption {// TODO: replace with interface
-    private final String name;
-    private final String desc;
-    private final Field field;
-    private final String path;
-    private final ProcessedCategory category;
-    private final Object container;
-    GuiOptionEditor editor;
-    int accordionId = -1;
-    private boolean isProperty;
-    private Config config;
+public interface ProcessedOption extends HasDebugLocation {
+    SearchTag[] getSearchTags();
 
-    /**
-     * @return a string identifying the position in code where this option was declared, intended for debugging purposes only
-     */
-    public String getCodeLocation() {
-        return field.toString();
-    }
+    int getAccordionId();
 
-    public ProcessedOption(String name, String desc, String path, Field field, ProcessedCategory category, Object container, Config config) {
-        this.name = name;
-        this.path = path;
-        this.desc = desc;
-        this.category = category;
-        this.config = config;
-        this.field = field;
-        this.container = container;
-        this.isProperty = field.getType() == Property.class;
-    }
+    GuiOptionEditor getEditor();
 
-    public SearchTag[] getSearchTags() {
-        return field.getAnnotationsByType(SearchTag.class);
-    }
+    ProcessedCategory getCategory();
 
-    private GuiOptionEditorAccordion owningAccordion;
+    String getName();
 
-    public GuiOptionEditorAccordion getOwningAccordion() {
-        if (owningAccordion == null && getAccordionId() >= 0) {
-            owningAccordion = getCategory()
-                .getOptions()
-                .stream()
-                .map(ProcessedOption::getEditor)
-                .filter(it -> it instanceof GuiOptionEditorAccordion)
-                .map(it -> (GuiOptionEditorAccordion) it)
-                .filter(it -> it.getAccordionId() == getAccordionId())
-                .findAny()
-                .orElse(null);
-        }
-        return owningAccordion;
-    }
+    String getDescription();
 
-    public int getAccordionId() {
-        return accordionId;
-    }
+    Config getConfig();
 
-    public GuiOptionEditor getEditor() {
-        return editor;
-    }
+    Object get();
 
-    public ProcessedCategory getCategory() {
-        return category;
-    }
+    Type getType();
 
-    public String getName() {
-        return name;
-    }
+    boolean set(Object value);
 
-    public String getDescription() {
-        return desc;
-    }
+    void explicitNotifyChange();
 
-    public Config getConfig() {
-        return config;
-    }
-
-    public Object get() {
-        try {
-            Object obj = field.get(container);
-            if (isProperty) {
-                return ((Property) obj).get();
-            } else {
-                return obj;
-            }
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public GetSetter<?> intoProperty() {
+    default GetSetter<?> intoProperty() {
         return new GetSetter<Object>() {
             @Override
             public Object get() {
@@ -134,40 +69,4 @@ public class ProcessedOption {// TODO: replace with interface
         };
     }
 
-    public Type getType() {
-        if (isProperty) {
-            return ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-        }
-        return field.getGenericType();
-    }
-
-    public boolean set(Object value) {
-        try {
-            Object toSet;
-            if (getType() == int.class && value instanceof Number) {
-                toSet = ((Number) value).intValue();
-            } else {
-                toSet = value;
-            }
-            if (isProperty) {
-                ((Property<Object>) field.get(container)).set(toSet);
-            } else {
-                field.set(container, toSet);
-            }
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public void explicitNotifyChange() {
-        if (isProperty) {
-            try {
-                ((Property<?>) field.get(container)).notifyObservers();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

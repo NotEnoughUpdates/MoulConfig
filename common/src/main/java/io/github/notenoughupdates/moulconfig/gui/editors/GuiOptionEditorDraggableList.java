@@ -98,7 +98,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         String str = exampleText.get(forObject);
         if (str == null) {
             str = "<unknown " + forObject + ">";
-            Warnings.warnOnce("Could not find draggable list object for " + forObject + " on option " + option.getCodeLocation(), forObject, option);
+            Warnings.warnOnce("Could not find draggable list object for " + forObject + " on option " + option.getDebugDeclarationLocation(), forObject, option);
         }
         return str;
     }

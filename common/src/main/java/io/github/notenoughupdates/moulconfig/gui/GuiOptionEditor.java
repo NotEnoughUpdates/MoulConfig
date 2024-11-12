@@ -24,6 +24,7 @@ import io.github.notenoughupdates.moulconfig.DescriptionRendereringBehaviour;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
+import io.github.notenoughupdates.moulconfig.processor.HasDebugLocation;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import lombok.var;
 import org.jetbrains.annotations.ApiStatus;
@@ -32,12 +33,17 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class GuiOptionEditor {
+public abstract class GuiOptionEditor implements HasDebugLocation {
     private static final int HEIGHT = 45;
     protected final ProcessedOption option;
     public MoulConfigEditor<?> activeConfigGUI;
     private String searchDescNameCache;
     private String searchTags = "";
+
+    @Override
+    public String getDebugDeclarationLocation() {
+        return option != null ? option.getDebugDeclarationLocation() : null;
+    }
 
     @ApiStatus.Internal
     public ProcessedOption getOption() {

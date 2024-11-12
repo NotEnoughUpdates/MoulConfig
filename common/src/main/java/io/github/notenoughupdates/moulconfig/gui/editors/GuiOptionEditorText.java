@@ -18,7 +18,7 @@ public class GuiOptionEditorText extends ComponentEditor {
         super(option);
 
         if (option.getType() != String.class) {
-            Warnings.warn("@ConfigEditorText " + option.getCodeLocation() + " is not a string option.");
+            Warnings.warn("@ConfigEditorText " + option.getDebugDeclarationLocation() + " is not a string option.");
         }
     }
 

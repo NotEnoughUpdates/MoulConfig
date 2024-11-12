@@ -28,6 +28,7 @@ import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorAccordio
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import lombok.Getter;
 import lombok.val;
+import lombok.var;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,7 +119,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     @Override
     public void beginAccordion(Object baseObject, Field field, ConfigOption option, int id) {
-        ProcessedOption processedOption = createProcessedOption(baseObject, field, option);
+        var processedOption = createProcessedOption(baseObject, field, option);
         // TODO: expose setter in subclass
         processedOption.editor = new GuiOptionEditorAccordion(processedOption, id);
         currentCategory.options.add(processedOption);
@@ -132,7 +133,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     @Override
     public void emitOption(Object baseObject, Field field, ConfigOption option) {
-        ProcessedOption processedOption = createProcessedOption(baseObject, field, option);
+        var processedOption = createProcessedOption(baseObject, field, option);
         GuiOptionEditor optionGui = createOptionGui(processedOption, field, option);
         if (optionGui == null) {
             Warnings.warn("Could not create GUI Option Editor for " + field + " in " + baseObject.getClass());
@@ -142,8 +143,8 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
         currentCategory.options.add(processedOption);
     }
 
-    protected ProcessedOption createProcessedOption(Object baseObject, Field field, ConfigOption option) {
-        ProcessedOption processedOption = new ProcessedOption(
+    protected ProcessedOptionImpl createProcessedOption(Object baseObject, Field field, ConfigOption option) {
+        ProcessedOptionImpl processedOption = new ProcessedOptionImpl(
             option.name(), option.desc(), String.join(".", categoryPath) + "." + field.getName(),
             field,
             currentCategory, baseObject,
