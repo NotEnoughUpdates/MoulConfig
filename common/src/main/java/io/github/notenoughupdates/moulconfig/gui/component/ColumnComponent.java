@@ -65,7 +65,7 @@ public class ColumnComponent extends GuiComponent {
     }
 
     public void foldWithContext(GuiImmediateContext context, BiConsumer<GuiComponent, GuiImmediateContext> visitor) {
-        int width = getWidth();
+        int width = context.getWidth();
         foldChildren(0, (child, position) -> {
             visitor.accept(child, context.translated(0, position, width, child.getHeight()));
             return child.getHeight() + position;
