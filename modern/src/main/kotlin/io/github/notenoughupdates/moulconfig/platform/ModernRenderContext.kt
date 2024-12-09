@@ -10,6 +10,7 @@ import io.github.notenoughupdates.moulconfig.common.RenderContext.TextureFilter
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.ShaderProgramKeys
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.ScreenRect
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.RenderPhase
 import net.minecraft.client.render.VertexFormat
@@ -18,12 +19,11 @@ import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.minecraft.util.TriState
-import net.minecraft.util.Util
 import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.awt.image.BufferedImage
+import java.util.concurrent.ThreadLocalRandom
 
 class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     companion object {
@@ -79,8 +79,8 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         val texture = NativeImageBackedTexture(img.width, img.height, true)
         texture.setData(img)
         texture.upload()
-        val res = MinecraftClient.getInstance().textureManager
-            .registerDynamicTexture("moulconfig", texture)
+        val id = Identifier.of("moulconfig", "dynamic/${ThreadLocalRandom.current().nextLong()}")
+        MinecraftClient.getInstance().textureManager.registerTexture(id, texture)
         return object : DynamicTextureReference() {
             override fun update(bufferedImage: BufferedImage) {
                 texture.setData(img)
@@ -88,10 +88,10 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
             }
 
             override val identifier: MyResourceLocation
-                get() = ModernMinecraft.fromIdentifier(res)
+                get() = ModernMinecraft.fromIdentifier(id)
 
             override fun doDestroy() {
-                MinecraftClient.getInstance().textureManager.destroyTexture(res)
+                MinecraftClient.getInstance().textureManager.destroyTexture(id)
             }
         }
     }
@@ -247,7 +247,10 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun pushScissor(left: Int, top: Int, right: Int, bottom: Int) {
-        drawContext.enableScissor(left, top, right, bottom)
+        // Do not use drawContext.enableScissor() since that transform coords
+        // In order to be compatible with 1.8.9, this method does not do that.
+        drawContext.scissorStack.push(ScreenRect(left, top, right - left, bottom - top))
+        refreshScissor()
     }
 
     override fun popScissor() {
