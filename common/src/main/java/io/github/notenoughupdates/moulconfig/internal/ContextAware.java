@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 public class ContextAware {
 
     public static <T> T wrapErrorWithContext(Field field, ContextAwareRunnable<T> runnable) {
-        return wrapErrorWithContext(field::toString, runnable);
+        return wrapErrorWithContext(field != null ? field::toString : null, runnable);
     }
 
     public static <T> T wrapErrorWithContext(HasDebugLocation debugLocation, ContextAwareRunnable<T> runnable) {

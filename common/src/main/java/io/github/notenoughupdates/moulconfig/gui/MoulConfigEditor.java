@@ -858,7 +858,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         if (editor == null) {
                             continue;
                         }
-                        editor.setGuiContext(guiContext);
+                        ContextAware.wrapErrorWithContext(editor, () -> {
+                            editor.setGuiContext(guiContext);
+                            return null;
+                        });
                         if (editor instanceof GuiOptionEditorAccordion) {
                             GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
                             if (accordion.getToggled()) {
@@ -970,8 +973,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
-        if (mouseX > innerLeft && mouseX < innerRight &&
-            mouseY > innerTop && mouseY < innerBottom) {
+        boolean handled = false;
+        {
             optionY = -optionsScroll.getValue();
             if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
                 getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
@@ -1014,14 +1017,14 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         mouseY,
                         mouseEvent
                     ))) {
-                        return true;
+                        handled = true;
                     }
                     optionY += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
                 }
             }
         }
 
-        return true;
+        return handled;
     }
 
     public boolean keyboardInput(KeyboardEvent event) {
