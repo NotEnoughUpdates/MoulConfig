@@ -22,7 +22,13 @@ package io.github.notenoughupdates.moulconfig.processor;
 
 import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.Config;
-import io.github.notenoughupdates.moulconfig.annotations.*;
+import io.github.notenoughupdates.moulconfig.annotations.Accordion;
+import io.github.notenoughupdates.moulconfig.annotations.Category;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigAccordionId;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorAccordion;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.internal.BoundField;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import lombok.var;
@@ -30,7 +36,12 @@ import lombok.var;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 public class ConfigProcessorDriver {
     private final List<Class<? extends Annotation>> nonStoredConfigOptions = Arrays.asList(
@@ -39,6 +50,8 @@ public class ConfigProcessorDriver {
     );
 
     public final ConfigStructureReader reader;
+
+    public boolean warnForPrivateFields = true;
 
     public int nextAnnotation = 1000000000;
 
@@ -67,14 +80,15 @@ public class ConfigProcessorDriver {
             ConfigOption optionAnnotation = field.getAnnotation(ConfigOption.class);
             if (optionAnnotation == null) continue;
             if (checkExpose && field.getAnnotation(Expose.class) == null
-                && (field.getModifiers() & Modifier.TRANSIENT) == 0
-                && nonStoredConfigOptions.stream().noneMatch(field::isAnnotationPresent)) {
+                    && (field.getModifiers() & Modifier.TRANSIENT) == 0
+                    && nonStoredConfigOptions.stream().noneMatch(field::isAnnotationPresent)) {
                 Warnings.warn("Non transient @ConfigOption without @Expose in " + categoryClass + " on field " + field);
             }
 
             if ((field.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
                 field.setAccessible(true);
-                Warnings.warn("@ConfigOption on non public field " + field + " in " + categoryClass);
+                if (warnForPrivateFields)
+                    Warnings.warn("@ConfigOption on non public field " + field + " in " + categoryClass);
             }
 
             ConfigAccordionId parentAccordion = field.getAnnotation(ConfigAccordionId.class);
@@ -146,7 +160,8 @@ public class ConfigProcessorDriver {
         }
         if ((categoryField.getModifiers() & Modifier.PUBLIC) != Modifier.PUBLIC) {
             categoryField.setAccessible(true);
-            Warnings.warn("@Category on non public field " + categoryField + " in " + parent.getClass());
+            if (warnForPrivateFields)
+                Warnings.warn("@Category on non public field " + categoryField + " in " + parent.getClass());
         }
         var deferredSubCategories = new ArrayList<BoundField>();
         reader.beginCategory(parent, categoryField, categoryAnnotation.name(), categoryAnnotation.desc());

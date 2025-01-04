@@ -57,7 +57,8 @@ public class BuiltinMoulConfigGuis {
         processor.registerConfigEditor(ConfigLink.class, ((option, configLink) -> {
             Field field;
             try {
-                field = configLink.owner().getField(configLink.field());
+                field = configLink.owner().getDeclaredField(configLink.field());
+                field.setAccessible(true);
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);
             }

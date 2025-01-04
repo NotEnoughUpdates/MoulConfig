@@ -84,6 +84,7 @@ public class MoulConfigTest {
         BuiltinMoulConfigGuis.addProcessors(processor);
         ConfigProcessorDriver driver = new ConfigProcessorDriver(processor);
         driver.checkExpose = false;
+        driver.warnForPrivateFields = false;
         driver.processConfig(testConfig);
         testConfig.testCategory.text2.whenChanged((oldValue, newValue) ->
             Minecraft.getMinecraft().thePlayer.addChatMessage(
