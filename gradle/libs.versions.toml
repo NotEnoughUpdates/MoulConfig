@@ -2,10 +2,10 @@
 mc_legacy = "1.8.9"
 mcp = "22-1.8.9"
 forge_loader = "11.15.1.2318-1.8.9"
-mkdocs = "2.4.0"
+mkdocs = "4.0.1"
 
 [libraries]
 
 [plugins]
-mkdocs = { id = "ru.vyarus.mkdocs", version.ref = "mkdocs" }
+mkdocs = { id = "ru.vyarus.mkdocs-build", version.ref = "mkdocs" }
 

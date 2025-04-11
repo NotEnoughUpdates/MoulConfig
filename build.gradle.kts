@@ -1,4 +1,3 @@
-
 plugins {
 	base
 	id("moulconfig.base")
@@ -9,6 +8,9 @@ plugins {
 mkdocs {
 	python {
 		pip("mkdocs-zettelkasten:0.1.9")
+	}
+	publish {
+		docPath = ""
 	}
 	strict = false
 }

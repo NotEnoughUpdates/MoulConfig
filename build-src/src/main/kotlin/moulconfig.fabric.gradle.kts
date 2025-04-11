@@ -19,9 +19,16 @@ the<UniminedExtension>().minecraft {
 	}
 
 	fabric {
-		loader("0.16.9")
+		loader("0.16.13")
 		if (hasAW)
 			accessWidener(aF)
+	}
+	mods {
+		this.modImplementation {
+			this.mixinRemap {
+				this.enableBaseMixin()
+			}
+		}
 	}
 	runs {
 		config("client") {
