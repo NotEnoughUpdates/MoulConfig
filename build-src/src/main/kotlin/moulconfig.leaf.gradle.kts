@@ -16,11 +16,6 @@ dependencies {
 	"implementation"(Dependencies.LIB_NINE_PATCH)
 	shadowInclude(Dependencies.LIB_NINE_PATCH)
 }
-afterEvaluate {
-	uniminedMaybe?.minecrafts?.values?.forEach {
-		it.runs.config("server") { enabled = false }
-	}
-}
 
 val shadowJar by tasks.named("shadowJar", ShadowJar::class) {
 	configurations = listOf(shadowInclude)

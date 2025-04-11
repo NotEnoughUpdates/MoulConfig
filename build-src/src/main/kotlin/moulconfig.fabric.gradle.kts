@@ -9,10 +9,10 @@ plugins {
 }
 
 the<UniminedExtension>().minecraft {
-	version("1.21.4")
+	version(property("moulconfig.minecraft") as String)
 	mappings {
 		intermediary()
-		yarn("1")
+		yarn(property("moulconfig.yarn") as String)
 	}
 
 	fabric {
