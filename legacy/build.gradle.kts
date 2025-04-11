@@ -3,8 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
 plugins {
-    alias(libs.plugins.unimined)
-    alias(libs.plugins.dokka)
+    id("moulconfig.dokka")
 	id("moulconfig.leaf")
 	id("moulconfig.kotlin")
 }
@@ -74,7 +73,7 @@ val remapJar by tasks.named("remapJar", RemapJarTask::class) {
 }
 
 val libraryJar by tasks.creating(Jar::class) {
-    from(zipTree(remapJar))
+    from(zipTree(remapJar.asJar.archiveFile))
     dependsOn(remapJar)
     archiveClassifier.set("notest")
     exclude("io/github/notenoughupdates/moulconfig/test/*")

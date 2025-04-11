@@ -88,7 +88,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
             }
 
             override val identifier: MyResourceLocation
-                get() = ModernMinecraft.fromIdentifier(id)
+                get() = MoulConfigPlatform.fromIdentifier(id)
 
             override fun doDestroy() {
                 MinecraftClient.getInstance().textureManager.destroyTexture(id)
@@ -205,7 +205,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     ) {
         drawContext.draw {
             val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
-            val bufferBuilder = it.getBuffer(RenderLayer.getGuiTextured(ModernMinecraft.boundTexture!!))
+            val bufferBuilder = it.getBuffer(RenderLayer.getGuiTextured(MoulConfigPlatform.boundTexture!!))
             bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1)
                 .color(tintA, tintG, tintB, tintA).next()
             bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(u1, v2)

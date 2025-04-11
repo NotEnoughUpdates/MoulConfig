@@ -1,11 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import xyz.wagyourtail.unimined.api.uniminedMaybe
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import xyz.wagyourtail.unimined.util.sourceSets
 
 plugins {
 	`maven-publish`
 	idea
 	id("moulconfig.base")
+	id("xyz.wagyourtail.unimined")
 	id("com.gradleup.shadow")
 }
 
@@ -30,7 +31,9 @@ val sourcesJar by tasks.creating(Jar::class) {
 	from(project(":common").the<SourceSetContainer>().getByName("main").allSource)
 	archiveClassifier.set("sources")
 }
-
+tasks.withType<KotlinCompile> {
+	compilerOptions.freeCompilerArgs.add("-Xmetadata-version=2.0.0")
+}
 configure<PublishingExtension> {
 	publications {
 		defaultMaven {

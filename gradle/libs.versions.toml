@@ -2,18 +2,10 @@
 mc_legacy = "1.8.9"
 mcp = "22-1.8.9"
 forge_loader = "11.15.1.2318-1.8.9"
-fabric_api = "0.111.0+1.21.4"
-kotlin = "2.0.0"
-dokka = "1.9.20"
-unimined = "1.2.14"
 mkdocs = "2.4.0"
 
 [libraries]
 
 [plugins]
 mkdocs = { id = "ru.vyarus.mkdocs", version.ref = "mkdocs" }
-kotlin_jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin_lombok = { id = "org.jetbrains.kotlin.plugin.lombok", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-unimined = { id = "xyz.wagyourtail.unimined", version.ref = "unimined" }
 

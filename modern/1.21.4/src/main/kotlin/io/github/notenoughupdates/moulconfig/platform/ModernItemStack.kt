@@ -23,7 +23,7 @@ class ModernItemStack private constructor(val backing: ItemStack) : IItemStack {
     }
 
     override fun getItemId(): MyResourceLocation {
-        return ModernMinecraft.fromIdentifier(Registries.ITEM.getId(backing.item))
+        return MoulConfigPlatform.fromIdentifier(Registries.ITEM.getId(backing.item))
     }
 
     companion object {

@@ -25,7 +25,7 @@ import org.lwjgl.glfw.GLFW
 import java.io.InputStream
 
 
-class ModernMinecraft : IMinecraft {
+class MoulConfigPlatform : IMinecraft {
     init {
         instance = this
     }
@@ -35,7 +35,8 @@ class ModernMinecraft : IMinecraft {
             IMinecraft.instance
         }
 
-        lateinit var instance: ModernMinecraft
+        lateinit var instance: MoulConfigPlatform
+            private set
         var boundTexture: Identifier? = null
         fun fromIdentifier(identifier: Identifier): MyResourceLocation {
             return MyResourceLocation(identifier.namespace, identifier.path)

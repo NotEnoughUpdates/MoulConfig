@@ -1,8 +1,7 @@
 plugins {
     java
-    alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.lombok)
-    alias(libs.plugins.dokka)
+	id("moulconfig.kotlin")
+    id("moulconfig.dokka")
     `maven-publish`
 	id("moulconfig.base")
 }

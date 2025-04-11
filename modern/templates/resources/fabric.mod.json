@@ -8,12 +8,12 @@
       "io.github.notenoughupdates.moulconfig.test.FabricMain"
     ]
   },
+  "accessWidener": "moulconfig.accesswidener",
   "custom": {
     "modmenu": {
       "badges": [
         "library"
       ]
     }
-  },
-  "accessWidener": "moulconfig.accesswidener"
+  }
 }

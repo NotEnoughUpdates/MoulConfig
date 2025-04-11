@@ -8,6 +8,9 @@ plugins {
 	id("moulconfig.leaf")
 }
 
+val fabricVersion = property("moulconfig.fabric") as String
+val aF = project.file("src/main/resources/moulconfig.accesswidener")
+val hasAW = aF.exists()
 the<UniminedExtension>().minecraft {
 	version(property("moulconfig.minecraft") as String)
 	mappings {
@@ -17,8 +20,7 @@ the<UniminedExtension>().minecraft {
 
 	fabric {
 		loader("0.16.9")
-		val aF = project.file("src/main/resources/moulconfig.accesswidener")
-		if (aF.exists())
+		if (hasAW)
 			accessWidener(aF)
 	}
 	runs {
@@ -30,6 +32,9 @@ the<UniminedExtension>().minecraft {
 	}
 }
 
+val fabricDeps = extensions.create("fabricDeps", FabricUtils::class, fabricVersion)
+
+fabricDeps.impl("fabric-resource-loader-v0")
 
 val remapJar by tasks.named("remapJar", RemapJarTask::class) {
 	asJar {
@@ -45,6 +50,28 @@ tasks.named("jar", Jar::class) {
 	dependsOn(tasks.processResources)
 }
 
+tasks.processResources {
+	from(project(":modern").file("templates/resources")) {
+		filesMatching("fabric.mod.json") {
+			filter {
+				if (!it.contains("accessWidener") || hasAW)
+					it
+				else
+					""
+			}
+		}
+	}
+}
+
+val generateFilteredSource = tasks.register("generateFilteredSource", Copy::class) {
+	from(project(":modern").file("templates/kotlin"))
+	rootSpec.into(layout.buildDirectory.dir("sharedModernSource"))
+}
+sourceSets.main {
+	kotlin {
+		srcDir(files(generateFilteredSource))
+	}
+}
 
 tasks.withType(Jar::class) {
 	this.filesMatching(listOf("fabric.mod.json")) {
