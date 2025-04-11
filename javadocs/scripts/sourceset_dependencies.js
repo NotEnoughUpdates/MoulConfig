@@ -1,1 +1,1 @@
-sourceset_dependencies = '{":legacy:dokkaHtmlPartial/main":[],":common:dokkaHtmlPartial/main":[],":modern:dokkaHtmlPartial/main":[]}'
+sourceset_dependencies = '{":modern:modern-1.21.4:dokkaHtmlPartial/main":[],":modern:modern-1.21.5:dokkaHtmlPartial/main":[],":legacy:dokkaHtmlPartial/main":[],":common:dokkaHtmlPartial/main":[]}'

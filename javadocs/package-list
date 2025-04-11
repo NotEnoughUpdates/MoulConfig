@@ -1,6 +1,11 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
-
+$dokka.location:io.github.notenoughupdates.moulconfig.forge/ForgeItemStack.Companion/of/#net.minecraft.item.ItemStack/PointingToDeclaration/legacy/io.github.notenoughupdates.moulconfig.forge/-forge-item-stack/of.html
+$dokka.location:io.github.notenoughupdates.moulconfig.internal/ForgeMinecraft.Companion/fromMyResourceLocation/#io.github.notenoughupdates.moulconfig.common.MyResourceLocation/PointingToDeclaration/legacy/io.github.notenoughupdates.moulconfig.internal/-forge-minecraft/from-my-resource-location.html
+$dokka.location:io.github.notenoughupdates.moulconfig.internal/ForgeMinecraft.Companion/fromResourceLocation/#net.minecraft.util.ResourceLocation/PointingToDeclaration/legacy/io.github.notenoughupdates.moulconfig.internal/-forge-minecraft/from-resource-location.html
+$dokka.location:io.github.notenoughupdates.moulconfig.managed/ManagedConfig.Companion/create/#java.io.File#java.lang.Class[TypeParam(bounds=[io.github.notenoughupdates.moulconfig.Config])]#kotlin.Function1[io.github.notenoughupdates.moulconfig.managed.ManagedConfigBuilder[TypeParam(bounds=[io.github.notenoughupdates.moulconfig.Config])],kotlin.Unit]/PointingToDeclaration/common/io.github.notenoughupdates.moulconfig.managed/-managed-config/create.html
+$dokka.location:io.github.notenoughupdates.moulconfig.managed/ManagedDataFile.Companion/create/#java.io.File#java.lang.Class[TypeParam(bounds=[kotlin.Any?])]#kotlin.Function1[io.github.notenoughupdates.moulconfig.managed.ManagedDataFileBuilder[TypeParam(bounds=[kotlin.Any?])],kotlin.Unit]/PointingToDeclaration/common/io.github.notenoughupdates.moulconfig.managed/-managed-data-file/create.html
+$dokka.location:io.github.notenoughupdates.moulconfig.xml/XSDGenerator.Companion/main/#kotlin.Array[kotlin.String]/PointingToDeclaration/common/io.github.notenoughupdates.moulconfig.xml/-x-s-d-generator/main.html
 module:common
 io.github.notenoughupdates.moulconfig
 io.github.notenoughupdates.moulconfig.annotations
@@ -22,7 +27,11 @@ io.github.notenoughupdates.moulconfig.gui.elements
 io.github.notenoughupdates.moulconfig.internal
 io.github.notenoughupdates.moulconfig.test
 io.github.notenoughupdates.moulconfig.tweaker
-module:modern
+module:modern-1.21.4
+io.github.notenoughupdates.moulconfig.gui
+io.github.notenoughupdates.moulconfig.platform
+io.github.notenoughupdates.moulconfig.test
+module:modern-1.21.5
 io.github.notenoughupdates.moulconfig.gui
 io.github.notenoughupdates.moulconfig.platform
 io.github.notenoughupdates.moulconfig.test
