@@ -9,5 +9,5 @@ fun cmd(vararg args: String): String? {
         println("${args.toList()} encountered error")
         return null
     }
-    return process.inputStream.readAllBytes().decodeToString()
+    return process.inputStream.readAllBytes().decodeToString().trim()
 }
