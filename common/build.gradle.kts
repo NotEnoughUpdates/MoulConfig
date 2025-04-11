@@ -4,19 +4,17 @@ plugins {
     alias(libs.plugins.kotlin.lombok)
     alias(libs.plugins.dokka)
     `maven-publish`
+	id("moulconfig.base")
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 
-tasks.withType(JavaCompile::class) {
-    options.encoding = "UTF-8"
-}
 dependencies {
-    annotationProcessor(libs.lombok)
-    compileOnly(libs.lombok)
-    compileOnly(libs.jbAnnotations)
-    implementation(libs.libninepatch)
-    compileOnly(libs.legacyGson)
+    annotationProcessor(Dependencies.LOMBOK)
+    compileOnly(Dependencies.LOMBOK)
+    compileOnly(Dependencies.JB_ANNOTATIONS)
+    implementation(Dependencies.LIB_NINE_PATCH)
+    compileOnly(Dependencies.LEGACY_GSON)
 }
 val singleFile by configurations.creating
 artifacts {
@@ -30,7 +28,7 @@ val sourcesJar by tasks.creating(Jar::class) {
 
 publishing {
     publications {
-        create<MavenPublication>("maven") {
+        defaultMaven {
             artifact(tasks.jar) {
                 classifier = ""
             }

@@ -3,14 +3,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
 plugins {
-    idea
-    java
-    `maven-publish`
-    alias(libs.plugins.kotlin.jvm)
-//    alias(libs.plugins.kotlin.lombok)
-    alias(libs.plugins.shadow)
     alias(libs.plugins.unimined)
     alias(libs.plugins.dokka)
+	id("moulconfig.leaf")
+	id("moulconfig.kotlin")
 }
 
 tasks.withType(JavaCompile::class) {
@@ -30,13 +26,8 @@ unimined.minecraft {
     }
     runs {
         config("client") {
-            this.jvmArgs.add("-Dmoulconfig.testmod=true")
-            this.jvmArgs.add("-Dmoulconfig.warn.crash=false")
-            this.jvmArgs.remove("-XX:+UseG1GC")
-            this.jvmArgs.remove("-XX:G1NewSizePercent=20")
-            this.jvmArgs.remove("-XX:MaxGCPauseMillis=50")
-            this.jvmArgs.remove("-XX:G1ReservePercent=20")
-            this.jvmArgs.remove("-XX:G1HeapRegionSize=32M")
+			jvmArgs("-Dmoulconfig.testmod=true")
+            jvmArgs("-Dmoulconfig.warn.crash=false")
         }
     }
 }
@@ -46,18 +37,10 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
-val include by configurations.creating {
-    isVisible = true
-}
-
 dependencies {
-    annotationProcessor(libs.lombok)
-    compileOnly(libs.lombok)
-    compileOnly(libs.jbAnnotations)
-    implementation((project(":common")))
-    implementation(libs.libninepatch)
-    include(libs.libninepatch)
-    include(project(":common", configuration = "singleFile"))
+    annotationProcessor(Dependencies.LOMBOK)
+    compileOnly(Dependencies.LOMBOK)
+    compileOnly(Dependencies.JB_ANNOTATIONS)
 }
 
 sourceSets.main {
@@ -69,7 +52,7 @@ tasks.withType(JavaCompile::class) {
 }
 
 tasks.processResources {
-    from(project(":common").tasks.processResources)
+    exclude("fabric.mod.json")
 }
 
 tasks.withType(KotlinCompile::class) {
@@ -78,29 +61,20 @@ tasks.withType(KotlinCompile::class) {
     }
 }
 
-tasks.shadowJar {
-    configurations = listOf(include)
-}
-
 tasks.jar {
     archiveClassifier.set("small")
 }
-tasks.shadowJar {
-    archiveClassifier.set("dev")
-}
-val sourcesJar by tasks.creating(Jar::class) {
-    from(sourceSets.main.get().allSource)
-    from(project(":common").sourceSets.getByName("main").allSource)
-    archiveClassifier.set("sources")
-}
+
 val remapJar by tasks.named("remapJar", RemapJarTask::class) {
-    archiveClassifier.set("")
+	asJar {
+		archiveClassifier.set("")
+	}
     dependsOn(tasks.shadowJar)
     inputFile.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
 
 val libraryJar by tasks.creating(Jar::class) {
-    from(zipTree(remapJar.archiveFile))
+    from(zipTree(remapJar))
     dependsOn(remapJar)
     archiveClassifier.set("notest")
     exclude("io/github/notenoughupdates/moulconfig/test/*")
@@ -109,18 +83,12 @@ val libraryJar by tasks.creating(Jar::class) {
 
 publishing {
     publications {
-        create<MavenPublication>("maven") {
+        defaultMaven {
             artifact(libraryJar) {
                 classifier = ""
             }
             artifact(remapJar) {
                 classifier = "test"
-            }
-            artifact(tasks["sourcesJar"]) {
-                classifier = "sources"
-            }
-            artifact(tasks.shadowJar) {
-                classifier = "named"
             }
         }
     }

@@ -1,31 +1,17 @@
 [versions]
-mc_modern = "1.21.4"
 mc_legacy = "1.8.9"
 mcp = "22-1.8.9"
 forge_loader = "11.15.1.2318-1.8.9"
-fabric_loader = "0.16.9"
 fabric_api = "0.111.0+1.21.4"
-yarn_build = "1"
-lombok = "1.18.32"
-jbAnnotations = "24.0.1"
 kotlin = "2.0.0"
-shadow = "8.1.1"
 dokka = "1.9.20"
 unimined = "1.2.14"
-legacyGson = "2.1"
 mkdocs = "2.4.0"
-libninepatch = "1.2.0"
 
 [libraries]
-libninepatch = { module = "io.github.juuxel:libninepatch", version.ref = "libninepatch" }
-legacyGson = { module = "com.google.code.gson:gson", version.ref = "legacyGson" }
-jbAnnotations = { module = "org.jetbrains:annotations", version.ref = "jbAnnotations" }
-lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
-fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 
 [plugins]
 mkdocs = { id = "ru.vyarus.mkdocs", version.ref = "mkdocs" }
-shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 kotlin_jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin_lombok = { id = "org.jetbrains.kotlin.plugin.lombok", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

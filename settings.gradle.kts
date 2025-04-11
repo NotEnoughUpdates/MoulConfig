@@ -26,3 +26,4 @@ rootProject.name = "MoulConfig"
 include("common")
 include("legacy")
 include("modern")
+includeBuild("build-src")
