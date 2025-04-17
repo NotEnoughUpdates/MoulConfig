@@ -1,223 +1,210 @@
-/*
- * Copyright (C) 2023 NotEnoughUpdates contributors
- *
- * This file is part of MoulConfig.
- *
- * MoulConfig is free software: you can redistribute it
- * and/or modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- *
- * MoulConfig is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with MoulConfig. If not, see <https://www.gnu.org/licenses/>.
- *
- */
+package io.github.notenoughupdates.moulconfig
 
-package io.github.notenoughupdates.moulconfig;
+import com.google.gson.annotations.Expose
+import java.awt.Color
 
-import com.google.gson.annotations.Expose;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import java.awt.*;
-
-@Data
-@AllArgsConstructor
-public class ChromaColour {
-    /**
-     * Hue in a range from 0 to 1. For a chroma colour this is added to the time as an offset.
-     */
-    @Expose
-    float hue;
-    /**
-     * Saturation in a range from 0 to 1
-     */
-    @Expose
-    float saturation;
-    /**
-     * Brightness in a range from 0 to 1
-     */
-    @Expose
-    float brightness;
-    /**
-     * If set to 0, this indicates a static colour. If set to a value above 0, indicates the amount of milliseconds that pass until the same colour is met again.
-     * This value may be saved lossy.
-     */
-    @Expose
-    int timeForFullRotationInMillis;
-    /**
-     * Alpha in a range from 0 to 255 (with 255 being fully opaque).
-     */
-    @Expose
-    int alpha;
+@Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
+data class ChromaColour(
+        /**
+         * Hue in a range from 0 to 1. For a chroma colour this is added to the time as an offset.
+         */
+        @Expose
+        var hue: Float,
+        /**
+         * Saturation in a range from 0 to 1
+         */
+        @Expose
+        var saturation: Float,
+        /**
+         * Brightness in a range from 0 to 1
+         */
+        @Expose
+        var brightness: Float,
+        /**
+         * If set to 0, this indicates a static colour. If set to a value above 0, indicates the amount of milliseconds that pass until the same colour is met again.
+         * This value may be saved lossy.
+         */
+        @Expose
+        var timeForFullRotationInMillis: Int,
+        /**
+         * Alpha in a range from 0 to 255 (with 255 being fully opaque).
+         */
+        @Expose
+        var alpha: Int,
+        ) {
+    private val cachedRGB: Int = (Color.HSBtoRGB(hue, saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
 
     /**
      * @param offset offset the colour by a hue amount.
      * @return the colour, at the current time if this is a chrome colour
      */
-    public Color getEffectiveColour(float offset) {
-        double effectiveHue;
-        if (timeForFullRotationInMillis > 0) {
-            effectiveHue = System.currentTimeMillis() / (double) timeForFullRotationInMillis;
+    fun getEffectiveColourRGB(offset: Float): Int {
+        var effectiveHue = if (timeForFullRotationInMillis > 0) {
+            System.currentTimeMillis() / timeForFullRotationInMillis.toDouble()
         } else {
-            effectiveHue = hue;
+            hue.toDouble()
         }
-        effectiveHue += offset;
-        return new Color(Color.HSBtoRGB((float) (effectiveHue % 1), saturation, brightness) | (alpha << 24), true);
+        effectiveHue += offset.toDouble()
+        return (Color.HSBtoRGB((effectiveHue % 1).toFloat(), saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
     }
+    /**
+     * @param offset offset the colour by a hue amount.
+     * @return the colour, at the current time if this is a chrome colour
+     */
+    fun getEffectiveColour(offset: Float): Color = Color(getEffectiveColourRGB(offset), true)
 
     /**
-     * Unlike {@link #getEffectiveColour(float)}, this offset does not change anything if not using an animated colour.
+     * Unlike [getEffectiveColourRGB], this offset does not change anything if not using an animated colour.
      *
      * @param offset offset the colour by a time amount in milliseconds.
      * @return the colour, at the current time if this is a chrome colour
      */
-    public Color getEffectiveColourWithTimeOffset(int offset) {
-        double effectiveHue;
-        if (timeForFullRotationInMillis > 0) {
-            effectiveHue = (System.currentTimeMillis() + offset) / (double) timeForFullRotationInMillis;
-        } else {
-            effectiveHue = hue;
-        }
-        return new Color(Color.HSBtoRGB((float) (effectiveHue % 1), saturation, brightness) | (alpha << 24), true);
-
+    fun getEffectiveColourWithTimeOffsetRGB(offset: Int): Int {
+        if (timeForFullRotationInMillis == 0) return cachedRGB
+        val effectiveHue = (System.currentTimeMillis() + offset) / timeForFullRotationInMillis.toDouble()
+        return (Color.HSBtoRGB((effectiveHue % 1).toFloat(), saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
     }
 
+    /**
+     * Unlike [getEffectiveColour], this offset does not change anything if not using an animated colour.
+     *
+     * @param offset offset the colour by a time amount in milliseconds.
+     * @return the colour, at the current time if this is a chrome colour
+     */
+    fun getEffectiveColourWithTimeOffset(offset: Int): Color = Color(getEffectiveColourWithTimeOffsetRGB(offset), true)
 
     /**
      * @return the colour, at the current time if this is a chrome colour
      */
-    public Color getEffectiveColour() {
-        return getEffectiveColour(0);
+    fun getEffectiveColourRGB(): Int = getEffectiveColourWithTimeOffsetRGB(0)
+
+    /**
+     * @return the colour, at the current time if this is a chrome colour
+     */
+    fun getEffectiveColour(): Color = getEffectiveColourWithTimeOffset(0)
+
+    @Deprecated("")
+    fun toLegacyString(): String {
+        val timeInSeconds = timeForFullRotationInMillis / 1000
+        val namedSpeed =
+        if (timeInSeconds == 0) 0 else (255 - (timeInSeconds - MIN_CHROMA_SECS) * 254f / (MAX_CHROMA_SECS - MIN_CHROMA_SECS)).toInt()
+        val red = cachedRGB shr 16 and 0xFF
+        val green = cachedRGB shr 8 and 0xFF
+        val blue = cachedRGB and 0xFF
+        return special(namedSpeed, alpha, red, green, blue)
     }
 
-    @Deprecated
-    public String toLegacyString() {
-        int timeInSeconds = timeForFullRotationInMillis / 1000;
-        int namedSpeed =
-            timeInSeconds == 0 ? 0 : (int) (255 - (timeInSeconds - MIN_CHROMA_SECS) * 254F / (MAX_CHROMA_SECS - MIN_CHROMA_SECS));
-        return special(namedSpeed, alpha, Color.HSBtoRGB(hue, saturation, brightness));
-    }
+    companion object {
 
-    @Deprecated
-    public static String special(int chromaSpeed, int alpha, int rgb) {
-        return special(chromaSpeed, alpha, (rgb & 0xFF0000) >> 16, (rgb & 0x00FF00) >> 8, (rgb & 0x0000FF));
-    }
+        @JvmStatic
+        @Deprecated("")
+        fun special(chromaSpeed: Int, alpha: Int, rgb: Int): String {
+            return special(chromaSpeed, alpha, rgb shr 16 and 0xFF, rgb shr 8 and 0xFF, rgb and 0xFF)
+        }
 
-    private static final int RADIX = 10;
+        private const val RADIX: Int = 10
 
-    @Deprecated
-    public static String special(int chromaSpeed, int alpha, int r, int g, int b) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(Integer.toString(chromaSpeed, RADIX)).append(":");
-        sb.append(Integer.toString(alpha, RADIX)).append(":");
-        sb.append(Integer.toString(r, RADIX)).append(":");
-        sb.append(Integer.toString(g, RADIX)).append(":");
-        sb.append(Integer.toString(b, RADIX));
-        return sb.toString();
-    }
+        @JvmStatic
+        @Deprecated("")
+        fun special(chromaSpeed: Int, alpha: Int, r: Int, g: Int, b: Int): String {
+            val sb = StringBuilder()
+            sb.append(chromaSpeed.toString(RADIX)).append(":")
+            sb.append(alpha.toString(RADIX)).append(":")
+            sb.append(r.toString(RADIX)).append(":")
+            sb.append(g.toString(RADIX)).append(":")
+            sb.append(b.toString(RADIX))
+            return sb.toString()
+        }
 
-    private static int[] decompose(String csv) {
-        String[] split = csv.split(":");
+        @JvmStatic
+        private fun decompose(csv: String): IntArray {
+            val split = csv.split(":")
 
-        int[] arr = new int[split.length];
+            val arr = IntArray(split.size)
 
-        for (int i = 0; i < split.length; i++) {
-            try {
-                arr[i] = Integer.parseInt(split[split.length - 1 - i], RADIX);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
+            for (i in split.indices) {
+                try {
+                    arr[i] = split[split.size - 1 - i].toInt(RADIX)
+                } catch (e: NumberFormatException) {
+                    e.printStackTrace()
+                }
             }
-        }
-        return arr;
-    }
-
-    @Deprecated
-    public static int specialToSimpleRGB(String special) {
-        int[] d = decompose(special);
-        int r = d[2];
-        int g = d[1];
-        int b = d[0];
-        int a = d[3];
-        int chr = d[4];
-
-        return (a & 0xFF) << 24 | (r & 0xFF) << 16 | (g & 0xFF) << 8 | (b & 0xFF);
-    }
-
-    @Deprecated
-    public static int getSpeed(String special) {
-        return decompose(special)[4];
-    }
-
-    @Deprecated
-    public static float getSecondsForSpeed(int speed) {
-        return (255 - speed) / 254f * (MAX_CHROMA_SECS - MIN_CHROMA_SECS) + MIN_CHROMA_SECS;
-    }
-
-    private static final int MIN_CHROMA_SECS = 1;
-    private static final int MAX_CHROMA_SECS = 60;
-
-
-    @Deprecated
-    public static int specialToChromaRGB(String special) {
-        int[] d = decompose(special);
-        int chr = d[4];
-        int a = d[3];
-        int r = d[2];
-        int g = d[1];
-        int b = d[0];
-
-        float[] hsv = Color.RGBtoHSB(r, g, b, null);
-
-        if (chr > 0) {
-            float seconds = getSecondsForSpeed(chr);
-            hsv[0] += (((double) System.currentTimeMillis()) / 1000.0 / seconds) % 1;
-            hsv[0] %= 1;
-            if (hsv[0] < 0) hsv[0] += 1;
+            return arr
         }
 
-        return (a & 0xFF) << 24 | (Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]) & 0x00FFFFFF);
-    }
+        @JvmStatic
+        @Deprecated("")
+        fun specialToSimpleRGB(special: String): Int {
+            val (b, g, r, a) = decompose(special)
 
-    @Deprecated
-    public static int rotateHue(int argb, int degrees) {
-        int a = (argb >> 24) & 0xFF;
-        int r = (argb >> 16) & 0xFF;
-        int g = (argb >> 8) & 0xFF;
-        int b = (argb) & 0xFF;
+            return (a and 0xFF) shl 24 or ((r and 0xFF) shl 16) or ((g and 0xFF) shl 8) or (b and 0xFF)
+        }
 
-        float[] hsv = Color.RGBtoHSB(r, g, b, null);
+        @JvmStatic
+        @Deprecated("")
+        fun getSpeed(special: String): Int = decompose(special)[4]
 
-        hsv[0] += degrees / 360f;
-        hsv[0] %= 1;
+        private const val MIN_CHROMA_SECS: Int = 1
+        private const val MAX_CHROMA_SECS: Int = 60
 
-        return (a & 0xFF) << 24 | (Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]) & 0x00FFFFFF);
-    }
+        @JvmStatic
+        @Deprecated("")
+        fun getSecondsForSpeed(speed: Int): Float = (255 - speed) / 254f * (MAX_CHROMA_SECS - MIN_CHROMA_SECS) + MIN_CHROMA_SECS
 
-    @Deprecated
-    public static ChromaColour forLegacyString(String stringRepresentation) {
-        int[] d = decompose(stringRepresentation);
-        assert d.length == 5;
+        @JvmStatic
+        @Deprecated("")
+        fun specialToChromaRGB(special: String): Int {
+            val (b, g, r, a, chr) = decompose(special)
 
-        int chr = d[4];
-        int a = d[3];
-        int r = d[2];
-        int g = d[1];
-        int b = d[0];
-        return fromRGB(r, g, b, chr > 0 ? (int) (getSecondsForSpeed(chr) * 1000) : 0, a);
-    }
+            val hsv = Color.RGBtoHSB(r, g, b, null)
 
-    public static ChromaColour fromStaticRGB(int r, int g, int b, int a) {
-        return fromRGB(r, g, b, 0, a);
-    }
+            if (chr > 0) {
+                val seconds = getSecondsForSpeed(chr)
+                hsv[0] += (((System.currentTimeMillis().toDouble()) / 1000.0 / seconds) % 1).toFloat()
+                hsv[0] %= 1f
+                if (hsv[0] < 0) hsv[0] += 1f
+            }
 
-    public static ChromaColour fromRGB(int r, int g, int b, int chromaSpeedMillis, int a) {
-        float[] floats = Color.RGBtoHSB(r, g, b, null);
-        return new ChromaColour(floats[0], floats[1], floats[2], chromaSpeedMillis, a);
+            return (a and 0xFF) shl 24 or (Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]) and 0x00FFFFFF)
+        }
+
+        @JvmStatic
+        @Deprecated("")
+        fun rotateHue(argb: Int, degrees: Int): Int {
+            val a = (argb shr 24) and 0xFF
+            val r = (argb shr 16) and 0xFF
+            val g = (argb shr 8) and 0xFF
+            val b = (argb) and 0xFF
+
+            val hsv = Color.RGBtoHSB(r, g, b, null)
+
+            hsv[0] += degrees / 360f
+            hsv[0] %= 1f
+
+            return (a and 0xFF) shl 24 or (Color.HSBtoRGB(hsv[0], hsv[1], hsv[2]) and 0x00FFFFFF)
+        }
+
+        @JvmStatic
+        @Deprecated("")
+        fun forLegacyString(stringRepresentation: String): ChromaColour {
+            val d = decompose(stringRepresentation)
+            assert(d.size == 5)
+
+            val chr = d[4]
+            val a = d[3]
+            val r = d[2]
+            val g = d[1]
+            val b = d[0]
+            return fromRGB(r, g, b, if (chr > 0) (getSecondsForSpeed(chr) * 1000).toInt() else 0, a)
+        }
+
+        @JvmStatic
+        fun fromStaticRGB(r: Int, g: Int, b: Int, a: Int): ChromaColour = fromRGB(r, g, b, 0, a)
+
+        @JvmStatic
+        fun fromRGB(r: Int, g: Int, b: Int, chromaSpeedMillis: Int, a: Int): ChromaColour {
+            val floats = Color.RGBtoHSB(r, g, b, null)
+            return ChromaColour(floats[0], floats[1], floats[2], chromaSpeedMillis, a)
+        }
     }
 }
