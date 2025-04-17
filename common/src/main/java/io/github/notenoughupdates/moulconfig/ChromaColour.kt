@@ -5,33 +5,33 @@ import java.awt.Color
 
 @Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
 data class ChromaColour(
-        /**
-         * Hue in a range from 0 to 1. For a chroma colour this is added to the time as an offset.
-         */
-        @Expose
-        var hue: Float,
-        /**
-         * Saturation in a range from 0 to 1
-         */
-        @Expose
-        var saturation: Float,
-        /**
-         * Brightness in a range from 0 to 1
-         */
-        @Expose
-        var brightness: Float,
-        /**
-         * If set to 0, this indicates a static colour. If set to a value above 0, indicates the amount of milliseconds that pass until the same colour is met again.
-         * This value may be saved lossy.
-         */
-        @Expose
-        var timeForFullRotationInMillis: Int,
-        /**
-         * Alpha in a range from 0 to 255 (with 255 being fully opaque).
-         */
-        @Expose
-        var alpha: Int,
-        ) {
+    /**
+     * Hue in a range from 0 to 1. For a chroma colour this is added to the time as an offset.
+     */
+    @Expose
+    val hue: Float,
+    /**
+     * Saturation in a range from 0 to 1
+     */
+    @Expose
+    val saturation: Float,
+    /**
+     * Brightness in a range from 0 to 1
+     */
+    @Expose
+    val brightness: Float,
+    /**
+     * If set to 0, this indicates a static colour. If set to a value above 0, indicates the amount of milliseconds that pass until the same colour is met again.
+     * This value may be saved lossy.
+     */
+    @Expose
+    val timeForFullRotationInMillis: Int,
+    /**
+     * Alpha in a range from 0 to 255 (with 255 being fully opaque).
+     */
+    @Expose
+    val alpha: Int,
+) {
     private val cachedRGB: Int = (Color.HSBtoRGB(hue, saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
 
     /**
