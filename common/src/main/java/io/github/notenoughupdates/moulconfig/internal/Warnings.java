@@ -49,7 +49,10 @@ public class Warnings {
         int i = 0;
         StackTraceElement modCall = null;
         for (StackTraceElement stackTraceElement : stackTrace) {
-            if (i++ < depth || (stackTraceElement.getClassName().startsWith(basePackage) &&
+            if (i++ < depth
+                || stackTraceElement.getClassName().startsWith("java.")
+                || stackTraceElement.getClassName().startsWith("kotlin.")
+                || (stackTraceElement.getClassName().startsWith(basePackage) &&
                 !stackTraceElement.getClassName().startsWith(testPackage)))
                 continue;
             modCall = stackTraceElement;
