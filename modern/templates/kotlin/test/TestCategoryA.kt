@@ -1,15 +1,7 @@
 package io.github.notenoughupdates.moulconfig.test
 
 import com.google.gson.annotations.Expose
-import io.github.notenoughupdates.moulconfig.annotations.Accordion
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
-import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
+import io.github.notenoughupdates.moulconfig.annotations.*
 import io.github.notenoughupdates.moulconfig.observer.Property
 import org.lwjgl.glfw.GLFW
 import java.util.Arrays
@@ -111,4 +103,19 @@ class TestCategoryA {
     @ConfigOption(name = "Keybind", desc = "The Number One")
     @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_1)
     var slot1: Int = GLFW.GLFW_KEY_1
+
+
+    @Expose
+    @ConfigOption(name = "Test Runnable",desc = "Test a java.lang.Runnable")
+    @ConfigEditorButton(buttonText = "Click me")
+    val runnable = Runnable {
+        println("JRunnable working")
+    }
+    @Expose
+    @ConfigOption(name = "Test Runnable",desc = "Test a kotlin.jvm.functions.Function0")
+    @ConfigEditorButton(buttonText = "Click me")
+    val kRunnable = {
+        println("KFunction0 working")
+    }
+
 }

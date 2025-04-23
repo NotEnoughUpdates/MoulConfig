@@ -26,11 +26,13 @@ import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
+import io.github.notenoughupdates.moulconfig.internal.TypeUtils;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import kotlin.jvm.functions.Function0;
 import kotlin.reflect.KFunction;
 import lombok.Getter;
 import lombok.val;
+import lombok.var;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.ParameterizedType;
@@ -56,8 +58,8 @@ public class GuiOptionEditorButton extends ComponentEditor {
 
         this.buttonText = buttonText;
         Type type = option.getType();
-        this.isUsingRunnable = type == Runnable.class;
-        this.isUsingKotlinLambda = type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == KFunction.class;
+        this.isUsingRunnable = TypeUtils.doesAExtendB(type, Runnable.class);
+        this.isUsingKotlinLambda = TypeUtils.doesAExtendB(type, Function0.class);
         if (this.buttonText == null) this.buttonText = "";
     }
 

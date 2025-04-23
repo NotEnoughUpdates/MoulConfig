@@ -12,8 +12,12 @@ public class TypeUtils {
         return normalizeNative(a) == normalizeNative(b);
     }
 
-    public static boolean doesAExtendB(Class<?> a, Class<?> b) {
-        return normalizeNative(b).isAssignableFrom(normalizeNative(a));
+    public static boolean doesAExtendB(Type a, Type b) {
+        return normalizeRawAll(b).isAssignableFrom(normalizeRawAll(a));
+    }
+
+    public static Class<?> normalizeRawAll(Type t) {
+        return normalizeNative(resolveRawType(t));
     }
 
     public static Class<?> normalizeNative(Class<?> clazz) {
