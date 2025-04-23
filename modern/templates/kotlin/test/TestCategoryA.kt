@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.test
 
 import com.google.gson.annotations.Expose
+import io.github.notenoughupdates.moulconfig.ChromaColour
 import io.github.notenoughupdates.moulconfig.annotations.*
 import io.github.notenoughupdates.moulconfig.observer.Property
 import org.lwjgl.glfw.GLFW
@@ -98,6 +99,10 @@ class TestCategoryA {
             return str
         }
     }
+
+    @ConfigOption(name = "Colour Test", desc = "Test a colour editor")
+    @ConfigEditorColour
+    var colour = ChromaColour(0F, 1f, 1f, 0, 0xFF)
 
     @Expose
     @ConfigOption(name = "Keybind", desc = "The Number One")

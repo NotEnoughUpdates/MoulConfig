@@ -2,6 +2,7 @@ package io.github.notenoughupdates.moulconfig
 
 import com.google.gson.annotations.Expose
 import java.awt.Color
+import kotlin.math.abs
 
 @Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
 data class ChromaColour(
@@ -32,20 +33,40 @@ data class ChromaColour(
     @Expose
     val alpha: Int,
 ) {
-    private val cachedRGB: Int = (Color.HSBtoRGB(hue, saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
+
+    private fun evaluateColourWithShift(hueShift: Double): Int {
+        if (abs(cachedRGBHueOffset - hueShift) < 1/360.0)return cachedRGB
+        val effectiveHue = ((hue.toDouble() + hueShift)%1).toFloat()
+        val ret = (Color.HSBtoRGB(effectiveHue, saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
+        cachedRGBHueOffset = hueShift
+        cachedRGB = ret
+        return ret
+    }
+
+    /**
+     * The value of [evaluateColourWithShift] at [cachedRGBHueOffset]
+     */
+    @Transient
+    private var cachedRGB: Int = 0
+
+    /**
+     * The last queried value of [evaluateColourWithShift].
+     */
+    @Transient
+    private var cachedRGBHueOffset: Double = Double.NaN
 
     /**
      * @param offset offset the colour by a hue amount.
      * @return the colour, at the current time if this is a chrome colour
      */
     fun getEffectiveColourRGB(offset: Float): Int {
-        var effectiveHue = if (timeForFullRotationInMillis > 0) {
+        var effectiveHueOffset = if (timeForFullRotationInMillis > 0) {
             System.currentTimeMillis() / timeForFullRotationInMillis.toDouble()
         } else {
-            hue.toDouble()
+            .0
         }
-        effectiveHue += offset.toDouble()
-        return (Color.HSBtoRGB((effectiveHue % 1).toFloat(), saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
+        effectiveHueOffset += offset
+        return evaluateColourWithShift(effectiveHueOffset)
     }
     /**
      * @param offset offset the colour by a hue amount.
@@ -60,9 +81,9 @@ data class ChromaColour(
      * @return the colour, at the current time if this is a chrome colour
      */
     fun getEffectiveColourWithTimeOffsetRGB(offset: Int): Int {
-        if (timeForFullRotationInMillis == 0) return cachedRGB
+        if (timeForFullRotationInMillis == 0) return evaluateColourWithShift(.0)
         val effectiveHue = (System.currentTimeMillis() + offset) / timeForFullRotationInMillis.toDouble()
-        return (Color.HSBtoRGB((effectiveHue % 1).toFloat(), saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
+        return evaluateColourWithShift(effectiveHue)
     }
 
     /**
