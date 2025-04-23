@@ -8,6 +8,9 @@ class TestConfig : Config() {
         return "1.20 Test"
     }
 
+    override fun isValidRunnable(runnableId: Int): Boolean {
+        return false
+    }
     @Category(name = "Cat a", desc = "Cat a desc")
     var testCategoryA: TestCategoryA = TestCategoryA()
 }

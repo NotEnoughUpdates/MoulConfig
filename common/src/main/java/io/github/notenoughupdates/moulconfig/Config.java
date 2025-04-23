@@ -73,4 +73,11 @@ public abstract class Config {
     }
 
     public transient List<Runnable> saveRunnables = new ArrayList<>();
+
+    /**
+     * Verify that calling {@link #executeRunnable} is valid. A project moving away from runnable ids can return {@code false} to throw warnings whenever this gets invoked.
+     */
+    public boolean isValidRunnable(int runnableId) {
+        return true;
+    }
 }

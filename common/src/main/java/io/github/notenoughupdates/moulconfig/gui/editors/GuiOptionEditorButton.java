@@ -27,7 +27,9 @@ import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.TypeUtils;
+import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.reflect.KFunction;
 import lombok.Getter;
@@ -38,13 +40,41 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Locale;
+import java.util.Objects;
 
 public class GuiOptionEditorButton extends ComponentEditor {
     private final int runnableId;
     private String buttonText;
     private final Config config;
-    private final boolean isUsingRunnable;
-    private final boolean isUsingKotlinLambda;
+    final DispatchStyle dispatchStyle;
+
+    enum DispatchStyle {
+        KRUNNABLE() {
+            @Override
+            void dispatch(GuiOptionEditorButton $this) {
+                var v = ((Function0<?>) $this.option.get()).invoke();
+                if (!Objects.equals(v, Unit.INSTANCE))
+                    Warnings.warn("KRunnable dispatch of button " + $this.getDebugDeclarationLocation() + " returned non unit value " + v);
+            }
+        },
+
+        RUNNABLE() {
+            @Override
+            void dispatch(GuiOptionEditorButton $this) {
+                ((Runnable) $this.option.get()).run();
+            }
+        },
+        BY_ID() {
+            @Override
+            @SuppressWarnings("deprecation")
+            void dispatch(GuiOptionEditorButton $this) {
+                $this.config.executeRunnable($this.runnableId);
+            }
+        };
+
+        abstract void dispatch(GuiOptionEditorButton $this);
+    }
+
 
     public GuiOptionEditorButton(
         ProcessedOption option,
@@ -58,8 +88,16 @@ public class GuiOptionEditorButton extends ComponentEditor {
 
         this.buttonText = buttonText;
         Type type = option.getType();
-        this.isUsingRunnable = TypeUtils.doesAExtendB(type, Runnable.class);
-        this.isUsingKotlinLambda = TypeUtils.doesAExtendB(type, Function0.class);
+        if (TypeUtils.doesAExtendB(type, Runnable.class)) {
+            dispatchStyle = DispatchStyle.RUNNABLE;
+        } else if (TypeUtils.doesAExtendB(type, Function0.class)) {
+            dispatchStyle = DispatchStyle.KRUNNABLE;
+        } else {
+            dispatchStyle = DispatchStyle.BY_ID;
+            if (!config.isValidRunnable(this.runnableId)) {
+                Warnings.warn("Invalid use of runnable id " + runnableId + " by " + getDebugDeclarationLocation());
+            }
+        }
         if (this.buttonText == null) this.buttonText = "";
     }
 
@@ -103,13 +141,7 @@ public class GuiOptionEditorButton extends ComponentEditor {
     });
 
     public void onClick() {
-        if (isUsingRunnable) {
-            ((Runnable) option.get()).run();
-        } else if (isUsingKotlinLambda) {
-            ((Function0<?>) option.get()).invoke();
-        } else {
-            config.executeRunnable(runnableId);
-        }
+        dispatchStyle.dispatch(this);
     }
 
     @Override

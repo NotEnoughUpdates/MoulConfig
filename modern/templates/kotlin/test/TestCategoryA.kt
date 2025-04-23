@@ -106,16 +106,22 @@ class TestCategoryA {
 
 
     @Expose
-    @ConfigOption(name = "Test Runnable",desc = "Test a java.lang.Runnable")
+    @ConfigOption(name = "Test Runnable", desc = "Test a java.lang.Runnable")
     @ConfigEditorButton(buttonText = "Click me")
     val runnable = Runnable {
         println("JRunnable working")
     }
     @Expose
-    @ConfigOption(name = "Test Runnable",desc = "Test a kotlin.jvm.functions.Function0")
+    @ConfigOption(name = "Test Runnable", desc = "Test a kotlin.jvm.functions.Function0")
     @ConfigEditorButton(buttonText = "Click me")
     val kRunnable = {
         println("KFunction0 working")
     }
+    @Expose
+    @ConfigOption(name = "Test Runnable", desc = "Test a (ignored) runnable using runnableId to emit a test warning")
+    @ConfigEditorButton(
+        runnableId = 10,
+        buttonText = "Click me")
+    val runnableId = Unit
 
 }
