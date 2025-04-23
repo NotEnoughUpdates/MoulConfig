@@ -27,17 +27,22 @@ import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
+import kotlin.jvm.functions.Function0;
+import kotlin.reflect.KFunction;
 import lombok.Getter;
 import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Locale;
 
 public class GuiOptionEditorButton extends ComponentEditor {
     private final int runnableId;
     private String buttonText;
     private final Config config;
-    private boolean isUsingRunnable;
+    private final boolean isUsingRunnable;
+    private final boolean isUsingKotlinLambda;
 
     public GuiOptionEditorButton(
         ProcessedOption option,
@@ -50,7 +55,9 @@ public class GuiOptionEditorButton extends ComponentEditor {
         this.config = config;
 
         this.buttonText = buttonText;
-        this.isUsingRunnable = option.getType() == Runnable.class;
+        Type type = option.getType();
+        this.isUsingRunnable = type == Runnable.class;
+        this.isUsingKotlinLambda = type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == KFunction.class;
         if (this.buttonText == null) this.buttonText = "";
     }
 
@@ -96,6 +103,8 @@ public class GuiOptionEditorButton extends ComponentEditor {
     public void onClick() {
         if (isUsingRunnable) {
             ((Runnable) option.get()).run();
+        } else if (isUsingKotlinLambda) {
+            ((Function0<?>) option.get()).invoke();
         } else {
             config.executeRunnable(runnableId);
         }
