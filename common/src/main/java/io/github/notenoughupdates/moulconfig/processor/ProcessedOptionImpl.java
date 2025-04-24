@@ -87,6 +87,11 @@ public class ProcessedOptionImpl implements ProcessedOption, ProcessedOption.Has
     }
 
     @Override
+    public String getPath() {
+        return path;
+    }
+
+    @Override
     public Config getConfig() {
         return config;
     }
