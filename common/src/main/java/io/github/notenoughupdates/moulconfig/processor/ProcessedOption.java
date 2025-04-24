@@ -45,6 +45,8 @@ public interface ProcessedOption extends HasDebugLocation {
 
     String getDescription();
 
+    String getPath();
+
     Config getConfig();
 
     Object get();
