@@ -176,10 +176,11 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         drawContext.draw {
             val matrix = drawContext.matrices.peek().positionMatrix
             val buffer = it.getBuffer(INVERTED_RECT)
-            buffer.vertex(matrix, left, bottom, 0F).next()
-            buffer.vertex(matrix, right, bottom, 0F).next()
-            buffer.vertex(matrix, right, top, 0F).next()
-            buffer.vertex(matrix, left, top, 0F).next()
+            val blue = 0xFF0000FF.toInt()
+            buffer.vertex(matrix, left, bottom, 0F).color(blue).next()
+            buffer.vertex(matrix, right, bottom, 0F).color(blue).next()
+            buffer.vertex(matrix, right, top, 0F).color(blue).next()
+            buffer.vertex(matrix, left, top, 0F).color(blue).next()
         }
     }
 
