@@ -47,7 +47,7 @@ data class ChromaColour(
      * The value of [evaluateColourWithShift] at [cachedRGBHueOffset]
      */
     @Transient
-    private var cachedRGB: Int = 0
+    private var cachedRGB: Int = Color.HSBtoRGB(hue, saturation, brightness) and 0x00FFFFFF or (alpha shl 24)
 
     /**
      * The last queried value of [evaluateColourWithShift].
