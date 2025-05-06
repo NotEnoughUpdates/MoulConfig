@@ -35,19 +35,23 @@ data class ChromaColour(
 ) {
 
     private fun evaluateColourWithShift(hueShift: Double): Int {
-        if (abs(cachedRGBHueOffset - hueShift) < 1/360.0)return cachedRGB
-        val effectiveHue = ((hue.toDouble() + hueShift)%1).toFloat()
+        if (abs(cachedRGBHueOffset - hueShift) < 1 / 360.0) return cachedChromaColor
+        val effectiveHue = ((hue.toDouble() + hueShift) % 1).toFloat()
         val ret = (Color.HSBtoRGB(effectiveHue, saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
         cachedRGBHueOffset = hueShift
-        cachedRGB = ret
+        cachedChromaColor = ret
         return ret
     }
+
+    /** The value of this color as a static color. */
+    @Transient
+    private val cachedRGB: Int = Color.HSBtoRGB(hue, saturation, brightness) and 0x00FFFFFF or (alpha shl 24)
 
     /**
      * The value of [evaluateColourWithShift] at [cachedRGBHueOffset]
      */
     @Transient
-    private var cachedRGB: Int = Color.HSBtoRGB(hue, saturation, brightness) and 0x00FFFFFF or (alpha shl 24)
+    private var cachedChromaColor: Int = cachedRGB
 
     /**
      * The last queried value of [evaluateColourWithShift].
@@ -81,7 +85,7 @@ data class ChromaColour(
      * @return the colour, at the current time if this is a chrome colour
      */
     fun getEffectiveColourWithTimeOffsetRGB(offset: Int): Int {
-        if (timeForFullRotationInMillis == 0) return evaluateColourWithShift(.0)
+        if (timeForFullRotationInMillis == 0) return cachedRGB
         val effectiveHue = (System.currentTimeMillis() + offset) / timeForFullRotationInMillis.toDouble()
         return evaluateColourWithShift(effectiveHue)
     }
@@ -109,9 +113,10 @@ data class ChromaColour(
         val timeInSeconds = timeForFullRotationInMillis / 1000
         val namedSpeed =
         if (timeInSeconds == 0) 0 else (255 - (timeInSeconds - MIN_CHROMA_SECS) * 254f / (MAX_CHROMA_SECS - MIN_CHROMA_SECS)).toInt()
-        val red = cachedRGB shr 16 and 0xFF
-        val green = cachedRGB shr 8 and 0xFF
-        val blue = cachedRGB and 0xFF
+        val rgb = Color.HSBtoRGB(hue, saturation, brightness)
+        val red = rgb shr 16 and 0xFF
+        val green = rgb shr 8 and 0xFF
+        val blue = rgb and 0xFF
         return special(namedSpeed, alpha, red, green, blue)
     }
 
