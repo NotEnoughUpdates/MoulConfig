@@ -4,6 +4,7 @@ plugins {
     id("moulconfig.dokka")
     `maven-publish`
 	id("moulconfig.base")
+    id("moulconfig.test")
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
