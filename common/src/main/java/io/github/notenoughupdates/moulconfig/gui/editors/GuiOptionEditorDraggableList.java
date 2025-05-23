@@ -39,6 +39,7 @@ import java.util.*;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private Map<Object, String> exampleText = new HashMap<>();
+    private boolean dynamicToString;
     private boolean enableDeleting;
     private List<Object> activeText;
     private final boolean requireNonEmpty;
@@ -52,38 +53,41 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private int dragOffsetX = -1;
     private int dragOffsetY = -1;
     private boolean dropdownOpen = false;
-    private Enum<?>[] enumConstants;
+    private final Map<Object, String[]> lineCache = new HashMap<>();
     private String exampleTextConcat;
 
     public GuiOptionEditorDraggableList(
             ProcessedOption option,
             String[] exampleText,
-            boolean enableDeleting
+            boolean enableDeleting,
+            boolean dynamicToString
     ) {
-        this(option, exampleText, enableDeleting, false);
+        this(option, exampleText, enableDeleting, dynamicToString, false);
     }
 
     public GuiOptionEditorDraggableList(
             ProcessedOption option,
             String[] exampleText,
             boolean enableDeleting,
+            boolean dynamicToString,
             boolean requireNonEmpty
     ) {
         super(option);
 
+        this.dynamicToString = dynamicToString;
         this.enableDeleting = enableDeleting;
         this.activeText = (List) option.get();
         this.requireNonEmpty = requireNonEmpty;
 
         Class<?> elementType = TypeUtils.resolveRawType(((ParameterizedType) option.getType()).getActualTypeArguments()[0]);
 
-        if (Enum.class.isAssignableFrom(elementType)) {
+        if (!dynamicToString && Enum.class.isAssignableFrom(elementType)) {
+            @SuppressWarnings("unchecked")
             Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) elementType;
-            enumConstants = enumType.getEnumConstants();
-            for (int i = 0; i < enumConstants.length; i++) {
-                this.exampleText.put(enumConstants[i], enumConstants[i].toString());
+            for (Enum<?> e : enumType.getEnumConstants()) {
+                this.exampleText.put(e, e.toString());
             }
-        } else {
+        } else if (!dynamicToString && !Enum.class.isAssignableFrom(elementType)) {
             for (int i = 0; i < exampleText.length; i++) {
                 this.exampleText.put(i, exampleText[i]);
             }
@@ -91,16 +95,34 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     private void saveChanges() {
+        lineCache.clear();
+        exampleTextConcat = null;
         option.explicitNotifyChange();
     }
 
+    private String[] getCachedLines(Object obj) {
+        return lineCache.computeIfAbsent(obj, k -> getExampleText(k).split("\n"));
+    }
+
     private String getExampleText(Object forObject) {
-        String str = exampleText.get(forObject);
-        if (str == null) {
-            str = "<unknown " + forObject + ">";
-            Warnings.warnOnce("Could not find draggable list object for " + forObject + " on option " + option.getDebugDeclarationLocation(), forObject, option);
+        if (dynamicToString) {
+            try {
+                return forObject != null ? forObject.toString() : "<null>";
+            } catch (Exception e) {
+                return "<unknown " + forObject + ">";
+            }
+        } else {
+            String str = exampleText.get(forObject);
+            if (str == null) {
+                str = "<unknown " + forObject + ">";
+                Warnings.warnOnce(
+                    "Could not find draggable list object for " + forObject +
+                        " on option " + option.getDebugDeclarationLocation(),
+                    forObject, option
+                );
+            }
+            return str;
         }
-        return str;
     }
 
     @Override
@@ -108,8 +130,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         int height = super.getHeight() + 13;
 
         for (Object object : activeText) {
-            String str = getExampleText(object);
-            height += 10 * str.split("\n").length;
+            height += 10 * getCachedLines(object).length;
         }
 
         return height;
@@ -168,7 +189,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         for (Object indexObject : activeText) {
             String str = getExampleText(indexObject);
 
-            String[] multilines = str.split("\n");
+            String[] multilines = getCachedLines(indexObject);
 
             int ySize = multilines.length * 10;
 
@@ -394,7 +415,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     @Override
     public boolean fulfillsSearch(String word) {
         if (exampleTextConcat == null) {
-            exampleTextConcat = String.join("", exampleText.values()).toLowerCase(Locale.ROOT);
+            StringBuilder sb = new StringBuilder();
+            for (Object obj : activeText) {
+                for (String line : getCachedLines(obj)) {
+                    sb.append(line);
+                }
+            }
+            exampleTextConcat = sb.toString().toLowerCase(Locale.ROOT);
         }
         return super.fulfillsSearch(word) || exampleTextConcat.contains(word);
     }
