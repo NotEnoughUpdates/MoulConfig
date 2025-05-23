@@ -48,6 +48,12 @@ public @interface ConfigEditorDraggableList {
     boolean requireNonEmpty() default false;
 
     /**
+     * If true, never cache the exampleText map and
+     * always call element.toString() at render‐time.
+     */
+    boolean dynamicToString() default false;
+
+    /**
      * @return set to false to disable deleting items from the list
      */
     boolean allowDeleting() default true;

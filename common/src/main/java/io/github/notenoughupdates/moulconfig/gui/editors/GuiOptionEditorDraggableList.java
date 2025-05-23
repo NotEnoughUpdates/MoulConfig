@@ -29,7 +29,6 @@ import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.internal.TypeUtils;
-import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import kotlin.Pair;
 import lombok.var;
@@ -39,6 +38,7 @@ import java.util.*;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private Map<Object, String> exampleText = new HashMap<>();
+    private boolean dynamicToString;
     private boolean enableDeleting;
     private List<Object> activeText;
     private final boolean requireNonEmpty;
@@ -52,38 +52,42 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private int dragOffsetX = -1;
     private int dragOffsetY = -1;
     private boolean dropdownOpen = false;
-    private Enum<?>[] enumConstants;
     private String exampleTextConcat;
 
     public GuiOptionEditorDraggableList(
             ProcessedOption option,
             String[] exampleText,
-            boolean enableDeleting
+            boolean enableDeleting,
+            boolean dynamicToString
     ) {
-        this(option, exampleText, enableDeleting, false);
+        this(option, exampleText, enableDeleting, dynamicToString, false);
     }
 
     public GuiOptionEditorDraggableList(
             ProcessedOption option,
             String[] exampleText,
             boolean enableDeleting,
+            boolean dynamicToString,
             boolean requireNonEmpty
     ) {
         super(option);
 
+        this.dynamicToString = dynamicToString;
         this.enableDeleting = enableDeleting;
         this.activeText = (List) option.get();
         this.requireNonEmpty = requireNonEmpty;
 
-        Class<?> elementType = TypeUtils.resolveRawType(((ParameterizedType) option.getType()).getActualTypeArguments()[0]);
+        Class<?> elementType = TypeUtils.resolveRawType(
+            ((ParameterizedType) option.getType()).getActualTypeArguments()[0]
+        );
 
-        if (Enum.class.isAssignableFrom(elementType)) {
+        if (!dynamicToString && Enum.class.isAssignableFrom(elementType)) {
+            @SuppressWarnings("unchecked")
             Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) elementType;
-            enumConstants = enumType.getEnumConstants();
-            for (int i = 0; i < enumConstants.length; i++) {
-                this.exampleText.put(enumConstants[i], enumConstants[i].toString());
+            for (Enum<?> e : enumType.getEnumConstants()) {
+                this.exampleText.put(e, e.toString());
             }
-        } else {
+        } else if (!dynamicToString && !Enum.class.isAssignableFrom(elementType)) {
             for (int i = 0; i < exampleText.length; i++) {
                 this.exampleText.put(i, exampleText[i]);
             }
@@ -95,12 +99,15 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     private String getExampleText(Object forObject) {
-        String str = exampleText.get(forObject);
-        if (str == null) {
-            str = "<unknown " + forObject + ">";
-            Warnings.warnOnce("Could not find draggable list object for " + forObject + " on option " + option.getDebugDeclarationLocation(), forObject, option);
+        if (dynamicToString) {
+            try {
+                return forObject != null ? forObject.toString() : "";
+            } catch (Exception e) { return ""; }
+        } else {
+            String str = exampleText.get(forObject);
+            if (str == null) { str = ""; }
+            return str;
         }
-        return str;
     }
 
     @Override
