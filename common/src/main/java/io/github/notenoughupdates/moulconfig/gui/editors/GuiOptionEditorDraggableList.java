@@ -29,6 +29,7 @@ import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.internal.TypeUtils;
+import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import kotlin.Pair;
 import lombok.var;
@@ -78,9 +79,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         this.activeText = (List) option.get();
         this.requireNonEmpty = requireNonEmpty;
 
-        Class<?> elementType = TypeUtils.resolveRawType(
-            ((ParameterizedType) option.getType()).getActualTypeArguments()[0]
-        );
+        Class<?> elementType = TypeUtils.resolveRawType(((ParameterizedType) option.getType()).getActualTypeArguments()[0]);
 
         if (!dynamicToString && Enum.class.isAssignableFrom(elementType)) {
             @SuppressWarnings("unchecked")
@@ -108,11 +107,20 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private String getExampleText(Object forObject) {
         if (dynamicToString) {
             try {
-                return forObject != null ? forObject.toString() : "";
-            } catch (Exception e) { return ""; }
+                return forObject != null ? forObject.toString() : "<null>";
+            } catch (Exception e) {
+                return "<unknown " + forObject + ">";
+            }
         } else {
             String str = exampleText.get(forObject);
-            if (str == null) { str = ""; }
+            if (str == null) {
+                str = "<unknown " + forObject + ">";
+                Warnings.warnOnce(
+                    "Could not find draggable list object for " + forObject +
+                        " on option " + option.getDebugDeclarationLocation(),
+                    forObject, option
+                );
+            }
             return str;
         }
     }
