@@ -52,6 +52,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private int dragOffsetX = -1;
     private int dragOffsetY = -1;
     private boolean dropdownOpen = false;
+    private final Map<Object, String[]> lineCache = new HashMap<>();
     private String exampleTextConcat;
 
     public GuiOptionEditorDraggableList(
@@ -95,7 +96,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     }
 
     private void saveChanges() {
+        lineCache.clear();
+        exampleTextConcat = null;
         option.explicitNotifyChange();
+    }
+
+    private String[] getCachedLines(Object obj) {
+        return lineCache.computeIfAbsent(obj, k -> getExampleText(k).split("\n"));
     }
 
     private String getExampleText(Object forObject) {
@@ -115,8 +122,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         int height = super.getHeight() + 13;
 
         for (Object object : activeText) {
-            String str = getExampleText(object);
-            height += 10 * str.split("\n").length;
+            height += 10 * getCachedLines(object).length;
         }
 
         return height;
@@ -175,7 +181,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         for (Object indexObject : activeText) {
             String str = getExampleText(indexObject);
 
-            String[] multilines = str.split("\n");
+            String[] multilines = getCachedLines(indexObject);
 
             int ySize = multilines.length * 10;
 
@@ -401,7 +407,13 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     @Override
     public boolean fulfillsSearch(String word) {
         if (exampleTextConcat == null) {
-            exampleTextConcat = String.join("", exampleText.values()).toLowerCase(Locale.ROOT);
+            StringBuilder sb = new StringBuilder();
+            for (Object obj : activeText) {
+                for (String line : getCachedLines(obj)) {
+                    sb.append(line);
+                }
+            }
+            exampleTextConcat = sb.toString().toLowerCase(Locale.ROOT);
         }
         return super.fulfillsSearch(word) || exampleTextConcat.contains(word);
     }
