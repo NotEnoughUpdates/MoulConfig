@@ -3,6 +3,7 @@ package io.github.notenoughupdates.moulconfig
 import com.google.gson.annotations.Expose
 import java.awt.Color
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 @Suppress("DeprecatedCallableAddReplaceWith", "DEPRECATION")
 data class ChromaColour(
@@ -35,8 +36,8 @@ data class ChromaColour(
 ) {
 
     private fun evaluateColourWithShift(hueShift: Double): Int {
-        if (abs(cachedRGBHueOffset - hueShift) < 1/360.0)return cachedRGB
-        val effectiveHue = ((hue.toDouble() + hueShift)%1).toFloat()
+        if (abs(cachedRGBHueOffset - hueShift) < 1 / 360.0) return cachedRGB
+        val effectiveHue = ((hue.toDouble() + hueShift) % 1).toFloat()
         val ret = (Color.HSBtoRGB(effectiveHue, saturation, brightness) and 0x00FFFFFF) or (alpha shl 24)
         cachedRGBHueOffset = hueShift
         cachedRGB = ret
@@ -68,6 +69,7 @@ data class ChromaColour(
         effectiveHueOffset += offset
         return evaluateColourWithShift(effectiveHueOffset)
     }
+
     /**
      * @param offset offset the colour by a hue amount.
      * @return the colour, at the current time if this is a chrome colour
@@ -106,12 +108,12 @@ data class ChromaColour(
 
     @Deprecated("")
     fun toLegacyString(): String {
-        val timeInSeconds = timeForFullRotationInMillis / 1000
         val namedSpeed =
-        if (timeInSeconds == 0) 0 else (255 - (timeInSeconds - MIN_CHROMA_SECS) * 254f / (MAX_CHROMA_SECS - MIN_CHROMA_SECS)).toInt()
-        val red = cachedRGB shr 16 and 0xFF
-        val green = cachedRGB shr 8 and 0xFF
-        val blue = cachedRGB and 0xFF
+            if (timeForFullRotationInMillis == 0) 0 else getSpeedForMillis(timeForFullRotationInMillis / 1000f)
+        val rgb = evaluateColourWithShift(.0)
+        val red = rgb shr 16 and 0xFF
+        val green = rgb shr 8 and 0xFF
+        val blue = rgb and 0xFF
         return special(namedSpeed, alpha, red, green, blue)
     }
 
@@ -171,6 +173,11 @@ data class ChromaColour(
         @JvmStatic
         @Deprecated("")
         fun getSecondsForSpeed(speed: Int): Float = (255 - speed) / 254f * (MAX_CHROMA_SECS - MIN_CHROMA_SECS) + MIN_CHROMA_SECS
+
+        @Deprecated("")
+        fun getSpeedForMillis(seconds: Float): Int {
+            return (255 - ((seconds - MIN_CHROMA_SECS) / (MAX_CHROMA_SECS - MIN_CHROMA_SECS) * 254)).roundToInt()
+        }
 
         @JvmStatic
         @Deprecated("")

@@ -70,6 +70,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     @Setter
     private SearchFunction searchFunction = GuiOptionEditor::fulfillsSearch;
 
+    @Setter
+    public Boolean wide = false;
+
     private LinkedHashMap<String, ? extends ProcessedCategory> currentlyVisibleCategories;
     private Set<ProcessedOption> currentlyVisibleOptions;
     private Map<String, Set<String>> childCategoryLookup = new HashMap<>();
@@ -324,8 +327,21 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int mouseX = iMinecraft.getMouseX();
         int mouseY = iMinecraft.getMouseY();
 
-        int xSize = Math.min(width - 100 / scaleFactor, 500);
+        int baseXSize = Math.min(width - 100 / scaleFactor, 500);
+        int xSize;
+        if (wide) {
+            int raw = (int) Math.floor(baseXSize * 1.5f);
+            xSize = Math.min(raw, width - 100 / scaleFactor);
+        } else {
+            xSize = baseXSize;
+        }
         int ySize = Math.min(height - 100 / scaleFactor, 400);
+
+        float leftPanelScalar = 1.0f;
+        if (wide) {
+            leftPanelScalar = 1.25f;
+        }
+        int leftPanelWidth = (int) (140f * leftPanelScalar);
 
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
@@ -367,7 +383,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         context.drawStringCenteredScaledMaxWidth(
             getConfigObject().getTitle(),
             ifr,
-            x + xSize / 2,
+            x + (float) xSize / 2,
             y + 15,
             false,
             xSize - getConfigObject().getSocials().size() * 18 * 2 - 25,
@@ -376,14 +392,16 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         context.drawDarkRect(
             x + 4, y + 49 - 20,
-            140, ySize - 54 + 20, false
+            leftPanelWidth, ySize - 54 + 20, false
         );
 
         int innerPadding = 20 / adjScaleFactor;
         int innerLeft = x + 4 + innerPadding;
-        int innerRight = x + 144 - innerPadding;
+        int innerRight = x + (leftPanelWidth + 4) - innerPadding;
         int innerTop = y + 49 + innerPadding;
         int innerBottom = y + ySize - 5 - innerPadding;
+        int catInnerW  = innerRight - innerLeft;              // total available width
+        int catCenterX = innerLeft + catInnerW / 2;
         context.drawColoredRect(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
         context.drawColoredRect(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
         context.drawColoredRect(innerRight - 1, innerTop + 1, innerRight, innerBottom, 0xff28282E); //Right
@@ -412,18 +430,20 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             var align = getConfigObject().alignCategory(entry.getValue(), isSelected);
             var textLength = ifr.getStringWidth(catName);
             var isIndented = childCategories != null || entry.getValue().getParentCategoryId() != null;
-            if (textLength > ((isIndented) ? 90 : 100)) {
+            int maxTextLength = (int) (((isIndented) ? 90 : 100) * leftPanelScalar);
+            int centerMark = x  + (int) (75 * leftPanelScalar);
+            if (textLength > maxTextLength) {
                 context.drawStringCenteredScaledMaxWidth(catName,
-                                                         ifr, x + 75 + (isIndented ? 5 : 0), y + 70 + catY, false, (isIndented ? 90 : 100), -1
+                                                         ifr, centerMark + (isIndented ? 5 : 0), y + 70 + catY, false, maxTextLength, -1
                 );
             } else if (align == HorizontalAlign.CENTER) {
                 context.drawStringCenteredScaledMaxWidth(catName,
-                                                         ifr, x + 75, y + 70 + catY, false, (isIndented ? 90 : 100), -1
+                                                         ifr, centerMark, y + 70 + catY, false, maxTextLength, -1
                 );
             } else if (align == HorizontalAlign.RIGHT) {
-                context.drawString(ifr, catName, x + 75 + 50 - textLength, y + 70 + catY - ifr.getHeight() / 2, -1, false);
+                context.drawString(ifr, catName, centerMark + 50 - textLength, y + 70 + catY - ifr.getHeight() / 2, -1, false);
             } else {
-                context.drawString(ifr, catName, x + 75 - 50 + (isIndented ? 10 : 0), y + 70 + catY - ifr.getHeight() / 2, -1, false);
+                context.drawString(ifr, catName, centerMark - 50 + (isIndented ? 10 : 0), y + 70 + catY - ifr.getHeight() / 2, -1, false);
             }
             if (childCategories != null) {
                 var isExpanded = showSubcategories && (isSelected || childCategories.contains(getSelectedCategory()));
@@ -462,13 +482,19 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         context.popScissor();
         /// </editor-fold>
 
-        context.drawStringCenteredScaledMaxWidth("Categories",
-                                                 ifr, x + 75, y + 44, false, 120, 0xa368ef
+        context.drawStringCenteredScaledMaxWidth(
+            "Categories",
+            ifr,
+            x + 4 + ((float) leftPanelWidth / 2),
+            y + 44,
+            false,
+            120,
+            0xa368ef
         );
 
-        context.drawDarkRect(x + 149, y + 29, xSize - 154, ySize - 34, false);
+        context.drawDarkRect(x + (leftPanelWidth + 9), y + 29, xSize - (leftPanelWidth + 14), ySize - 34, false);
 
-        innerLeft = x + 149 + innerPadding;
+        innerLeft = x + (leftPanelWidth + 9) + innerPadding;
         innerRight = x + xSize - 5 - innerPadding;
         innerBottom = y + ySize - 5 - innerPadding;
 
@@ -492,7 +518,6 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             if (!shouldShow) strLen = 0;
 
             int len = Math.max(strLen, minimumSearchSize.getValue());
-//            context.drawColoredRect(0, 0, 1000, 1000, 0xFFFF0000);
             searchField.setWidth(len);
             context.pushMatrix();
             context.translate(innerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9, 0);
@@ -719,23 +744,34 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int scaleFactor = iMinecraft.getScaleFactor();
         int adjScaleFactor = Math.max(2, scaleFactor);
 
-        int xSize = Math.min(width - 100 / scaleFactor, 500);
+        int baseXSize = Math.min(width - 100 / scaleFactor, 500);
+        int xSize;
+        if (wide) {
+            int raw = (int) Math.floor(baseXSize * 1.5f);
+            xSize = Math.min(raw, width - 100 / scaleFactor);
+        } else {
+            xSize = baseXSize;
+        }
         int ySize = Math.min(height - 100 / scaleFactor, 400);
 
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
 
         int innerPadding = 20 / adjScaleFactor;
+        float leftPanelScalar = wide ? 1.25f : 1.0f;
+        int leftPanelWidth = (int) (140f * leftPanelScalar);
+
+        int catsInnerLeft = x + 4 + innerPadding;
+        int optsInnerLeft = x + (leftPanelWidth + 9) + innerPadding;
+        int optsInnerRight = x + xSize - 5 - innerPadding;
         int innerTop = y + 49 + innerPadding;
         int innerBottom = y + ySize - 5 - innerPadding;
-        int innerLeft = x + 149 + innerPadding;
-        int innerRight = x + xSize - 5 - innerPadding;
 
         int dist = innerBottom - innerTop - 12;
         int optionsBarStartY = innerTop + 6 + (int) (dist * optionsBarStart);
         int optionsBarEndY = innerTop + 6 + (int) (dist * optionsBarend);
-        int optionsBarStartX = innerRight - 12;
-        int optionsBarEndX = innerRight - 3;
+        int optionsBarStartX = optsInnerRight - 12;
+        int optionsBarEndX = optsInnerRight - 3;
 
         int categoryY = -categoryScroll.getValue();
         categoryY += 15 * getCurrentlyVisibleCategories().size();
@@ -746,9 +782,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         float catBarEnd = catBarStart + categoryBarSize;
         int categoryBarStartY = innerTop + 6 + (int) (catDist * catBarStart);
         int categoryBarEndY = innerTop + 6 + (int) (catDist * catBarEnd);
-        int categoryBarStartX = x + innerPadding + 7;
-        int categoryBarEndX = x + innerPadding + 12;
-        keyboardScrollXCutoff = innerLeft - 10;
+        int categoryBarStartX = catsInnerLeft + 3;
+        int categoryBarEndX = catsInnerLeft + 8;
+        keyboardScrollXCutoff = catsInnerLeft - 10;
         int mouseButton = mouseEvent instanceof MouseEvent.Click ? ((MouseEvent.Click) mouseEvent).getMouseButton() : -1;
         boolean mouseState = mouseEvent instanceof MouseEvent.Click && ((MouseEvent.Click) mouseEvent).getMouseState();
         if (mouseState) {
@@ -766,7 +802,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 categoryScroll.setTarget(mouseY - innerTop);
                 return true;
             }
-            boolean searchIconFocus = (mouseX >= innerRight - 20 && mouseX <= innerRight - 2 &&
+            boolean searchIconFocus = (mouseX >= optsInnerRight - 20 && mouseX <= optsInnerRight - 2 &&
                 mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9);
 
 
@@ -781,7 +817,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 int strLen = iMinecraft.getDefaultFontRenderer().getStringWidth(searchFieldContent.get()) + 10;
                 int len = Math.max(strLen, minimumSearchSize.getValue());
 
-                if (mouseX >= innerRight - 25 - len && mouseX <= innerRight - 25 &&
+                if (mouseX >= optsInnerRight - 25 - len && mouseX <= optsInnerRight - 25 &&
                     mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9) {
 
                     if (mouseButton == 1) {
@@ -793,7 +829,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     searchField.mouseEvent(mouseEvent,
                                            new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, mouseX, mouseY, mouseX, mouseY, 0F, 0F)
                                                .translated(
-                                                   innerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9,
+                                                   optsInnerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9,
                                                    0, 0
                                                ));
 
@@ -810,7 +846,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             if (dWheel > 0) {
                 dWheel = 1;
             }
-            if (mouseX < innerLeft) {
+            if (mouseX < catsInnerLeft) {
                 int newTarget = categoryScroll.getTarget() - dWheel * 30;
                 if (newTarget < 0) {
                     newTarget = 0;
@@ -885,7 +921,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     newTarget = barMax;
                 }
                 optionsScroll.setTimeToReachTarget(Math.min(
-                    150,
+                    (leftPanelWidth + 10),
                     Math.max(10, 5 * Math.abs(newTarget - optionsScroll.getValue()))
                 ));
                 optionsScroll.resetTimer();
@@ -898,7 +934,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     if (getSelectedCategory() == null) {
                         setSelectedCategory(entry.getKey());
                     }
-                    if (mouseX >= x + 5 && mouseX <= x + 145 &&
+                    if (mouseX >= x + 5 && mouseX <= x + (leftPanelWidth + 5) &&
                         mouseY >= y + 70 + catY - 7 && mouseY <= y + 70 + catY + 7) {
                         if (entry.getKey().equals(getSelectedCategory())) {
                             if (entry.getValue().getParentCategoryId() == null)
@@ -928,7 +964,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int optionY = -optionsScroll.getValue();
         if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
             getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
-            int optionWidthDefault = innerRight - innerLeft - 20;
+            int optionWidthDefault = optsInnerRight - optsInnerLeft - 20;
             ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
@@ -956,7 +992,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                         activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                     }
                 }
-                int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                int finalX = (optsInnerLeft + optsInnerRight - optionWidth) / 2 - 5;
                 int finalY = innerTop + 5 + optionY;
                 int finalWidth = optionWidth;
                 if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInputOverlay(
@@ -978,7 +1014,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             optionY = -optionsScroll.getValue();
             if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
                 getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
-                int optionWidthDefault = innerRight - innerLeft - 20;
+                int optionWidthDefault = optsInnerRight - optsInnerLeft - 20;
                 ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
                 HashMap<Integer, Integer> activeAccordions = new HashMap<>();
                 for (ProcessedOption option : getOptionsInCategory(cat)) {
@@ -1006,7 +1042,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                             activeAccordions.put(accordion.getAccordionId(), accordionDepth);
                         }
                     }
-                    int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                    int finalX = (optsInnerLeft + optsInnerRight - optionWidth) / 2 - 5;
                     int finalY = innerTop + 5 + optionY;
                     int finalWidth = optionWidth;
                     if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInput(
@@ -1033,13 +1069,21 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int height = iMinecraft.getScaledHeight();
         int scaleFactor = iMinecraft.getScaleFactor();
 
-        int xSize = Math.min(width - 100 / scaleFactor, 500);
-        int ySize = Math.min(height - 100 / scaleFactor, 400);
+        int baseXSize = Math.min(width - 100 / scaleFactor, 500);
+        int xSize;
+        if (wide) {
+            int raw = (int) Math.floor(baseXSize * 1.5f);
+            xSize = Math.min(raw, width - 100 / scaleFactor);
+        } else {
+            xSize = baseXSize;
+        }
+        float leftPanelScalar = wide ? 1.25f : 1.0f;
+        int leftPanelWidth = (int) (140f * leftPanelScalar);
 
         int adjScaleFactor = Math.max(2, scaleFactor);
 
         int innerPadding = 20 / adjScaleFactor;
-        int innerWidth = xSize - 154 - innerPadding * 2;
+        int innerWidth = xSize - (leftPanelWidth + 14) - innerPadding * 2;
 
         if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
             getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
