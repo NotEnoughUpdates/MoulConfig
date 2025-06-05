@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.test
 
 import io.github.notenoughupdates.moulconfig.common.IItemStack
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.gui.CloseEventListener
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
@@ -27,7 +28,9 @@ class FabricMain : ModInitializer {
         ClientCommandRegistrationCallback.EVENT.register { a, b ->
             a.register(literal("moulconfig").executes {
                 MinecraftClient.getInstance().send {
-                    config.openConfigGui()
+                    val editor = config.getEditor()
+                    editor.setWide(config.instance.testCategoryA.isWide)
+                    IMinecraft.instance.openWrappedScreen(editor)
                 }
                 0
             })

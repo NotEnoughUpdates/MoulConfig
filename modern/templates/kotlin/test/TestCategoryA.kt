@@ -8,6 +8,10 @@ import org.lwjgl.glfw.GLFW
 import java.util.Arrays
 
 class TestCategoryA {
+
+    @ConfigOption(name ="Open Wide", desc= "Use a wider config menu")
+    @ConfigEditorBoolean
+    var isWide: Boolean = false
     @ConfigOption(name = "Test Option", desc = "Test toggle")
     @ConfigEditorBoolean
     var shouldTestToggle: Boolean = false
