@@ -92,7 +92,7 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                         editingKeycode = true;
                         return true;
                     }
-                    if (mouseX > width / 6 - 24 + 48 + 3 && mouseX < width / 6 - 24 + 48 + 13 &&
+                    if (mouseX > width / 6 - 24 + 48 - 3 && mouseX < width / 6 - 24 + 48 + 13 - 5 &&
                         mouseY > height - 7 - 14 + 3 && mouseY < height - 7 - 14 + 3 + 11) {
                         option.set(defaultKeyCode);
                         return true;
