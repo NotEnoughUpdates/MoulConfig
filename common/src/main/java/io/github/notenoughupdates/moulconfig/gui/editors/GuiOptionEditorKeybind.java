@@ -110,7 +110,7 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                         if (keyPressed.getPressed()) return true;
                         editingKeycode = false;
                         int keycode = keyPressed.getKeycode();
-                        if (keycode == KeyboardConstants.INSTANCE.getEscape() && keycode == 0) {
+                        if (keycode == KeyboardConstants.INSTANCE.getEscape() || keycode == 0) {
                             keycode = KeyboardConstants.INSTANCE.getNone();
                         }
                         option.set(keycode);
