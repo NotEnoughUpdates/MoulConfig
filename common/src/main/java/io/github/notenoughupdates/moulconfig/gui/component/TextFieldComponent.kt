@@ -25,6 +25,7 @@ open class TextFieldComponent(
     private var scrollOffset = 0
     private var visibleText: String? = null
     override fun getWidth(): Int {
+        if (isFocused) return max(preferredWidth, font.getStringWidth(text.get()))
         return preferredWidth
     }
 
@@ -248,10 +249,12 @@ open class TextFieldComponent(
         super.mouseEvent(mouseEvent, context)
         checkScrollOffset(context.width)
         updateVisibleText(context.width)
-        if (context.isHovered && mouseEvent is Click) {
-            if (mouseEvent.mouseState) {
+        if (mouseEvent is Click && mouseEvent.mouseState) {
+            if (context.isHovered) {
                 requestFocus()
                 return true
+            } else {
+                setFocus(false)
             }
         }
         return false
