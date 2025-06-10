@@ -9,9 +9,9 @@ sealed interface LayoutPass {
 
     object Adopt : LayoutPass
 
-    // TODO: width, height passes separation, first layout width, then wrap, then height, then relative position, then absolute position
-    object Fit : LayoutPass
-    object Grow : LayoutPass
+    object Reset : LayoutPass
+    data class Fit(val axis: LayoutAxis) : LayoutPass
+    data class Grow(val axis: LayoutAxis) : LayoutPass
     object RelativePosition : LayoutPass
     object AbsolutePosition : LayoutPass
 

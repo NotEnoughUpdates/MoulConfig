@@ -32,7 +32,7 @@ class Element {
                 backgroundPainter?.paint(layoutPass.graphicsContext, area)
             }
 
-            is LayoutPass.RelativePosition -> {
+            is LayoutPass.Reset -> {
                 relativePosition = Position.ZERO
             }
 

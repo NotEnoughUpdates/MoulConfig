@@ -16,7 +16,7 @@ import javax.swing.SwingUtilities
 class TestGui : JPanel() {
     val tree = buildShaleLayout {
         box {
-            rtl()
+            ltr()
             padding(10)
             childGap(10)
             grow()
