@@ -8,10 +8,6 @@ class BoxElement : Element() {
     override fun beforePass(layoutPass: LayoutPass) {
         super.beforePass(layoutPass)
         when (layoutPass) {
-            is LayoutPass.Reset -> {
-                preferredSize = Size.ZERO
-            }
-
             is LayoutPass.Grow -> {
                 if (direction.axis == layoutPass.axis) {
                     growChildElementsAlongAxis()

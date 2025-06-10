@@ -34,11 +34,14 @@ class Element {
 
             is LayoutPass.Reset -> {
                 relativePosition = Position.ZERO
+                absolutePosition = Position.ZERO
+                preferredSize = Size.ZERO
+                minimumSize = Size.ZERO
             }
 
             is LayoutPass.AbsolutePosition -> {
-                children.forEach {
-                    it.absolutePosition = absolutePosition + it.relativePosition
+                parent?.let { parent ->
+                    absolutePosition = parent.absolutePosition + relativePosition
                 }
             }
 
@@ -52,5 +55,13 @@ class Element {
         beforePass(layoutPass)
         children.forEach { layoutPass.visitChild(it) }
         afterPass(layoutPass)
+    }
+
+    fun constrainPreferredSize() {
+        // TODO: also apply maximumSize here
+        preferredSize = Size(
+            maxOf(minimumSize.width, preferredSize.width),
+            maxOf(minimumSize.height, preferredSize.height),
+        )
     }
 }
