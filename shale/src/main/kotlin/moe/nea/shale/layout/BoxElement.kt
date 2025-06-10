@@ -15,7 +15,7 @@ class BoxElement : Element() {
             is LayoutPass.Grow -> {
                 growChildElementsAlongAxis()
                 val crossAxis = direction.axis.cross
-                val myHeight = crossAxis.choose(preferredSize)
+                val myHeight = crossAxis.choose(preferredSize) - crossAxis.choose(padding.sizes)
                 children.filter { it.sizing is Sizing.GrowFractional }
                     .forEach {
                         it.preferredSize = crossAxis.setUnchoosenSize(it.preferredSize, myHeight)

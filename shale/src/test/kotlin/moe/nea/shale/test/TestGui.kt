@@ -16,7 +16,7 @@ import javax.swing.SwingUtilities
 class TestGui : JPanel() {
     val tree = buildShaleLayout {
         box {
-            btt()
+            rtl()
             padding(10)
             childGap(10)
             grow()
@@ -34,7 +34,7 @@ class TestGui : JPanel() {
             }
             box {
                 background(Color.BLUE)
-                fixed(1000, 20)
+                fixed(20, 1000)
             }
         }
     }
