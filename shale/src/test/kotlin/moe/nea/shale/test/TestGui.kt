@@ -16,15 +16,17 @@ import javax.swing.SwingUtilities
 class TestGui : JPanel() {
     val tree = buildShaleLayout {
         box {
-            ltr()
+            btt()
+            padding(10)
+            childGap(10)
             grow()
             box {
                 background(Color.RED)
-                grow(2f)
+                grow()
             }
             box {
                 background(Color.GREEN)
-                grow(1f)
+                grow()
             }
             box {
                 background(Color.CYAN)

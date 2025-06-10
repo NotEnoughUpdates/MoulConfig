@@ -12,6 +12,8 @@ sealed interface LayoutPass {
     // TODO: width, height passes separation, first layout width, then wrap, then height, then relative position, then absolute position
     object Fit : LayoutPass
     object Grow : LayoutPass
+    object RelativePosition : LayoutPass
+    object AbsolutePosition : LayoutPass
 
     data class Render(val graphicsContext: GraphicsContext) : LayoutPass
 }

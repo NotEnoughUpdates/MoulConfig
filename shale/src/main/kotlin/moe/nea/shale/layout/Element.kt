@@ -32,6 +32,16 @@ class Element {
                 backgroundPainter?.paint(layoutPass.graphicsContext, area)
             }
 
+            is LayoutPass.RelativePosition -> {
+                relativePosition = Position.ZERO
+            }
+
+            is LayoutPass.AbsolutePosition -> {
+                children.forEach {
+                    it.absolutePosition = absolutePosition + it.relativePosition
+                }
+            }
+
             else -> {}
         }
     }

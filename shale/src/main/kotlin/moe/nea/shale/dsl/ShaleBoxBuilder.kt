@@ -56,4 +56,14 @@ open class ShaleBoxBuilder : ShaleBuilder(), HasChildren<Element> {
     fun fixed(size: Size) {
         container.sizing = Sizing.Fixed(size)
     }
+
+    fun padding(all: Int) = padding(Padding(all = all))
+
+    fun padding(padding: Padding) {
+        container.padding = padding
+    }
+
+    fun childGap(childGap: Int) {
+        container.childGap = childGap
+    }
 }
