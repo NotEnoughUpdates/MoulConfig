@@ -29,4 +29,5 @@ dependencies {
 	val kotlinVersion = "2.0.0"
 	api("org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:$kotlinVersion")
 	api("org.jetbrains.kotlin.plugin.lombok:org.jetbrains.kotlin.plugin.lombok.gradle.plugin:$kotlinVersion")
+	api("org.jetbrains.kotlin.plugin.allopen:org.jetbrains.kotlin.plugin.allopen.gradle.plugin:${kotlinVersion}")
 }
