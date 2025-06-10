@@ -10,7 +10,9 @@ class RootElement : BoxElement() {
         val layoutPasses = listOf<LayoutPass>(
             LayoutPass.Adopt,
             LayoutPass.Fit,
-            LayoutPass.Grow
+            LayoutPass.Grow,
+            LayoutPass.RelativePosition,
+            LayoutPass.AbsolutePosition,
             // TODO: text wrap, position
         )
         layoutPasses.forEach {

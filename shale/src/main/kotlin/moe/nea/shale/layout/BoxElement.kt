@@ -95,7 +95,16 @@ class BoxElement : Element() {
                 // TODO: respect maximum size
             }
 
-            LayoutPass.Grow -> {
+            is LayoutPass.RelativePosition -> {
+                val corner = direction.chooseBeginningPosition(padding, preferredSize)
+                var pointer = corner
+                val axis = direction.axis
+                val orientation = direction.orientation
+                children.forEach {
+                    val childPreferredSizeAlongAxis = axis.choose(it.preferredSize)
+                    it.relativePosition = pointer + axis.unchoosePosition(orientation.compensateForOwnSize(childPreferredSizeAlongAxis))
+                    pointer += axis.unchoosePosition(orientation.multiply(childPreferredSizeAlongAxis))
+                }
             }
 
             else -> {}
