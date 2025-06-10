@@ -98,7 +98,7 @@ open class SliderComponent(
                 var editingBuffer: String = ""
 
                 override fun get(): String {
-                    if (isFocused) return editingBuffer
+                    if (isInFocus) return editingBuffer
                     var num: Float
                     try {
                         num = value.get()
@@ -111,6 +111,7 @@ open class SliderComponent(
 
                 override fun set(newValue: String) {
                     editingBuffer = newValue
+                    if (isInFocus) return
                     var num: Float
                     try {
                         num = editingBuffer.toFloat()
@@ -122,7 +123,7 @@ open class SliderComponent(
             },
             20,
             GetSetter.constant(true),
-            "#000000",
+            "",
             IMinecraft.instance.defaultFontRenderer
         )
     }
