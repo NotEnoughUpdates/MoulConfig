@@ -10,6 +10,8 @@ import io.github.notenoughupdates.moulconfig.observer.ObservableList
 import io.github.notenoughupdates.moulconfig.platform.ModernItemStack
 import io.github.notenoughupdates.moulconfig.xml.Bind
 import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
+import moe.nea.shale.render.minecraft.ShaleComponent
+import moe.nea.shale.util.ExampleTrees
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
@@ -31,6 +33,13 @@ class FabricMain : ModInitializer {
                     val editor = config.getEditor()
                     editor.setWide(config.instance.testCategoryA.isWide)
                     IMinecraft.instance.openWrappedScreen(editor)
+                }
+                0
+            })
+            a.register(literal("shaleuitest").executes {
+                MinecraftClient.getInstance().send {
+                    val tree = ExampleTrees.boxes
+                    ShaleComponent(tree).openScreen()
                 }
                 0
             })
