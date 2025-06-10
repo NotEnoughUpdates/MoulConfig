@@ -18,6 +18,8 @@ dependencies {
 	shadowInclude(Dependencies.LIB_NINE_PATCH)
 	compileOnly(Dependencies.JB_ANNOTATIONS)
 	compileOnly(Dependencies.JSPECIFY)
+	"implementation"(project(":shale"))
+	shadowInclude(project(":shale"))
 }
 
 val shadowJar by tasks.named("shadowJar", ShadowJar::class) {
