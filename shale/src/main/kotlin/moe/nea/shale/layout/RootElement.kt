@@ -12,16 +12,17 @@ class RootElement : BoxElement() {
     /**
      * Emit a relayout
      */
-    fun relayout() {
+    fun relayout(layoutContext: LayoutContext) {
         val layoutPasses = listOf<LayoutPass>(
-            LayoutPass.Adopt,
-            LayoutPass.Reset,
-            LayoutPass.Fit(textFlowAxis),
-            LayoutPass.Grow(textFlowAxis),
-            LayoutPass.Fit(textFlowAxis.cross),
-            LayoutPass.Grow(textFlowAxis.cross),
-            LayoutPass.RelativePosition,
-            LayoutPass.AbsolutePosition,
+            LayoutPass.Adopt(layoutContext),
+            LayoutPass.Reset(layoutContext),
+            LayoutPass.Fit(textFlowAxis, layoutContext),
+            LayoutPass.Grow(textFlowAxis, layoutContext),
+            LayoutPass.Wrap(layoutContext),
+            LayoutPass.Fit(textFlowAxis.cross, layoutContext),
+            LayoutPass.Grow(textFlowAxis.cross, layoutContext),
+            LayoutPass.RelativePosition(layoutContext),
+            LayoutPass.AbsolutePosition(layoutContext),
             // TODO: text wrap
         )
         layoutPasses.forEach {

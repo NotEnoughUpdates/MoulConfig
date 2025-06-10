@@ -3,7 +3,7 @@ package moe.nea.shale.dsl
 import moe.nea.shale.layout.RootElement
 
 @DslMarker
-@Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)
 annotation class ShaleDsl
 

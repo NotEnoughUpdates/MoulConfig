@@ -2,9 +2,10 @@ package moe.nea.shale.test
 
 import moe.nea.shale.dsl.box
 import moe.nea.shale.dsl.buildShaleLayout
+import moe.nea.shale.dsl.text
 import moe.nea.shale.layout.Size
 import moe.nea.shale.layout.Sizing
-import moe.nea.shale.render.AwtGraphicsContext
+import moe.nea.shale.render.awt.AwtGraphicsContext
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Dimension
@@ -33,8 +34,11 @@ class TestGui : JPanel() {
                 fixed(200, 100)
             }
             box {
-                background(Color.BLUE)
-                fixed(20, 1000)
+                background(Color.DARK_GRAY)
+                padding(10)
+                text("Hello, World!") {
+                    color(Color.WHITE)
+                }
             }
         }
     }
@@ -42,8 +46,9 @@ class TestGui : JPanel() {
     override fun paintComponent(g: Graphics?) {
         super.paintComponent(g)
         tree.sizing = Sizing.Fixed(Size.coerced(width, height))
-        tree.relayout()
-        tree.render(AwtGraphicsContext(g!!))
+        val ctx = AwtGraphicsContext(g!!)
+        tree.relayout(ctx)
+        tree.render(ctx)
     }
 }
 
