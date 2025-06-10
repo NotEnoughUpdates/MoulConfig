@@ -34,6 +34,7 @@ class TestGui : JPanel() {
             }
             box {
                 background(Color.BLUE)
+                fixed(1000, 20)
             }
         }
     }

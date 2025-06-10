@@ -103,7 +103,7 @@ class BoxElement : Element() {
                 children.forEach {
                     val childPreferredSizeAlongAxis = axis.choose(it.preferredSize)
                     it.relativePosition = pointer + axis.unchoosePosition(orientation.compensateForOwnSize(childPreferredSizeAlongAxis))
-                    pointer += axis.unchoosePosition(orientation.multiply(childPreferredSizeAlongAxis))
+                    pointer += axis.unchoosePosition(orientation.multiply(childPreferredSizeAlongAxis + childGap))
                 }
             }
 
