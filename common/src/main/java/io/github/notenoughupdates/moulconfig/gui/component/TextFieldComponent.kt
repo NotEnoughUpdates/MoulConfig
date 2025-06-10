@@ -25,7 +25,7 @@ open class TextFieldComponent(
     private var scrollOffset = 0
     private var visibleText: String? = null
     override fun getWidth(): Int {
-        if (isFocused) return max(preferredWidth, font.getStringWidth(text.get()))
+        if (isFocused) return max(preferredWidth, font.getStringWidth(text.get()) + 10)
         return preferredWidth
     }
 
