@@ -13,7 +13,7 @@ class BoxElement : Element() {
                     growChildElementsAlongAxis()
                 } else {
                     val crossAxis = direction.axis.cross
-                    val myHeight = crossAxis.choose(preferredSize) - crossAxis.choose(padding.sizes)
+                    val myHeight = (crossAxis.choose(preferredSize) - crossAxis.choose(padding.sizes)).coerceAtLeast(0)
                     children.filter { it.sizing is Sizing.GrowFractional }
                         .forEach {
                             it.preferredSize = crossAxis.setUnchoosenSize(it.preferredSize, myHeight)
