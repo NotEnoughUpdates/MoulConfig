@@ -15,6 +15,11 @@ enum class LayoutAxis {
         HORIZONTAL -> Position(scalar, 0)
     }
 
+    fun limit(size: Size) = when (this) {
+        VERTICAL -> size.copy(width = 0)
+        HORIZONTAL -> size.copy(height = 0)
+    }
+
     fun choose(size: Size) = when (this) {
         VERTICAL -> size.height
         HORIZONTAL -> size.width
@@ -55,6 +60,7 @@ enum class LayoutOrientation {
 }
 
 enum class LayoutDirection {
+    // TODO: this class could be split up into a vertical and a horizontal component with one of these each, as well as another attribute deciding which one is the major axis.
     LEFT_TO_RIGHT,
     RIGHT_TO_LEFT,
     TOP_TO_BOTTOM,

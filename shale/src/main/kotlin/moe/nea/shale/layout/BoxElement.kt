@@ -8,18 +8,21 @@ class BoxElement : Element() {
     override fun beforePass(layoutPass: LayoutPass) {
         super.beforePass(layoutPass)
         when (layoutPass) {
-            is LayoutPass.Fit -> {
+            is LayoutPass.Reset -> {
                 preferredSize = Size.ZERO
             }
 
             is LayoutPass.Grow -> {
-                growChildElementsAlongAxis()
-                val crossAxis = direction.axis.cross
-                val myHeight = crossAxis.choose(preferredSize) - crossAxis.choose(padding.sizes)
-                children.filter { it.sizing is Sizing.GrowFractional }
-                    .forEach {
-                        it.preferredSize = crossAxis.setUnchoosenSize(it.preferredSize, myHeight)
-                    }
+                if (direction.axis == layoutPass.axis) {
+                    growChildElementsAlongAxis()
+                } else {
+                    val crossAxis = direction.axis.cross
+                    val myHeight = crossAxis.choose(preferredSize) - crossAxis.choose(padding.sizes)
+                    children.filter { it.sizing is Sizing.GrowFractional }
+                        .forEach {
+                            it.preferredSize = crossAxis.setUnchoosenSize(it.preferredSize, myHeight)
+                        }
+                }
             }
 
             else -> {}
@@ -73,21 +76,26 @@ class BoxElement : Element() {
              */
             is LayoutPass.Fit -> {
                 val axis = direction.axis
-                preferredSize += padding.sizes
-                minimumSize += padding.sizes
-                preferredSize += axis.unchooseSize(
-                    children.sumOf { axis.choose(it.preferredSize) }
-                        + (children.size - 1) * childGap
-                )
-                minimumSize += axis.unchooseSize(
-                    children.sumOf { axis.choose(it.minimumSize) }
-                        + (children.size - 1) * childGap)
-                preferredSize += axis.cross.unchooseSize(
-                    children.maxOfOrNull { axis.cross.choose(it.preferredSize) } ?: 0
-                )
-                minimumSize += axis.cross.unchooseSize(
-                    children.maxOfOrNull { axis.cross.choose(it.minimumSize) } ?: 0
-                )
+                val layoutAxis = layoutPass.axis
+                preferredSize += layoutAxis.limit(padding.sizes)
+                minimumSize += layoutAxis.limit(padding.sizes)
+                if (axis == layoutPass.axis) {
+                    preferredSize += axis.unchooseSize(
+                        children.sumOf { axis.choose(it.preferredSize) }
+                            + (children.size - 1) * childGap
+                    )
+                    minimumSize += axis.unchooseSize(
+                        children.sumOf { axis.choose(it.minimumSize) }
+                            + (children.size - 1) * childGap)
+                } else {
+                    preferredSize += axis.cross.unchooseSize(
+                        children.maxOfOrNull { axis.cross.choose(it.preferredSize) } ?: 0
+                    )
+                    minimumSize += axis.cross.unchooseSize(
+                        children.maxOfOrNull { axis.cross.choose(it.minimumSize) } ?: 0
+                    )
+                }
+                // While not technically correct to size outside of the layout pass here, it doesnt matter since fixed sizing is not affected by any layouting pass anyway.
                 (sizing as? Sizing.Fixed)?.let {
                     minimumSize = it.size + padding.sizes
                     preferredSize = it.size + padding.sizes
