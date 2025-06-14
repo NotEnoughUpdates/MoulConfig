@@ -846,7 +846,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             if (dWheel > 0) {
                 dWheel = 1;
             }
-            if (mouseX < catsInnerLeft) {
+            if (mouseX < optsInnerLeft) {
                 int newTarget = categoryScroll.getTarget() - dWheel * 30;
                 if (newTarget < 0) {
                     newTarget = 0;
