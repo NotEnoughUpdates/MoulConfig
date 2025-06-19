@@ -1,7 +1,7 @@
 package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
-import io.github.notenoughupdates.moulconfig.gui.component.SliderComponent;
+import io.github.notenoughupdates.moulconfig.gui.component.SliderWithTextComponent;
 import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +13,7 @@ public class GuiOptionEditorSlider extends ComponentEditor {
         super(option);
         if (minStep < 0) minStep = 0.01f;
 
-        component = wrapComponent(new SliderComponent((GetSetter<Float>) option.intoProperty(), minValue, maxValue, minStep, 55));
+        component = wrapComponent(new SliderWithTextComponent((GetSetter<Float>) option.intoProperty(), minValue, maxValue, minStep, 55));
     }
 
     public float getFloatValue() {
