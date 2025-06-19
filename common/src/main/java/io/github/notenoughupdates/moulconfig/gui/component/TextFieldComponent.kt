@@ -24,8 +24,9 @@ open class TextFieldComponent(
     private var selection = -1
     private var scrollOffset = 0
     private var visibleText: String? = null
+    private var shouldExpandToFit = false
     override fun getWidth(): Int {
-        if (isFocused) return max(preferredWidth, font.getStringWidth(text.get()) + 10)
+        if (isFocused && shouldExpandToFit) return max(preferredWidth, font.getStringWidth(text.get()) + 10)
         return preferredWidth
     }
 
@@ -314,6 +315,10 @@ open class TextFieldComponent(
             if (!skipWords) return position
             if (position < text.get().length && Character.isWhitespace(text.get()[position])) return position
         }
+    }
+
+    fun setShouldExpandToFit(new: Boolean) {
+        shouldExpandToFit = new
     }
 
     companion object {
