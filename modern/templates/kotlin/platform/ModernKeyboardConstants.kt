@@ -10,6 +10,10 @@ object ModernKeyboardConstants : IKeyboardConstants {
         get() = InputUtil.GLFW_KEY_LEFT_CONTROL
     override val ctrlRight: Int
         get() = InputUtil.GLFW_KEY_RIGHT_CONTROL
+    override val cmdLeft: Int
+        get() = InputUtil.GLFW_KEY_LEFT_SUPER
+    override val cmdRight: Int
+        get() = InputUtil.GLFW_KEY_RIGHT_SUPER
     override val shiftLeft: Int
         get() = InputUtil.GLFW_KEY_LEFT_SHIFT
     override val shiftRight: Int
