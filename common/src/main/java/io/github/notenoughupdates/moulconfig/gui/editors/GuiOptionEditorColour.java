@@ -74,9 +74,20 @@ public class GuiOptionEditorColour extends ComponentEditor {
                 if (mouseEvent instanceof MouseEvent.Click) {
                     val click = ((MouseEvent.Click) mouseEvent);
                     if (click.getMouseState() && click.getMouseButton() == 0 && context.isHovered()) {
-                        openOverlay(new ColorSelectComponent(0, 0, get().toLegacyString(), newString -> set(newString), () -> {
+                        ColorSelectComponent colorSelectComponent = new ColorSelectComponent(0, 0, get().toLegacyString(), newString -> set(newString), () -> {
                             closeOverlay();
-                        }), context.getAbsoluteMouseX(), context.getAbsoluteMouseY());
+                        });
+                        //Clamp the Y so that the colour picker can't go off screen
+                        int scaledHeight = context.getRenderContext().getMinecraft().getScaledHeight();
+				        int clampedY;
+
+				        if (context.getAbsoluteMouseY() + colorSelectComponent.getHeight() > scaledHeight) {
+					        clampedY = scaledHeight - colorSelectComponent.getHeight();
+				        } else {
+					        clampedY = context.getAbsoluteMouseY();
+				        }
+
+                        openOverlay(colorSelectComponent, context.getAbsoluteMouseX(), clampedY);
                         return true;
                     }
                 }
