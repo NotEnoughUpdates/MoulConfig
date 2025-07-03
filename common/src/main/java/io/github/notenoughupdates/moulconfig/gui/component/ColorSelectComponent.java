@@ -141,10 +141,8 @@ public class ColorSelectComponent extends GuiComponent {
     private static DynamicTextureReference opacitySliderRef;
 
     private static DynamicTextureReference loadOrUpdate(RenderContext renderContext, DynamicTextureReference ref, BufferedImage image) {
-        if (ref == null)
-            return renderContext.generateDynamicTexture(image);
-        ref.update(image);
-        return ref;
+        if (ref != null) ref.destroy();
+        return renderContext.generateDynamicTexture(image);
     }
 
     private DynamicTextureReference getOpacitySlider(RenderContext renderContext, int currentColour) {
