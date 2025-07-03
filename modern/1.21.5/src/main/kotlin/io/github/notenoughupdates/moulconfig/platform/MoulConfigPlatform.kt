@@ -119,6 +119,9 @@ class MoulConfigPlatform : IMinecraft {
             return window.scaleFactor.toInt()
         }
 
+    override val isOnMacOS: Boolean
+        get() = MinecraftClient.IS_SYSTEM_MAC
+
     override fun isMouseButtonDown(mouseButton: Int): Boolean {
         return GLFW.glfwGetMouseButton(window.handle, mouseButton) == GLFW.GLFW_PRESS
     }

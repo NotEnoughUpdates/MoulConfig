@@ -30,6 +30,7 @@ interface IMinecraft {
     val scaledWidth: Int
     val scaledHeight: Int
     val scaleFactor: Int
+    val isOnMacOS: Boolean
     fun isMouseButtonDown(mouseButton: Int): Boolean
     fun isKeyboardKeyDown(keyboardKey: Int): Boolean
 

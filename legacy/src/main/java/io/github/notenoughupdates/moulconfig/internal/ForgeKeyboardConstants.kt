@@ -10,6 +10,10 @@ object ForgeKeyboardConstants : IKeyboardConstants {
         get() = Keyboard.KEY_LCONTROL
     override val ctrlRight: Int
         get() = Keyboard.KEY_RCONTROL
+    override val cmdLeft: Int
+        get() = Keyboard.KEY_LMETA
+    override val cmdRight: Int
+        get() = Keyboard.KEY_RMETA
     override val shiftLeft: Int
         get() = Keyboard.KEY_LSHIFT
     override val shiftRight: Int

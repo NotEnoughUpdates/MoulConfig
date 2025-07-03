@@ -9,6 +9,8 @@ interface IKeyboardConstants {
     val backSpace: Int
     val ctrlLeft: Int
     val ctrlRight: Int
+    val cmdLeft: Int
+    val cmdRight: Int
     val shiftLeft: Int
     val shiftRight: Int
     val escape: Int

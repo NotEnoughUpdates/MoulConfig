@@ -207,6 +207,9 @@ class ForgeMinecraft : IMinecraft {
         }
     }
 
+    override val isOnMacOS: Boolean
+        get() = Minecraft.isRunningOnMac
+
     override val defaultFontRenderer: IFontRenderer
         get() = ForgeFontRenderer(Minecraft.getMinecraft().fontRendererObj)
     override val keyboardConstants: IKeyboardConstants
