@@ -25,6 +25,7 @@ open class TextFieldComponent(
     private var scrollOffset = 0
     private var visibleText: String? = null
     private var shouldExpandToFit = false
+    private var initializedCursor = false
     override fun getWidth(): Int {
         if (isFocused && shouldExpandToFit) return max(preferredWidth, font.getStringWidth(text.get()) + 10)
         return preferredWidth
@@ -253,6 +254,16 @@ open class TextFieldComponent(
         if (mouseEvent is Click && mouseEvent.mouseState) {
             if (context.isHovered) {
                 requestFocus()
+
+                //Initializes the position of the cursor to the end of the text in the box when its first clicked on
+                if (!initializedCursor) {
+                    initializedCursor = true
+                    //The validate method clamps it to the end of the text for us
+                    cursor = Int.MAX_VALUE
+                    validateCursor()
+                    scrollCursorIntoView(context.width)
+                }
+
                 return true
             } else {
                 setFocus(false)

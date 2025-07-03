@@ -5,3 +5,4 @@ build/
 .gradle/
 .env
 *.png~
+*.DS_Store
