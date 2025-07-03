@@ -211,13 +211,13 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
                 if (hasDepth) RenderLayer.getGuiTextured(texture)
                 else RenderLayer.getGuiTexturedOverlay(texture))
             bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1)
-                .color(tintA, tintG, tintB, tintA).next()
+                .color(tintR, tintG, tintB, tintA).next()
             bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(u1, v2)
-                .color(tintA, tintG, tintB, tintA).next()
+                .color(tintR, tintG, tintB, tintA).next()
             bufferBuilder.vertex(matrix4f, x + width, y + height, 0f).texture(u2, v2)
-                .color(tintA, tintG, tintB, tintA).next()
+                .color(tintR, tintG, tintB, tintA).next()
             bufferBuilder.vertex(matrix4f, x + width, y, 0F).texture(u2, v1)
-                .color(tintA, tintG, tintB, tintA).next()
+                .color(tintR, tintG, tintB, tintA).next()
         }
     }
 
