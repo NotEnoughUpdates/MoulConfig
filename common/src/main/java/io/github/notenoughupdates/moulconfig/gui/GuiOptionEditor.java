@@ -82,12 +82,12 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
             if (scale < 1 / 16f) break;
         }
         context.pushMatrix();
-        context.translate(x + 5 + width / 3, y + 5, 0);
-        context.scale(scale, scale, 1);
-        context.translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F, 0);
+        context.translate(x + 5 + width / 3, y + 5);
+        context.scale(scale, scale);
+        context.translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F);
         for (String line : lines) {
             context.drawString(fr, line, 0, 0, 0xc0c0c0, false);
-            context.translate(0, fr.getHeight() + 1, 0);
+            context.translate(0, fr.getHeight() + 1);
         }
         context.popMatrix();
     }

@@ -92,7 +92,7 @@ public class ArrayComponent<T> extends GuiComponent {
             Color color = (index % 2 == 0 ? evenRows : oddRows).get();
             childContext.getRenderContext().drawColoredRect(0f, 0f, childContext.getWidth(), child.getHeight(), color.getRGB());
             child.render(childContext);
-            context.getRenderContext().translate(0, child.getHeight(), 0);
+            context.getRenderContext().translate(0, child.getHeight());
         });
         context.getRenderContext().popMatrix();
     }

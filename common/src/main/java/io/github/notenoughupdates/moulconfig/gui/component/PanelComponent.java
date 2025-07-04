@@ -109,7 +109,7 @@ public class PanelComponent extends GuiComponent {
     public void render(GuiImmediateContext context) {
         context.getRenderContext().pushMatrix();
         backgroundRenderer.render(context.getRenderContext(), 0, 0, context.getWidth(), context.getHeight() - 2);
-        context.getRenderContext().translate(insets, insets, 0);
+        context.getRenderContext().translate(insets, insets);
         element.render(getChildContext(context));
         context.getRenderContext().popMatrix();
     }

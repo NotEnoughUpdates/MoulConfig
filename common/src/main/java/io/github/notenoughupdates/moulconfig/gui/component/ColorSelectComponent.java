@@ -25,6 +25,7 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.DynamicTextureReference;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
+import io.github.notenoughupdates.moulconfig.common.TextureFilter;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
@@ -220,9 +221,7 @@ public class ColorSelectComponent extends GuiComponent {
         if (valueSlider) {
             valueOffset = 15;
 
-            renderContext.bindTexture(getBrightnessSlider(renderContext).getIdentifier());
-            renderContext.color(1, 1, 1, 1);
-            renderContext.drawTexturedRect(5 + 64 + 5, 5, 10, 64);
+            renderContext.drawTexturedRect(getBrightnessSlider(renderContext).getIdentifier(), 5 + 64 + 5, 5, 10, 64);
         }
 
         int opacityOffset = 0;
@@ -230,15 +229,11 @@ public class ColorSelectComponent extends GuiComponent {
             opacityOffset = 15;
 
             // Render checkerboard background
-            renderContext.bindTexture(GuiTextures.COLOUR_SELECTOR_BAR_ALPHA);
-            renderContext.color(1, 1, 1, 1);
-            renderContext.drawTexturedRect(5 + 64 + 5 + valueOffset, 5, 10, 64);
+            renderContext.drawTexturedRect(GuiTextures.COLOUR_SELECTOR_BAR_ALPHA, 5 + 64 + 5 + valueOffset, 5, 10, 64);
 
 
             // Render actual color slider
-            renderContext.bindTexture(getOpacitySlider(renderContext, currentColour).getIdentifier());
-            renderContext.color(1, 1, 1, 1);
-            renderContext.drawTexturedRect(5 + 64 + 5 + valueOffset, 5, 10, 64);
+            renderContext.drawTexturedRect(getOpacitySlider(renderContext, currentColour).getIdentifier(), 5 + 64 + 5 + valueOffset, 5, 10, 64);
         }
 
 
@@ -264,17 +259,14 @@ public class ColorSelectComponent extends GuiComponent {
             );
         }
 
-        renderContext.bindTexture(GuiTextures.COLOUR_SELECTOR_BAR);
-        renderContext.color(1, 1, 1, 1);
-        if (valueSlider) renderContext.drawTexturedRect(5 + 64 + 5, 5, 10, 64);
-        if (opacitySlider) renderContext.drawTexturedRect(5 + 64 + 5 + valueOffset, 5, 10, 64);
+        if (valueSlider) renderContext.drawTexturedRect(GuiTextures.COLOUR_SELECTOR_BAR, 5 + 64 + 5, 5, 10, 64);
+        if (opacitySlider) renderContext.drawTexturedRect(GuiTextures.COLOUR_SELECTOR_BAR, 5 + 64 + 5 + valueOffset, 5, 10, 64);
 
 
         if (chromaSpeed > 0) {
-            renderContext.drawTexturedRect(5 + 64 + valueOffset + opacityOffset + 5, 5, 10, 64);
+            renderContext.drawTexturedRect(GuiTextures.COLOUR_SELECTOR_BAR, 5 + 64 + valueOffset + opacityOffset + 5, 5, 10, 64);
         } else {
-            renderContext.bindTexture(GuiTextures.COLOUR_SELECTOR_CHROMA);
-            renderContext.drawTexturedRect(5 + 64 + valueOffset + opacityOffset + 5, 5 + 27, 10, 10);
+            renderContext.drawTexturedRect(GuiTextures.COLOUR_SELECTOR_CHROMA, 5 + 64 + valueOffset + opacityOffset + 5, 5 + 27, 10, 10);
         }
         if (valueSlider)
             renderContext.drawColoredRect(
@@ -298,15 +290,11 @@ public class ColorSelectComponent extends GuiComponent {
             );
         }
 
-        renderContext.bindTexture(getHueWheelImage(renderContext, hsv[2]).getIdentifier());
-        renderContext.color(1, 1, 1, 1);
-        renderContext.setTextureMinMagFilter(RenderContext.TextureFilter.LINEAR);
-        renderContext.drawTexturedRect(1, 1, 72, 72);
+        renderContext.setTextureFilter(getHueWheelImage(renderContext, hsv[2]).getIdentifier(), TextureFilter.LINEAR);
+        renderContext.drawTexturedRect(getHueWheelImage(renderContext, hsv[2]).getIdentifier(), 1, 1, 72, 72);
 
-        renderContext.bindTexture(GuiTextures.COLOUR_SELECTOR_DOT);
-        renderContext.color(1, 1, 1, 1);
-        renderContext.setTextureMinMagFilter(RenderContext.TextureFilter.LINEAR);
-        renderContext.drawTexturedRect(5 + 32 + selx - 4, 5 + 32 + sely - 4, 8, 8);
+        renderContext.setTextureFilter(GuiTextures.COLOUR_SELECTOR_DOT, TextureFilter.LINEAR);
+        renderContext.drawTexturedRect(GuiTextures.COLOUR_SELECTOR_DOT, 5 + 32 + selx - 4, 5 + 32 + sely - 4, 8, 8);
 
         DrawContextExt.drawStringCenteredScalingDownWithMaxWidth(
             renderContext,
@@ -343,7 +331,7 @@ public class ColorSelectComponent extends GuiComponent {
         }
 
         renderContext.pushMatrix();
-        renderContext.translate(5 + 8, 5 + 64 + 5, 0);
+        renderContext.translate(5 + 8, 5 + 64 + 5);
         componentHexField.render(context.translated(5 + 8, 5 + 64 + 5, 48, 12));
         renderContext.popMatrix();
     }

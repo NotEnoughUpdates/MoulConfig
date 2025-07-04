@@ -18,8 +18,8 @@ object DrawContextExt {
         pushMatrix()
         val width = fr.getStringWidth(text)
         val factor = (maxWidth / width.toFloat()).coerceAtMost(1f)
-        translate(centerX.toFloat(), centerY.toFloat(), 0F)
-        scale(factor, factor, 1F)
+        translate(centerX.toFloat(), centerY.toFloat())
+        scale(factor, factor)
         drawString(fr, text, -width / 2, -fr.height / 2, color, shadow)
         popMatrix()
     }

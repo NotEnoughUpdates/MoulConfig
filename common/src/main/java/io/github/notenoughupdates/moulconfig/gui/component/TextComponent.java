@@ -99,7 +99,7 @@ public class TextComponent extends GuiComponent {
                     context.getRenderContext().drawString(fontRenderer, line, context.getWidth() - length + 2, 2, -1, shadow);
                     break;
             }
-            context.getRenderContext().translate(0, fontRenderer.getHeight() + 2, 0);
+            context.getRenderContext().translate(0, fontRenderer.getHeight() + 2);
         }
         context.getRenderContext().popMatrix();
     }

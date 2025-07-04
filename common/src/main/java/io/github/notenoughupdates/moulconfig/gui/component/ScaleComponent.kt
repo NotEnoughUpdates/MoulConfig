@@ -29,7 +29,7 @@ class ScaleComponent(
     override fun render(context: GuiImmediateContext) {
         context.renderContext.pushMatrix()
         val s = scaleFactor.get()
-        context.renderContext.scale(s, s, 1F)
+        context.renderContext.scale(s, s)
         child.render(context.scaled(s))
         context.renderContext.popMatrix()
     }

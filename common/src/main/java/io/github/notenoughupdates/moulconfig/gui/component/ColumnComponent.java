@@ -77,7 +77,7 @@ public class ColumnComponent extends GuiComponent {
         context.getRenderContext().pushMatrix();
         foldWithContext(context, (child, childContext) -> {
             child.render(childContext);
-            context.getRenderContext().translate(0, child.getHeight(), 0);
+            context.getRenderContext().translate(0, child.getHeight());
         });
         context.getRenderContext().popMatrix();
     }

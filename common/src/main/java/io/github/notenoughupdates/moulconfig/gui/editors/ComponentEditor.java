@@ -100,7 +100,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
         protected void renderElement(@NotNull GuiImmediateContext context) {
             context.getRenderContext().pushMatrix();
-            context.getRenderContext().translate(5, 13, 0);
+            context.getRenderContext().translate(5, 13);
             this.getElement().render(getChildContext(context));
             context.getRenderContext().popMatrix();
         }
@@ -129,12 +129,12 @@ public abstract class ComponentEditor extends GuiOptionEditor {
                 if (scale < 1 / 16f) break;
             }
             context.getRenderContext().pushMatrix();
-            context.getRenderContext().translate(5 + width / 3, 5, 0);
-            context.getRenderContext().scale(scale, scale, 1);
-            context.getRenderContext().translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F, 0);
+            context.getRenderContext().translate(5 + width / 3, 5);
+            context.getRenderContext().scale(scale, scale);
+            context.getRenderContext().translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F);
             for (String line : lines) {
                 context.getRenderContext().drawString(fr, line, 0, 0, 0xc0c0c0, false);
-                context.getRenderContext().translate(0, fr.getHeight() + 1, 0);
+                context.getRenderContext().translate(0, fr.getHeight() + 1);
             }
             context.getRenderContext().popMatrix();
         }
@@ -193,7 +193,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
         var context = getImmContext(x, y, width, getHeight(), renderContext);
         context.getRenderContext().pushMatrix();
-        context.getRenderContext().translate(context.getRenderOffsetX(), context.getRenderOffsetY(), 0);
+        context.getRenderContext().translate(context.getRenderOffsetX(), context.getRenderOffsetY());
         getDelegate().render(context);
         context.getRenderContext().popMatrix();
     }
@@ -216,7 +216,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             return _void;
         });
         val ctx = getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), context);
-        ctx.getRenderContext().translate(overlayX, overlayY, 0);
+        ctx.getRenderContext().translate(overlayX, overlayY);
         overlay.render(ctx);
     }
 }

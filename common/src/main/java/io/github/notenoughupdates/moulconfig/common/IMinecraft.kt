@@ -15,8 +15,6 @@ import java.util.*
  */
 @ApiStatus.NonExtendable
 interface IMinecraft {
-    @Deprecated("Prefer using .bindTexture from RenderContext")
-    fun bindTexture(resourceLocation: MyResourceLocation)
     fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream
     fun getLogger(label: String): MCLogger
 

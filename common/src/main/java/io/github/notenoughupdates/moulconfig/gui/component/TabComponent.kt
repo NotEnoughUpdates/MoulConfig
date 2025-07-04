@@ -83,7 +83,7 @@ data class TabComponent(
                 headerOffset + headerPadding, headerPadding,
                 tab.header.width, headerHeight)
             context.renderContext.pushMatrix()
-            context.renderContext.translate(headerOffset + headerPadding + 0F, headerPadding + 0F, 0F)
+            context.renderContext.translate(headerOffset + headerPadding + 0F, headerPadding + 0F)
             tab.header.render(child)
             context.renderContext.popMatrix()
             headerOffset += tab.header.width + 2 * headerPadding + headerSpacing
@@ -93,7 +93,7 @@ data class TabComponent(
 
         val child = context.translated(bodyPadding, headerHeight + bodyPadding, context.width - bodyPadding * 2, context.height - headerHeight - bodyPadding)
         context.renderContext.pushMatrix()
-        context.renderContext.translate(bodyPadding + 0F, headerHeight + bodyPadding + 0F, 0F)
+        context.renderContext.translate(bodyPadding + 0F, headerHeight + bodyPadding + 0F)
         selectedTab.body.render(child)
         context.renderContext.popMatrix()
     }

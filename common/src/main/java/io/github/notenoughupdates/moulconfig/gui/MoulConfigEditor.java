@@ -36,7 +36,6 @@ import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedCategory;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
-import io.github.notenoughupdates.moulconfig.processor.ProcessedOptionImpl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -47,8 +46,6 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -100,7 +97,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             allOptions.addAll(category.getValue().getOptions());
             if (category.getValue().getParentCategoryId() != null) {
                 childCategoryLookup.computeIfAbsent(category.getValue().getParentCategoryId(), ignored -> new HashSet<>())
-                                   .add(category.getKey());
+                    .add(category.getKey());
             }
         }
         for (ProcessedOption option : allOptions) {
@@ -247,17 +244,17 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             if (!getConfigObject().shouldSearchCategoryNames()) directlyMatchedCategories.clear();
             for (String word : toSearch.split(" +")) {
                 directlyMatchedCategories.removeIf(it -> ContextAware.wrapErrorWithContext(it,
-                                                                                           () -> !(it.getDisplayName().toLowerCase(Locale.ROOT).contains(word)
-                                                                                               || it.getDescription().toLowerCase(Locale.ROOT).contains(word))));
+                    () -> !(it.getDisplayName().toLowerCase(Locale.ROOT).contains(word)
+                        || it.getDescription().toLowerCase(Locale.ROOT).contains(word))));
             }
 
             Set<ProcessedOption> matchingOptionsAndDependencies = new HashSet<>();
 
             var childCategoriesOfDirectlyMatched = directlyMatchedCategories.stream()
-                                                                            .flatMap(it -> childCategoryLookup.getOrDefault(it.getIdentifier(), Collections.emptySet()).stream())
-                                                                            .map(getAllCategories()::get)
-                                                                            .filter(Objects::nonNull)
-                                                                            .collect(Collectors.toList());
+                .flatMap(it -> childCategoryLookup.getOrDefault(it.getIdentifier(), Collections.emptySet()).stream())
+                .map(getAllCategories()::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
             directlyMatchedCategories.addAll(childCategoriesOfDirectlyMatched);
 
             // No search propagation needed if category is matched.
@@ -276,9 +273,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 .stream()
                 .map(ProcessedOption::getCategory).collect(Collectors.toSet());
             Set<ProcessedCategory> parentCategories = visibleCategories.stream()
-                                                                       .filter(it -> it.getParentCategoryId() != null)
-                                                                       .map(it -> getAllCategories().get(it.getParentCategoryId()))
-                                                                       .filter(Objects::nonNull).collect(Collectors.toSet());
+                .filter(it -> it.getParentCategoryId() != null)
+                .map(it -> getAllCategories().get(it.getParentCategoryId()))
+                .filter(Objects::nonNull).collect(Collectors.toSet());
             visibleCategories.addAll(parentCategories);
             LinkedHashMap<String, ProcessedCategory> matchingCategories = new LinkedHashMap<>(getAllCategories());
             matchingCategories.entrySet().removeIf(stringProcessedCategoryEntry -> !visibleCategories.contains(stringProcessedCategoryEntry.getValue()));
@@ -400,7 +397,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int innerRight = x + (leftPanelWidth + 4) - innerPadding;
         int innerTop = y + 49 + innerPadding;
         int innerBottom = y + ySize - 5 - innerPadding;
-        int catInnerW  = innerRight - innerLeft;              // total available width
+        int catInnerW = innerRight - innerLeft;              // total available width
         int catCenterX = innerLeft + catInnerW / 2;
         context.drawColoredRect(innerLeft, innerTop, innerLeft + 1, innerBottom, 0xff08080E); //Left
         context.drawColoredRect(innerLeft + 1, innerTop, innerRight, innerTop + 1, 0xff08080E); //Top
@@ -431,14 +428,14 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             var textLength = ifr.getStringWidth(catName);
             var isIndented = childCategories != null || entry.getValue().getParentCategoryId() != null;
             int maxTextLength = (int) (((isIndented) ? 90 : 100) * leftPanelScalar);
-            int centerMark = x  + (int) (75 * leftPanelScalar);
+            int centerMark = x + (int) (75 * leftPanelScalar);
             if (textLength > maxTextLength) {
                 context.drawStringCenteredScaledMaxWidth(catName,
-                                                         ifr, centerMark + (isIndented ? 5 : 0), y + 70 + catY, false, maxTextLength, -1
+                    ifr, centerMark + (isIndented ? 5 : 0), y + 70 + catY, false, maxTextLength, -1
                 );
             } else if (align == HorizontalAlign.CENTER) {
                 context.drawStringCenteredScaledMaxWidth(catName,
-                                                         ifr, centerMark, y + 70 + catY, false, maxTextLength, -1
+                    ifr, centerMark, y + 70 + catY, false, maxTextLength, -1
                 );
             } else if (align == HorizontalAlign.RIGHT) {
                 context.drawString(ifr, catName, centerMark + 50 - textLength, y + 70 + catY - ifr.getHeight() / 2, -1, false);
@@ -447,7 +444,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
             if (childCategories != null) {
                 var isExpanded = showSubcategories && (isSelected || childCategories.contains(getSelectedCategory()));
-                context.drawOpenCloseTriangle(isExpanded, x + 24.5F, y + 67 + catY, 6, 6);
+                context.drawOpenCloseTriangle(isExpanded, x + 24.5F, y + 67 + catY, 6, 6, -1);
                 if (isExpanded) {
                     context.drawVerticalLine(x + 27, y + catY + 76, y + catY + 76 + ((int) childCategories.stream().filter(currentConfigEditing::containsKey).count()) * 15, 0xFF444444);
                 }
@@ -476,7 +473,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         int catDist = innerBottom - innerTop - 12;
         context.drawColoredRect(innerLeft + 2, innerTop + 5, innerLeft + 7, innerBottom - 5, 0xff101010);
         context.drawColoredRect(innerLeft + 3, innerTop + 6 + (int) (catDist * catBarStart), innerLeft + 6,
-                                innerTop + 6 + (int) (catDist * catBarEnd), 0xff303030
+            innerTop + 6 + (int) (catDist * catBarEnd), 0xff303030
         );
 
         context.popScissor();
@@ -498,9 +495,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         innerRight = x + xSize - 5 - innerPadding;
         innerBottom = y + ySize - 5 - innerPadding;
 
-        context.bindTexture(GuiTextures.SEARCH);
-        context.color(1, 1, 1, 1);
-        context.drawTexturedRect(innerRight - 20, innerTop - (20 + innerPadding) / 2 - 9, 18, 18);
+        context.drawTexturedRect(GuiTextures.SEARCH, innerRight - 20, innerTop - (20 + innerPadding) / 2 - 9, 18, 18);
 
         minimumSearchSize.tick();
         boolean shouldShow = !searchFieldContent.get().trim().isEmpty() || searchField.isFocused();
@@ -520,7 +515,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             int len = Math.max(strLen, minimumSearchSize.getValue());
             searchField.setWidth(len);
             context.pushMatrix();
-            context.translate(innerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9, 0);
+            context.translate(innerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9);
             searchField.render(
                 new GuiImmediateContext(context, 0, 0, 0, 0, mouseX, mouseY, mouseX, mouseY, 0F, 0F)
                     .translated(
@@ -561,22 +556,22 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 var innerSize = innerRight - innerLeft - 40;
                 var titleScale = 2;
                 context.pushMatrix();
-                context.translate(titlePositionX, titlePositionY, 0);
+                context.translate(titlePositionX, titlePositionY);
                 context.drawStringCenteredScaledMaxWidth("§7Seems like your search is found in a subcategory.", ifr,
-                                                         0,
-                                                         titleScale * ifr.getHeight(),
-                                                         true, innerSize, -1
+                    0,
+                    titleScale * ifr.getHeight(),
+                    true, innerSize, -1
                 );
                 context.drawStringCenteredScaledMaxWidth("§7Check out the subcategories on the left.", ifr,
-                                                         0,
-                                                         (titleScale + 1) * ifr.getHeight(),
-                                                         true, innerSize, -1
+                    0,
+                    (titleScale + 1) * ifr.getHeight(),
+                    true, innerSize, -1
                 );
-                context.scale(titleScale, titleScale, 1);
+                context.scale(titleScale, titleScale);
                 context.drawStringCenteredScaledMaxWidth("§7No options found.", ifr,
-                                                         0,
-                                                         0,
-                                                         true, innerSize / titleScale, -1
+                    0,
+                    0,
+                    true, innerSize / titleScale, -1
                 );
                 context.popMatrix();
             }
@@ -618,7 +613,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 }
                 optionY += optionHeight + 5;
             }
-            context.disableDepth();
+// TODO: why was this ever needed:             context.disableDepth();
             if (optionY > 0) {
                 barSize =
                     LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + optionsScroll.getValue()));
@@ -629,15 +624,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         /// </editor-fold>
 
         /// <editor-fold name="Render overlays for options on the right">
-        context.disableScissor();
+        // TODO: why was this ever needed: context.disableScissor();
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
             int optionYOverlay = -optionsScroll.getValue();
             ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
             int optionWidthDefault = innerRight - innerLeft - 20;
 
             context.pushMatrix();
-            context.translate(0, 0, 10);
-            context.enableDepth();
+            // TODO: why was this ever needed: TODO: if this produces inconsistent results, just move the option bar rendering up. context.translate(0, 0, 10);
+            // TODO: why was this ever needed:    context.enableDepth();
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ProcessedOption option : getOptionsInCategory(cat)) {
                 int optionWidth = optionWidthDefault;
@@ -670,6 +665,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     int finalX = (innerLeft + innerRight - optionWidth) / 2 - 5;
                     int finalY = innerTop + 5 + optionYOverlay;
                     int finalOptionWidth = optionWidth;
+                    // TODO: move overlay to a Layer :)
                     ContextAware.wrapErrorWithContext(editor, () -> {
                         editor.renderOverlay(
                             context,
@@ -682,10 +678,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                 }
                 optionYOverlay += optionHeight + 5;
             }
-            context.disableDepth();
+            // TODO: why was this ever needed:  context.disableDepth();
             context.popMatrix();
         }
-        context.refreshScissor();
+// TODO: why was this ever needed:         context.refreshScissor();
         /// </editor-fold>
 
         optionsBarStart = optionsScroll.getValue() / (float) (optionY + optionsScroll.getValue());
@@ -715,10 +711,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         List<Social> socials = getConfigObject().getSocials();
         for (int socialIndex = 0; socialIndex < socials.size(); socialIndex++) {
             Social social = socials.get(socialIndex);
-            context.bindTexture(social.getIcon());
-            context.color(1, 1, 1, 1);
             int socialLeft = x + xSize - 23 - 18 * socialIndex;
-            context.drawTexturedRect(socialLeft, y + 7, 16, 16);
+            context.drawTexturedRect(social.getIcon(), socialLeft, y + 7, 16, 16);
 
             if (mouseX >= socialLeft && mouseX <= socialLeft + 16 &&
                 mouseY >= y + 6 && mouseY <= y + 23) {
@@ -729,9 +723,9 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         context.clearScissor();
 
         if (tooltipToDisplay != null) {
-            context.scheduleDrawTooltip(tooltipToDisplay);
+            context.scheduleDrawTooltip(iMinecraft.getMouseX(), iMinecraft.getMouseY(), tooltipToDisplay);
         }
-        context.doDrawTooltip();
+        context.renderExtraLayers();
     }
 
     private GuiContext guiContext = new GuiContext(new MetaComponent());
@@ -827,11 +821,11 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
                     String old = searchFieldContent.get();
                     searchField.mouseEvent(mouseEvent,
-                                           new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, mouseX, mouseY, mouseX, mouseY, 0F, 0F)
-                                               .translated(
-                                                   optsInnerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9,
-                                                   0, 0
-                                               ));
+                        new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, mouseX, mouseY, mouseX, mouseY, 0F, 0F)
+                            .translated(
+                                optsInnerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9,
+                                0, 0
+                            ));
 
                     if (!searchFieldContent.get().equals(old)) updateSearchResults();
                 }
@@ -1132,7 +1126,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         String old = searchFieldContent.get();
         searchField.keyboardEvent(event,
-                                  new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, 0, 0, 0, 0, 0F, 0F));
+            new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, 0, 0, 0, 0, 0F, 0F));
 
         if (!searchFieldContent.get().equals(old)) {
             searchFieldContent.set(IMinecraft.instance.getDefaultFontRenderer().trimStringToWidth(

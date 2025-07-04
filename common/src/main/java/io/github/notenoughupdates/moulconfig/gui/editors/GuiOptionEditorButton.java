@@ -116,9 +116,7 @@ public class GuiOptionEditorButton extends ComponentEditor {
         @Override
         public void render(@NotNull GuiImmediateContext context) {
 
-            context.getRenderContext().color(1, 1, 1, 1);
-            IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
-            context.getRenderContext().drawTexturedRect(0, 0, context.getWidth(), context.getHeight());
+            context.getRenderContext().drawTexturedRect(GuiTextures.BUTTON, 0, 0, context.getWidth(), context.getHeight());
             context.getRenderContext().drawStringCenteredScaledMaxWidth(
                 buttonText,
                 context.getRenderContext().getMinecraft().getDefaultFontRenderer(),

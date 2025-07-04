@@ -52,7 +52,7 @@ class CollapsibleComponent(
 
         val barHeight = maxOf(title.get().height, fr.height)
         context.renderContext.pushMatrix()
-        context.renderContext.translate(iconWidth.toFloat(), 0F, 0F)
+        context.renderContext.translate(iconWidth.toFloat(), 0F)
         title.get().render(context.translated(iconWidth, 0, context.width - iconWidth, barHeight))
         context.renderContext.popMatrix()
 
@@ -66,7 +66,7 @@ class CollapsibleComponent(
             )
 
             context.renderContext.pushMatrix()
-            context.renderContext.translate(0F, barHeight.toFloat(), 0F)
+            context.renderContext.translate(0F, barHeight.toFloat())
             body.get().render(
                 context.translated(0, barHeight, context.width, context.height - barHeight)
             )

@@ -4,12 +4,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.platform.DepthTestFunction
 import com.mojang.blaze3d.platform.LogicOp
 import com.mojang.blaze3d.vertex.VertexFormat
-import io.github.notenoughupdates.moulconfig.common.DynamicTextureReference
-import io.github.notenoughupdates.moulconfig.common.IFontRenderer
-import io.github.notenoughupdates.moulconfig.common.IItemStack
-import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
-import io.github.notenoughupdates.moulconfig.common.RenderContext
-import io.github.notenoughupdates.moulconfig.common.RenderContext.TextureFilter
+import io.github.notenoughupdates.moulconfig.common.*
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
@@ -22,9 +17,9 @@ import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
-import org.lwjgl.opengl.GL11
 import java.awt.image.BufferedImage
 import java.util.concurrent.ThreadLocalRandom
+import java.util.function.Consumer
 
 class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     companion object {
@@ -58,15 +53,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     val mouse = MinecraftClient.getInstance().mouse
     val window = MinecraftClient.getInstance().window
-    var hasDepth = true
-    override fun disableDepth() {
-        hasDepth = false
-        //TODO("Choose between GUI_OVERLAY and GUI depending on a var, maybe")
-    }
-
-    override fun enableDepth() {
-        hasDepth = true
-    }
 
     fun NativeImageBackedTexture.setData(img: BufferedImage) {
         for (i in (0 until img.width)) {
@@ -99,14 +85,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
 
-    override fun refreshScissor() {
-        drawContext.setScissor(drawContext.scissorStack.stack.peekLast())
-    }
-
-    override fun disableScissor() {
-        drawContext.setScissor(null)
-    }
-
     override fun pushMatrix() {
         drawContext.matrices.push()
     }
@@ -115,24 +93,12 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         drawContext.matrices.pop()
     }
 
-    override fun translate(x: Float, y: Float, z: Float) {
-        drawContext.matrices.translate(x, y, z)
+    override fun translate(x: Float, y: Float) {
+        drawContext.matrices.translate(x, y, 0F)
     }
 
-    override fun scale(x: Float, y: Float, z: Float) {
-        drawContext.matrices.scale(x, y, z)
-    }
-
-    var tintR = 1F
-    var tintG = 1F
-    var tintB = 1F
-    var tintA = 1F
-
-    override fun color(r: Float, g: Float, b: Float, a: Float) {
-        tintR = r
-        tintG = g
-        tintB = b
-        tintA = a
+    override fun scale(x: Float, y: Float) {
+        drawContext.matrices.scale(x, y, 1F)
     }
 
     override fun isMouseButtonDown(mouseButton: Int): Boolean {
@@ -144,7 +110,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
 
-    override fun drawTriangles(vararg coordinates: Float) {
+    override fun drawColoredTriangles(color: Int, vararg coordinates: Float) {
         require(coordinates.size % 6 == 0)
         drawContext.draw {
             val buf = it.getBuffer(COLORED_TRIANGLES)
@@ -152,7 +118,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
             for (i in 0 until (coordinates.size / 2)) {
                 buf.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F)
-                    .color(tintA, tintR, tintG, tintB).next()
+                    .color(color).next()
             }
         }
     }
@@ -172,54 +138,44 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         drawContext.fill(left.toInt(), top.toInt(), right.toInt(), bottom.toInt(), color)
     }
 
-    override fun invertedRect(left: Float, top: Float, right: Float, bottom: Float) {
+    override fun invertedRect(left: Float, top: Float, right: Float, bottom: Float, additiveColor: Int) {
         drawContext.draw {
             val matrix = drawContext.matrices.peek().positionMatrix
             val buffer = it.getBuffer(INVERTED_RECT)
-            val blue = 0xFF0000FF.toInt()
-            buffer.vertex(matrix, left, bottom, 0F).color(blue).next()
-            buffer.vertex(matrix, right, bottom, 0F).color(blue).next()
-            buffer.vertex(matrix, right, top, 0F).color(blue).next()
-            buffer.vertex(matrix, left, top, 0F).color(blue).next()
+            buffer.vertex(matrix, left, bottom, 0F).color(additiveColor).next()
+            buffer.vertex(matrix, right, bottom, 0F).color(additiveColor).next()
+            buffer.vertex(matrix, right, top, 0F).color(additiveColor).next()
+            buffer.vertex(matrix, left, top, 0F).color(additiveColor).next()
         }
     }
 
-    override fun setTextureMinMagFilter(textureFilter: TextureFilter) {
-        // TODO encode this in pipelines
-        val filter = when (textureFilter) {
-            TextureFilter.LINEAR -> GL11.GL_LINEAR
-            TextureFilter.NEAREST -> GL11.GL_NEAREST
-        }
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)
+    override fun setTextureFilter(texture: MyResourceLocation, filter: TextureFilter) {
+        // TODO: implement this in pipelines (and also switch this to just be an argument in draw textured quad)
     }
 
-    override fun drawTexturedRect(
-        x: Float,
-        y: Float,
-        width: Float,
-        height: Float,
-        u1: Float,
-        v1: Float,
-        u2: Float,
-        v2: Float
-    ) {
+
+    override fun drawTexturedTintedRect(
+        texture: MyResourceLocation,
+        x: Float, y: Float,
+        width: Float, height: Float,
+        u1: Float, v1: Float, u2: Float, v2: Float,
+        color: Int
+    ) { // TODO: transform this into a class
         drawContext.draw {
             val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
-            val texture = MoulConfigPlatform.boundTexture!!
-            val bufferBuilder = it.getBuffer(
-                if (hasDepth) RenderLayer.getGuiTextured(texture)
-                else RenderLayer.getGuiTexturedOverlay(texture))
+            val bufferBuilder = it.getBuffer(RenderLayer.getGuiTextured(MoulConfigPlatform.fromMyResourceLocation(texture)))
             bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1)
-                .color(tintR, tintG, tintB, tintA).next()
+                .color(color).next()
             bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(u1, v2)
-                .color(tintR, tintG, tintB, tintA).next()
+                .color(color).next()
             bufferBuilder.vertex(matrix4f, x + width, y + height, 0f).texture(u2, v2)
-                .color(tintR, tintG, tintB, tintA).next()
+                .color(color).next()
             bufferBuilder.vertex(matrix4f, x + width, y, 0F).texture(u2, v1)
-                .color(tintR, tintG, tintB, tintA).next()
+                .color(color).next()
         }
+
     }
+
 
     override fun drawDarkRect(x: Int, y: Int, width: Int, height: Int, shadow: Boolean) {
         val main: Int = -0x1000000 or 0x202026
@@ -254,7 +210,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         // Do not use drawContext.enableScissor() since that transform coords
         // In order to be compatible with 1.8.9, this method does not do that.
         drawContext.scissorStack.push(ScreenRect(left, top, right - left, bottom - top))
-        refreshScissor()
+        drawContext.setScissor(drawContext.scissorStack.stack.peek())
     }
 
     override fun popScissor() {
@@ -278,22 +234,24 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         )
     }
 
-    var scheduledTooltip: List<String>? = null
-
-    override fun scheduleDrawTooltip(tooltipLines: MutableList<String>) {
-        scheduledTooltip = tooltipLines
+    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<String?>) {
+        drawContext.drawTooltip(
+            MinecraftClient.getInstance().textRenderer,
+            tooltipLines.map { Text.literal(it) },
+            // TODO: improve this somewhat
+            x,
+            y,
+        )
     }
 
-    override fun doDrawTooltip() {
-        if (scheduledTooltip != null) {
-            drawContext.drawTooltip(
-                MinecraftClient.getInstance().textRenderer,
-                scheduledTooltip!!.map { Text.literal(it) },
-                // TODO: improve this somewhat
-                (MinecraftClient.getInstance().mouse.x / MinecraftClient.getInstance().window.scaleFactor).toInt(),
-                (MinecraftClient.getInstance().mouse.y / MinecraftClient.getInstance().window.scaleFactor).toInt(),
-            )
-        }
+    override fun renderExtraLayers() {
+        // Left blank: [drawOnTop] renders directly.
     }
 
+    override fun drawOnTop(layer: Layer, later: Consumer<RenderContext>) {
+        pushMatrix()
+        drawContext.matrices.translate(0F, 0F, layer.sortIndex * 200F)
+        later.accept(this)
+        popMatrix()
+    }
 }

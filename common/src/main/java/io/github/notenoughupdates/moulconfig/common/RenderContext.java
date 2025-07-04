@@ -2,22 +2,33 @@ package io.github.notenoughupdates.moulconfig.common;
 
 import io.github.notenoughupdates.moulconfig.internal.NinePatchRenderer;
 import juuxel.libninepatch.NinePatch;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.function.Consumer;
 
+@ApiStatus.NonExtendable
 public interface RenderContext {
     void pushMatrix();
 
     void popMatrix();
 
-    void translate(float x, float y, float z);
+    void translate(float x, float y);
 
-    void scale(float x, float y, float z);
+    void scale(float x, float y);
 
-    void color(float r, float g, float b, float a);
+    default void scale(float scalar) {
+        scale(scalar, scalar);
+    }
+
+    /**
+     * draws more content that should be laid on top of other later render calls. the consumer will be invoked linearly, but with no guarantee for when.
+     * TODO: make a call on if scissors should be retained (i think they should _not_)
+     */
+    void drawOnTop(@NotNull Layer layer, @NotNull Consumer<@NotNull RenderContext> later);
 
     boolean isMouseButtonDown(int mouseButton);
 
@@ -27,22 +38,33 @@ public interface RenderContext {
         return isKeyboardKeyDown(KeyboardConstants.INSTANCE.getShiftLeft()) || isKeyboardKeyDown(KeyboardConstants.INSTANCE.getShiftRight());
     }
 
+    default boolean isPhysicalCtrlDown() {
+        return isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCtrlLeft()) || isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCtrlRight());
+    }
+
+    /**
+     * @return if the command (on 🍎) or super (on 🐧) or windows (on 🪟) key is down.
+     */
+    default boolean isCmdDown() {
+        return isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCmdLeft()) || isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCmdRight());
+    }
+
     /**
      * Returns whether the control key is held down on Windows and Linux, and for macOS checks if the command key is held down.
      */
-    default boolean isCtrlDown() {
+    default boolean isLogicalCtrlDown() {
         if (getMinecraft().isOnMacOS()) {
-            return isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCmdLeft()) || isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCmdRight());
+            return isCmdDown();
         } else {
-            return isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCtrlLeft()) || isKeyboardKeyDown(KeyboardConstants.INSTANCE.getCtrlRight());
+            return isPhysicalCtrlDown();
         }
     }
 
     default void drawStringScaledMaxWidth(@NotNull String text, @NotNull IFontRenderer fontRenderer, int x, int y, boolean shadow, int width, int color) {
         pushMatrix();
-        translate(x, y, 0);
+        translate(x, y);
         float scale = Math.min(1F, Math.max(0.1F, width / (float) fontRenderer.getStringWidth(text)));
-        scale(scale, scale, 1F);
+        scale(scale, scale);
         drawString(fontRenderer, text, 0, 0, color, shadow);
         popMatrix();
     }
@@ -57,21 +79,14 @@ public interface RenderContext {
         pushMatrix();
         int strLength = fr.getStringWidth(text);
         float factor = Math.min(length / (float) strLength, 1f);
-        translate(x, y, 0);
-        scale(factor, factor, 1);
+        translate(x, y);
+        scale(factor, factor);
         drawString(fr, text, -strLength / 2, -fr.getHeight() / 2, color, shadow);
         popMatrix();
     }
 
-    void disableDepth();
-
-    void enableDepth();
-
-
     /**
      * Dynamically load a buffered image into a minecraft bindable texture. The returned resource location must be destroyed.
-     *
-     * @return a resource location that can be used with {@link #bindTexture}
      */
     @NotNull DynamicTextureReference generateDynamicTexture(@NotNull BufferedImage image);
 
@@ -93,19 +108,19 @@ public interface RenderContext {
         drawColoredRect(startX, y, endX + 1, y + 1, color);
     }
 
+    void drawColoredTriangles(int color, float... coordinates);
 
-    void drawTriangles(float... coordinates);
-
-    default void drawOpenCloseTriangle(boolean isOpen, float x, float y, float width, float height) {
-        color(1, 1, 1, 1);
+    default void drawOpenCloseTriangle(boolean isOpen, float x, float y, float width, float height, int color) {
         if (isOpen) {
-            drawTriangles(
+            drawColoredTriangles(
+                color,
                 x, y,
                 x + width / 2, y + height,
                 x + width, y
             );
         } else {
-            drawTriangles(
+            drawColoredTriangles(
+                color,
                 x, y + height,
                 x + width, y + height / 2,
                 x, y
@@ -117,35 +132,30 @@ public interface RenderContext {
 
     void drawColoredRect(float left, float top, float right, float bottom, int color);
 
-    void invertedRect(float left, float top, float right, float bottom);
+    void invertedRect(float left, float top, float right, float bottom, int additiveColor); // TODO: worth a consideration (is this a stable API)???
 
-    default void drawTexturedRect(float x, float y, float width, float height) {
-        drawTexturedRect(x, y, width, height, 0f, 0f, 1f, 1f);
+    void setTextureFilter(@NotNull MyResourceLocation texture, @NotNull TextureFilter filter); // TODO: is this correct? should this be part of the draw texture call instead?
+
+    default void drawTexturedRect(@NotNull MyResourceLocation texture, float x, float y, float width, float height) {
+        drawTexturedRect(texture, x, y, width, height, 0f, 0f, 1f, 1f);
     }
 
-    void drawTexturedRect(float x, float y, float width, float height, float u1, float v1, float u2, float v2);
-
-
-    enum TextureFilter {
-        /**
-         * Smoothly interpolate between pixels
-         */
-        LINEAR,
-        /**
-         * Do not interpolate between pixels (pixelated upscaling).
-         */
-        NEAREST;
+    default void drawTexturedRect(@NotNull MyResourceLocation texture, float x, float y, float width, float height, float u1, float v1, float u2, float v2) {
+        drawTexturedTintedRect(texture, x, y, width, height, u1, v1, u2, v2, -1);
     }
 
-    /**
-     * Set the texture min and mag filter which dictate how an image is upscaled / interpolated.
-     * Affects the {@link #bindTexture currently bound texture}.
-     */
-    void setTextureMinMagFilter(@NotNull TextureFilter filter);
+    default void drawTexturedTintedRect(@NotNull MyResourceLocation texture, float x, float y, float width, float height, int color) {
+        drawTexturedTintedRect(texture, x, y, width, height, 0, 0, 1, 1, color);
+    }
+
+    void drawTexturedTintedRect(@NotNull MyResourceLocation texture,
+                                float x, float y, float width, float height,
+                                float u1, float v1, float u2, float v2,
+                                int color);
 
     default void drawNinePatch(@NotNull NinePatch<@NotNull MyResourceLocation> patch, float x, float y, int width, int height) {
         pushMatrix();
-        translate(x, y, 0);
+        translate(x, y);
         patch.draw(NinePatchRenderer.INSTANCE, this, width, height);
         popMatrix();
     }
@@ -158,7 +168,7 @@ public interface RenderContext {
 
     void drawGradientRect(int zLevel, int left, int top, int right, int bottom, int startColor, int endColor);
 
-    void pushScissor(int left, int top, int right, int bottom);
+    void pushScissor(int left, int top, int right, int bottom); // TODO:
 
     void popScissor();
 
@@ -166,20 +176,19 @@ public interface RenderContext {
 
     void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable String overlayText);
 
-    void scheduleDrawTooltip(@NotNull List<String> tooltipLines);
+    void drawTooltipNow(int x, int y, @NotNull List<String> tooltipLines);
 
-    void doDrawTooltip();
+    default void scheduleDrawTooltip(int x, int y, @NotNull List<String> tooltipLines) {
+        // TODO: should this do some form of conflict resolution?
+        drawOnTop(Layer.TOOLTIP, it -> it.drawTooltipNow(x, y, tooltipLines));
+    }
 
-    void refreshScissor();
-
-    void disableScissor();
-
+    /**
+     * Must be called only by the implementor after all rendering is done.
+     */
+    void renderExtraLayers();
 
     default @NotNull IMinecraft getMinecraft() {
         return IMinecraft.instance;
-    }
-
-    default void bindTexture(@NotNull MyResourceLocation texture) {
-        getMinecraft().bindTexture(texture);
     }
 }

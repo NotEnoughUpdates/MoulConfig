@@ -38,6 +38,7 @@ class MoulConfigPlatform : IMinecraft {
 
         lateinit var instance: MoulConfigPlatform
             private set
+        var boundTexture: Identifier? = null
         fun fromIdentifier(identifier: Identifier): MyResourceLocation {
             return MyResourceLocation(identifier.namespace, identifier.path)
         }
@@ -49,6 +50,10 @@ class MoulConfigPlatform : IMinecraft {
 
     override val isDevelopmentEnvironment: Boolean
         get() = FabricLoader.getInstance().isDevelopmentEnvironment
+
+    override fun bindTexture(resourceLocation: MyResourceLocation) {
+        boundTexture = fromMyResourceLocation(resourceLocation)
+    }
 
     override fun getLogger(label: String): MCLogger {
         val logger = LogManager.getLogger(label)

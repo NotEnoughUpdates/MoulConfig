@@ -20,9 +20,9 @@ open class SliderWithTextComponent(
 
 
     override fun render(context: GuiImmediateContext) {
-        context.renderContext.translate(-(width/3).toFloat(), 0f, 0f)
+        context.renderContext.translate(-(width/3).toFloat(), 0f)
         super.render(context)
-        context.renderContext.translate(60f, -5f, 0f)
+        context.renderContext.translate(60f, -5f)
         componentNumberInput.width
         componentNumberInput.render(context.translated(60, -5, componentNumberInput.width, 18))
     }

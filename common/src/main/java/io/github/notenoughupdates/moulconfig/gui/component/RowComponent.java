@@ -77,7 +77,7 @@ public class RowComponent extends GuiComponent {
         context.getRenderContext().pushMatrix();
         foldWithContext(context, (child, childContext) -> {
             child.render(childContext);
-            context.getRenderContext().translate(child.getWidth(), 0, 0);
+            context.getRenderContext().translate(child.getWidth(), 0);
         });
         context.getRenderContext().popMatrix();
     }

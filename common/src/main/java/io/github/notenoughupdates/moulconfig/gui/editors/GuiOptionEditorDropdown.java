@@ -122,7 +122,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
             int outlineColour = 0xffffffff;
 
             context.getRenderContext().pushMatrix();
-            context.getRenderContext().translate(0, 0, 100);
+            // TODO: do we even need that? (given the render order) context.getRenderContext().translate(0, 0, 100);
             int left = 0;
             int top = 0;
             context.getRenderContext().drawColoredRect(left, top, left + 1, top + dropdownHeight, outlineColour); //Left
@@ -154,7 +154,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
                 dropdownWidth - 16, 0xffa0a0a0
             );
             context.getRenderContext().drawOpenCloseTriangle(
-                false, context.getWidth() - 10, 4, 6, 6
+                false, context.getWidth() - 10, 4, 6, 6, -1
             );
             context.getRenderContext().popMatrix();
         }
@@ -206,7 +206,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
                 0, 0, dropdownWidth, context.getHeight(), false
             );
             context.getRenderContext().drawOpenCloseTriangle(
-                true, context.getWidth() - 10, 4, 6, 6
+                true, context.getWidth() - 10, 4, 6, 6, -1
             );
             context.getRenderContext().drawStringScaledMaxWidth(
                 selectedString, IMinecraft.instance.getDefaultFontRenderer(),

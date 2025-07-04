@@ -75,7 +75,7 @@ public class CenterComponent extends GuiComponent {
     @Override
     public void render(GuiImmediateContext context) {
         context.getRenderContext().pushMatrix();
-        context.getRenderContext().translate(getChildOffsetX(context), getChildOffsetY(context), 0);
+        context.getRenderContext().translate(getChildOffsetX(context), getChildOffsetY(context));
         child.render(getChildContext(context));
         context.getRenderContext().popMatrix();
     }

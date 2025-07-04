@@ -53,10 +53,10 @@ class ForgeRenderContext : RenderContext {
         }
     }
 
-    override fun setTextureMinMagFilter(textureFilter: RenderContext.TextureFilter) {
+    override fun setTextureMinMagFilter(textureFilter: TextureFilter) {
         val filter = when (textureFilter) {
-            RenderContext.TextureFilter.LINEAR -> GL11.GL_LINEAR
-            RenderContext.TextureFilter.NEAREST -> GL11.GL_NEAREST
+            TextureFilter.LINEAR -> GL11.GL_LINEAR
+            TextureFilter.NEAREST -> GL11.GL_NEAREST
         }
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, filter)

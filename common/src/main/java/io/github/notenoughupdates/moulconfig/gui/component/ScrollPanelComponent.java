@@ -37,7 +37,7 @@ public class ScrollPanelComponent extends GuiComponent {
         var y = context.getRenderOffsetY();
         context.getRenderContext().pushScissor(x, y, x + context.getWidth(), y + context.getHeight());
         context.getRenderContext().pushMatrix();
-        context.getRenderContext().translate(0, -scrollOffset, 0);
+        context.getRenderContext().translate(0, -scrollOffset);
         child.render(context.translatedNonRendering(0, -scrollOffset, context.getWidth(), context.getHeight()));
         context.getRenderContext().popMatrix();
         context.getRenderContext().popScissor();

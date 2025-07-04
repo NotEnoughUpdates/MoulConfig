@@ -1,6 +1,9 @@
 package io.github.notenoughupdates.moulconfig.platform
 
-import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.pipeline.RenderPipeline
+import com.mojang.blaze3d.platform.DepthTestFunction
+import com.mojang.blaze3d.platform.LogicOp
+import com.mojang.blaze3d.vertex.VertexFormat
 import io.github.notenoughupdates.moulconfig.common.DynamicTextureReference
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer
 import io.github.notenoughupdates.moulconfig.common.IItemStack
@@ -8,12 +11,10 @@ import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
 import io.github.notenoughupdates.moulconfig.common.RenderContext
 import io.github.notenoughupdates.moulconfig.common.TextureFilter
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gl.ShaderProgramKeys
+import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.ScreenRect
 import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.RenderPhase
-import net.minecraft.client.render.VertexFormat
 import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.InputUtil
@@ -27,44 +28,37 @@ import java.util.concurrent.ThreadLocalRandom
 
 class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     companion object {
-        val RL = RenderLayer.of(
+        val INVERTED_RECT_PIPE = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
+            .withColorLogic(LogicOp.OR_REVERSE)
+            .withLocation("moulconfig_inverted_rect")
+            .build()
+        val INVERTED_RECT = RenderLayer.MultiPhase.of(
             "moulconfig_inverted_rect",
-            VertexFormats.POSITION,
-            VertexFormat.DrawMode.QUADS,
             RenderLayer.DEFAULT_BUFFER_SIZE,
-            false,
-            false,
+            INVERTED_RECT_PIPE,
             RenderLayer.MultiPhaseParameters.builder()
-                .program(RenderPhase.POSITION_PROGRAM)
-                .colorLogic(RenderPhase.OR_REVERSE)
                 .build(false)
         )
+        val COLORED_TRIANGLES_PIPE =
+            RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
+                .withLocation("moulconfig_colored_triangles")
+                .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.TRIANGLES)
+                .build()
         val COLORED_TRIANGLES =
-            RenderLayer.of(
-                "mc_triangles",
-                VertexFormats.POSITION_COLOR,
-                VertexFormat.DrawMode.TRIANGLES,
+            RenderLayer.MultiPhase.of(
+                "moulconfig_colored_triangles",
                 RenderLayer.DEFAULT_BUFFER_SIZE,
-                false,
-                false,
+                COLORED_TRIANGLES_PIPE,
                 RenderLayer.MultiPhaseParameters.builder()
-                    // TODO: import mipmap settings
-                    .program(RenderPhase.ShaderProgram(ShaderProgramKeys.POSITION_COLOR))
-                    .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
-                    .depthTest(RenderPhase.LEQUAL_DEPTH_TEST)
+
                     .build(false)
             )
     }
 
     val mouse = MinecraftClient.getInstance().mouse
     val window = MinecraftClient.getInstance().window
-    override fun disableDepth() {
-        RenderSystem.disableDepthTest()
-    }
-
-    override fun enableDepth() {
-        RenderSystem.enableDepthTest()
-    }
+    var hasDepth = true
 
     fun NativeImageBackedTexture.setData(img: BufferedImage) {
         for (i in (0 until img.width)) {
@@ -76,10 +70,10 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun generateDynamicTexture(img: BufferedImage): DynamicTextureReference {
-        val texture = NativeImageBackedTexture(img.width, img.height, true)
+        val id = Identifier.of("moulconfig", "dynamic/${ThreadLocalRandom.current().nextLong()}")
+        val texture = NativeImageBackedTexture(id.path, img.width, img.height, true)
         texture.setData(img)
         texture.upload()
-        val id = Identifier.of("moulconfig", "dynamic/${ThreadLocalRandom.current().nextLong()}")
         MinecraftClient.getInstance().textureManager.registerTexture(id, texture)
         return object : DynamicTextureReference() {
             override fun update(bufferedImage: BufferedImage) {
@@ -97,14 +91,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
 
-    override fun refreshScissor() {
-        drawContext.setScissor(drawContext.scissorStack.stack.peekLast())
-    }
-
-    override fun disableScissor() {
-        drawContext.setScissor(null)
-    }
-
     override fun pushMatrix() {
         drawContext.matrices.push()
     }
@@ -115,6 +101,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun translate(x: Float, y: Float, z: Float) {
         drawContext.matrices.translate(x, y, z)
+        drawContext.layer
     }
 
     override fun scale(x: Float, y: Float, z: Float) {
@@ -144,7 +131,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun drawTriangles(vararg coordinates: Float) {
         require(coordinates.size % 6 == 0)
-        RenderSystem.enableBlend()
         drawContext.draw {
             val buf = it.getBuffer(COLORED_TRIANGLES)
             val matrix = drawContext.matrices.peek().positionMatrix
@@ -154,7 +140,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
                     .color(tintA, tintR, tintG, tintB).next()
             }
         }
-        RenderSystem.disableBlend()
     }
 
     override fun drawString(
@@ -175,16 +160,17 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     override fun invertedRect(left: Float, top: Float, right: Float, bottom: Float) {
         drawContext.draw {
             val matrix = drawContext.matrices.peek().positionMatrix
-            val buffer = it.getBuffer(RL)
-            buffer.vertex(matrix, left, bottom, 0F).next()
-            buffer.vertex(matrix, right, bottom, 0F).next()
-            buffer.vertex(matrix, right, top, 0F).next()
-            buffer.vertex(matrix, left, top, 0F).next()
+            val buffer = it.getBuffer(INVERTED_RECT)
+            val blue = 0xFF0000FF.toInt()
+            buffer.vertex(matrix, left, bottom, 0F).color(blue).next()
+            buffer.vertex(matrix, right, bottom, 0F).color(blue).next()
+            buffer.vertex(matrix, right, top, 0F).color(blue).next()
+            buffer.vertex(matrix, left, top, 0F).color(blue).next()
         }
     }
 
     override fun setTextureMinMagFilter(textureFilter: TextureFilter) {
-        // TODO bind texture first
+        // TODO encode this in pipelines
         val filter = when (textureFilter) {
             TextureFilter.LINEAR -> GL11.GL_LINEAR
             TextureFilter.NEAREST -> GL11.GL_NEAREST
@@ -205,15 +191,18 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     ) {
         drawContext.draw {
             val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
-            val bufferBuilder = it.getBuffer(RenderLayer.getGuiTextured(MoulConfigPlatform.boundTexture!!))
+            val texture = MoulConfigPlatform.boundTexture!!
+            val bufferBuilder = it.getBuffer(
+                if (hasDepth) RenderLayer.getGuiTextured(texture)
+                else RenderLayer.getGuiTexturedOverlay(texture))
             bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1)
-                .color(tintA, tintG, tintB, tintA).next()
+                .color(tintR, tintG, tintB, tintA).next()
             bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(u1, v2)
-                .color(tintA, tintG, tintB, tintA).next()
+                .color(tintR, tintG, tintB, tintA).next()
             bufferBuilder.vertex(matrix4f, x + width, y + height, 0f).texture(u2, v2)
-                .color(tintA, tintG, tintB, tintA).next()
+                .color(tintR, tintG, tintB, tintA).next()
             bufferBuilder.vertex(matrix4f, x + width, y, 0F).texture(u2, v1)
-                .color(tintA, tintG, tintB, tintA).next()
+                .color(tintR, tintG, tintB, tintA).next()
         }
     }
 

@@ -59,9 +59,7 @@ public class SwitchComponent extends GuiComponent {
 
     @Override
     public void render(GuiImmediateContext context) {
-        context.getRenderContext().color(1, 1, 1, 1);
-        mc.bindTexture(GuiTextures.TOGGLE_BAR);
-        context.getRenderContext().drawTexturedRect(0, 0, context.getWidth(), context.getHeight());
+        context.getRenderContext().drawTexturedRect(GuiTextures.TOGGLE_BAR, 0, 0, context.getWidth(), context.getHeight());
 
         boolean val = value.get();
         if (lastValue != val) {
@@ -85,8 +83,9 @@ public class SwitchComponent extends GuiComponent {
         } else {
             buttonLocation = GuiTextures.TOGGLE_ON;
         }
-        mc.bindTexture(buttonLocation);
-        context.getRenderContext().drawTexturedRect(animationPercentage * (context.getWidth() - 12), 0, 12, context.getHeight());
+        context.getRenderContext().drawTexturedRect(
+            buttonLocation,
+            animationPercentage * (context.getWidth() - 12), 0, 12, context.getHeight());
     }
 
     @Override

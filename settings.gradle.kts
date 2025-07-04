@@ -28,7 +28,8 @@ include("legacy")
 include("modern")
 listOf(
 	"1.21.4",
-	"1.21.5"
+	"1.21.5",
+	"1.21.7",
 ).forEach { version ->
 	val modPath = "modern:$version"
 	include(modPath)

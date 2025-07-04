@@ -24,9 +24,11 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.KeyboardConstants;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
+import io.github.notenoughupdates.moulconfig.common.TextureFilter;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
+import io.github.notenoughupdates.moulconfig.internal.ColourUtil;
 import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
 import io.github.notenoughupdates.moulconfig.internal.TypeUtils;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
@@ -56,18 +58,18 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private String exampleTextConcat;
 
     public GuiOptionEditorDraggableList(
-            ProcessedOption option,
-            String[] exampleText,
-            boolean enableDeleting
+        ProcessedOption option,
+        String[] exampleText,
+        boolean enableDeleting
     ) {
         this(option, exampleText, enableDeleting, false);
     }
 
     public GuiOptionEditorDraggableList(
-            ProcessedOption option,
-            String[] exampleText,
-            boolean enableDeleting,
-            boolean requireNonEmpty
+        ProcessedOption option,
+        String[] exampleText,
+        boolean enableDeleting,
+        boolean requireNonEmpty
     ) {
         super(option);
 
@@ -123,41 +125,42 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     public void render(RenderContext renderContext, int x, int y, int width) {
         super.render(renderContext, x, y, width);
         int height = getHeight();
-        var fr = IMinecraft.instance.getDefaultFontRenderer();
+        var mc = IMinecraft.instance;
+        var fr = mc.getDefaultFontRenderer();
 
-        renderContext.color(1, 1, 1, 1);
-        IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
-        renderContext.drawTexturedRect(x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
+        renderContext.drawTexturedRect(GuiTextures.BUTTON, x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
 
         renderContext.drawStringCenteredScaledMaxWidth("Add", fr,
-                                                       x + width / 6, y + 45 - 7 - 6,
-                                                       false, 44, 0xFF303030
+            x + width / 6, y + 45 - 7 - 6,
+            false, 44, 0xFF303030
         );
 
         if (canDeleteRightNow()) {
             long currentTime = System.currentTimeMillis();
-            if (trashHoverTime < 0) {
-                float greenBlue = LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f);
-                renderContext.color(1, greenBlue, greenBlue, 1);
-            } else {
-                float greenBlue = LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
-                renderContext.color(1, greenBlue, greenBlue, 1);
-            }
+            // TODO: replace with lerpinginteger
+            float greenBlue = trashHoverTime < 0
+                ? LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f)
+                : LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
             int deleteX = x + width / 6 + 27;
             int deleteY = y + 45 - 7 - 13;
-            renderContext.bindTexture(GuiTextures.DELETE);
-            renderContext.setTextureMinMagFilter(RenderContext.TextureFilter.NEAREST);
-            renderContext.drawTexturedRect(deleteX, deleteY, 11, 14);
+            int color = ColourUtil.packARGB(1, greenBlue, greenBlue, 1);
+            renderContext.setTextureFilter(GuiTextures.DELETE, TextureFilter.NEAREST);
+            renderContext.drawTexturedTintedRect(GuiTextures.DELETE,
+                deleteX, deleteY, 11, 14,
+                0, 0, 1, 1,
+                color
+            );
             // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
             if (lastMousePosition != null && currentDragging == null &&
-                    lastMousePosition.getFirst() >= deleteX && lastMousePosition.getFirst() < deleteX + 11 &&
-                    lastMousePosition.getSecond() >= deleteY && lastMousePosition.getSecond() < deleteY + 14 &&
-                    !dropdownOpen) {
-                renderContext.scheduleDrawTooltip(Collections.singletonList(
-                        "§cDelete Item"
+                lastMousePosition.getFirst() >= deleteX && lastMousePosition.getFirst() < deleteX + 11 &&
+                lastMousePosition.getSecond() >= deleteY && lastMousePosition.getSecond() < deleteY + 14 &&
+                !dropdownOpen) {
+                renderContext.scheduleDrawTooltip(
+                    mc.getMouseX(), mc.getMouseY(),
+                    Collections.singletonList(
+                    "§cDelete Item"
                 ));
             }
-            renderContext.color(1, 1, 1, 1);
         }
 
         renderContext.drawColoredRect(x + 5, y + 45, x + width - 5, y + height - 5, 0xffdddddd);
@@ -176,16 +179,16 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
                     String line = multilines[multilineIndex];
                     renderContext.drawStringScaledMaxWidth(line + "§r", fr,
-                                                           x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
+                        x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
                     );
                 }
                 renderContext.drawString(
-                        fr,
-                        "≡",
-                        x + 10,
-                        y + 49 + yOff + ySize / 2 - 4,
-                        0xffffff,
-                        true
+                    fr,
+                    "≡",
+                    x + 10,
+                    y + 49 + yOff + ySize / 2 - 4,
+                    0xffffff,
+                    true
                 );
             }
 
@@ -213,11 +216,11 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             context.drawColoredRect(left + 1, top, left + dropdownWidth, top + 1, outline); //Top
             context.drawColoredRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, outline); //Right
             context.drawColoredRect(
-                    left + 1,
-                    top + dropdownHeight - 1,
-                    left + dropdownWidth - 1,
-                    top + dropdownHeight,
-                    outline
+                left + 1,
+                top + dropdownHeight - 1,
+                left + dropdownWidth - 1,
+                top + dropdownHeight,
+                outline
             ); //Bottom
             context.drawColoredRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
 
@@ -228,7 +231,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                     str = "<NONE>";
                 }
                 context.drawStringScaledMaxWidth(str.replaceAll("(\n.*)+", " ..."),
-                                                 fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
+                    fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
                 );
                 dropdownY += 12;
             }
@@ -255,21 +258,21 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
                 String line = multilines[multilineIndex];
                 context.drawStringScaledMaxWidth(
-                        line + "§r",
-                        fr,
-                        dragOffsetX + mouseX + 10,
-                        dragOffsetY + mouseY + multilineIndex * 10,
-                        true,
-                        width - 20,
-                        0xffffff | (opacity << 24)
+                    line + "§r",
+                    fr,
+                    dragOffsetX + mouseX + 10,
+                    dragOffsetY + mouseY + multilineIndex * 10,
+                    true,
+                    width - 20,
+                    0xffffff | (opacity << 24)
                 );
             }
 
             int ySize = multilines.length * 10;
 
             context.drawString(fr, "≡",
-                               dragOffsetX + mouseX,
-                               dragOffsetY - 1 + mouseY + ySize / 2 - 4, 0xffffff, true
+                dragOffsetX + mouseX,
+                dragOffsetY - 1 + mouseY + ySize / 2 - 4, 0xffffff, true
             );
         }
     }
@@ -283,10 +286,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         }
         var click = mouseEvent instanceof MouseEvent.Click ? (MouseEvent.Click) mouseEvent : null;
         if (click != null &&
-                !click.getMouseState() && !dropdownOpen &&
-                dragStartIndex >= 0 && click.getMouseButton() == 0 &&
-                mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
-                mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
+            !click.getMouseState() && !dropdownOpen &&
+            dragStartIndex >= 0 && click.getMouseButton() == 0 &&
+            mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
+            mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
             if (canDeleteRightNow()) {
                 activeText.remove(dragStartIndex);
                 saveChanges();
@@ -301,8 +304,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             dragStartIndex = -1;
             if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
         } else if (currentDragging != null &&
-                mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
-                mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
+            mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
+            mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
             if (trashHoverTime < 0 && canDeleteRightNow()) trashHoverTime = System.currentTimeMillis();
         } else if (!canDeleteRightNow()) {
             trashHoverTime = Long.MAX_VALUE;
@@ -324,7 +327,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 int dropdownHeight = -1 + 12 * remaining.size();
 
                 if (mouseX > left && mouseX < left + dropdownWidth &&
-                        mouseY > top && mouseY < top + dropdownHeight) {
+                    mouseY > top && mouseY < top + dropdownHeight) {
                     int dropdownY = -1;
                     for (Object objectIndex : remaining) {
                         if (mouseY < top + dropdownY + 12) {
@@ -343,8 +346,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             }
 
             if (activeText.size() < exampleText.size() &&
-                    mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-                    mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
+                mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
+                mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
                 dropdownOpen = true;
                 dragOffsetX = mouseX;
                 dragOffsetY = mouseY;
@@ -352,8 +355,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             }
 
             if (click.getMouseButton() == 0 &&
-                    mouseX > x + 5 && mouseX < x + width - 5 &&
-                    mouseY > y + 45 && mouseY < y + height - 6) {
+                mouseX > x + 5 && mouseX < x + width - 5 &&
+                mouseY > y + 45 && mouseY < y + height - 6) {
                 int yOff = 0;
                 int i = 0;
                 for (Object objectIndex : activeText) {

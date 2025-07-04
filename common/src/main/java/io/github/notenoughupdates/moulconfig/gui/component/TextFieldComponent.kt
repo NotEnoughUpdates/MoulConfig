@@ -101,7 +101,8 @@ open class TextFieldComponent(
             (TEXT_PADDING_X + leftPos).toFloat(),
             TEXT_PADDING_Y.toFloat(),
             (TEXT_PADDING_X + rightPos).toFloat(),
-            (context.height - TEXT_PADDING_Y).toFloat()
+            (context.height - TEXT_PADDING_Y).toFloat(),
+            0xFF0000FF.toInt(),
         )
     }
 
@@ -179,18 +180,18 @@ open class TextFieldComponent(
                 }
 
                 KeyboardConstants.backSpace -> {
-                    if (selection == -1) selection = skipCharacters(context.renderContext.isCtrlDown, -1)
+                    if (selection == -1) selection = skipCharacters(context.renderContext.isLogicalCtrlDown, -1)
                     writeText("", context.width)
                     return true
                 }
 
                 KeyboardConstants.delete -> {
-                    if (selection == -1) selection = skipCharacters(context.renderContext.isCtrlDown, 1)
+                    if (selection == -1) selection = skipCharacters(context.renderContext.isLogicalCtrlDown, 1)
                     writeText("", context.width)
                     return true
                 }
 
-                KeyboardConstants.keyC -> if (context.renderContext.isCtrlDown) {
+                KeyboardConstants.keyC -> if (context.renderContext.isLogicalCtrlDown) {
                     IMinecraft.instance.copyToClipboard(
                         getSelection()
                     )
@@ -199,7 +200,7 @@ open class TextFieldComponent(
                     return false
                 }
 
-                KeyboardConstants.keyX -> if (context.renderContext.isCtrlDown) {
+                KeyboardConstants.keyX -> if (context.renderContext.isLogicalCtrlDown) {
                     IMinecraft.instance.copyToClipboard(
                         getSelection()
                     )
@@ -209,14 +210,14 @@ open class TextFieldComponent(
                     return false
                 }
 
-                KeyboardConstants.keyV -> if (context.renderContext.isCtrlDown) {
+                KeyboardConstants.keyV -> if (context.renderContext.isLogicalCtrlDown) {
                     writeText(IMinecraft.instance.copyFromClipboard(), context.width)
                     return true
                 } else {
                     return false
                 }
 
-                KeyboardConstants.keyA -> if (context.renderContext.isCtrlDown) {
+                KeyboardConstants.keyA -> if (context.renderContext.isLogicalCtrlDown) {
                     cursor = text.get().length
                     selection = 0
                     scrollCursorIntoView(context.width)
@@ -301,7 +302,7 @@ open class TextFieldComponent(
     open fun onDirectionalKey(context: GuiImmediateContext, i: Int) {
         if (context.renderContext.isShiftDown) {
             if (selection == -1) selection = cursor
-            cursor = skipCharacters(context.renderContext.isCtrlDown, i)
+            cursor = skipCharacters(context.renderContext.isLogicalCtrlDown, i)
         } else {
             if (selection != -1) {
                 cursor = if (i < 0)
@@ -310,7 +311,7 @@ open class TextFieldComponent(
                     max(cursor, selection)
                 selection = -1
             } else {
-                cursor = skipCharacters(context.renderContext.isCtrlDown, i)
+                cursor = skipCharacters(context.renderContext.isLogicalCtrlDown, i)
             }
         }
         scrollCursorIntoView(context.width)

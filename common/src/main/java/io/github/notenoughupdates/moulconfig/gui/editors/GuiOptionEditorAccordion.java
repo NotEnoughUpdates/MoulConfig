@@ -50,7 +50,7 @@ public class GuiOptionEditorAccordion extends ComponentEditor {
         @Override
         public void render(@NotNull GuiImmediateContext context) {
             context.getRenderContext().drawDarkRect(0, 0, context.getWidth(), context.getHeight(), true);
-            context.getRenderContext().drawOpenCloseTriangle(accordionToggled, 6, 6, 13.5F - 6F, 13.5F - 6F);
+            context.getRenderContext().drawOpenCloseTriangle(accordionToggled, 6, 6, 13.5F - 6F, 13.5F - 6F, -1);
             context.getRenderContext().drawStringScaledMaxWidth(option.getName(), context.getRenderContext().getMinecraft().getDefaultFontRenderer(), 18, 6, false, context.getWidth() - 18, 0xc0c0c0);
         }
 

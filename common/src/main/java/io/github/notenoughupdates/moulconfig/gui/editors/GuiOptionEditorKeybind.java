@@ -42,32 +42,28 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                 RenderContext renderContext = context.getRenderContext();
                 int width = getWidth();
 
-                renderContext.color(1, 1, 1, 1);
-                renderContext.bindTexture(GuiTextures.BUTTON);
-                renderContext.drawTexturedRect(width / 6 - 24, height - 7 - 14, 48, 16);
+                renderContext.drawTexturedRect(GuiTextures.BUTTON, width / 6 - 24, height - 7 - 14, 48, 16);
 
 
                 String keyName = IMinecraft.instance.getKeyName((int) option.get());
                 String text = editingKeycode ? "> " + keyName + " <" : keyName;
                 renderContext.drawStringCenteredScaledMaxWidth(text,
-                                                               IMinecraft.instance.getDefaultFontRenderer(),
-                                                               width / 6, height - 7 - 6,
-                                                               false, 38, 0xFF303030
+                    IMinecraft.instance.getDefaultFontRenderer(),
+                    width / 6, height - 7 - 6,
+                    false, 38, 0xFF303030
                 );
 
                 int resetX = width / 6 - 24 + 48 + 3;
                 int resetY = height - 7 - 14 + 3;
 
-                renderContext.bindTexture(GuiTextures.RESET);
-                renderContext.color(1, 1, 1, 1);
-                renderContext.drawTexturedRect(resetX, resetY, 10, 11);
+                renderContext.drawTexturedRect(GuiTextures.RESET, resetX, resetY, 10, 11);
                 int mouseX = context.getMouseX();
                 int mouseY = context.getMouseY();
                 if (mouseX >= resetX && mouseX < resetX + 10 &&
                     mouseY >= resetY && mouseY < resetY + 11) {
-                    renderContext.scheduleDrawTooltip(Collections.singletonList(
-                        "§cReset to Default"
-                    ));
+                    renderContext.scheduleDrawTooltip(
+                        context.getMouseX(), context.getMouseY(),
+                        Collections.singletonList("§cReset to Default"));
                 }
             }
 

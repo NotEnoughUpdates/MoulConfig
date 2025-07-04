@@ -53,7 +53,7 @@ data class AlignComponent(
 
     override fun render(context: GuiImmediateContext) {
         context.renderContext.pushMatrix()
-        context.renderContext.translate(getChildOffsetX(context).toFloat(), getChildOffsetY(context).toFloat(), 0f)
+        context.renderContext.translate(getChildOffsetX(context).toFloat(), getChildOffsetY(context).toFloat())
         child.render(getChildContext(context))
         context.renderContext.popMatrix()
     }

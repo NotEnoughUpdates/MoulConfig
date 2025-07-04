@@ -10,7 +10,7 @@ import java.io.Closeable
 @ApiStatus.NonExtendable
 abstract class DynamicTextureReference : Closeable {
     /**
-     * An opaque reference to this dynamic texture. Can be used with [RenderContext.bindTexture].
+     * An opaque reference to this dynamic texture. Can be used with [RenderContext.drawTexturedRect].
      */
     abstract val identifier: MyResourceLocation
 
@@ -23,7 +23,7 @@ abstract class DynamicTextureReference : Closeable {
         wasDestroyed = true
     }
 
-    abstract fun update(bufferedImage: BufferedImage)
+    abstract fun update(bufferedImage: BufferedImage) // TODO: check why this is broken on 1.21
 
     protected abstract fun doDestroy()
 
@@ -33,7 +33,7 @@ abstract class DynamicTextureReference : Closeable {
         destroy()
     }
 
-    protected fun finalize() {
+    protected fun finalize() { // TODO: replace with a reference queue and Warnings.warn
         if (!wasDestroyed)
             IMinecraft.instance.getLogger("DynamicTextureReference").warn("Dangling DynamicTextureReference")
     }
