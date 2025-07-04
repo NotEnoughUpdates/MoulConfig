@@ -85,11 +85,6 @@ public interface RenderContext {
         popMatrix();
     }
 
-    /**
-     * Dynamically load a buffered image into a minecraft bindable texture. The returned resource location must be destroyed.
-     */
-    @NotNull DynamicTextureReference generateDynamicTexture(@NotNull BufferedImage image);
-
     default void drawVerticalLine(int x, int startY, int endY, int color) {
         if (startY > endY) {
             int temp = startY;
@@ -134,24 +129,22 @@ public interface RenderContext {
 
     void invertedRect(float left, float top, float right, float bottom, int additiveColor); // TODO: worth a consideration (is this a stable API)???
 
-    void setTextureFilter(@NotNull MyResourceLocation texture, @NotNull TextureFilter filter); // TODO: is this correct? should this be part of the draw texture call instead?
-
     default void drawTexturedRect(@NotNull MyResourceLocation texture, float x, float y, float width, float height) {
         drawTexturedRect(texture, x, y, width, height, 0f, 0f, 1f, 1f);
     }
 
     default void drawTexturedRect(@NotNull MyResourceLocation texture, float x, float y, float width, float height, float u1, float v1, float u2, float v2) {
-        drawTexturedTintedRect(texture, x, y, width, height, u1, v1, u2, v2, -1);
+        drawTexturedTintedRect(texture, x, y, width, height, u1, v1, u2, v2, -1, TextureFilter.NEAREST);
     }
 
     default void drawTexturedTintedRect(@NotNull MyResourceLocation texture, float x, float y, float width, float height, int color) {
-        drawTexturedTintedRect(texture, x, y, width, height, 0, 0, 1, 1, color);
+        drawTexturedTintedRect(texture, x, y, width, height, 0, 0, 1, 1, color, TextureFilter.NEAREST);
     }
 
     void drawTexturedTintedRect(@NotNull MyResourceLocation texture,
                                 float x, float y, float width, float height,
                                 float u1, float v1, float u2, float v2,
-                                int color);
+                                int color, TextureFilter filter);
 
     default void drawNinePatch(@NotNull NinePatch<@NotNull MyResourceLocation> patch, float x, float y, int width, int height) {
         pushMatrix();
@@ -168,11 +161,12 @@ public interface RenderContext {
 
     void drawGradientRect(int zLevel, int left, int top, int right, int bottom, int startColor, int endColor);
 
-    void pushScissor(int left, int top, int right, int bottom); // TODO:
+    void pushScissor(int left, int top, int right, int bottom); // TODO: scissors should probably be pushed relative, like everything else.
 
     void popScissor();
 
-    void clearScissor();
+    @Deprecated
+    void clearScissor();  // TODO: this sort of escapes out of the current context.
 
     void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable String overlayText);
 

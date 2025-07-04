@@ -22,6 +22,8 @@ package io.github.notenoughupdates.moulconfig.internal;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -36,7 +38,7 @@ public class Warnings {
     public static String testPackage = basePackage + "test.";
     public static HashSet<Object> warnedObjects = new HashSet<>();
 
-    public static void warnOnce(String warningText, Object... warningBucketEntries) {
+    public static void warnOnce(@NotNull String warningText, Object @NotNull ... warningBucketEntries) {
         if (!shouldWarn) return;
         List<Object> warningBucket = Arrays.asList(warningBucketEntries);
         if (warnedObjects.contains(warningBucket)) return;
@@ -44,7 +46,13 @@ public class Warnings {
         warn0(warningText, 3);
     }
 
-    private static void warn0(String warningText, int depth) {
+    public static void warnAt(@NotNull String warningText, @NotNull StackTraceElement firstOffender, @Nullable StackTraceElement modCall) {
+        logger.warn("Warning: " + warningText + " at " + firstOffender + " called by " + modCall);
+        if (shouldCrash)
+            throw new RuntimeException(warningText);
+    }
+
+    private static void warn0(@NotNull String warningText, int depth) {
         StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
         int i = 0;
         StackTraceElement modCall = null;
@@ -58,16 +66,14 @@ public class Warnings {
             modCall = stackTraceElement;
             break;
         }
-        logger.warn("Warning: " + warningText + " at " + stackTrace[depth] + " called by " + modCall);
-        if (shouldCrash)
-            throw new RuntimeException(warningText);
+        warnAt(warningText, stackTrace[depth], modCall);
     }
 
-    public static void warn(String warningText, int depth) {
+    public static void warn(@NotNull String warningText, int depth) {
         if (shouldWarn) warn0(warningText, depth);
     }
 
-    public static void warn(String warningText) {
+    public static void warn(@NotNull String warningText) {
         warn(warningText, 4);
     }
 }

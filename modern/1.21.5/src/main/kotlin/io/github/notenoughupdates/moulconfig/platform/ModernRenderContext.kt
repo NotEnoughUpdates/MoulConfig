@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.DepthTestFunction
 import com.mojang.blaze3d.platform.LogicOp
 import com.mojang.blaze3d.vertex.VertexFormat
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
@@ -53,37 +54,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     val mouse = MinecraftClient.getInstance().mouse
     val window = MinecraftClient.getInstance().window
-
-    fun NativeImageBackedTexture.setData(img: BufferedImage) {
-        for (i in (0 until img.width)) {
-            for (j in (0 until img.height)) {
-                val argb = img.getRGB(i, j)
-                image!!.setColorArgb(i, j, argb)
-            }
-        }
-    }
-
-    override fun generateDynamicTexture(img: BufferedImage): DynamicTextureReference {
-        val id = Identifier.of("moulconfig", "dynamic/${ThreadLocalRandom.current().nextLong()}")
-        val texture = NativeImageBackedTexture(id.path, img.width, img.height, true)
-        texture.setData(img)
-        texture.upload()
-        MinecraftClient.getInstance().textureManager.registerTexture(id, texture)
-        return object : DynamicTextureReference() {
-            override fun update(bufferedImage: BufferedImage) {
-                texture.setData(img)
-                texture.upload()
-            }
-
-            override val identifier: MyResourceLocation
-                get() = MoulConfigPlatform.fromIdentifier(id)
-
-            override fun doDestroy() {
-                MinecraftClient.getInstance().textureManager.destroyTexture(id)
-            }
-        }
-    }
-
 
     override fun pushMatrix() {
         drawContext.matrices.push()
@@ -149,19 +119,25 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         }
     }
 
-    override fun setTextureFilter(texture: MyResourceLocation, filter: TextureFilter) {
-        // TODO: implement this in pipelines (and also switch this to just be an argument in draw textured quad)
-    }
-
-
     override fun drawTexturedTintedRect(
         texture: MyResourceLocation,
         x: Float, y: Float,
         width: Float, height: Float,
         u1: Float, v1: Float, u2: Float, v2: Float,
-        color: Int
+        color: Int, filter: TextureFilter,
     ) { // TODO: transform this into a class
+        FilterAssertionCache.assertTextureFilter(texture, filter)
         drawContext.draw {
+            MinecraftClient.getInstance()
+                .textureManager
+                .getTexture(MoulConfigPlatform.fromMyResourceLocation(texture))
+                .setFilter(
+                    when (filter) {
+                        TextureFilter.LINEAR -> true
+                        TextureFilter.NEAREST -> false
+                    },
+                    false
+                )
             val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
             val bufferBuilder = it.getBuffer(RenderLayer.getGuiTextured(MoulConfigPlatform.fromMyResourceLocation(texture)))
             bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1)
@@ -238,7 +214,9 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         drawContext.drawTooltip(
             MinecraftClient.getInstance().textRenderer,
             tooltipLines.map { Text.literal(it) },
-            // TODO: improve this somewhat
+            // TODO: we should improve render context somewhat
+            //       and yet you participate in it.
+            //       i am very smart
             x,
             y,
         )

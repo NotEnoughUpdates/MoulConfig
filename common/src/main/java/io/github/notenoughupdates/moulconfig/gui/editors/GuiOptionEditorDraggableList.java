@@ -144,11 +144,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             int deleteX = x + width / 6 + 27;
             int deleteY = y + 45 - 7 - 13;
             int color = ColourUtil.packARGB(1, greenBlue, greenBlue, 1);
-            renderContext.setTextureFilter(GuiTextures.DELETE, TextureFilter.NEAREST);
             renderContext.drawTexturedTintedRect(GuiTextures.DELETE,
                 deleteX, deleteY, 11, 14,
                 0, 0, 1, 1,
-                color
+                color,TextureFilter.NEAREST
             );
             // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
             if (lastMousePosition != null && currentDragging == null &&

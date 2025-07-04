@@ -6,6 +6,7 @@ import io.github.notenoughupdates.moulconfig.gui.GuiElement
 import io.github.notenoughupdates.moulconfig.internal.MCLogger
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import org.jetbrains.annotations.ApiStatus
+import java.awt.image.BufferedImage
 import java.io.InputStream
 import java.util.*
 
@@ -18,6 +19,15 @@ interface IMinecraft {
     fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream
     fun getLogger(label: String): MCLogger
 
+    /**
+     * @return if the [resourceLocation] is one that is only temporarily used as a generated target by [generateDynamicTexture].
+     */
+    fun isGeneratedSentinel(resourceLocation: MyResourceLocation): Boolean
+
+    /**
+     * Dynamically load a buffered image into a minecraft bindable texture. The returned resource location must be destroyed.
+     */
+    fun generateDynamicTexture(img: BufferedImage): DynamicTextureReference
     val mouseX: Int
     val mouseY: Int
     val mouseXHF: Double

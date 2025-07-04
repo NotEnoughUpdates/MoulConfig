@@ -24,7 +24,6 @@ import io.github.notenoughupdates.moulconfig.ChromaColour;
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.DynamicTextureReference;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
-import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.common.TextureFilter;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
@@ -141,12 +140,12 @@ public class ColorSelectComponent extends GuiComponent {
     private static DynamicTextureReference brightnessSlider;
     private static DynamicTextureReference opacitySliderRef;
 
-    private static DynamicTextureReference loadOrUpdate(RenderContext renderContext, DynamicTextureReference ref, BufferedImage image) {
+    private static DynamicTextureReference loadOrUpdate(DynamicTextureReference ref, BufferedImage image) {
         if (ref != null) ref.destroy();
-        return renderContext.generateDynamicTexture(image);
+        return IMinecraft.instance.generateDynamicTexture(image);
     }
 
-    private DynamicTextureReference getOpacitySlider(RenderContext renderContext, int currentColour) {
+    private DynamicTextureReference getOpacitySlider(int currentColour) {
         BufferedImage bufferedImageOpacity = new BufferedImage(10, 64, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < 10; x++) {
             for (int y = 0; y < 64; y++) {
@@ -156,10 +155,10 @@ public class ColorSelectComponent extends GuiComponent {
                 bufferedImageOpacity.setRGB(x, y, rgb);
             }
         }
-        return opacitySliderRef = loadOrUpdate(renderContext, opacitySliderRef, bufferedImageOpacity);
+        return opacitySliderRef = loadOrUpdate(opacitySliderRef, bufferedImageOpacity);
     }
 
-    private DynamicTextureReference getBrightnessSlider(RenderContext renderContext) {
+    private DynamicTextureReference getBrightnessSlider() {
         BufferedImage bufferedImageValue = new BufferedImage(10, 64, BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < 10; x++) {
             for (int y = 0; y < 64; y++) {
@@ -169,10 +168,10 @@ public class ColorSelectComponent extends GuiComponent {
                 bufferedImageValue.setRGB(x, y, rgb);
             }
         }
-        return brightnessSlider = loadOrUpdate(renderContext, brightnessSlider, bufferedImageValue);
+        return brightnessSlider = loadOrUpdate(brightnessSlider, bufferedImageValue);
     }
 
-    private DynamicTextureReference getHueWheelImage(RenderContext renderContext, float brightness) {
+    private DynamicTextureReference getHueWheelImage(float brightness) {
         // TODO cache this image if parameters havent changed.
         BufferedImage bufferedImage = new BufferedImage(288, 288, BufferedImage.TYPE_INT_ARGB);
         float borderRadius = 0.05f;
@@ -201,7 +200,7 @@ public class ColorSelectComponent extends GuiComponent {
                 }
             }
         }
-        return hueWheelImage = loadOrUpdate(renderContext, hueWheelImage, bufferedImage);
+        return hueWheelImage = loadOrUpdate(hueWheelImage, bufferedImage);
     }
 
     @Override
@@ -221,7 +220,7 @@ public class ColorSelectComponent extends GuiComponent {
         if (valueSlider) {
             valueOffset = 15;
 
-            renderContext.drawTexturedRect(getBrightnessSlider(renderContext).getIdentifier(), 5 + 64 + 5, 5, 10, 64);
+            renderContext.drawTexturedRect(getBrightnessSlider().getIdentifier(), 5 + 64 + 5, 5, 10, 64);
         }
 
         int opacityOffset = 0;
@@ -233,7 +232,7 @@ public class ColorSelectComponent extends GuiComponent {
 
 
             // Render actual color slider
-            renderContext.drawTexturedRect(getOpacitySlider(renderContext, currentColour).getIdentifier(), 5 + 64 + 5 + valueOffset, 5, 10, 64);
+            renderContext.drawTexturedRect(getOpacitySlider(currentColour).getIdentifier(), 5 + 64 + 5 + valueOffset, 5, 10, 64);
         }
 
 
@@ -290,11 +289,21 @@ public class ColorSelectComponent extends GuiComponent {
             );
         }
 
-        renderContext.setTextureFilter(getHueWheelImage(renderContext, hsv[2]).getIdentifier(), TextureFilter.LINEAR);
-        renderContext.drawTexturedRect(getHueWheelImage(renderContext, hsv[2]).getIdentifier(), 1, 1, 72, 72);
+        renderContext.drawTexturedTintedRect(
+            getHueWheelImage(hsv[2]).getIdentifier(),
+            1, 1, 72, 72,
+            0, 0, 1, 1,
+            -1,
+            TextureFilter.LINEAR
+        );
 
-        renderContext.setTextureFilter(GuiTextures.COLOUR_SELECTOR_DOT, TextureFilter.LINEAR);
-        renderContext.drawTexturedRect(GuiTextures.COLOUR_SELECTOR_DOT, 5 + 32 + selx - 4, 5 + 32 + sely - 4, 8, 8);
+        renderContext.drawTexturedTintedRect(
+            GuiTextures.COLOUR_SELECTOR_DOT,
+            5 + 32 + selx - 4, 5 + 32 + sely - 4, 8, 8,
+            0, 0, 1, 1,
+            -1,
+            TextureFilter.LINEAR
+        );
 
         DrawContextExt.drawStringCenteredScalingDownWithMaxWidth(
             renderContext,
