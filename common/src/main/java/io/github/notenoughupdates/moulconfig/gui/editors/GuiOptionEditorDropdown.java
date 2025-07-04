@@ -37,17 +37,27 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
     private Enum<?>[] constants;
     private String valuesForSearch;
 
+    public GuiOptionEditorDropdown(ProcessedOption option, String[] values) {
+        this(option, values, false);
+    }
+
     public GuiOptionEditorDropdown(
         ProcessedOption option,
-        String[] values
+        String[] values,
+        boolean forceGivenValues
     ) {
         super(option);
         Class<?> clazz = (Class<?>) option.getType();
         if (Enum.class.isAssignableFrom(clazz)) {
             constants = (Enum<?>[]) (clazz).getEnumConstants();
-            this.values = new String[constants.length];
-            for (int i = 0; i < constants.length; i++) {
-                this.values[i] = constants[i].toString();
+            if (forceGivenValues) {
+                assert values.length == constants.length;
+                this.values = values;
+            } else {
+                this.values = new String[constants.length];
+                for (int i = 0; i < constants.length; i++) {
+                    this.values[i] = constants[i].toString();;
+                }
             }
         } else {
             this.values = values;
