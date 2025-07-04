@@ -175,7 +175,17 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
             if (mouseEvent instanceof MouseEvent.Click && ((MouseEvent.Click) mouseEvent).getMouseState() && context.isHovered()) {
                 if (!isOverlayOpen()) {
                     componentWidth = context.getWidth();
-                    openOverlay(dropdownOverlay, context.getRenderOffsetX(), context.getRenderOffsetY());
+                    //Clamp the Y so that the dropdown can't go off the screen
+                    int scaledHeight = context.getRenderContext().getMinecraft().getScaledHeight();
+                    int clampedY;
+
+                    if (context.getRenderOffsetY() + dropdownOverlay.getHeight() > scaledHeight) {
+                        clampedY = scaledHeight - dropdownOverlay.getHeight();
+                    } else {
+                        clampedY = context.getRenderOffsetY();
+                    }
+
+                    openOverlay(dropdownOverlay, context.getRenderOffsetX(), clampedY);
                 }
                 return true;
             }
