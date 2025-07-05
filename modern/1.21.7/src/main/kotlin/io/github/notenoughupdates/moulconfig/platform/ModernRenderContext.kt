@@ -239,7 +239,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
     override fun drawOnTop(layer: Layer, scissorBehaviour: RenderContext.ScissorBehaviour, later: Consumer<RenderContext>) {
         pushMatrix()
         if (scissorBehaviour == RenderContext.ScissorBehaviour.ESCAPE) {
-            pushScissor(0, 0, minecraft.scaledWidth, minecraft.scaledHeight)
+            pushRawScissor(0, 0, minecraft.scaledWidth, minecraft.scaledHeight)
         }
         drawContext.matrices.translate(0F, 0F, layer.sortIndex * 200F)
         later.accept(this)

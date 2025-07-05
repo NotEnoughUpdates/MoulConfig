@@ -206,9 +206,9 @@ public interface RenderContext {
     void drawGradientRect(int zLevel, int left, int top, int right, int bottom, int startColor, int endColor);
 
     /**
-     * push a scissor rectangle, clamped to the current scissor rectangle. (right now relative to the screen, but should be relative to the current translation, TODO).
+     * push a scissor rectangle, clamped to the current scissor rectangle, relative to the current render position.
      */
-    void pushScissor(int left, int top, int right, int bottom); // TODO: scissors should probably be pushed relative, like everything else.
+    void pushScissor(int left, int top, int right, int bottom);
 
     /**
      * push a raw scissor rectangle. this can be used to widen the current scissor view, and is relative to the screen.

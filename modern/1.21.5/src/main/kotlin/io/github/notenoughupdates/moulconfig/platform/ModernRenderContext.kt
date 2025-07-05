@@ -184,10 +184,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun pushScissor(left: Int, top: Int, right: Int, bottom: Int) {
-        // Do not use drawContext.enableScissor() since that transform coords // TODO: update when changing the pushScissor calls
-        // In order to be compatible with 1.8.9, this method does not do that.
-        drawContext.scissorStack.push(ScreenRect(left, top, right - left, bottom - top))
-        refreshScissor()
+        drawContext.enableScissor(left, top, right, bottom)
     }
 
     private fun refreshScissor() {
