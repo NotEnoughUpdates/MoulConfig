@@ -9,12 +9,21 @@ import java.util.Arrays
 
 class TestCategoryA {
 
-    @ConfigOption(name ="Open Wide", desc= "Use a wider config menu")
+    @ConfigOption(name = "Open Wide", desc = "Use a wider config menu")
     @ConfigEditorBoolean
     var isWide: Boolean = false
+
     @ConfigOption(name = "Test Option", desc = "Test toggle")
     @ConfigEditorBoolean
     var shouldTestToggle: Boolean = false
+
+    @ConfigOption(
+        name = "Test Option 2",
+        desc = "Test toggle 2. §eWith a longer description " +
+            "that is also colored so that color can be tested in the config editor"
+    )
+    @ConfigEditorBoolean
+    var shouldTestToggle2: Boolean = false
 
     @ConfigOption(name = "Pronouns in MoulConfig", desc = "Fuck It")
     @ConfigEditorDropdown
@@ -120,17 +129,20 @@ class TestCategoryA {
     val runnable = Runnable {
         println("JRunnable working")
     }
+
     @Expose
     @ConfigOption(name = "Test Runnable", desc = "Test a kotlin.jvm.functions.Function0")
     @ConfigEditorButton(buttonText = "Click me")
     val kRunnable = {
         println("KFunction0 working")
     }
+
     @Expose
     @ConfigOption(name = "Test Runnable", desc = "Test a (ignored) runnable using runnableId to emit a test warning")
     @ConfigEditorButton(
         runnableId = 10,
-        buttonText = "Click me")
+        buttonText = "Click me"
+    )
     val runnableId = Unit
 
 }
