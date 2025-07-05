@@ -5,7 +5,7 @@ import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.text.Text
 
-class GuiElementWrapper(
+open class GuiElementWrapper(
     val guiElement: GuiElement,
 ) : Screen(Text.literal("")) {
     override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {

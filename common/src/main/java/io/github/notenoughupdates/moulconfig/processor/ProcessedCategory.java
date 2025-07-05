@@ -41,16 +41,16 @@ public interface ProcessedCategory extends HasDebugLocation {
     @Nullable String getParentCategoryId();
 
     @Unmodifiable
-    List<ProcessedOption> getOptions();
+    List<? extends ProcessedOption> getOptions();
 
     @Unmodifiable
-    Map<Integer, ProcessedOption> getAccordionAnchors();
+    Map<? extends Integer, ? extends ProcessedOption> getAccordionAnchors();
 
     /**
      * Collect a list of categories into a map that can be used by {@link MoulConfigEditor#MoulConfigEditor(LinkedHashMap, Config)}.
      * Also checks that all ids are unique and all categories with a parent are ordered correctly
      */
-    static <T extends ProcessedCategory> @Unmodifiable LinkedHashMap<String, T> collect(Iterable<T> categories) {
+    static <T extends ProcessedCategory> @Unmodifiable LinkedHashMap<String, T> collect(Iterable<? extends T> categories) {
         var map = new LinkedHashMap<String, T>();
         String lastParentId = null;
         for (T category : categories) {

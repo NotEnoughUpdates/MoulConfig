@@ -25,6 +25,7 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.Social;
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.Layer;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.component.MetaComponent;
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorAccordion;
@@ -366,8 +367,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             (height - openingYSize) / 2,
             openingXSize, openingYSize
         );
-        context.clearScissor();
-        context.pushScissor(
+        context.assertNoScissors();
+        context.pushScissor( // Push opening animation scissors
             (width - openingXSize) / 2,
             (height - openingYSize) / 2,
             (width + openingXSize) / 2,
@@ -407,7 +408,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         /// <editor-fold name="Render categories on the left">
 
-        context.pushScissor(
+        context.pushScissor( // Categories scissors
             0, innerTop + 1,
             width, innerBottom - 1
         );
@@ -476,7 +477,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             innerTop + 6 + (int) (catDist * catBarEnd), 0xff303030
         );
 
-        context.popScissor();
+        context.popScissor(); // Categories scissors
         /// </editor-fold>
 
         context.drawStringCenteredScaledMaxWidth(
@@ -542,7 +543,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         context.drawColoredRect(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1, 0x6008080E); //Middle
 
         /// <editor-fold name="Render options on the right">
-        context.pushScissor(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1);
+        context.pushScissor(innerLeft + 1, innerTop + 1, innerRight - 1, innerBottom - 1); // Options rect scissors
         float barSize = 1;
         int optionY = -optionsScroll.getValue();
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
@@ -620,7 +621,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
-        context.popScissor();
+        context.popScissor(); // Options rect scissors
         /// </editor-fold>
 
         /// <editor-fold name="Render overlays for options on the right">
@@ -666,15 +667,15 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
                     int finalY = innerTop + 5 + optionYOverlay;
                     int finalOptionWidth = optionWidth;
                     // TODO: move overlay to a Layer :)
-                    ContextAware.wrapErrorWithContext(editor, () -> {
+                    context.drawOnTop(Layer.OVERLAY, RenderContext.ScissorBehaviour.ESCAPE, ctx -> ContextAware.wrapErrorWithContext(editor, () -> {
                         editor.renderOverlay(
-                            context,
+                            ctx,
                             finalX,
                             finalY,
                             finalOptionWidth
                         );
                         return null;
-                    });
+                    }));
                 }
                 optionYOverlay += optionHeight + 5;
             }
@@ -720,7 +721,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             }
         }
 
-        context.clearScissor();
+        context.popScissor(); // Opening animation.
+        context.assertNoScissors();
 
         if (tooltipToDisplay != null) {
             context.scheduleDrawTooltip(iMinecraft.getMouseX(), iMinecraft.getMouseY(), tooltipToDisplay);

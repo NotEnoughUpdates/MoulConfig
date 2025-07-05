@@ -140,7 +140,7 @@ public interface RenderContext {
     void drawTexturedTintedRect(@NotNull MyResourceLocation texture,
                                 float x, float y, float width, float height,
                                 float u1, float v1, float u2, float v2,
-                                int color, TextureFilter filter);
+                                int color, @NotNull TextureFilter filter);
 
     class DrawTextureBuilder {
         @NotNull MyResourceLocation texture;
@@ -150,7 +150,7 @@ public interface RenderContext {
         float height;
         float u1 = 0, v1 = 0, u2 = 1, v2 = 1;
         int color = -1;
-        TextureFilter filter = TextureFilter.NEAREST;
+        @NotNull TextureFilter filter = TextureFilter.NEAREST;
 
         public DrawTextureBuilder(@NotNull MyResourceLocation texture, float x, float y, float width, float height) {
             this.texture = texture;
@@ -205,9 +205,19 @@ public interface RenderContext {
 
     void drawGradientRect(int zLevel, int left, int top, int right, int bottom, int startColor, int endColor);
 
+    /**
+     * push a scissor rectangle, clamped to the current scissor rectangle. (right now relative to the screen, but should be relative to the current translation, TODO).
+     */
     void pushScissor(int left, int top, int right, int bottom); // TODO: scissors should probably be pushed relative, like everything else.
 
+    /**
+     * push a raw scissor rectangle. this can be used to widen the current scissor view, and is relative to the screen.
+     */
+    void pushRawScissor(int left, int top, int right, int bottom);
+
     void popScissor();
+
+    void assertNoScissors();
 
     @Deprecated
     void clearScissor();  // TODO: this sort of escapes out of the current context.

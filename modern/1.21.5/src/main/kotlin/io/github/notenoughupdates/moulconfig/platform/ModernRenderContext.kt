@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.LogicOp
 import com.mojang.blaze3d.vertex.VertexFormat
 import io.github.notenoughupdates.moulconfig.common.*
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache
+import io.github.notenoughupdates.moulconfig.internal.Warnings
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
@@ -48,7 +49,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
             )
     }
 
-    val mouse = MinecraftClient.getInstance().mouse
     val window = MinecraftClient.getInstance().window
 
     override fun pushMatrix() {
@@ -121,7 +121,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         width: Float, height: Float,
         u1: Float, v1: Float, u2: Float, v2: Float,
         color: Int, filter: TextureFilter,
-    ) { // TODO: transform this into a class
+    ) {
         FilterAssertionCache.assertTextureFilter(texture, filter)
         drawContext.draw {
             MinecraftClient.getInstance()
@@ -178,15 +178,20 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         drawContext.fillGradient(RenderLayer.getGui(), left, top, right, bottom, startColor, endColor, zLevel)
     }
 
+    override fun pushRawScissor(left: Int, top: Int, right: Int, bottom: Int) {
+        drawContext.scissorStack.stack.addLast(ScreenRect(left, top, right - left, bottom - top))
+        refreshScissor()
+    }
+
     override fun pushScissor(left: Int, top: Int, right: Int, bottom: Int) {
-        // Do not use drawContext.enableScissor() since that transform coords
+        // Do not use drawContext.enableScissor() since that transform coords // TODO: update when changing the pushScissor calls
         // In order to be compatible with 1.8.9, this method does not do that.
         drawContext.scissorStack.push(ScreenRect(left, top, right - left, bottom - top))
         refreshScissor()
     }
 
     private fun refreshScissor() {
-        drawContext.setScissor(drawContext.scissorStack.stack.peek())
+        drawContext.setScissor(drawContext.scissorStack.stack.peekLast())
     }
 
     override fun popScissor() {
@@ -196,6 +201,12 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     override fun clearScissor() {
         drawContext.scissorStack.stack.clear();
         drawContext.setScissor(null)
+    }
+
+    override fun assertNoScissors() {
+        if (!drawContext.scissorStack.stack.isEmpty()) {
+            Warnings.warn("Scissors found despite no scissor assertion", 4)
+        }
     }
 
     override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: String?) {
@@ -229,9 +240,9 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     override fun drawOnTop(layer: Layer, scissorBehaviour: RenderContext.ScissorBehaviour, later: Consumer<RenderContext>) {
         pushMatrix()
         if (scissorBehaviour == RenderContext.ScissorBehaviour.ESCAPE) {
-            pushScissor(0, 0, minecraft.scaledWidth, minecraft.scaledHeight)
+            pushRawScissor(0, 0, minecraft.scaledWidth, minecraft.scaledHeight)
         }
-        drawContext.matrices.translate(0F, 0F, layer.sortIndex * 200F)
+        drawContext.matrices.translate(0F, 0F, layer.sortIndex.toFloat())
         later.accept(this)
         if (scissorBehaviour == RenderContext.ScissorBehaviour.ESCAPE) {
             popScissor()
