@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.platform
 
 import io.github.notenoughupdates.moulconfig.common.ClickType
+import io.github.notenoughupdates.moulconfig.common.DynamicTextureReference
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer
 import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
@@ -16,13 +17,16 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.glfw.GLFW
+import java.awt.image.BufferedImage
 import java.io.InputStream
+import java.util.concurrent.ThreadLocalRandom
 
 
 class MoulConfigPlatform : IMinecraft {
@@ -37,7 +41,6 @@ class MoulConfigPlatform : IMinecraft {
 
         lateinit var instance: MoulConfigPlatform
             private set
-        var boundTexture: Identifier? = null
         fun fromIdentifier(identifier: Identifier): MyResourceLocation {
             return MyResourceLocation(identifier.namespace, identifier.path)
         }
@@ -49,9 +52,38 @@ class MoulConfigPlatform : IMinecraft {
 
     override val isDevelopmentEnvironment: Boolean
         get() = FabricLoader.getInstance().isDevelopmentEnvironment
+    fun NativeImageBackedTexture.setData(img: BufferedImage) {
+        for (i in (0 until img.width)) {
+            for (j in (0 until img.height)) {
+                val argb = img.getRGB(i, j)
+                image!!.setColorArgb(i, j, argb)
+            }
+        }
+    }
 
-    override fun bindTexture(resourceLocation: MyResourceLocation) {
-        boundTexture = fromMyResourceLocation(resourceLocation)
+    override fun generateDynamicTexture(img: BufferedImage): DynamicTextureReference {
+        val texture = NativeImageBackedTexture(img.width, img.height, true)
+        texture.setData(img)
+        texture.upload()
+        val id = Identifier.of("moulconfig", "dynamic/${ThreadLocalRandom.current().nextLong()}")
+        MinecraftClient.getInstance().textureManager.registerTexture(id, texture)
+        return object : DynamicTextureReference() {
+            override fun update(bufferedImage: BufferedImage) {
+                texture.setData(img)
+                texture.upload()
+            }
+
+            override val identifier: MyResourceLocation
+                get() = MoulConfigPlatform.fromIdentifier(id)
+
+            override fun doDestroy() {
+                MinecraftClient.getInstance().textureManager.destroyTexture(id)
+            }
+        }
+    }
+
+    override fun isGeneratedSentinel(resourceLocation: MyResourceLocation): Boolean {
+        return resourceLocation.root == "moulconfig" && resourceLocation.path.startsWith("dynamic/")
     }
 
     override fun getLogger(label: String): MCLogger {
