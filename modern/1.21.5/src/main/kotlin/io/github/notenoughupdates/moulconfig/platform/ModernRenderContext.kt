@@ -12,14 +12,10 @@ import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.ScreenRect
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexFormats
-import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
-import net.minecraft.util.Identifier
 import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
-import java.awt.image.BufferedImage
-import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Consumer
 
 class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
@@ -186,6 +182,10 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         // Do not use drawContext.enableScissor() since that transform coords
         // In order to be compatible with 1.8.9, this method does not do that.
         drawContext.scissorStack.push(ScreenRect(left, top, right - left, bottom - top))
+        refreshScissor()
+    }
+
+    private fun refreshScissor() {
         drawContext.setScissor(drawContext.scissorStack.stack.peek())
     }
 
@@ -226,10 +226,16 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         // Left blank: [drawOnTop] renders directly.
     }
 
-    override fun drawOnTop(layer: Layer, later: Consumer<RenderContext>) {
+    override fun drawOnTop(layer: Layer, scissorBehaviour: RenderContext.ScissorBehaviour, later: Consumer<RenderContext>) {
         pushMatrix()
+        if (scissorBehaviour == RenderContext.ScissorBehaviour.ESCAPE) {
+            pushScissor(0, 0, minecraft.scaledWidth, minecraft.scaledHeight)
+        }
         drawContext.matrices.translate(0F, 0F, layer.sortIndex * 200F)
         later.accept(this)
+        if (scissorBehaviour == RenderContext.ScissorBehaviour.ESCAPE) {
+            popScissor()
+        }
         popMatrix()
     }
 }

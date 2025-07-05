@@ -23,17 +23,16 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
+import io.github.notenoughupdates.moulconfig.common.TextureFilter;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.internal.KeybindHelper;
-import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import kotlin.Pair;
+import lombok.val;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Collections;
 
@@ -54,9 +53,7 @@ public class GuiOptionEditorKeybindL extends GuiOptionEditor {
 
         int height = getHeight();
 
-        GlStateManager.color(1, 1, 1, 1);
-        IMinecraft.instance.bindTexture(GuiTextures.BUTTON);
-        RenderUtils.drawTexturedRect(x + width / 6 - 24, y + height - 7 - 14, 48, 16);
+        renderContext.drawTexturedRect(GuiTextures.BUTTON, x + width / 6 - 24, y + height - 7 - 14, 48, 16);
 
         String keyName = KeybindHelper.getKeyName((int) option.get());
         String text = editingKeycode ? "> " + keyName + " <" : keyName;
@@ -68,17 +65,17 @@ public class GuiOptionEditorKeybindL extends GuiOptionEditor {
 
         int resetX = x + width / 6 - 24 + 48 + 3;
         int resetY = y + height - 7 - 14 + 3;
-
-        IMinecraft.instance.bindTexture(GuiTextures.RESET);
-        GlStateManager.color(1, 1, 1, 1);
-        RenderUtils.drawTexturedRect(resetX, resetY, 10, 11, GL11.GL_NEAREST);
+        val mc = IMinecraft.instance;
+        renderContext.drawComplexTexture(GuiTextures.RESET, resetX, resetY, 10, 11, it -> it.filter(TextureFilter.NEAREST));
         // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
         if (lastMousePosition != null &&
             lastMousePosition.getFirst() >= resetX && lastMousePosition.getFirst() < resetX + 10 &&
             lastMousePosition.getSecond() >= resetY && lastMousePosition.getSecond() < resetY + 11) {
-            renderContext.scheduleDrawTooltip(Collections.singletonList(
-                "§cReset to Default"
-            ));
+            renderContext.scheduleDrawTooltip(
+                mc.getMouseX(), mc.getMouseY(),
+                Collections.singletonList(
+                    "§cReset to Default"
+                ));
         }
     }
 

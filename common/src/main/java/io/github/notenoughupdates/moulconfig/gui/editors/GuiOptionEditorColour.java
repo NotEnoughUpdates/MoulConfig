@@ -61,9 +61,9 @@ public class GuiOptionEditorColour extends ComponentEditor {
             @Override
             public void render(@NotNull GuiImmediateContext context) {
                 int argb = get().getEffectiveColour().getRGB();
-                context.getRenderContext().drawTexturedTintedRect(
+                context.getRenderContext().drawComplexTexture(
                     GuiTextures.BUTTON_WHITE, 0f, 0f, context.getWidth(), context.getHeight(),
-                    ColourUtil.makeOpaque(argb)
+                    it -> it.color(ColourUtil.makeOpaque(argb))
                 );
             }
 

@@ -289,20 +289,16 @@ public class ColorSelectComponent extends GuiComponent {
             );
         }
 
-        renderContext.drawTexturedTintedRect(
+        renderContext.drawComplexTexture(
             getHueWheelImage(hsv[2]).getIdentifier(),
             1, 1, 72, 72,
-            0, 0, 1, 1,
-            -1,
-            TextureFilter.LINEAR
+            it -> it.filter(TextureFilter.LINEAR)
         );
 
-        renderContext.drawTexturedTintedRect(
+        renderContext.drawComplexTexture(
             GuiTextures.COLOUR_SELECTOR_DOT,
             5 + 32 + selx - 4, 5 + 32 + sely - 4, 8, 8,
-            0, 0, 1, 1,
-            -1,
-            TextureFilter.LINEAR
+            it -> it.filter(TextureFilter.LINEAR)
         );
 
         DrawContextExt.drawStringCenteredScalingDownWithMaxWidth(
