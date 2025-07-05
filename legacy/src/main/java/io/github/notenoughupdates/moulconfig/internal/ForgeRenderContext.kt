@@ -67,6 +67,7 @@ class ForgeRenderContext : RenderContext {
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0)
         worldrenderer.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION)
 
+        applyGlobalColor(color)
         require(coordinates.size % 6 == 0)
         for (i in 0 until (coordinates.size / 2)) {
             worldrenderer.pos(coordinates[i * 2].toDouble(), coordinates[i * 2 + 1].toDouble(), 0.0).endVertex()
@@ -116,6 +117,7 @@ class ForgeRenderContext : RenderContext {
     override fun drawTexturedTintedRect(texture: MyResourceLocation, x: Float, y: Float, width: Float, height: Float, u1: Float, v1: Float, u2: Float, v2: Float, color: Int, filter: TextureFilter) {
         FilterAssertionCache.assertTextureFilter(texture, filter)
         applyGlobalColor(color)
+        Minecraft.getMinecraft().textureManager.bindTexture(ForgeMinecraft.fromMyResourceLocation(texture))
         RenderUtils.drawTexturedRect(
             x, y,
             width, height,
