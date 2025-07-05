@@ -33,6 +33,22 @@ public class ColourUtil {
         return (color >> ALPHA_SHIFT) & BYTE_MASK;
     }
 
+    public static float unpackARGBRedF(int color) {
+        return unpackARGBRedI(color) / COMPONENT_SIZE_F;
+    }
+
+    public static float unpackARGBGreenF(int color) {
+        return unpackARGBGreenI(color) / COMPONENT_SIZE_F;
+    }
+
+    public static float unpackARGBBlueF(int color) {
+        return unpackARGBBlueI(color) / COMPONENT_SIZE_F;
+    }
+
+    public static float unpackARGBAlphaF(int color) {
+        return unpackARGBAlphaI(color) / COMPONENT_SIZE_F;
+    }
+
     public static int makeOpaque(int argb) {
         return argb | MAX_ALPHA;
     }

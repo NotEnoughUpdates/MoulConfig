@@ -224,7 +224,7 @@ public interface RenderContext {
 
     void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable String overlayText);
 
-    void drawTooltipNow(int x, int y, @NotNull List<String> tooltipLines);
+    void drawTooltipNow(int x, int y, @NotNull List<@NotNull String> tooltipLines);
 
     default void scheduleDrawTooltip(int x, int y, @NotNull List<String> tooltipLines) {
         // TODO: should this do some form of conflict resolution?

@@ -41,6 +41,7 @@ package io.github.notenoughupdates.moulconfig.gui.elements;/*
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
+import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiElement;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
@@ -84,9 +85,8 @@ public class GuiElementBoolean extends GuiElement {
 
     @Override
     public void render() {
-        GlStateManager.color(1, 1, 1, 1);
-        IMinecraft.instance.bindTexture(GuiTextures.TOGGLE_BAR);
-        RenderUtils.drawTexturedRect(x, y, xSize, ySize);
+        RenderContext renderContext = IMinecraft.instance.provideTopLevelRenderContext();
+        renderContext.drawTexturedRect(GuiTextures.TOGGLE_BAR, x, y, xSize, ySize);
 
         MyResourceLocation buttonLoc = GuiTextures.TOGGLE_ON;
         long currentMillis = System.currentTimeMillis();
@@ -133,8 +133,7 @@ public class GuiElementBoolean extends GuiElement {
             buttonLoc = GuiTextures.TOGGLE_THREE;
         }
 
-        IMinecraft.instance.bindTexture(buttonLoc);
-        RenderUtils.drawTexturedRect(x + animation, y, 12, 14);
+        renderContext.drawTexturedRect(buttonLoc, x + animation, y, 12, 14);
     }
 
     @Override

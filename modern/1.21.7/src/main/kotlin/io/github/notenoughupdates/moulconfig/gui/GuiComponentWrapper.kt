@@ -1,6 +1,5 @@
 package io.github.notenoughupdates.moulconfig.gui
 
-import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.platform.ModernRenderContext
 import io.github.notenoughupdates.moulconfig.platform.MoulConfigPlatform
 import net.minecraft.client.MinecraftClient
@@ -26,7 +25,8 @@ open class GuiComponentWrapper(
         val y = (mouse.y * window.scaledHeight.toDouble() / window.height.toDouble()).toInt()
         return GuiImmediateContext(
             ModernRenderContext(
-                drawContext ?: MoulConfigPlatform.makeDrawContext()            ),
+                drawContext ?: MoulConfigPlatform.makeDrawContext()
+            ),
             0, 0,
             window.scaledWidth,
             window.scaledHeight,

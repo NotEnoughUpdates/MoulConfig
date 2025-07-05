@@ -65,7 +65,11 @@ public class GlScissorStack {
 
     private static final LinkedList<Bounds> boundsStack = new LinkedList<>();
 
-    public static void push(int left, int top, int right, int bottom, ScaledResolution scaledResolution) {
+    public static boolean isEmpty() {
+        return boundsStack.isEmpty();
+    }
+
+    public static void push(int left, int top, int right, int bottom, ScaledResolution scaledResolution, boolean bypassInclusion) {
         if (right < left) {
             int temp = right;
             right = left;
@@ -76,7 +80,7 @@ public class GlScissorStack {
             bottom = top;
             top = temp;
         }
-        if (boundsStack.isEmpty()) {
+        if (boundsStack.isEmpty() || bypassInclusion) {
             boundsStack.push(new Bounds(left, top, right, bottom));
         } else {
             boundsStack.push(boundsStack.peek().createSubBound(left, top, right, bottom));

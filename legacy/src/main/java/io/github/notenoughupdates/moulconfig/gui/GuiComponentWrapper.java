@@ -90,7 +90,7 @@ public class GuiComponentWrapper extends GuiScreen {
             frc,
             0, 0, width, height, mouseX, mouseY, mouseX, mouseY , mouseX, mouseY
         ));
-        frc.doDrawTooltip();
+        frc.renderExtraLayers();
     }
 
     @Override

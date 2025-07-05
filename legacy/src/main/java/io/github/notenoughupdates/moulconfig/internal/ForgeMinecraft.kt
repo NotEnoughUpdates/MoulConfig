@@ -1,20 +1,13 @@
 package io.github.notenoughupdates.moulconfig.internal
 
-import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
-import io.github.notenoughupdates.moulconfig.common.ClickType
-import io.github.notenoughupdates.moulconfig.common.IFontRenderer
-import io.github.notenoughupdates.moulconfig.common.IKeyboardConstants
-import io.github.notenoughupdates.moulconfig.common.IMinecraft
-import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
-import io.github.notenoughupdates.moulconfig.common.RenderContext
+import io.github.notenoughupdates.moulconfig.common.*
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
 import io.github.notenoughupdates.moulconfig.gui.GuiScreenElementWrapper
-import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorDraggableList
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorKeybindL
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorSliderL
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorTextL
@@ -22,6 +15,7 @@ import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.event.ClickEvent
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ChatComponentText
@@ -33,13 +27,10 @@ import org.lwjgl.input.Mouse
 import java.awt.Toolkit
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
+import java.awt.image.BufferedImage
 import java.io.InputStream
 
 class ForgeMinecraft : IMinecraft {
-    override fun bindTexture(resourceLocation: MyResourceLocation) {
-        Minecraft.getMinecraft().textureManager.bindTexture(fromMyResourceLocation(resourceLocation))
-    }
-
     override fun loadResourceLocation(resourceLocation: MyResourceLocation): InputStream {
         return Minecraft.getMinecraft().resourceManager.getResource(fromMyResourceLocation(resourceLocation))
             .inputStream
@@ -67,10 +58,10 @@ class ForgeMinecraft : IMinecraft {
         processor.registerConfigEditor(
             ConfigEditorKeybind::class.java
         ) { processedOption, keybind: ConfigEditorKeybind ->
-	        GuiOptionEditorKeybindL(
-		        processedOption,
-		        keybind.defaultKey
-	        )
+            GuiOptionEditorKeybindL(
+                processedOption,
+                keybind.defaultKey
+            )
         }
         processor.registerConfigEditor(
             ConfigEditorText::class.java
@@ -118,6 +109,32 @@ class ForgeMinecraft : IMinecraft {
                         )
                 )
         )
+    }
+
+    override fun generateDynamicTexture(image: BufferedImage): DynamicTextureReference {
+        val texture = DynamicTexture(image)
+        val res = Minecraft.getMinecraft().textureManager.getDynamicTextureLocation("moulconfigdyn", texture)
+
+        return object : DynamicTextureReference() {
+            override val identifier: MyResourceLocation
+                get() = fromResourceLocation(res)
+
+            override fun update(bufferedImage: BufferedImage) {
+                bufferedImage.getRGB(
+                    0, 0, bufferedImage.width, bufferedImage.height,
+                    texture.textureData, 0, bufferedImage.width
+                )
+                texture.updateDynamicTexture()
+            }
+
+            override fun doDestroy() {
+                Minecraft.getMinecraft().textureManager.deleteTexture(res)
+            }
+        }
+    }
+
+    override fun isGeneratedSentinel(resourceLocation: MyResourceLocation): Boolean {
+        return resourceLocation.root == "moulconfigdyn" // technically this will also start with dynamic/ but i dont control that, so i will just use another namespace smilers
     }
 
     override fun getKeyName(keyCode: Int): String {

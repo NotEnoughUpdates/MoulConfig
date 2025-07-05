@@ -580,7 +580,7 @@ public class GuiElementTextField {
                 );
             } else {
                 if ((options & SCISSOR_TEXT) != 0) {
-                    GlScissorStack.push(x + 5, 0, x + searchBarXSize, scaledresolution.getScaledHeight(), scaledresolution);
+                    GlScissorStack.push(x + 5, 0, x + searchBarXSize, scaledresolution.getScaledHeight(), scaledresolution, false);
                     Minecraft.getMinecraft().fontRendererObj.drawString(StringUtils.chromaStringByColourCode(texts[yOffI]), x + 5,
                         y + (searchBarYSize - 8) / 2 + yOff, customTextColour
                     );

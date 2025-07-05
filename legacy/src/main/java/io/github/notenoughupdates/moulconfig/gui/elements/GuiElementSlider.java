@@ -22,15 +22,13 @@ package io.github.notenoughupdates.moulconfig.gui.elements;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiElement;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
-import io.github.notenoughupdates.moulconfig.internal.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.util.function.Consumer;
 
@@ -80,32 +78,26 @@ public class GuiElementSlider extends GuiElement {
 
         float sliderAmount = Math.max(0, Math.min(1, (value - minValue) / (maxValue - minValue)));
         int sliderAmountI = (int) (width * sliderAmount);
+        RenderContext renderContext = IMinecraft.instance.provideTopLevelRenderContext();
 
-        GlStateManager.color(1f, 1f, 1f, 1f);
-        IMinecraft.instance.bindTexture(GuiTextures.SLIDER_ON_CAP);
-        RenderUtils.drawTexturedRect(x, y, 4, HEIGHT, GL11.GL_NEAREST);
-        IMinecraft.instance.bindTexture(GuiTextures.SLIDER_OFF_CAP);
-        RenderUtils.drawTexturedRect(x + width - 4, y, 4, HEIGHT, GL11.GL_NEAREST);
+        renderContext.drawTexturedRect(GuiTextures.SLIDER_ON_CAP, x, y, 4, HEIGHT);
+        renderContext.drawTexturedRect(GuiTextures.SLIDER_OFF_CAP, x + width - 4, y, 4, HEIGHT);
 
         if (sliderAmountI > 5) {
-            IMinecraft.instance.bindTexture(GuiTextures.SLIDER_ON_SEGMENT);
-            RenderUtils.drawTexturedRect(x + 4, y, sliderAmountI - 4, HEIGHT, GL11.GL_NEAREST);
+            renderContext.drawTexturedRect(GuiTextures.SLIDER_ON_SEGMENT, x + 4, y, sliderAmountI - 4, HEIGHT);
         }
 
         if (sliderAmountI < width - 5) {
-            IMinecraft.instance.bindTexture(GuiTextures.SLIDER_OFF_SEGMENT);
-            RenderUtils.drawTexturedRect(x + sliderAmountI, y, width - 4 - sliderAmountI, HEIGHT, GL11.GL_NEAREST);
+            renderContext.drawTexturedRect(GuiTextures.SLIDER_OFF_SEGMENT, x + sliderAmountI, y, width - 4 - sliderAmountI, HEIGHT);
         }
 
         for (int i = 1; i < 4; i++) {
             int notchX = x + width * i / 4 - 1;
-            IMinecraft.instance.bindTexture(
-                notchX > x + sliderAmountI ? GuiTextures.SLIDER_OFF_NOTCH : GuiTextures.SLIDER_ON_NOTCH);
-            RenderUtils.drawTexturedRect(notchX, y + (HEIGHT - 4) / 2, 2, 4, GL11.GL_NEAREST);
+            renderContext.drawTexturedRect(notchX > x + sliderAmountI ? GuiTextures.SLIDER_OFF_NOTCH : GuiTextures.SLIDER_ON_NOTCH,
+                notchX, y + (HEIGHT - 4) / 2, 2, 4);
         }
 
-        IMinecraft.instance.bindTexture(GuiTextures.SLIDER_BUTTON);
-        RenderUtils.drawTexturedRect(x + sliderAmountI - 4, y, 8, HEIGHT, GL11.GL_NEAREST);
+        renderContext.drawTexturedRect(GuiTextures.SLIDER_BUTTON, x + sliderAmountI - 4, y, 8, HEIGHT);
     }
 
     @Override
