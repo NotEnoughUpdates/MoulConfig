@@ -4,14 +4,20 @@ import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.platform.DepthTestFunction
 import com.mojang.blaze3d.vertex.VertexFormat
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.internal.ColourUtil
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache
+import io.github.notenoughupdates.moulconfig.internal.Rect
 import io.github.notenoughupdates.moulconfig.internal.Warnings
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.ScreenRect
-import net.minecraft.client.render.RenderLayer
+import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner
+import net.minecraft.client.gui.tooltip.TooltipComponent
+import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexFormats
+import net.minecraft.client.texture.TextureSetup
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
 import org.joml.Matrix3x2f
@@ -27,15 +33,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
                 .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                 .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.TRIANGLES)
                 .build()
-        val COLORED_TRIANGLES =
-            RenderLayer.MultiPhase.of(
-                "moulconfig_colored_triangles",
-                RenderLayer.DEFAULT_BUFFER_SIZE,
-                COLORED_TRIANGLES_PIPE,
-                RenderLayer.MultiPhaseParameters.builder()
-
-                    .build(false)
-            )
     }
 
     val window = MinecraftClient.getInstance().window
@@ -67,15 +64,40 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun drawColoredTriangles(color: Int, vararg coordinates: Float) {
         require(coordinates.size % 6 == 0)
-//        drawContext.draw { // TODO
-//            val buf = it.getBuffer(COLORED_TRIANGLES)
-//            val matrix = drawContext.matrices.peek().positionMatrix
-//
-//            for (i in 0 until (coordinates.size / 2)) {
-//                buf.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F)
-//                    .color(color).next()
-//            }
-//        }
+        var rect = Rect.ofDot(coordinates[0].toInt(), coordinates[1].toInt())
+        coordinates.asSequence().chunked(2).forEach { (x, y) ->
+            rect = rect.includePoint(x.toInt(), y.toInt())
+        }
+        val scissor = drawContext.scissorStack.peekLast()
+        val matrix = Matrix3x2f(drawContext.matrices)
+        var bounds = ScreenRect(rect.x, rect.y, rect.w, rect.h)
+        bounds = bounds.transform(matrix)
+        if (scissor != null)
+            bounds = bounds.intersection(bounds) ?: return
+        drawContext.state.addSimpleElement(object : SimpleGuiElementRenderState {
+            override fun setupVertices(vertices: VertexConsumer, depth: Float) {
+                for (i in 0 until (coordinates.size / 2)) {
+                    vertices.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F)
+                        .color(color).next()
+                }
+            }
+
+            override fun pipeline(): RenderPipeline {
+                return COLORED_TRIANGLES_PIPE
+            }
+
+            override fun textureSetup(): TextureSetup {
+                return TextureSetup.empty()
+            }
+
+            override fun scissorArea(): ScreenRect? {
+                return scissor
+            }
+
+            override fun bounds(): ScreenRect? {
+                return bounds
+            }
+        })
     }
 
     override fun drawString(
@@ -86,7 +108,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         color: Int,
         shadow: Boolean
     ) {
-        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, text, x, y, color, shadow)
+        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, text, x, y, ColourUtil.makeOpaque(color), shadow)
     }
 
     override fun drawColoredRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
@@ -94,6 +116,10 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun invertedRect(left: Float, top: Float, right: Float, bottom: Float, additiveColor: Int) {
+        val left = left.toInt()
+        val top = top.toInt()
+        val right = right.toInt()
+        val bottom = bottom.toInt()
         drawContext.fill(RenderPipelines.GUI_INVERT, left, top, right, bottom, -1)
         drawContext.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, left, top, right, bottom, additiveColor)
     }
@@ -120,7 +146,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         drawContext.drawTexturedQuad(
             RenderPipelines.GUI_TEXTURED,
             identifier,
-            x.toInt(), y.toInt(), (x + width).toInt(), (y + width).toInt(),
+            x.toInt(), (x + width).toInt(), y.toInt(), (y + height).toInt(),
             u1, u2, v1, v2,
             color
         )
@@ -191,21 +217,22 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<String?>) {
-        drawContext.drawTooltip(
+        drawContext.drawTooltipImmediately(
             MinecraftClient.getInstance().textRenderer,
-            tooltipLines.map { Text.literal(it) },
+            tooltipLines.map { TooltipComponent.of(Text.literal(it).asOrderedText()) },
+            x, y,
+            HoveredTooltipPositioner.INSTANCE,
+            null,
             // TODO: we should improve render context somewhat
             //       and yet you participate in it.
             //       i am very smart
-            x,
-            y,
         )
     }
 
     override fun renderExtraLayers() {
         var currentLayer = Layer.ROOT
         while (true) {
-            val nextLayer = queuedLayers.ceilingEntry(currentLayer) ?: break
+            val nextLayer = queuedLayers.ceilingEntry(currentLayer.next()) ?: break
             currentLayer = nextLayer.key
             val draws = nextLayer.value
             for (action in draws) {

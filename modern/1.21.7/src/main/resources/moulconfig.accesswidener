@@ -7,9 +7,10 @@ accessible class net/minecraft/client/gui/DrawContext$ScissorStack
 accessible field net/minecraft/client/gui/DrawContext$ScissorStack stack Ljava/util/Deque;
 accessible method net/minecraft/client/gui/DrawContext fill (Lcom/mojang/blaze3d/pipeline/RenderPipeline;IIIII)V
 accessible method net/minecraft/client/gui/DrawContext drawTexturedQuad (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIIIFFFFI)V
-
+accessible field net/minecraft/client/render/GameRenderer guiState Lnet/minecraft/client/gui/render/state/GuiRenderState;
 accessible field net/minecraft/client/gl/RenderPipelines GUI_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 accessible method net/minecraft/client/render/RenderLayer of (Ljava/lang/String;ILcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;
 accessible class net/minecraft/client/render/RenderLayer$MultiPhase
 accessible class net/minecraft/client/render/RenderLayer$MultiPhaseParameters
 accessible method net/minecraft/client/render/RenderLayer$MultiPhaseParameters$Builder build (Z)Lnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;
+accessible field net/minecraft/client/gui/DrawContext state Lnet/minecraft/client/gui/render/state/GuiRenderState;

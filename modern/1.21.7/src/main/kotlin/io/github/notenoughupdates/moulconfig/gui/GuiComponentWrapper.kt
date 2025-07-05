@@ -1,6 +1,8 @@
 package io.github.notenoughupdates.moulconfig.gui
 
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.platform.ModernRenderContext
+import io.github.notenoughupdates.moulconfig.platform.MoulConfigPlatform
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
@@ -24,11 +26,7 @@ open class GuiComponentWrapper(
         val y = (mouse.y * window.scaledHeight.toDouble() / window.height.toDouble()).toInt()
         return GuiImmediateContext(
             ModernRenderContext(
-                drawContext ?: DrawContext(
-                    MinecraftClient.getInstance(),
-                    MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
-                )
-            ),
+                drawContext ?: MoulConfigPlatform.makeDrawContext()            ),
             0, 0,
             window.scaledWidth,
             window.scaledHeight,
@@ -51,7 +49,7 @@ open class GuiComponentWrapper(
         super.render(drawContext, i, j, f)
         val ctx = createContext(drawContext)
         context.root.render(ctx)
-        ctx.renderContext.doDrawTooltip()
+        ctx.renderContext.renderExtraLayers()
     }
 
     override fun charTyped(c: Char, i: Int): Boolean {
