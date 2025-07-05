@@ -38,13 +38,14 @@ class ModernFontRenderer(val textRenderer: TextRenderer) :
                         newLine += color.toChatFormatting()
                     }
                 }
-                val newFormatting = when {
-                    style.isBold -> "§l"
-                    style.isItalic -> "§o"
-                    style.isUnderlined -> "§n"
-                    style.isStrikethrough -> "§m"
-                    style.isObfuscated -> "§k"
-                    else -> ""
+                val newFormatting = buildString {
+                    when {
+                        style.isBold -> append("§l")
+                        style.isItalic -> append("§o")
+                        style.isUnderlined -> append("§n")
+                        style.isStrikethrough -> append("§m")
+                        style.isObfuscated -> append("§k")
+                    }
                 }
 
                 if (newFormatting != lastFormatting) {
