@@ -96,8 +96,8 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         y: Int,
         color: Int,
         shadow: Boolean
-    ): Int {
-        return drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, text, x, y, color, shadow)
+    ) {
+        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, text, x, y, color, shadow)
     }
 
     override fun drawColoredRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
@@ -167,7 +167,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun drawGradientRect(
-        zLevel: Int,
         left: Int,
         top: Int,
         right: Int,
@@ -175,7 +174,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         startColor: Int,
         endColor: Int
     ) {
-        drawContext.fillGradient(RenderLayer.getGui(), left, top, right, bottom, startColor, endColor, zLevel)
+        drawContext.fillGradient(RenderLayer.getGui(), left, top, right, bottom, startColor, endColor, 0)
     }
 
     override fun pushRawScissor(left: Int, top: Int, right: Int, bottom: Int) {

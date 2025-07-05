@@ -28,7 +28,7 @@ class HoverComponent(
 
     override fun render(context: GuiImmediateContext) {
         if (context.isHovered) {
-            context.renderContext.scheduleDrawTooltip(hoverLines.get())
+            context.renderContext.scheduleDrawTooltip(context.mouseX, context.mouseY, hoverLines.get())
         }
         child.render(context)
 

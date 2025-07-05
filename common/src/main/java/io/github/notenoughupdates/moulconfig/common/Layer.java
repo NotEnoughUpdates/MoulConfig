@@ -11,6 +11,7 @@ public class Layer {
      */
     int sortIndex;
 
+    public static final Layer ROOT = new Layer(0);
     public static final Layer TOOLTIP = new Layer(300);
     public static final Layer OVERLAY = new Layer(100);
 }

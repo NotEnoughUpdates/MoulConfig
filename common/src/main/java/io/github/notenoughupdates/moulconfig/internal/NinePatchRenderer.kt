@@ -17,16 +17,14 @@ object NinePatchRenderer : ContextualTextureRenderer<MyResourceLocation, RenderC
         u2: Float,
         v2: Float
     ) {
-        context.drawTexturedRect(
+        context.drawComplexTexture(
             texture,
             x.toFloat(),
             y.toFloat(),
             width.toFloat(),
             height.toFloat(),
-            u1,
-            v1,
-            u2,
-            v2
-        )
+        ) {
+            it.uv(u1, v1, u2, v2)
+        }
     }
 }

@@ -348,7 +348,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
         float opacityFactor = LerpUtils.sigmoidZeroOne(delta / 500f);
         context.drawGradientRect(
-            0, 0, 0, width, height,
+            0, 0, width, height,
             (int) (0x80 * opacityFactor) << 24 | 0x101010,
             (int) (0x90 * opacityFactor) << 24 | 0x101010
         );

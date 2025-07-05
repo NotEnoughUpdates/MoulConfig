@@ -2,46 +2,25 @@ package io.github.notenoughupdates.moulconfig.platform
 
 import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.platform.DepthTestFunction
-import com.mojang.blaze3d.platform.LogicOp
 import com.mojang.blaze3d.vertex.VertexFormat
-import io.github.notenoughupdates.moulconfig.common.DynamicTextureReference
-import io.github.notenoughupdates.moulconfig.common.IFontRenderer
-import io.github.notenoughupdates.moulconfig.common.IItemStack
-import io.github.notenoughupdates.moulconfig.common.Layer
-import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
-import io.github.notenoughupdates.moulconfig.common.RenderContext
-import io.github.notenoughupdates.moulconfig.common.TextureFilter
+import io.github.notenoughupdates.moulconfig.common.*
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache
+import io.github.notenoughupdates.moulconfig.internal.Warnings
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.ScreenRect
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexFormats
-import net.minecraft.client.texture.NativeImageBackedTexture
 import net.minecraft.client.util.InputUtil
 import net.minecraft.text.Text
-import net.minecraft.util.Identifier
-import org.joml.Matrix4f
+import org.joml.Matrix3x2f
 import org.lwjgl.glfw.GLFW
-import org.lwjgl.opengl.GL11
-import java.awt.image.BufferedImage
-import java.util.concurrent.ThreadLocalRandom
+import java.util.*
 import java.util.function.Consumer
 
-class ModernRenderContext(val drawContext: DrawContext) : RenderContext class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
+class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     companion object {
-        val INVERTED_RECT_PIPE = RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
-            .withColorLogic(LogicOp.OR_REVERSE)
-            .withLocation("moulconfig_inverted_rect")
-            .build()
-        val INVERTED_RECT = RenderLayer.MultiPhase.of(
-            "moulconfig_inverted_rect",
-            RenderLayer.DEFAULT_BUFFER_SIZE,
-            INVERTED_RECT_PIPE,
-            RenderLayer.MultiPhaseParameters.builder()
-                .build(false)
-        )
         val COLORED_TRIANGLES_PIPE =
             RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
                 .withLocation("moulconfig_colored_triangles")
@@ -61,7 +40,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
 
     val window = MinecraftClient.getInstance().window
 
-    override fun pushMatrix() {
+    override fun pushMatrix() { // TODO: cope with the massively reduced stack capacity
         drawContext.matrices.pushMatrix()
     }
 
@@ -88,15 +67,15 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
 
     override fun drawColoredTriangles(color: Int, vararg coordinates: Float) {
         require(coordinates.size % 6 == 0)
-        drawContext.draw {
-            val buf = it.getBuffer(COLORED_TRIANGLES)
-            val matrix = drawContext.matrices.peek().positionMatrix
-
-            for (i in 0 until (coordinates.size / 2)) {
-                buf.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F)
-                    .color(color).next()
-            }
-        }
+//        drawContext.draw { // TODO
+//            val buf = it.getBuffer(COLORED_TRIANGLES)
+//            val matrix = drawContext.matrices.peek().positionMatrix
+//
+//            for (i in 0 until (coordinates.size / 2)) {
+//                buf.vertex(matrix, coordinates[i * 2], coordinates[i * 2 + 1], 0.0F)
+//                    .color(color).next()
+//            }
+//        }
     }
 
     override fun drawString(
@@ -106,8 +85,8 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
         y: Int,
         color: Int,
         shadow: Boolean
-    ): Int {
-        return drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, text, x, y, color, shadow)
+    ) {
+        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, text, x, y, color, shadow)
     }
 
     override fun drawColoredRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
@@ -115,14 +94,8 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
     }
 
     override fun invertedRect(left: Float, top: Float, right: Float, bottom: Float, additiveColor: Int) {
-        drawContext.draw {
-            val matrix = drawContext.matrices.peek().positionMatrix
-            val buffer = it.getBuffer(INVERTED_RECT)
-            buffer.vertex(matrix, left, bottom, 0F).color(additiveColor).next()
-            buffer.vertex(matrix, right, bottom, 0F).color(additiveColor).next()
-            buffer.vertex(matrix, right, top, 0F).color(additiveColor).next()
-            buffer.vertex(matrix, left, top, 0F).color(additiveColor).next()
-        }
+        drawContext.fill(RenderPipelines.GUI_INVERT, left, top, right, bottom, -1)
+        drawContext.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, left, top, right, bottom, additiveColor)
     }
 
     override fun drawTexturedTintedRect(
@@ -133,29 +106,24 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
         color: Int, filter: TextureFilter,
     ) {
         FilterAssertionCache.assertTextureFilter(texture, filter)
-        drawContext.draw {
-            MinecraftClient.getInstance()
-                .textureManager
-                .getTexture(MoulConfigPlatform.fromMyResourceLocation(texture))
-                .setFilter(
-                    when (filter) {
-                        TextureFilter.LINEAR -> true
-                        TextureFilter.NEAREST -> false
-                    },
-                    false
-                )
-            val matrix4f: Matrix4f = drawContext.matrices.peek().positionMatrix
-            val bufferBuilder = it.getBuffer(RenderLayer.getGuiTextured(MoulConfigPlatform.fromMyResourceLocation(texture)))
-            bufferBuilder.vertex(matrix4f, x, y, 0F).texture(u1, v1)
-                .color(color).next()
-            bufferBuilder.vertex(matrix4f, x, y + height, 0f).texture(u1, v2)
-                .color(color).next()
-            bufferBuilder.vertex(matrix4f, x + width, y + height, 0f).texture(u2, v2)
-                .color(color).next()
-            bufferBuilder.vertex(matrix4f, x + width, y, 0F).texture(u2, v1)
-                .color(color).next()
-        }
-
+        val identifier = MoulConfigPlatform.fromMyResourceLocation(texture)
+        MinecraftClient.getInstance()
+            .textureManager
+            .getTexture(identifier)
+            .setFilter(
+                when (filter) {
+                    TextureFilter.LINEAR -> true
+                    TextureFilter.NEAREST -> false
+                },
+                false
+            )
+        drawContext.drawTexturedQuad(
+            RenderPipelines.GUI_TEXTURED,
+            identifier,
+            x.toInt(), y.toInt(), (x + width).toInt(), (y + width).toInt(),
+            u1, u2, v1, v2,
+            color
+        )
     }
 
 
@@ -177,7 +145,6 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
     }
 
     override fun drawGradientRect(
-        zLevel: Int,
         left: Int,
         top: Int,
         right: Int,
@@ -185,27 +152,30 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
         startColor: Int,
         endColor: Int
     ) {
-        drawContext.fillGradient(RenderLayer.getGui(), left, top, right, bottom, startColor, endColor, zLevel)
+        drawContext.fillGradient(left, top, right, bottom, startColor, endColor)
+    }
+
+    override fun pushRawScissor(left: Int, top: Int, right: Int, bottom: Int) {
+        drawContext.scissorStack.stack.addLast(ScreenRect(left, top, right - left, bottom - top))
     }
 
     override fun pushScissor(left: Int, top: Int, right: Int, bottom: Int) {
-        // Do not use drawContext.enableScissor() since that transform coords
-        // In order to be compatible with 1.8.9, this method does not do that.
-        drawContext.scissorStack.push(ScreenRect(left, top, right - left, bottom - top))
-        refreshScissor()
-    }
-
-    private fun refreshScissor() {
-        drawContext.setScissor(drawContext.scissorStack.stack.peek())
+        drawContext.enableScissor(left, top, right, bottom)
     }
 
     override fun popScissor() {
         drawContext.disableScissor()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun clearScissor() {
         drawContext.scissorStack.stack.clear();
-        drawContext.setScissor(null)
+    }
+
+    override fun assertNoScissors() {
+        if (!drawContext.scissorStack.stack.isEmpty()) {
+            Warnings.warn("Scissors found despite no scissor assertion", 4)
+        }
     }
 
     override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: String?) {
@@ -233,19 +203,53 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext class Mo
     }
 
     override fun renderExtraLayers() {
-        // Left blank: [drawOnTop] renders directly.
+        var currentLayer = Layer.ROOT
+        while (true) {
+            val nextLayer = queuedLayers.ceilingEntry(currentLayer) ?: break
+            currentLayer = nextLayer.key
+            val draws = nextLayer.value
+            for (action in draws) {
+                if (!drawContext.scissorStack.stack.isEmpty()) {
+                    Warnings.warn("Scissors found despite no scissor assertion", 4)
+                }
+                action.scissorTop?.let { rect ->
+                    pushRawScissor(rect.left, rect.top, rect.right, rect.bottom)
+                }
+                drawContext.matrices.pushMatrix()
+                drawContext.matrices.set(action.transform)
+
+                action.action.accept(this)
+
+                drawContext.matrices.popMatrix()
+
+                if (action.scissorTop != null)
+                    popScissor()
+                if (!drawContext.scissorStack.stack.isEmpty()) {
+                    Warnings.warn("Scissors found despite no scissor assertion after execution of ${action.action}", 4)
+                }
+            }
+        }
     }
 
+    class DrawAction(
+        val action: Consumer<RenderContext>,
+        val scissorTop: ScreenRect?,
+        val transform: Matrix3x2f,
+    )
+
+    val queuedLayers: NavigableMap<Layer, MutableList<DrawAction>> = TreeMap()
+
     override fun drawOnTop(layer: Layer, scissorBehaviour: RenderContext.ScissorBehaviour, later: Consumer<RenderContext>) {
-        pushMatrix()
-        if (scissorBehaviour == RenderContext.ScissorBehaviour.ESCAPE) {
-            pushRawScissor(0, 0, minecraft.scaledWidth, minecraft.scaledHeight)
-        }
-        drawContext.matrices.translate(0F, 0F, layer.sortIndex * 200F)
-        later.accept(this)
-        if (scissorBehaviour == RenderContext.ScissorBehaviour.ESCAPE) {
-            popScissor()
-        }
-        popMatrix()
+        val layer = queuedLayers.getOrPut(layer) { mutableListOf() }
+        layer.add(
+            DrawAction(
+                later,
+                when (scissorBehaviour) {
+                    RenderContext.ScissorBehaviour.ESCAPE -> null
+                    RenderContext.ScissorBehaviour.INHERIT -> drawContext.scissorStack.peekLast()
+                },
+                Matrix3x2f(drawContext.matrices)
+            )
+        )
     }
 }

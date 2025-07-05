@@ -31,7 +31,7 @@ public interface RenderContext {
     /**
      * draws more content that should be laid on top of other later render calls. the consumer will be invoked linearly, but with no guarantee for when.
      */
-    void drawOnTop(@NotNull Layer layer, @NotNull ScissorBehaviour escapeScissors, @NotNull Consumer<@NotNull RenderContext> later);
+    void drawOnTop(@NotNull Layer layer, @NotNull ScissorBehaviour escapeScissors, @NotNull Consumer<@NotNull RenderContext> later); // TODO: assert well ordering of layers in all child classes
 
     boolean isMouseButtonDown(int mouseButton);
 
@@ -126,7 +126,7 @@ public interface RenderContext {
         }
     }
 
-    int drawString(@NotNull IFontRenderer fontRenderer, @NotNull String text, int x, int y, int color, boolean shadow);
+    void drawString(@NotNull IFontRenderer fontRenderer, @NotNull String text, int x, int y, int color, boolean shadow);
 
     void drawColoredRect(float left, float top, float right, float bottom, int color);
 
@@ -203,7 +203,7 @@ public interface RenderContext {
 
     void drawDarkRect(int x, int y, int width, int height, boolean shadow);
 
-    void drawGradientRect(int zLevel, int left, int top, int right, int bottom, int startColor, int endColor);
+    void drawGradientRect(int left, int top, int right, int bottom, int startColor, int endColor);
 
     /**
      * push a scissor rectangle, clamped to the current scissor rectangle, relative to the current render position.
