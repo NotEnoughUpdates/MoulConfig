@@ -216,7 +216,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         )
     }
 
-    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<String?>) {
+    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<String>) {
         drawContext.drawTooltipImmediately(
             MinecraftClient.getInstance().textRenderer,
             tooltipLines.map { TooltipComponent.of(Text.literal(it).asOrderedText()) },
