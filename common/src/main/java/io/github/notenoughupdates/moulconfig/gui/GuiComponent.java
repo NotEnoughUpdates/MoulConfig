@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui;
 
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
@@ -34,14 +35,11 @@ import java.util.function.BiFunction;
  */
 public abstract class GuiComponent {
     protected final IMinecraft mc = IMinecraft.instance;
+    @Setter
     @Getter
     GuiContext context;
 
     protected GuiComponent() {
-    }
-
-    public void setContext(GuiContext context) {
-        this.context = context;
     }
 
     /**
@@ -58,14 +56,15 @@ public abstract class GuiComponent {
      * Call this method to request focus in the current gui context.
      */
     public void requestFocus() {
-        context.setFocusedElement(this);
+        if (context != null)
+            context.setFocusedElement(this);
     }
 
     /**
      * Unfocus this element only if this element is selected.
      */
     public void blur() {
-        if (context.getFocusedElement() == this)
+        if (context != null && context.getFocusedElement() == this)
             context.setFocusedElement(null);
     }
 
@@ -86,7 +85,7 @@ public abstract class GuiComponent {
      * @return true if this is focused directly, and has no focused child
      */
     public boolean isFocused() {
-        return context.getFocusedElement() == this;
+        return context != null && context.getFocusedElement() == this;
     }
 
     /**
