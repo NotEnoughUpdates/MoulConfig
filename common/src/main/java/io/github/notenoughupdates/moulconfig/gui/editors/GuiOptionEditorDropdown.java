@@ -22,17 +22,21 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class GuiOptionEditorDropdown extends ComponentEditor {
-    private String[] values;
+    private List<StructuredText> values;
     private boolean useOrdinal;
     private Enum<?>[] constants;
     private String valuesForSearch;
@@ -40,7 +44,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
     public GuiOptionEditorDropdown(ProcessedOption option, String[] values) {
         this(option, values, false);
     }
-
+ // TODO: rework this entire thing to accept StructuredTexts and/or classes implementing a custom interfaces and/or a custom text mapper
     public GuiOptionEditorDropdown(
         ProcessedOption option,
         String[] values,
@@ -48,19 +52,14 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
     ) {
         super(option);
         Class<?> clazz = (Class<?>) option.getType();
-        if (Enum.class.isAssignableFrom(clazz)) {
+        if (Enum.class.isAssignableFrom(clazz) && !forceGivenValues) {
             constants = (Enum<?>[]) (clazz).getEnumConstants();
-            if (forceGivenValues) {
-                assert values.length == constants.length;
-                this.values = values;
-            } else {
-                this.values = new String[constants.length];
-                for (int i = 0; i < constants.length; i++) {
-                    this.values[i] = constants[i].toString();;
-                }
+            this.values = new ArrayList<>();
+            for (Enum<?> constant : constants) {
+                this.values.add(StructuredText.of(constant.toString()));
             }
         } else {
-            this.values = values;
+            this.values = Arrays.stream(values).map(StructuredText::of).collect(Collectors.toList());
             assert values.length > 0;
         }
         this.useOrdinal = clazz == int.class || clazz == Integer.class;
@@ -74,7 +73,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
 
         @Override
         public int getHeight() {
-            return 13 + 12 * values.length;
+            return 13 + 12 * values.size();
         }
 
         @Override
@@ -88,7 +87,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
                     int top = 0;
                     int mouseY = context.getMouseY();
                     int dropdownY = 13;
-                    for (int ordinal = 0; ordinal < values.length; ordinal++) {
+                    for (int ordinal = 0; ordinal < values.size(); ordinal++) {
                         if (mouseY >= top + 3 + dropdownY && mouseY <= top + 3 + dropdownY + 12) {
                             int selected = ordinal;
                             if (constants != null) {
@@ -96,7 +95,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
                             } else if (useOrdinal) {
                                 option.set(selected);
                             } else {
-                                option.set(values[selected]);
+                                option.set(values.get(selected).getText());
                             }
                         }
                         dropdownY += 12;
@@ -110,9 +109,9 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
         @Override
         public void render(@NotNull GuiImmediateContext context) {
             int selected = getSelectedIndex();
-            String selectedString = " - Select - ";
-            if (selected >= 0 && selected < values.length) {
-                selectedString = values[selected];
+            StructuredText selectedString = StructuredText.of(" - Select - ");
+            if (selected >= 0 && selected < values.size()) {
+                selectedString = values.get(selected);
             }
 
             int dropdownHeight = context.getHeight();
@@ -134,9 +133,9 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
             context.getRenderContext().drawColoredRect(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, outlineColour); //Bar
             int dropdownY = 13;
             IFontRenderer fr = IMinecraft.instance.getDefaultFontRenderer();
-            for (String option : values) {
-                if (option.isEmpty()) {
-                    option = "<NONE>";
+            for (StructuredText option : values) {
+                if (option.getText().isEmpty()) {
+                    option = StructuredText.of("<NONE>");
                 }
                 context.getRenderContext().drawStringScaledMaxWidth(
                     option,
@@ -196,10 +195,10 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
         public void render(@NotNull GuiImmediateContext context) {
             int dropdownWidth = context.getWidth();
             int selected = getSelectedIndex();
-            if (selected >= values.length) selected = values.length;
-            String selectedString = " - Select - ";
-            if (selected >= 0 && selected < values.length) {
-                selectedString = values[selected];
+            if (selected >= values.size()) selected = values.size();
+            StructuredText selectedString = StructuredText.of(" - Select - ");
+            if (selected >= 0 && selected < values.size()) {
+                selectedString = values.get(selected);
             }
 
             context.getRenderContext().drawDarkRect(
@@ -235,7 +234,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
     @Override
     public boolean fulfillsSearch(String word) {
         if (valuesForSearch == null) {
-            valuesForSearch = String.join("", values).toLowerCase(Locale.ROOT);
+            valuesForSearch = values.stream().map(StructuredText::getText).collect(Collectors.joining(" ")).toLowerCase(Locale.ROOT);
         }
         return super.fulfillsSearch(word) || valuesForSearch.contains(word);
     }

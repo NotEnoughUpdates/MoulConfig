@@ -2,6 +2,7 @@ package io.github.notenoughupdates.moulconfig.processor;
 
 import io.github.notenoughupdates.moulconfig.Config;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.notenoughupdates.moulconfig.observer.Property;
@@ -11,8 +12,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 public class ProcessedOptionImpl implements ProcessedOption, ProcessedOption.HasField {
-    final String name;
-    final String desc;
+    final StructuredText name;
+    final StructuredText desc;
     final Field field;
     final String path;
     final ProcessedCategory category;
@@ -22,7 +23,7 @@ public class ProcessedOptionImpl implements ProcessedOption, ProcessedOption.Has
     boolean isProperty;
     Config config;
 
-    public ProcessedOptionImpl(String name, String desc, String path, Field field, ProcessedCategory category, Object container, Config config) {
+    public ProcessedOptionImpl(StructuredText name, StructuredText desc, String path, Field field, ProcessedCategory category, Object container, Config config) {
         this.name = name;
         this.path = path;
         this.desc = desc;
@@ -76,13 +77,13 @@ public class ProcessedOptionImpl implements ProcessedOption, ProcessedOption.Has
     }
 
     @Override
-    public String getName() {
+    public StructuredText getName() {
         return name;
     }
 
     @Override
 
-    public String getDescription() {
+    public StructuredText getDescription() {
         return desc;
     }
 

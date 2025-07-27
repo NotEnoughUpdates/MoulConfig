@@ -24,6 +24,7 @@ import io.github.notenoughupdates.moulconfig.DescriptionRendereringBehaviour;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.processor.HasDebugLocation;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import lombok.var;
@@ -72,7 +73,7 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
         );
 
         float scale = 1;
-        List<String> lines;
+        List<StructuredText> lines;
         int descriptionHeight = option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : getHeight();
         while (true) {
             lines = fr.splitText(option.getDescription(), (int) (width * 2 / 3 / scale - 10));
@@ -85,7 +86,7 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
         context.translate(x + 5 + width / 3, y + 5);
         context.scale(scale, scale);
         context.translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F);
-        for (String line : lines) {
+        for (var line : lines) {
             context.drawString(fr, line, 0, 0, 0xc0c0c0, false);
             context.translate(0, fr.getHeight() + 1);
         }
@@ -134,7 +135,7 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
 
     public boolean fulfillsSearch(String word) {
         if (searchDescNameCache == null) {
-            searchDescNameCache = (option.getName() + option.getDescription() + searchTags).toLowerCase(Locale.ROOT);
+            searchDescNameCache = (option.getName().getText() + option.getDescription().getText() + searchTags).toLowerCase(Locale.ROOT);
         }
         return searchDescNameCache.contains(word);
     }

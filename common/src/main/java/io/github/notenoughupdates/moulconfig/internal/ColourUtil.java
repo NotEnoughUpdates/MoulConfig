@@ -64,4 +64,5 @@ public class ColourUtil {
     public static final int GREEN_SHIFT = 8;
     public static final int BLUE_SHIFT = 0;
     public static final int MAX_ALPHA = 0xFF000000;
+
 }

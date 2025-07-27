@@ -1,5 +1,6 @@
 package io.github.notenoughupdates.moulconfig.common
 
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
@@ -44,9 +45,18 @@ interface IMinecraft {
 
     fun addExtraBuiltinConfigProcessors(processor: MoulConfigProcessor<*>)
 
-    fun sendClickableChatMessage(message: String, action: String, type: ClickType)
+    fun sendClickableChatMessage(message: StructuredText, action: String, type: ClickType) // TODO: should this be in the structured text?
 
-    fun getKeyName(keyCode: Int): String
+    fun getKeyName(keyCode: Int): StructuredText
+
+    fun createLiteral(text: String): StructuredText
+    fun createTranslatable(key: String, vararg args: StructuredText): StructuredText
+
+    /**
+     * Create a structured text from an untyped platform object. Must be a platform type exactly, not a string or a structured text.
+     */
+    @ApiStatus.Experimental
+    fun createStructuredTextInternal(obj: Any): StructuredText?
 
     /**
      * This is a method to provide a render context. Note that constructing this context directly will potentially give

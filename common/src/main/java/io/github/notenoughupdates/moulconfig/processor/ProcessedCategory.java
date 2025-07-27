@@ -21,6 +21,7 @@
 package io.github.notenoughupdates.moulconfig.processor;
 
 import io.github.notenoughupdates.moulconfig.Config;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import lombok.var;
@@ -32,9 +33,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProcessedCategory extends HasDebugLocation {
-    String getDisplayName();
+    StructuredText getDisplayName();
 
-    String getDescription();
+    StructuredText getDescription();
 
     String getIdentifier();
 

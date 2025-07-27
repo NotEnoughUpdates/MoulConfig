@@ -2,10 +2,12 @@ package io.github.notenoughupdates.moulconfig.xml;
 
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.HorizontalAlign;
 import io.github.notenoughupdates.moulconfig.gui.VerticalAlign;
 import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent;
+import io.github.notenoughupdates.moulconfig.gui.component.TextComponent;
 import io.github.notenoughupdates.moulconfig.xml.loaders.*;
 import lombok.SneakyThrows;
 import lombok.var;
@@ -77,6 +79,8 @@ public class XMLUniverse {
         xmlUniverse.registerMapper(PanelComponent.BackgroundRenderer.class, PanelComponent.DefaultBackgroundRenderer::valueOf);
         xmlUniverse.registerMapper(HorizontalAlign.class, HorizontalAlign::valueOf);
         xmlUniverse.registerMapper(VerticalAlign.class, VerticalAlign::valueOf);
+        xmlUniverse.registerMapper(TextComponent.TextAlignment.class, TextComponent.TextAlignment::valueOf);
+        xmlUniverse.registerMapper(StructuredText.class, StructuredText::of);
         xmlUniverse.registerMapper(Color.class, str -> str.startsWith("#") ? new Color((int) Long.parseLong(str.substring(1), 16), str.length() == 9) : new Color(Integer.parseInt(str), true));
         return xmlUniverse;
     }

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.DepthTestFunction
 import com.mojang.blaze3d.platform.LogicOp
 import com.mojang.blaze3d.vertex.VertexFormat
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache
 import io.github.notenoughupdates.moulconfig.internal.Warnings
 import net.minecraft.client.MinecraftClient
@@ -14,7 +15,6 @@ import net.minecraft.client.gui.ScreenRect
 import net.minecraft.client.render.RenderLayer
 import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.util.InputUtil
-import net.minecraft.text.Text
 import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import java.util.function.Consumer
@@ -91,13 +91,13 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
 
     override fun drawString(
         fontRenderer: IFontRenderer,
-        text: String,
+        text: StructuredText,
         x: Int,
         y: Int,
         color: Int,
         shadow: Boolean
     ) {
-        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, text, x, y, color, shadow)
+        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, MoulConfigText.unwrap(text), x, y, color, shadow)
     }
 
     override fun drawColoredRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
@@ -205,7 +205,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         }
     }
 
-    override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: String?) {
+    override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: StructuredText?) {
         val item = (itemStack as ModernItemStack).backing
         drawContext.drawItem(item, x, y)
         drawContext.drawStackOverlay(
@@ -213,14 +213,14 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
             item,
             x,
             y,
-            overlayText ?: ""
+            overlayText?.text ?: "" // So rude
         )
     }
 
-    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<String>) {
+    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<StructuredText>) {
         drawContext.drawTooltip(
             MinecraftClient.getInstance().textRenderer,
-            tooltipLines.map { Text.literal(it) },
+            tooltipLines.map { MoulConfigText.unwrap(it) },
             // TODO: we should improve render context somewhat
             //       and yet you participate in it.
             //       i am very smart

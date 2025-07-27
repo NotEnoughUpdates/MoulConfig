@@ -1,5 +1,6 @@
 package io.github.notenoughupdates.moulconfig.processor;
 
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -10,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ProcessedCategoryImpl implements ProcessedCategory {
-    public final String name;
-    public final String desc;
+    public final StructuredText name;
+    public final StructuredText desc;
     public final Field reflectField;
     public final List<ProcessedOption> options = new ArrayList<>();
     public final Map<Integer, ProcessedOption> accordionAnchors = new HashMap<>();
@@ -19,12 +20,12 @@ public class ProcessedCategoryImpl implements ProcessedCategory {
     public @Nullable String parent;
 
     @Override
-    public String getDisplayName() {
+    public StructuredText getDisplayName() {
         return name;
     }
 
     @Override
-    public String getDescription() {
+    public StructuredText getDescription() {
         return desc;
     }
 
@@ -53,11 +54,11 @@ public class ProcessedCategoryImpl implements ProcessedCategory {
         return accordionAnchors;
     }
 
-    public ProcessedCategoryImpl(Field field, String name, String desc) {
+    public ProcessedCategoryImpl(Field field, StructuredText name, StructuredText desc) {
         this(field, name, desc, null);
     }
 
-    public ProcessedCategoryImpl(Field field, String name, String desc, @Nullable String parent) {
+    public ProcessedCategoryImpl(Field field, StructuredText name, StructuredText desc, @Nullable String parent) {
         this.reflectField = field;
         this.name = name;
         this.parent = parent;

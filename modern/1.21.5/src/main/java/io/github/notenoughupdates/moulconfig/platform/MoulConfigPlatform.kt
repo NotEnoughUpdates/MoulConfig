@@ -1,12 +1,14 @@
 package io.github.notenoughupdates.moulconfig.platform
 
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
 import io.github.notenoughupdates.moulconfig.gui.GuiElementWrapper
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache
 import io.github.notenoughupdates.moulconfig.internal.MCLogger
+import io.github.notenoughupdates.moulconfig.internal.StructuredTextHelper
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.MinecraftClient
@@ -183,8 +185,8 @@ class MoulConfigPlatform : IMinecraft {
         return MinecraftClient.getInstance().keyboard.clipboard ?: ""
     }
 
-    override fun sendClickableChatMessage(message: String, action: String, type: ClickType) {
-        MinecraftClient.getInstance().inGameHud.chatHud.addMessage(Text.literal(message).styled {
+    override fun sendClickableChatMessage(message: StructuredText, action: String, type: ClickType) {
+        MinecraftClient.getInstance().inGameHud.chatHud.addMessage(MoulConfigText.unwrap(message).copy().styled {
             it.withClickEvent(
                 when (type) {
                     ClickType.OPEN_LINK -> ClickEvent.OpenUrl(URI(action))
@@ -194,10 +196,25 @@ class MoulConfigPlatform : IMinecraft {
         })
     }
 
-    override fun getKeyName(keyCode: Int): String {
-        return ModernKeybindHelper.getKeyName(keyCode)
+    override fun getKeyName(keyCode: Int): StructuredText {
+        return StructuredText.of(ModernKeybindHelper.getKeyName(keyCode))
     }
 
+    override fun createTranslatable(key: String, vararg args: StructuredText): StructuredText {
+        return MoulConfigText.wrap(Text.translatable(key, *args.map { MoulConfigText.unwrap(it) }.toTypedArray()))
+    }
+
+    override fun createStructuredTextInternal(obj: Any): StructuredText? {
+        if (obj is Text)
+            return MoulConfigText.wrap(obj)
+        return null
+    }
+
+    override fun createLiteral(text: String): StructuredText {
+        return MoulConfigText.wrap(Text.literal(text))
+    }
+
+    @Deprecated("This context will be at the top level, not providing any of the useful translations and scalings that might be needed to render properly. Use with care.")
     override fun provideTopLevelRenderContext(): RenderContext {
         return ModernRenderContext(
             DrawContext(

@@ -1,5 +1,6 @@
 package io.github.notenoughupdates.moulconfig.gui.component
 
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent
@@ -9,7 +10,7 @@ import java.util.function.Supplier
 
 class HoverComponent(
     val child: GuiComponent,
-    val hoverLines: Supplier<List<String>>,
+    val hoverLines: Supplier<List<StructuredText>>,
 ) : GuiComponent() {
     override fun getWidth(): Int {
         return child.width

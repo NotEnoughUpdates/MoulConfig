@@ -23,6 +23,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 import io.github.notenoughupdates.moulconfig.Config;
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
@@ -44,7 +45,7 @@ import java.util.Objects;
 
 public class GuiOptionEditorButton extends ComponentEditor {
     private final int runnableId;
-    private String buttonText;
+    private StructuredText buttonText;
     private final Config config;
     final DispatchStyle dispatchStyle;
 
@@ -79,7 +80,7 @@ public class GuiOptionEditorButton extends ComponentEditor {
     public GuiOptionEditorButton(
         ProcessedOption option,
         int runnableId,
-        String buttonText,
+        StructuredText buttonText,
         Config config
     ) {
         super(option);
@@ -98,7 +99,10 @@ public class GuiOptionEditorButton extends ComponentEditor {
                 Warnings.warn("Invalid use of runnable id " + runnableId + " by " + getDebugDeclarationLocation());
             }
         }
-        if (this.buttonText == null) this.buttonText = "";
+        if (this.buttonText == null) {
+            Warnings.warn("Empty button text by " + getDebugDeclarationLocation());
+            this.buttonText = StructuredText.empty();
+        }
     }
 
     @Getter
@@ -144,6 +148,6 @@ public class GuiOptionEditorButton extends ComponentEditor {
 
     @Override
     public boolean fulfillsSearch(String word) {
-        return super.fulfillsSearch(word) || buttonText.toLowerCase(Locale.ROOT).contains(word);
+        return super.fulfillsSearch(word) || buttonText.getText().toLowerCase(Locale.ROOT).contains(word);
     }
 }

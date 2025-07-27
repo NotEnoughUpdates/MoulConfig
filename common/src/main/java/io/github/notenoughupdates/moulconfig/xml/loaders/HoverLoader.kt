@@ -1,12 +1,13 @@
 package io.github.notenoughupdates.moulconfig.xml.loaders
 
 import io.github.notenoughupdates.moulconfig.gui.component.HoverComponent
-import io.github.notenoughupdates.moulconfig.observer.GetSetter
+import io.github.notenoughupdates.moulconfig.internal.StructuredTextHelper
 import io.github.notenoughupdates.moulconfig.xml.ChildCount
 import io.github.notenoughupdates.moulconfig.xml.XMLContext
 import io.github.notenoughupdates.moulconfig.xml.XMLGuiLoader
 import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import org.w3c.dom.Element
+import java.util.function.Supplier
 import javax.xml.namespace.QName
 
 class HoverLoader : XMLGuiLoader.Basic<HoverComponent> {
@@ -14,7 +15,11 @@ class HoverLoader : XMLGuiLoader.Basic<HoverComponent> {
         val list = context.getPropertyFromAttribute(element, QName("lines"), List::class.java)!!
         return HoverComponent(
             context.getChildFragment(element),
-            list as GetSetter<List<String>>
+            Supplier {
+                list.get().map {
+                    StructuredTextHelper.mapStringOrStructuredText(it)
+                }
+            }
         )
     }
 

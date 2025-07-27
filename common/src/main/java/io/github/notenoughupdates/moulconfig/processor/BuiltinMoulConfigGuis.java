@@ -23,6 +23,7 @@ package io.github.notenoughupdates.moulconfig.processor;
 
 import io.github.notenoughupdates.moulconfig.annotations.*;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.editors.*;
 import lombok.val;
 
@@ -31,7 +32,7 @@ import java.lang.reflect.Field;
 public class BuiltinMoulConfigGuis {
     public static void addProcessors(MoulConfigProcessor<?> processor) {
         processor.registerConfigEditor(ConfigEditorButton.class, (processedOption, configEditorButton) ->
-            new GuiOptionEditorButton(processedOption, configEditorButton.runnableId(), configEditorButton.buttonText(), processedOption.getConfig()));
+            new GuiOptionEditorButton(processedOption, configEditorButton.runnableId(), StructuredText.of(configEditorButton.buttonText()), processedOption.getConfig()));
         processor.registerConfigEditor(ConfigEditorBoolean.class, (processedOption, configEditorBoolean) ->
             new GuiOptionEditorBoolean(processedOption, configEditorBoolean.runnableId(), processedOption.getConfig()));
         processor.registerConfigEditor(ConfigEditorAccordion.class, (processedOption, accordion) ->
@@ -48,7 +49,7 @@ public class BuiltinMoulConfigGuis {
         processor.registerConfigEditor(ConfigEditorSlider.class, (processedOption, configEditorSlider) ->
             new GuiOptionEditorSlider(processedOption, configEditorSlider.minValue(), configEditorSlider.maxValue(), configEditorSlider.minStep()));
         processor.registerConfigEditor(ConfigEditorInfoText.class, (processedOption, configEditorInfoText) ->
-            new GuiOptionEditorInfoText(processedOption, configEditorInfoText.infoTitle()));
+            new GuiOptionEditorInfoText(processedOption, StructuredText.of(configEditorInfoText.infoTitle())));
         processor.registerConfigEditor(ConfigEditorText.class, (processedOption, configEditorText) ->
             new GuiOptionEditorText(processedOption));
         processor.registerConfigEditor(ConfigEditorDraggableList.class, (processedOption, configEditorDraggableList) ->
@@ -62,7 +63,7 @@ public class BuiltinMoulConfigGuis {
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);
             }
-            return new GuiOptionEditorButton(option, -1, "Link", option.getConfig()) {
+            return new GuiOptionEditorButton(option, -1, StructuredText.of("Link"), option.getConfig()) {
                 @Override
                 public void onClick() {
                     val linkedOption = activeConfigGUI.getOptionFromField(field);

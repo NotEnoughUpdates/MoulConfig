@@ -20,6 +20,7 @@
 
 package io.github.notenoughupdates.moulconfig;
 
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.HorizontalAlign;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedCategory;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
@@ -36,13 +37,13 @@ public abstract class Config {
         return HorizontalAlign.CENTER;
     }
 
-    public String formatCategoryName(ProcessedCategory category, boolean isSelected) {
+    public StructuredText formatCategoryName(ProcessedCategory category, boolean isSelected) {
         if (isSelected) {
-            return "§b§n" + category.getDisplayName();
+            return category.getDisplayName().underlined().aqua();
         } else if (category.getParentCategoryId() == null) {
-            return "§7" + category.getDisplayName();
+            return category.getDisplayName().grey();
         } else {
-            return "§8" + category.getDisplayName();
+            return category.getDisplayName().darkGrey();
         }
     }
 
@@ -50,8 +51,8 @@ public abstract class Config {
         return new ArrayList<>();
     }
 
-    public String getTitle() {
-        return "Config GUI";
+    public StructuredText getTitle() {
+        return StructuredText.of("Config GUI");
     }
 
     public void saveNow() {

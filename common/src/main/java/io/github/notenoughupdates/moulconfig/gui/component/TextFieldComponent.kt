@@ -3,6 +3,7 @@ package io.github.notenoughupdates.moulconfig.gui.component
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.common.KeyboardConstants
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent
@@ -27,7 +28,7 @@ open class TextFieldComponent(
     private var shouldExpandToFit = false
     private var initializedCursor = false
     override fun getWidth(): Int {
-        if (isFocused && shouldExpandToFit) return max(preferredWidth, font.getStringWidth(text.get()) + 10)
+        if (isFocused && shouldExpandToFit) return max(preferredWidth, font.getStringWidth(StructuredText.of(text.get())) + 10)
         return preferredWidth
     }
 
@@ -70,7 +71,7 @@ open class TextFieldComponent(
         if (text.get().isEmpty() && !isFocused) {
             context.renderContext.drawString(
                 font,
-                suggestion,
+                StructuredText.of(suggestion),
                 TEXT_PADDING_X,
                 context.height / 2 - font.height / 2,
                 SUGGESTION_COLOR,
@@ -125,7 +126,7 @@ open class TextFieldComponent(
     private fun renderText(context: GuiImmediateContext, visibleText: String) {
         val textColor = if (editable.get()) ENABLED_COLOR else DISABLED_COLOR
         context.renderContext.drawString(
-            font, visibleText, TEXT_PADDING_X,
+            font, StructuredText.of(visibleText), TEXT_PADDING_X,
             context.height / 2 - font.height / 2, textColor, true
         )
     }

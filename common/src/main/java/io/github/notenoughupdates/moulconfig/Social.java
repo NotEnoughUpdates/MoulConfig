@@ -23,16 +23,18 @@ package io.github.notenoughupdates.moulconfig;
 import io.github.notenoughupdates.moulconfig.common.ClickType;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Social {
 
-    public static Social forLink(String name, MyResourceLocation icon, String link) {
+    public static Social forLink(StructuredText name, MyResourceLocation icon, String link) {
         try {
             return new URLSocial(name, new URI(link), icon);
         } catch (URISyntaxException e) {
@@ -42,16 +44,16 @@ public abstract class Social {
 
     public abstract void onClick();
 
-    public abstract List<String> getTooltip();
+    public abstract List<StructuredText> getTooltip();
 
     public abstract MyResourceLocation getIcon();
 
     private static class URLSocial extends Social {
-        private final String name;
+        private final StructuredText name;
         private final URI url;
         private final MyResourceLocation icon;
 
-        private URLSocial(String name, URI url, MyResourceLocation icon) {
+        private URLSocial(StructuredText name, URI url, MyResourceLocation icon) {
             this.name = name;
             this.url = url;
             this.icon = icon;
@@ -62,13 +64,13 @@ public abstract class Social {
             try {
                 Desktop.getDesktop().browse(url);
             } catch (Exception e) {
-                IMinecraft.instance.sendClickableChatMessage("Click here to open " + name, url.toString(), ClickType.OPEN_LINK);
+                IMinecraft.instance.sendClickableChatMessage(StructuredText.of("Click here to open ").append(name), url.toString(), ClickType.OPEN_LINK);
             }
         }
 
         @Override
-        public List<String> getTooltip() {
-            return Arrays.asList(name);
+        public List<StructuredText> getTooltip() {
+            return Collections.singletonList(name);
         }
 
         @Override

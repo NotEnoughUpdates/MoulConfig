@@ -1,8 +1,10 @@
 package io.github.notenoughupdates.moulconfig.xml.loaders;
 
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.component.TextComponent;
 import io.github.notenoughupdates.moulconfig.internal.MapOfs;
+import io.github.notenoughupdates.moulconfig.internal.StructuredTextHelper;
 import io.github.notenoughupdates.moulconfig.xml.ChildCount;
 import io.github.notenoughupdates.moulconfig.xml.XMLContext;
 import io.github.notenoughupdates.moulconfig.xml.XMLGuiLoader;
@@ -18,13 +20,13 @@ import java.util.Map;
 public class TextLoader implements XMLGuiLoader.Basic<TextComponent> {
     @Override
     public @NotNull TextComponent createInstance(@NotNull XMLContext<?> context, @NotNull Element element) {
-        var string = context.getPropertyFromAttribute(element, new QName("text"), String.class);
-        var textAlignment = context.getPropertyFromAttribute(element, new QName("textAlign"), String.class);
+        var string = context.getPropertyFromAttribute(element, new QName("text"), StructuredText.class);
+        assert string != null;
         return new TextComponent(
             IMinecraft.instance.getDefaultFontRenderer(),
             string,
             context.getPropertyFromAttribute(element, new QName("width"), int.class, IMinecraft.instance.getDefaultFontRenderer().getStringWidth(string.get())),
-            textAlignment == null ? TextComponent.TextAlignment.LEFT : TextComponent.TextAlignment.valueOf(textAlignment.get()),
+            context.getPropertyFromAttribute(element, new QName("textAlign"), TextComponent.TextAlignment.class, TextComponent.TextAlignment.LEFT),
             context.getPropertyFromAttribute(element, new QName("shadow"), boolean.class, true),
             context.getPropertyFromAttribute(element, new QName("split"), boolean.class, true)
         );

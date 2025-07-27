@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui.component;
 
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import lombok.RequiredArgsConstructor;
@@ -38,26 +39,30 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class TextComponent extends GuiComponent {
     final IFontRenderer fontRenderer;
-    final Supplier<String> string;
+    final Supplier<StructuredText> string;
     final int suggestedWidth;
     final TextAlignment alignment;
     final boolean shadow;
     final boolean split;
-    private String lastString;
+    private StructuredText lastString;
     private int lastWidth = -1;
-    private List<String> lastSplit;
+    private List<StructuredText> lastSplit;
     private static final Pattern colorPattern = Pattern.compile("§[a-f0-9r]");
 
-    public TextComponent(String string, int width, TextAlignment alignment) {
+    public TextComponent(StructuredText string, int width, TextAlignment alignment) {
         this(IMinecraft.instance.getDefaultFontRenderer(), () -> string, width, alignment, false, false);
     }
 
-    public TextComponent(String string, int width) {
+    public TextComponent(StructuredText string, int width) {
         this(IMinecraft.instance.getDefaultFontRenderer(), () -> string, width, TextAlignment.LEFT, false, false);
     }
 
-    public TextComponent(String string) {
+    public TextComponent(StructuredText string) {
         this(string, IMinecraft.instance.getDefaultFontRenderer().getStringWidth(string));
+    }
+
+    public TextComponent(String string) {
+        this(StructuredText.of(string));
     }
 
     @Override
@@ -70,7 +75,7 @@ public class TextComponent extends GuiComponent {
         return 2 + (fontRenderer.getHeight() + 2) * split(string.get(), getWidth()).size();
     }
 
-    public List<String> split(String text, int width) {
+    public List<StructuredText> split(StructuredText text, int width) {
         if (!split) return Collections.singletonList(text);
         if (Objects.equals(text, lastString) && width == lastWidth)
             return lastSplit;
@@ -83,8 +88,8 @@ public class TextComponent extends GuiComponent {
     @Override
     public void render(GuiImmediateContext context) {
         context.getRenderContext().pushMatrix();
-        List<String> lines = split(string.get(), context.getWidth());
-        for (String line : lines) {
+        List<StructuredText> lines = split(string.get(), context.getWidth());
+        for (StructuredText line : lines) {
             int length = fontRenderer.getStringWidth(line);
             if (length > context.getWidth()) {
                 context.getRenderContext().drawStringScaledMaxWidth(line, fontRenderer, 2, 2, shadow, context.getWidth(), -1);

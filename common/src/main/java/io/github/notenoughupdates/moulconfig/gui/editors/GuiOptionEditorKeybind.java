@@ -5,6 +5,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.KeyboardConstants;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
@@ -45,8 +46,8 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                 renderContext.drawTexturedRect(GuiTextures.BUTTON, width / 6 - 24, height - 7 - 14, 48, 16);
 
 
-                String keyName = IMinecraft.instance.getKeyName((int) option.get());
-                String text = editingKeycode ? "> " + keyName + " <" : keyName;
+                StructuredText keyName = IMinecraft.instance.getKeyName((int) option.get());
+                StructuredText text = editingKeycode ? StructuredText.of("> ").append(keyName).append(" <") : keyName;
                 renderContext.drawStringCenteredScaledMaxWidth(text,
                     IMinecraft.instance.getDefaultFontRenderer(),
                     width / 6, height - 7 - 6,
@@ -63,7 +64,7 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                     mouseY >= resetY && mouseY < resetY + 11) {
                     renderContext.scheduleDrawTooltip(
                         context.getMouseX(), context.getMouseY(),
-                        Collections.singletonList("§cReset to Default"));
+                        Collections.singletonList(StructuredText.of("Reset to Default").red()));
                 }
             }
 

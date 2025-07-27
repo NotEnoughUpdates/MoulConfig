@@ -1,5 +1,6 @@
 package io.github.notenoughupdates.moulconfig.common
 
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import org.jetbrains.annotations.ApiStatus
 
 /**
@@ -9,8 +10,8 @@ import org.jetbrains.annotations.ApiStatus
  */
 @ApiStatus.NonExtendable
 interface IItemStack {
-    fun getLore(): List<String>
-    fun getDisplayName(): String
+    fun getLore(): List<StructuredText>
+    fun getDisplayName(): StructuredText
 
     fun getStackSize(): Int
     fun getItemId(): MyResourceLocation

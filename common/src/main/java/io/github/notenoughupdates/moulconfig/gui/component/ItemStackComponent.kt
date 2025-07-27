@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.gui.component
 
 import io.github.notenoughupdates.moulconfig.common.IItemStack
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext
 import io.github.notenoughupdates.moulconfig.observer.GetSetter
@@ -17,6 +18,6 @@ open class ItemStackComponent(
     }
 
     override fun render(context: GuiImmediateContext) {
-        context.renderContext.renderItemStack(itemStack.get(), 1, 1, "")
+        context.renderContext.renderItemStack(itemStack.get(), 1, 1, StructuredText.empty())
     }
 }

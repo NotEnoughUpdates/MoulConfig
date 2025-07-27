@@ -20,6 +20,7 @@
 
 package io.github.notenoughupdates.moulconfig.gui.editors;
 
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.component.TextComponent;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
@@ -28,10 +29,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 
 public class GuiOptionEditorInfoText extends ComponentEditor {
-    private String infoTitle;
+    private StructuredText infoTitle;
     GuiComponent component;
 
-    public GuiOptionEditorInfoText(ProcessedOption option, String infoTitle) {
+    public GuiOptionEditorInfoText(ProcessedOption option, StructuredText infoTitle) {
         super(option);
 
         this.infoTitle = infoTitle;
@@ -46,6 +47,6 @@ public class GuiOptionEditorInfoText extends ComponentEditor {
 
     @Override
     public boolean fulfillsSearch(String word) {
-        return super.fulfillsSearch(word) || (infoTitle != null && infoTitle.toLowerCase(Locale.ROOT).contains(word));
+        return super.fulfillsSearch(word) || (infoTitle != null && infoTitle.getText().toLowerCase(Locale.ROOT).contains(word));
     }
 }

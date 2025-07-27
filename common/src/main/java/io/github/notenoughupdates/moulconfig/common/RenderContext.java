@@ -1,5 +1,6 @@
 package io.github.notenoughupdates.moulconfig.common;
 
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.internal.NinePatchRenderer;
 import juuxel.libninepatch.NinePatch;
 import org.jetbrains.annotations.ApiStatus;
@@ -63,7 +64,7 @@ public interface RenderContext {
         }
     }
 
-    default void drawStringScaledMaxWidth(@NotNull String text, @NotNull IFontRenderer fontRenderer, int x, int y, boolean shadow, int width, int color) {
+    default void drawStringScaledMaxWidth(@NotNull StructuredText text, @NotNull IFontRenderer fontRenderer, int x, int y, boolean shadow, int width, int color) {
         pushMatrix();
         translate(x, y);
         float scale = Math.min(1F, Math.max(0.1F, width / (float) fontRenderer.getStringWidth(text)));
@@ -73,7 +74,7 @@ public interface RenderContext {
     }
 
     default void drawStringCenteredScaledMaxWidth(
-        @NotNull String text,
+        @NotNull StructuredText text,
         @NotNull IFontRenderer fr,
         float x, float y,
         boolean shadow,
@@ -126,7 +127,7 @@ public interface RenderContext {
         }
     }
 
-    void drawString(@NotNull IFontRenderer fontRenderer, @NotNull String text, int x, int y, int color, boolean shadow);
+    void drawString(@NotNull IFontRenderer fontRenderer, @NotNull StructuredText text, int x, int y, int color, boolean shadow);
 
     void drawColoredRect(float left, float top, float right, float bottom, int color);
 
@@ -222,11 +223,11 @@ public interface RenderContext {
     @Deprecated
     void clearScissor();  // TODO: this sort of escapes out of the current context.
 
-    void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable String overlayText);
+    void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable StructuredText overlayText);
 
-    void drawTooltipNow(int x, int y, @NotNull List<@NotNull String> tooltipLines);
+    void drawTooltipNow(int x, int y, @NotNull List<@NotNull StructuredText> tooltipLines);
 
-    default void scheduleDrawTooltip(int x, int y, @NotNull List<String> tooltipLines) {
+    default void scheduleDrawTooltip(int x, int y, @NotNull List<StructuredText> tooltipLines) {
         // TODO: should this do some form of conflict resolution?
         drawOnTop(Layer.TOOLTIP, ScissorBehaviour.ESCAPE, it -> it.drawTooltipNow(x, y, tooltipLines));
     }

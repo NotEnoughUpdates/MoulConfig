@@ -2,12 +2,13 @@ package io.github.notenoughupdates.moulconfig.internal
 
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer
 import io.github.notenoughupdates.moulconfig.common.RenderContext
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 
 object DrawContextExt {
     @JvmOverloads
     @JvmStatic
     fun RenderContext.drawStringCenteredScalingDownWithMaxWidth(
-        text: String,
+        text: StructuredText,
         centerX: Int,
         centerY: Int,
         maxWidth: Int,

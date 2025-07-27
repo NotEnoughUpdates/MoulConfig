@@ -20,13 +20,7 @@ class CollapsibleComponent(
         val fr = IMinecraft.instance.defaultFontRenderer
         val padding = 2
         val trim = 3
-        val rightTriangle = '▶'.toString()
-        val rightSize = fr.getStringWidth(rightTriangle)
-        val bottomTriangle = '▼'.toString()
-        val bottomSize = fr.getStringWidth(bottomTriangle)
-        val bottomOffset = (rightSize - bottomSize).coerceAtLeast(0) / 2
-        val rightOffset = (bottomSize - rightSize).coerceAtLeast(0) / 2
-        val iconWidth = maxOf(rightSize, bottomSize)
+        val iconWidth = 9
     }
 
     override fun getWidth(): Int {
@@ -43,13 +37,7 @@ class CollapsibleComponent(
 
     override fun render(context: GuiImmediateContext) {
         val collapsed = collapsedState.get()
-        context.renderContext.drawString(
-            fr,
-            if (collapsed) rightTriangle else bottomTriangle,
-            if (collapsed) rightOffset else bottomOffset, 0, -1,
-            false
-        )
-
+        context.renderContext.drawOpenCloseTriangle(!collapsed, 0F, 0F, iconWidth.toFloat(), iconWidth.toFloat(), -1)
         val barHeight = maxOf(title.get().height, fr.height)
         context.renderContext.pushMatrix()
         context.renderContext.translate(iconWidth.toFloat(), 0F)

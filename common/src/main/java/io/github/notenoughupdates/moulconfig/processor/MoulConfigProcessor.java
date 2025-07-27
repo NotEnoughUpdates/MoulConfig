@@ -23,6 +23,7 @@ package io.github.notenoughupdates.moulconfig.processor;
 
 import io.github.notenoughupdates.moulconfig.Config;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
@@ -72,7 +73,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     @Override
     public void beginCategory(Object baseObject, Field field, String name, String description) {
-        currentCategory = new ProcessedCategoryImpl(field, name, description);
+        currentCategory = new ProcessedCategoryImpl(field, StructuredText.of(name), StructuredText.of(description));
         categories.put(currentCategory.getIdentifier(), currentCategory);
     }
 
@@ -145,7 +146,7 @@ public class MoulConfigProcessor<T extends Config> implements ConfigStructureRea
 
     protected ProcessedOptionImpl createProcessedOption(Object baseObject, Field field, ConfigOption option) {
         ProcessedOptionImpl processedOption = new ProcessedOptionImpl(
-            option.name(), option.desc(), String.join(".", categoryPath) + "." + field.getName(),
+            StructuredText.of(option.name()), StructuredText.of(option.desc()), String.join(".", categoryPath) + "." + field.getName(),
             field,
             currentCategory, baseObject,
             configBaseObject

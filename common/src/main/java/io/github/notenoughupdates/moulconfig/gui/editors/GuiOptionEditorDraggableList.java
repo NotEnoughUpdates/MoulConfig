@@ -25,6 +25,7 @@ import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.KeyboardConstants;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.common.TextureFilter;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
@@ -38,9 +39,10 @@ import lombok.var;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
-    private Map<Object, String> exampleText = new HashMap<>();
+    private Map<Object, StructuredText> exampleText = new HashMap<>();
     private boolean enableDeleting;
     private List<Object> activeText;
     private final boolean requireNonEmpty;
@@ -56,6 +58,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     private boolean dropdownOpen = false;
     private Enum<?>[] enumConstants;
     private String exampleTextConcat;
+    // TODO: rework this entire thing to accept StructuredTexts and/or classes implementing a custom interfaces and/or a custom text mapper
 
     public GuiOptionEditorDraggableList(
         ProcessedOption option,
@@ -82,12 +85,12 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         if (Enum.class.isAssignableFrom(elementType)) {
             Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) elementType;
             enumConstants = enumType.getEnumConstants();
-            for (int i = 0; i < enumConstants.length; i++) {
-                this.exampleText.put(enumConstants[i], enumConstants[i].toString());
+            for (int i = 0; i < enumConstants.length; i++) { // TODO: all of this caching is useless, tbh.
+                this.exampleText.put(enumConstants[i], StructuredText.of(enumConstants[i].toString()));
             }
         } else {
             for (int i = 0; i < exampleText.length; i++) {
-                this.exampleText.put(i, exampleText[i]);
+                this.exampleText.put(i, StructuredText.of(exampleText[i]));
             }
         }
     }
@@ -96,10 +99,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         option.explicitNotifyChange();
     }
 
-    private String getExampleText(Object forObject) {
-        String str = exampleText.get(forObject);
+    private StructuredText getExampleText(Object forObject) {
+        StructuredText str = exampleText.get(forObject);
         if (str == null) {
-            str = "<unknown " + forObject + ">";
+            str = StructuredText.of("<unknown " + forObject + ">");
             Warnings.warnOnce("Could not find draggable list object for " + forObject + " on option " + option.getDebugDeclarationLocation(), forObject, option);
         }
         return str;
@@ -109,9 +112,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     public int getHeight() {
         int height = super.getHeight() + 13;
 
+        var fr = IMinecraft.instance.getDefaultFontRenderer();
         for (Object object : activeText) {
-            String str = getExampleText(object);
-            height += 10 * str.split("\n").length;
+            StructuredText str = getExampleText(object);
+            height += 10 * fr.splitLines(str).size();
         }
 
         return height;
@@ -130,7 +134,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
         renderContext.drawTexturedRect(GuiTextures.BUTTON, x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
 
-        renderContext.drawStringCenteredScaledMaxWidth("Add", fr,
+        renderContext.drawStringCenteredScaledMaxWidth(StructuredText.of("Add"), fr,
             x + width / 6, y + 45 - 7 - 6,
             false, 44, 0xFF303030
         );
@@ -156,8 +160,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 renderContext.scheduleDrawTooltip(
                     mc.getMouseX(), mc.getMouseY(),
                     Collections.singletonList(
-                    "§cDelete Item"
-                ));
+                        StructuredText.of("Delete Item").red()
+                    ));
             }
         }
 
@@ -167,22 +171,22 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         int i = 0;
         int yOff = 0;
         for (Object indexObject : activeText) {
-            String str = getExampleText(indexObject);
+            StructuredText str = getExampleText(indexObject);
 
-            String[] multilines = str.split("\n");
+            var multilines = IMinecraft.instance.getDefaultFontRenderer().splitLines(str);
 
-            int ySize = multilines.length * 10;
+            int ySize = multilines.size() * 10;
 
             if (i++ != dragStartIndex) {
-                for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
-                    String line = multilines[multilineIndex];
-                    renderContext.drawStringScaledMaxWidth(line + "§r", fr,
+                for (int multilineIndex = 0; multilineIndex < multilines.size(); multilineIndex++) {
+                    var line = multilines.get(multilineIndex);
+                    renderContext.drawStringScaledMaxWidth(line, fr,
                         x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
                     );
                 }
                 renderContext.drawString(
                     fr,
-                    "≡",
+                    StructuredText.of("≡"),
                     x + 10,
                     y + 49 + yOff + ySize / 2 - 4,
                     0xffffff,
@@ -224,11 +228,11 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
             int dropdownY = -1;
             for (Object indexObject : remaining) {
-                String str = getExampleText(indexObject);
-                if (str.isEmpty()) {
-                    str = "<NONE>";
+                StructuredText str = getExampleText(indexObject);
+                if (str.getText().isEmpty()) {
+                    str = StructuredText.of("<NONE>");
                 }
-                context.drawStringScaledMaxWidth(str.replaceAll("(\n.*)+", " ..."),
+                context.drawStringScaledMaxWidth(fr.splitLines(str).get(0),
                     fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
                 );
                 dropdownY += 12;
@@ -249,14 +253,14 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             int mouseX = IMinecraft.instance.getMouseX();
             int mouseY = IMinecraft.instance.getMouseY();
 
-            String str = getExampleText(currentDragging);
-            String[] multilines = str.split("\n");
+            StructuredText str = getExampleText(currentDragging);
+            var multilines = fr.splitLines(str);
 
             // TODO: context.enableBlend();
-            for (int multilineIndex = 0; multilineIndex < multilines.length; multilineIndex++) {
-                String line = multilines[multilineIndex];
+            for (int multilineIndex = 0; multilineIndex < multilines.size(); multilineIndex++) {
+                StructuredText line = multilines.get(multilineIndex);
                 context.drawStringScaledMaxWidth(
-                    line + "§r",
+                    line,
                     fr,
                     dragOffsetX + mouseX + 10,
                     dragOffsetY + mouseY + multilineIndex * 10,
@@ -266,9 +270,9 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 );
             }
 
-            int ySize = multilines.length * 10;
+            int ySize = multilines.size() * 10;
 
-            context.drawString(fr, "≡",
+            context.drawString(fr, StructuredText.of("≡"),
                 dragOffsetX + mouseX,
                 dragOffsetY - 1 + mouseY + ySize / 2 - 4, 0xffffff, true
             );
@@ -357,9 +361,10 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 mouseY > y + 45 && mouseY < y + height - 6) {
                 int yOff = 0;
                 int i = 0;
+                var fr = IMinecraft.instance.getDefaultFontRenderer();
                 for (Object objectIndex : activeText) {
-                    String str = getExampleText(objectIndex);
-                    int ySize = 10 * str.split("\n").length;
+                    StructuredText str = getExampleText(objectIndex);
+                    int ySize = 10 * fr.splitLines(str).size();
                     if (mouseY < y + 50 + yOff + ySize) {
                         dragOffsetX = x + 10 - mouseX;
                         dragOffsetY = y + 50 + yOff - mouseY;
@@ -375,6 +380,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         } else if (mouseEvent instanceof MouseEvent.Move && currentDragging != null) {
             int yOff = 0;
             int i = 0;
+            var fr = IMinecraft.instance.getDefaultFontRenderer();
             for (Object objectIndex : activeText) {
                 if (dragOffsetY + mouseY + 4 < y + 50 + yOff + 10) {
                     activeText.remove(dragStartIndex);
@@ -383,8 +389,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                     dragStartIndex = i;
                     break;
                 }
-                String str = getExampleText(objectIndex);
-                yOff += 10 * str.split("\n").length;
+                StructuredText str = getExampleText(objectIndex);
+                yOff += 10 * fr.splitLines(str).size();
                 i++;
             }
         }
@@ -395,7 +401,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     @Override
     public boolean fulfillsSearch(String word) {
         if (exampleTextConcat == null) {
-            exampleTextConcat = String.join("", exampleText.values()).toLowerCase(Locale.ROOT);
+            exampleTextConcat = exampleText.values().stream().map(StructuredText::getText).collect(Collectors.joining(" "))
+                .toLowerCase(Locale.ROOT);
         }
         return super.fulfillsSearch(word) || exampleTextConcat.contains(word);
     }

@@ -3,12 +3,13 @@ package io.github.notenoughupdates.moulconfig.forge
 import io.github.notenoughupdates.moulconfig.common.IItemStack
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
 import io.github.notenoughupdates.moulconfig.internal.ForgeMinecraft
+import io.github.notenoughupdates.moulconfig.internal.StructuredTextHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
 class ForgeItemStack private constructor(val backing: ItemStack) : IItemStack {
-    override fun getLore(): List<String> {
+    override fun getLore(): List<StructuredTextHelper> {
         return backing.getTooltip(Minecraft.getMinecraft().thePlayer, false)
     }
 
