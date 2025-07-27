@@ -33,7 +33,7 @@ public class MoulConfigText implements StructuredText {
 
     @NotNull
     @Override
-    public StructuredText append(StructuredText text) {
+    public StructuredText append(@NotNull StructuredText text) {
         ((MutableText) this.text).append(unwrap(text));
         return this;
     }

@@ -24,6 +24,7 @@ import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.common.TextureFilter;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.internal.KeybindHelper;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
@@ -74,7 +75,7 @@ public class GuiOptionEditorKeybindL extends GuiOptionEditor {
             renderContext.scheduleDrawTooltip(
                 mc.getMouseX(), mc.getMouseY(),
                 Collections.singletonList(
-                    "§cReset to Default"
+                    StructuredText.of("Reset to Default").darkRed()
                 ));
         }
     }

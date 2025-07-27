@@ -23,6 +23,7 @@ package io.github.notenoughupdates.moulconfig.test;
 
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import io.github.notenoughupdates.moulconfig.common.IItemStack;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.forge.ForgeItemStack;
 import io.github.notenoughupdates.moulconfig.gui.*;
 import io.github.notenoughupdates.moulconfig.gui.component.*;
@@ -113,7 +114,7 @@ public class MoulConfigTest {
                     screenToOpen = new GuiComponentWrapper(new GuiContext(
                         new CenterComponent(new PanelComponent(
                             new ColumnComponent(
-                                new TextComponent("Label", 80),
+                                new TextComponent(StructuredText.of("Label"), 80),
                                 new RowComponent(new SwitchComponent(Property.of(false), 100), new TextComponent("Some property"))
                             )
                         ))

@@ -4,6 +4,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.gui.GuiElement
@@ -19,7 +20,8 @@ import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.event.ClickEvent
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.ChatStyle
+import net.minecraft.util.ChatComponentTranslation
+import net.minecraft.util.IChatComponent
 import net.minecraft.util.ResourceLocation
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.input.Keyboard
@@ -94,20 +96,22 @@ class ForgeMinecraft : IMinecraft {
     override val scaleFactor: Int
         get() = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
 
-    override fun sendClickableChatMessage(message: String, action: String, type: ClickType) {
-        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
-            ChatComponentText(message)
-                .setChatStyle(
-                    ChatStyle()
-                        .setChatClickEvent(
-                            ClickEvent(
-                                when (type) {
-                                    ClickType.OPEN_LINK -> ClickEvent.Action.OPEN_URL
-                                    ClickType.RUN_COMMAND -> ClickEvent.Action.RUN_COMMAND
-                                }, action
-                            )
-                        )
+    override fun sendClickableChatMessage(message: StructuredText, action: String, type: ClickType) {
+        val component = StructuredTextImpl.unwrap(message)
+        component.setChatStyle(
+            component.chatStyle
+                .setChatClickEvent(
+                    ClickEvent(
+                        when (type) {
+                            ClickType.OPEN_LINK -> ClickEvent.Action.OPEN_URL
+                            ClickType.RUN_COMMAND -> ClickEvent.Action.RUN_COMMAND
+                        }, action
+                    )
                 )
+        )
+        Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
+            component
+
         )
     }
 
@@ -137,8 +141,22 @@ class ForgeMinecraft : IMinecraft {
         return resourceLocation.root == "moulconfigdyn" // technically this will also start with dynamic/ but i dont control that, so i will just use another namespace smilers
     }
 
-    override fun getKeyName(keyCode: Int): String {
-        return KeybindHelper.getKeyName(keyCode)
+    override fun getKeyName(keyCode: Int): StructuredText {
+        return StructuredText.of(KeybindHelper.getKeyName(keyCode))
+    }
+
+    override fun createLiteral(text: String): StructuredText {
+        return StructuredTextImpl.wrap(ChatComponentText(text))
+    }
+
+    override fun createTranslatable(key: String, vararg args: StructuredText): StructuredText {
+        return StructuredTextImpl.wrap(ChatComponentTranslation(key, *args))
+    }
+
+    override fun createStructuredTextInternal(obj: Any): StructuredText? {
+        if (obj is IChatComponent)
+            return StructuredTextImpl.wrap(obj)
+        return null
     }
 
     override fun isMouseButtonDown(mouseButton: Int): Boolean {

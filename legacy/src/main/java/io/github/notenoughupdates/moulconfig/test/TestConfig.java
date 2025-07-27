@@ -20,11 +20,11 @@
 
 package io.github.notenoughupdates.moulconfig.test;
 
-import com.google.gson.annotations.Expose;
 import io.github.notenoughupdates.moulconfig.Config;
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.Social;
 import io.github.notenoughupdates.moulconfig.annotations.Category;
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.HorizontalAlign;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedCategory;
 import net.minecraft.client.Minecraft;
@@ -45,8 +45,8 @@ public class TestConfig extends Config {
     }
 
     @Override
-    public String formatCategoryName(ProcessedCategory category, boolean isSelected) {
-        return super.formatCategoryName(category, isSelected) + "AAAAAAAAAAAA";
+    public StructuredText formatCategoryName(ProcessedCategory category, boolean isSelected) {
+        return super.formatCategoryName(category, isSelected).append("AAAAAAAAAAAA");
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TestConfig extends Config {
 
     @Override
     public List<Social> getSocials() {
-        return Arrays.asList(Social.forLink("Go to Discord", GuiTextures.RESET, "https://discord.gg/moulberry"));
+        return Arrays.asList(Social.forLink(StructuredText.of("Go to Discord"), GuiTextures.RESET, "https://discord.gg/moulberry"));
     }
 
     @Override
@@ -65,7 +65,12 @@ public class TestConfig extends Config {
     }
 
     @Override
-    public String getTitle() {
-        return "§bMoulConfig §aTest §eConfig";
+    public StructuredText getTitle() {
+        return StructuredText.empty()
+            .append(StructuredText.of("MoulConfig").aqua())
+            .append(" ")
+            .append(StructuredText.of("Test").green())
+            .append(" ")
+            .append(StructuredText.of("Config").yellow());
     }
 }

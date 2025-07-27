@@ -55,7 +55,7 @@ interface IMinecraft {
     /**
      * Create a structured text from an untyped platform object. Must be a platform type exactly, not a string or a structured text.
      */
-    @ApiStatus.Experimental
+    @ApiStatus.Internal
     fun createStructuredTextInternal(obj: Any): StructuredText?
 
     /**

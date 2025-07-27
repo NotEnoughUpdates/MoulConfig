@@ -2,19 +2,20 @@ package io.github.notenoughupdates.moulconfig.forge
 
 import io.github.notenoughupdates.moulconfig.common.IItemStack
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.internal.ForgeMinecraft
-import io.github.notenoughupdates.moulconfig.internal.StructuredTextHelper
 import net.minecraft.client.Minecraft
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
 class ForgeItemStack private constructor(val backing: ItemStack) : IItemStack {
-    override fun getLore(): List<StructuredTextHelper> {
+    override fun getLore(): List<StructuredText> {
         return backing.getTooltip(Minecraft.getMinecraft().thePlayer, false)
+            .map { StructuredText.of(it) }
     }
 
-    override fun getDisplayName(): String {
-        return backing.displayName
+    override fun getDisplayName(): StructuredText {
+        return StructuredText.of(backing.displayName)
     }
 
     override fun getStackSize(): Int {

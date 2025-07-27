@@ -29,8 +29,8 @@ public interface StructuredText {
     @NotNull
     Stream<@NotNull StructuredText> getChildren();
 
-    @NotNull StructuredText append(StructuredText text);
-    default @NotNull StructuredText append(String text) {
+    @NotNull StructuredText append(@NotNull StructuredText text);
+    default @NotNull StructuredText append(@NotNull String text) {
         return append(StructuredText.of(text));
     }
 
@@ -38,7 +38,7 @@ public interface StructuredText {
 
     void setStyle(StructuredStyle style);
 
-    default @NotNull StructuredText withStyle(StructuredStyle style) {
+    default @NotNull StructuredText withStyle(@NotNull StructuredStyle style) {
         setStyle(style);
         return this;
     }

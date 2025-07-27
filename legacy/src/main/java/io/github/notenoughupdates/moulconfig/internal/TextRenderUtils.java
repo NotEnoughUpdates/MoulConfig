@@ -23,10 +23,12 @@ package io.github.notenoughupdates.moulconfig.internal;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -126,33 +128,8 @@ public class TextRenderUtils {
         drawStringScaled(str, fr, x - newLen / 2, y - fontHeight / 2, shadow, colour, factor);
     }
 
-    public static void renderToolTip(
-        ItemStack stack,
-        int mouseX,
-        int mouseY,
-        int screenWidth,
-        int screenHeight,
-        FontRenderer fontStd
-    ) {
-        List<String> list = stack.getTooltip(
-            Minecraft.getMinecraft().thePlayer,
-            Minecraft.getMinecraft().gameSettings.advancedItemTooltips
-        );
-
-        for (int i = 0; i < list.size(); ++i) {
-            if (i == 0) {
-                list.set(i, stack.getRarity().rarityColor + list.get(i));
-            } else {
-                list.set(i, EnumChatFormatting.GRAY + list.get(i));
-            }
-        }
-
-        FontRenderer font = stack.getItem().getFontRenderer(stack);
-        drawHoveringText(list, mouseX, mouseY, screenWidth, screenHeight, -1, font == null ? fontStd : font);
-    }
-
     public static void drawHoveringText(
-        List<String> textLines,
+        List<? extends IChatComponent> textLines,
         final int mouseX,
         final int mouseY,
         final int screenWidth,
@@ -167,8 +144,8 @@ public class TextRenderUtils {
             GlStateManager.disableDepth();
             int tooltipTextWidth = 0;
 
-            for (String textLine : textLines) {
-                int textLineWidth = font.getStringWidth(textLine);
+            for (IChatComponent textLine : textLines) {
+                int textLineWidth = font.getStringWidth(textLine.getFormattedText());
 
                 if (textLineWidth > tooltipTextWidth) {
                     tooltipTextWidth = textLineWidth;
@@ -199,16 +176,16 @@ public class TextRenderUtils {
 
             if (needsWrap) {
                 int wrappedTooltipWidth = 0;
-                List<String> wrappedTextLines = new ArrayList<>();
+                List<IChatComponent> wrappedTextLines = new ArrayList<>();
                 for (int i = 0; i < textLines.size(); i++) {
-                    String textLine = textLines.get(i);
-                    List<String> wrappedLine = font.listFormattedStringToWidth(textLine, tooltipTextWidth);
+                    IChatComponent textLine = textLines.get(i);
+                    List<IChatComponent> wrappedLine = GuiUtilRenderComponents.splitText(textLine, tooltipTextWidth, font, false, false);
                     if (i == 0) {
                         titleLinesCount = wrappedLine.size();
                     }
 
-                    for (String line : wrappedLine) {
-                        int lineWidth = font.getStringWidth(line);
+                    for (IChatComponent line : wrappedLine) {
+                        int lineWidth = font.getStringWidth(line.getFormattedText());
                         if (lineWidth > wrappedTooltipWidth) {
                             wrappedTooltipWidth = lineWidth;
                         }
@@ -326,8 +303,8 @@ public class TextRenderUtils {
             );
 
             for (int lineNumber = 0; lineNumber < textLines.size(); ++lineNumber) {
-                String line = textLines.get(lineNumber);
-                font.drawStringWithShadow(line, (float) tooltipX, (float) tooltipY, -1);
+                IChatComponent line = textLines.get(lineNumber);
+                font.drawStringWithShadow(line.getFormattedText(), (float) tooltipX, (float) tooltipY, -1);
 
                 if (lineNumber + 1 == titleLinesCount) {
                     tooltipY += 2;

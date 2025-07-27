@@ -1,15 +1,19 @@
 package io.github.notenoughupdates.moulconfig.internal
 
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.GuiUtilRenderComponents
-import net.minecraft.util.ChatComponentText
 import java.util.regex.Pattern
 
 
 class ForgeFontRenderer(val font: FontRenderer) : IFontRenderer {
     override val height: Int
         get() = font.FONT_HEIGHT
+
+    override fun getStringWidth(string: StructuredText): Int {
+        return font.getStringWidth(StructuredTextImpl.unwrap(string).formattedText)
+    }
 
     override fun getStringWidth(string: String): Int {
         return font.getStringWidth(string)
@@ -19,28 +23,17 @@ class ForgeFontRenderer(val font: FontRenderer) : IFontRenderer {
         return font.getCharWidth(char)
     }
 
-    companion object {
-        private val colorPattern: Pattern = Pattern.compile("§[a-f0-9r]")
-    }
-
-    override fun splitText(text: String, width: Int): List<String> {
+    override fun splitText(text: StructuredText, width: Int): List<StructuredText> {
         val iChatComponents =
-            GuiUtilRenderComponents.splitText(ChatComponentText(text), width, font, false, false)
-        var lastFormat = "§r"
-        val strings: MutableList<String> = ArrayList(iChatComponents.size)
-        for (iChatComponent in iChatComponents) {
-            val formattedText = lastFormat + iChatComponent.formattedText.replace("^((§.)*) *".toRegex(), "$1")
-            strings.add(formattedText)
-            val matcher = colorPattern.matcher(formattedText)
-            while (matcher.find()) {
-                lastFormat = matcher.group(0)
-            }
-        }
-        return strings
+            GuiUtilRenderComponents.splitText(StructuredTextImpl.unwrap(text), width, font, false, false)
+        return iChatComponents.map { StructuredTextImpl.wrap(it) }
     }
 
-    override fun trimStringToWidth(string: String, maxWidth: Int, reverse: Boolean): String {
-        return font.trimStringToWidth(string, maxWidth, reverse)
+    override fun splitLines(text: StructuredText): List<StructuredText> {
+        return splitText(text, Integer.MAX_VALUE)
     }
 
+    override fun trimStringToWidth(string: String, width: Int, reverse: Boolean): String {
+        return font.trimStringToWidth(string, width, reverse)
+    }
 }

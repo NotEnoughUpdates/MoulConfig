@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.internal
 
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.forge.ForgeItemStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
@@ -38,8 +39,8 @@ class ForgeRenderContext : RenderContext {
         return Keyboard.isKeyDown(keyboardKey)
     }
 
-    override fun drawString(renderer: IFontRenderer, text: String, x: Int, y: Int, color: Int, shadow: Boolean) {
-        (renderer as ForgeFontRenderer).font.drawString(text, x.toFloat(), y.toFloat(), color, shadow)
+    override fun drawString(fontRenderer: IFontRenderer, text: StructuredText, x: Int, y: Int, color: Int, shadow: Boolean) {
+        (fontRenderer as ForgeFontRenderer).font.drawString(StructuredTextImpl.unwrap(text).formattedText, x.toFloat(), y.toFloat(), color, shadow)
     }
 
 
@@ -174,7 +175,7 @@ class ForgeRenderContext : RenderContext {
         GlScissorStack.clear()
     }
 
-    override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: String?) {
+    override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: StructuredText?) {
         val forgeStack = itemStack as ForgeItemStack
         val backing = forgeStack.backing
         val renderItem = Minecraft.getMinecraft().renderItem
@@ -185,20 +186,20 @@ class ForgeRenderContext : RenderContext {
             backing,
             x,
             y,
-            overlayText
+            overlayText.text
         )
         RenderHelper.disableStandardItemLighting()
     }
 
 
-    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<String>) {
+    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<StructuredText>) {
         val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
         val width = scaledResolution.scaledWidth
         val height = scaledResolution.scaledHeight
         val mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth
         val mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1
         TextRenderUtils.drawHoveringText(
-            tooltipLines, mouseX, mouseY,
+            tooltipLines.map { StructuredTextImpl.unwrap(it) }, mouseX, mouseY,
             width, height, -1, Minecraft.getMinecraft().fontRendererObj
         )
     }
