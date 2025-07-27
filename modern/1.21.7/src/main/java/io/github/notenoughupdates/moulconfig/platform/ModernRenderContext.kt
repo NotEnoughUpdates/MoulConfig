@@ -4,6 +4,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.platform.DepthTestFunction
 import com.mojang.blaze3d.vertex.VertexFormat
 import io.github.notenoughupdates.moulconfig.common.*
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.internal.ColourUtil
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache
 import io.github.notenoughupdates.moulconfig.internal.Rect
@@ -19,7 +20,10 @@ import net.minecraft.client.render.VertexConsumer
 import net.minecraft.client.render.VertexFormats
 import net.minecraft.client.texture.TextureSetup
 import net.minecraft.client.util.InputUtil
+import net.minecraft.text.OrderedText
 import net.minecraft.text.Text
+import net.minecraft.util.Language
+import net.minecraft.world.gen.structure.Structure
 import org.joml.Matrix3x2f
 import org.lwjgl.glfw.GLFW
 import java.util.*
@@ -100,15 +104,8 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         })
     }
 
-    override fun drawString(
-        fontRenderer: IFontRenderer,
-        text: String,
-        x: Int,
-        y: Int,
-        color: Int,
-        shadow: Boolean
-    ) {
-        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, text, x, y, ColourUtil.makeOpaque(color), shadow)
+    override fun drawString(fontRenderer: IFontRenderer, text: StructuredText, x: Int, y: Int, color: Int, shadow: Boolean) {
+        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, MoulConfigText.unwrap(text), x, y, ColourUtil.makeOpaque(color), shadow)
     }
 
     override fun drawColoredRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
@@ -204,7 +201,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         }
     }
 
-    override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: String?) {
+    override fun renderItemStack(itemStack: IItemStack, x: Int, y: Int, overlayText: StructuredText?) {
         val item = (itemStack as ModernItemStack).backing
         drawContext.drawItem(item, x, y)
         drawContext.drawStackOverlay(
@@ -212,14 +209,14 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
             item,
             x,
             y,
-            overlayText ?: ""
+            overlayText?.text ?: ""
         )
     }
 
-    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<String>) {
+    override fun drawTooltipNow(x: Int, y: Int, tooltipLines: List<StructuredText>) {
         drawContext.drawTooltipImmediately(
             MinecraftClient.getInstance().textRenderer,
-            tooltipLines.map { TooltipComponent.of(Text.literal(it).asOrderedText()) },
+            tooltipLines.map { TooltipComponent.of(Language.getInstance().reorder(MoulConfigText.unwrap(it))) },
             x, y,
             HoveredTooltipPositioner.INSTANCE,
             null,

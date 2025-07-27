@@ -29,10 +29,6 @@ class ForgeFontRenderer(val font: FontRenderer) : IFontRenderer {
         return iChatComponents.map { StructuredTextImpl.wrap(it) }
     }
 
-    override fun splitLines(text: StructuredText): List<StructuredText> {
-        return splitText(text, Integer.MAX_VALUE)
-    }
-
     override fun trimStringToWidth(string: String, width: Int, reverse: Boolean): String {
         return font.trimStringToWidth(string, width, reverse)
     }

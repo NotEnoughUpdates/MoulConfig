@@ -3,11 +3,10 @@ package io.github.notenoughupdates.moulconfig.platform
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import net.minecraft.client.font.TextRenderer
-import net.minecraft.client.util.ChatMessages
 import net.minecraft.text.StringVisitable
 import net.minecraft.text.Style
 import net.minecraft.text.Text
-import java.util.Optional
+import java.util.*
 
 class ModernFontRenderer(val textRenderer: TextRenderer) :
     IFontRenderer {
@@ -16,6 +15,10 @@ class ModernFontRenderer(val textRenderer: TextRenderer) :
 
     override fun getStringWidth(string: StructuredText): Int {
         return textRenderer.getWidth(MoulConfigText.unwrap(string))
+    }
+
+    override fun getStringWidth(string: String): Int {
+        return textRenderer.getWidth(string)
     }
 
     override fun getCharWidth(char: Char): Int {
@@ -33,12 +36,9 @@ class ModernFontRenderer(val textRenderer: TextRenderer) :
             lines.add(MoulConfigText.wrap(text))
         }
         return lines
-
     }
 
     override fun trimStringToWidth(string: String, width: Int, reverse: Boolean): String {
         return textRenderer.trimToWidth(string, width, reverse)
     }
-
-
 }
