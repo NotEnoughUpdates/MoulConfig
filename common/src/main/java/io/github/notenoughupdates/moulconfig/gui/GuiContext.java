@@ -23,6 +23,7 @@ package io.github.notenoughupdates.moulconfig.gui;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +39,11 @@ public class GuiContext {
      * The root element of this GuiContext
      */
     public final GuiComponent root;
-    public GuiComponent focusedElement;
+    private @Nullable GuiComponent focusedElement;
     public List<FloatingGuiElement> floatingWindows = new ArrayList<>();
     public Runnable closeRequestHandler;
 
-    public void setFocusedElement(GuiComponent focusedElement) {
+    public void setFocusedElement(@Nullable GuiComponent focusedElement) {
         if (this.focusedElement == focusedElement) return;
         GuiComponent oldElement = this.focusedElement;
         if (oldElement != null)

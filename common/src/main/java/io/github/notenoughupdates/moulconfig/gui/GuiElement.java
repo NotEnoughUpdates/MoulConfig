@@ -20,7 +20,9 @@
 
 package io.github.notenoughupdates.moulconfig.gui;
 
-
+/**
+ * Can be adapted as a {@link GuiComponent} using {@link GuiElementComponent}
+ */
 public abstract class GuiElement {
     public abstract void render();
 

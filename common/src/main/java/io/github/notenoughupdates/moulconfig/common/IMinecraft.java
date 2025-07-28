@@ -4,6 +4,7 @@ import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiElement;
+import io.github.notenoughupdates.moulconfig.gui.GuiElementComponent;
 import io.github.notenoughupdates.moulconfig.internal.InitUtil;
 import io.github.notenoughupdates.moulconfig.internal.MCLogger;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
@@ -35,6 +36,13 @@ public interface IMinecraft {
     DynamicTextureReference generateDynamicTexture(BufferedImage image);
 
     Pair<Double, Double> getMousePositionHF();
+
+    default Pair<Integer, Integer> getMousePosition() {
+        var mousePositionHF = getMousePositionHF();
+        return new Pair<>(
+                mousePositionHF.getFirst().intValue(),
+                mousePositionHF.getSecond().intValue());
+    }
 
     default int getMouseX() {
         return (int) getMouseXHF();
@@ -102,7 +110,9 @@ public interface IMinecraft {
     @Deprecated
     RenderContext provideTopLevelRenderContext();
 
-    void openWrappedScreen(GuiElement guiElement);
+    default void openWrappedScreen(GuiElement guiElement) {
+        openWrappedScreen(new GuiElementComponent(guiElement));
+    }
 
     void openWrappedScreen(GuiContext guiContext);
 

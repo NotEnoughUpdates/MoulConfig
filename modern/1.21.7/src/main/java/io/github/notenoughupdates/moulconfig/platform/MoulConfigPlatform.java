@@ -2,10 +2,7 @@ package io.github.notenoughupdates.moulconfig.platform;
 
 import io.github.notenoughupdates.moulconfig.common.*;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
-import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper;
 import io.github.notenoughupdates.moulconfig.gui.GuiContext;
-import io.github.notenoughupdates.moulconfig.gui.GuiElement;
-import io.github.notenoughupdates.moulconfig.gui.GuiElementWrapper;
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache;
 import io.github.notenoughupdates.moulconfig.internal.MCLogger;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
@@ -42,6 +39,7 @@ import java.util.stream.Stream;
 @NullMarked
 public class MoulConfigPlatform implements IMinecraft {
     public static @Nullable MoulConfigPlatform instance;
+    MinecraftClient mc = MinecraftClient.getInstance();
 
     public MoulConfigPlatform() {
         if (instance != null) {
@@ -60,11 +58,11 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     public static ItemStack unwrap(IItemStack itemStack) {
-        return ((ModernItemStack) itemStack).getBacking();
+        return ((MoulConfigItemStack) itemStack).getItemStack();
     }
 
     public static IItemStack wrap(ItemStack itemStack) {
-        return new ModernItemStack(itemStack);
+        return new MoulConfigItemStack(itemStack);
     }
 
     public static Text unwrap(StructuredText structuredText) {
@@ -83,8 +81,6 @@ public class MoulConfigPlatform implements IMinecraft {
         return new MoulConfigFontRenderer(font);
     }
     //</editor-fold>
-
-    MinecraftClient mc = MinecraftClient.getInstance();
 
     @SneakyThrows
     @Override
@@ -272,13 +268,8 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     @Override
-    public void openWrappedScreen(GuiElement gui) {
-        openWrappedScreen(new GuiElementWrapper(gui));
-    }
-
-    @Override
     public void openWrappedScreen(GuiContext gui) {
-        openWrappedScreen(new GuiComponentWrapper(gui));
+        openWrappedScreen(new MoulConfigScreenComponent(Text.empty(), gui, null));
     }
 
     @Override

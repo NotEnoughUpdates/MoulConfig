@@ -3,11 +3,11 @@ package io.github.notenoughupdates.moulconfig.test
 import io.github.notenoughupdates.moulconfig.common.IItemStack
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import io.github.notenoughupdates.moulconfig.gui.CloseEventListener
-import io.github.notenoughupdates.moulconfig.gui.GuiComponentWrapper
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.managed.ManagedConfig
 import io.github.notenoughupdates.moulconfig.observer.ObservableList
-import io.github.notenoughupdates.moulconfig.platform.ModernItemStack
+import io.github.notenoughupdates.moulconfig.platform.MoulConfigPlatform
+import io.github.notenoughupdates.moulconfig.platform.MoulConfigScreenComponent
 import io.github.notenoughupdates.moulconfig.xml.Bind
 import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import net.fabricmc.api.ModInitializer
@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.minecraft.block.Blocks
 import net.minecraft.client.MinecraftClient
 import net.minecraft.item.ItemStack
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import java.io.File
 import java.util.Arrays
@@ -44,10 +45,12 @@ class FabricMain : ModInitializer {
                         )
                     )
                     MinecraftClient.getInstance().setScreen(
-                        GuiComponentWrapper(
+                        MoulConfigScreenComponent(
+                            Text.empty(),
                             GuiContext(
                                 scene
-                            )
+                            ),
+                            null
                         )
                     )
                 }
@@ -83,7 +86,7 @@ class FabricMain : ModInitializer {
         }
 
         @field:Bind
-        var itemStack: IItemStack = ModernItemStack.of(ItemStack(Blocks.SAND))
+        var itemStack: IItemStack = MoulConfigPlatform.wrap(ItemStack(Blocks.SAND))
 
         @field:Bind
         var value: Boolean = false
