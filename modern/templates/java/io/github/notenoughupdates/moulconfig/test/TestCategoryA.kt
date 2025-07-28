@@ -5,7 +5,7 @@ import io.github.notenoughupdates.moulconfig.ChromaColour
 import io.github.notenoughupdates.moulconfig.annotations.*
 import io.github.notenoughupdates.moulconfig.observer.Property
 import org.lwjgl.glfw.GLFW
-import java.util.Arrays
+import java.util.*
 
 class TestCategoryA {
 
@@ -44,6 +44,11 @@ class TestCategoryA {
         @ConfigEditorDropdown(values = ["0", "1", "2", "3"])
         var numberDropdown: Int = 0
 
+        @Expose
+        @ConfigOption(name = "Drop Down", desc = "Using strings")
+        @ConfigEditorDropdown(values = ["A", "B", "C"])
+        var dropDownUisngStrings: String = "A"
+
 
         @ConfigOption(name = "Enum Dropdown", desc = "1, 2, 3, 4")
         @ConfigEditorDropdown
@@ -72,7 +77,7 @@ class TestCategoryA {
     )
     var notice: String = ""
 
-    @ConfigOption(name = "Text Box", desc = "Lets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.")
+    @ConfigOption(name = "Text Box", desc = "Lets you put strings.")
     @ConfigEditorText
     var customText: Property<String> = Property.of("abc")
 
@@ -80,7 +85,7 @@ class TestCategoryA {
     @ConfigEditorDraggableList(
         exampleText = ["abc", "dec", "blah", "surel it works really cool and great :))"]
     )
-    var draggableList: List<Int> = ArrayList(mutableListOf(0))
+    var draggableList: List<Int> = ArrayList(mutableListOf(0, 1, 2, 3))
 
     @Expose
     @ConfigOption(name = "Enum Draggable List", desc = "Draggable list but doesnt work properly.")

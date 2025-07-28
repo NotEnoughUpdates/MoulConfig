@@ -360,6 +360,8 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                             }
                             dropdownY += 12;
                         }
+                    } else if (click.getMouseState()) {
+                        closeOverlay();
                     }
                 }
                 return super.mouseEvent(mouseEvent, context);
