@@ -227,7 +227,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
         } else if (constants != null) {
             return ((Enum) selectedObject).ordinal();
         } else {
-            return Arrays.asList(values).indexOf(selectedObject);
+            return (values).stream().map(StructuredText::getText).collect(Collectors.toList()).indexOf(selectedObject);
         }
     }
 
