@@ -8,11 +8,13 @@ import java.util.regex.Pattern
 
 
 class ForgeFontRenderer(val font: FontRenderer) : IFontRenderer {
-    override val height: Int
-        get() = font.FONT_HEIGHT
 
     override fun getStringWidth(string: StructuredText): Int {
         return font.getStringWidth(StructuredTextImpl.unwrap(string).formattedText)
+    }
+
+    override fun getHeight(): Int {
+        return font.FONT_HEIGHT
     }
 
     override fun getStringWidth(string: String): Int {

@@ -60,16 +60,17 @@ class ForgeRenderContext : RenderContext {
         GlStateManager.color(ColourUtil.unpackARGBRedF(color), ColourUtil.unpackARGBGreenF(color), ColourUtil.unpackARGBBlueF(color), ColourUtil.unpackARGBAlphaF(color))
     }
 
-    override fun drawColoredTriangles(color: Int, vararg coordinates: Float) {
+
+    override fun drawColouredQuads(colour: Int, vararg coordinates: Float) {
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0)
-        worldrenderer.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION)
+        worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
 
-        applyGlobalColor(color)
-        require(coordinates.size % 6 == 0)
+        applyGlobalColor(colour)
+        require(coordinates.size % 8 == 0)
         for (i in 0 until (coordinates.size / 2)) {
             worldrenderer.pos(coordinates[i * 2].toDouble(), coordinates[i * 2 + 1].toDouble(), 0.0).endVertex()
         }

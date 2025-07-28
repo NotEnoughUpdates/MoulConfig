@@ -79,7 +79,7 @@ public class GuiComponentWrapper extends GuiScreen {
 
         if (Keyboard.getEventKeyState())
             context.getRoot().keyboardEvent(new KeyboardEvent.CharTyped(Keyboard.getEventCharacter()), createContext());
-        context.getRoot().keyboardEvent(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), Keyboard.getEventKeyState()), createContext());
+        context.getRoot().keyboardEvent(new KeyboardEvent.KeyPressed(Keyboard.getEventKey(), -1, Keyboard.getEventKeyState()), createContext());
     }
 
     @Override
@@ -88,7 +88,7 @@ public class GuiComponentWrapper extends GuiScreen {
         ForgeRenderContext frc = new ForgeRenderContext();
         context.getRoot().render(new GuiImmediateContext(
             frc,
-            0, 0, width, height, mouseX, mouseY, mouseX, mouseY , mouseX, mouseY
+            0, 0, width, height, mouseX, mouseY, mouseX, mouseY, mouseX, mouseY
         ));
         frc.renderExtraLayers();
     }

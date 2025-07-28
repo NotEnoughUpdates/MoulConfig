@@ -84,22 +84,26 @@ class ForgeMinecraft : IMinecraft {
         }
     }
 
-    override val isDevelopmentEnvironment: Boolean
-        get() = Launch.blackboard.get("fml.deobfuscatedEnvironment") as Boolean
+    override fun isDevelopmentEnvironment(): Boolean {
+        return Launch.blackboard.get("fml.deobfuscatedEnvironment") as Boolean
+    }
 
-    override val scaledWidth
-        get(): Int = ScaledResolution(Minecraft.getMinecraft()).scaledWidth
+    override fun getScaledWidth(): Int {
+        return ScaledResolution(Minecraft.getMinecraft()).scaledWidth
+    }
 
-    override val scaledHeight: Int
-        get() = ScaledResolution(Minecraft.getMinecraft()).scaledHeight
+    override fun getScaledHeight(): Int {
+        return ScaledResolution(Minecraft.getMinecraft()).scaledHeight
+    }
 
-    override val scaleFactor: Int
-        get() = ScaledResolution(Minecraft.getMinecraft()).scaleFactor
+    override fun getScaleFactor(): Int {
+        return ScaledResolution(Minecraft.getMinecraft()).scaleFactor
+    }
 
-    override fun sendClickableChatMessage(message: StructuredText, action: String, type: ClickType) {
+    override fun sendClickableChatMessage(message: StructuredText, action: String, type: ClickType?) {
         val component = StructuredTextImpl.unwrap(message)
-        component.setChatStyle(
-            component.chatStyle
+        if (type != null)
+            component.chatStyle = component.chatStyle
                 .setChatClickEvent(
                     ClickEvent(
                         when (type) {
@@ -108,7 +112,6 @@ class ForgeMinecraft : IMinecraft {
                         }, action
                     )
                 )
-        )
         Minecraft.getMinecraft().ingameGUI.chatGUI.printChatMessage(
             component
 
@@ -201,31 +204,14 @@ class ForgeMinecraft : IMinecraft {
         } ?: ""
     }
 
-    override val mouseX: Int
-        get() {
-            val width = scaledWidth
-            val mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth
-            return mouseX
-        }
-
-    override val mouseY: Int
-        get() {
-            val height = scaledHeight
-            val mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1
-            return mouseY
-        }
-    override val mouseXHF: Double
-        get() {
-            val width = ScaledResolution(Minecraft.getMinecraft()).scaledWidth_double
-            val mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth
-            return mouseX
-        }
-    override val mouseYHF: Double
-        get() {
-            val height = ScaledResolution(Minecraft.getMinecraft()).scaledHeight_double
-            val mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1
-            return mouseY
-        }
+    override fun getMousePositionHF(): Pair<Double, Double> {
+        val sr = ScaledResolution(Minecraft.getMinecraft())
+        val width = sr.scaledWidth_double
+        val mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth
+        val height = sr.scaledHeight_double
+        val mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1
+        return mouseX to mouseY
+    }
 
     companion object {
         @JvmStatic
@@ -242,11 +228,15 @@ class ForgeMinecraft : IMinecraft {
         }
     }
 
-    override val isOnMacOS: Boolean
-        get() = Minecraft.isRunningOnMac
+    override fun isOnMacOs(): Boolean {
+        return Minecraft.isRunningOnMac
+    }
 
-    override val defaultFontRenderer: IFontRenderer
-        get() = ForgeFontRenderer(Minecraft.getMinecraft().fontRendererObj)
-    override val keyboardConstants: IKeyboardConstants
-        get() = ForgeKeyboardConstants
+    override fun getDefaultFontRenderer(): IFontRenderer {
+        return ForgeFontRenderer(Minecraft.getMinecraft().fontRendererObj)
+    }
+
+    override fun getKeyboardConstants(): IKeyboardConstants {
+        return ForgeKeyboardConstants
+    }
 }
