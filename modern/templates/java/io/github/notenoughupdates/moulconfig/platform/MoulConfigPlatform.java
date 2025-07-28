@@ -192,7 +192,7 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public int getScaleFactor() {
-        return mc.getWindow().getScaleFactor();
+        return (int) mc.getWindow().getScaleFactor();
     }
 
 
@@ -254,7 +254,11 @@ public class MoulConfigPlatform implements IMinecraft {
     public static DrawContext makeDrawContext() {
         return new DrawContext(
             MinecraftClient.getInstance(),
+            #if MC217
             MinecraftClient.getInstance().gameRenderer.guiState
+            #else
+            MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers()
+            #endif
         );
     }
 

@@ -1,4 +1,5 @@
 package io.github.notenoughupdates.moulconfig.platform;
+
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import io.github.notenoughupdates.moulconfig.common.*;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
@@ -13,6 +14,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Language;
@@ -35,16 +38,6 @@ import java.util.function.Consumer;
 public class MoulConfigRenderContext implements RenderContext {
     @Getter
     final DrawContext drawContext;
-
-    @Value
-    static class DrawAction {
-        Consumer<RenderContext> action;
-        @Nullable
-        ScreenRect scissorTop;
-        Matrix3x2f transform;
-    }
-
-    NavigableMap<Layer, List<DrawAction>> queuedLayers = new TreeMap<>();
     MinecraftClient mc = MinecraftClient.getInstance();
 
     public MoulConfigRenderContext(DrawContext drawContext) {
@@ -76,14 +69,23 @@ public class MoulConfigRenderContext implements RenderContext {
 
     @Override
     public void translate(float x, float y) {
+        #if MC217
         getMatrices().translate(x, y);
+        #else
+        getMatrices().translate(x, y, 0);
+        #endif
     }
 
     @Override
     public void scale(float x, float y) {
+        #if MC217
         getMatrices().scale(x, y);
+        #else
+        getMatrices().scale(x, y, 1);
+        #endif
     }
 
+    #if MC217
     @Override
     public void drawOnTop(Layer layer, ScissorBehaviour escapeScissors, Consumer<RenderContext> later) {
         var queuedActions = queuedLayers.computeIfAbsent(layer, ignored -> new ArrayList<>());
@@ -95,6 +97,24 @@ public class MoulConfigRenderContext implements RenderContext {
             },
             new Matrix3x2f(getMatrices())));
     }
+    #else
+    @Override
+    public void drawOnTop(Layer layer, ScissorBehaviour escapeScissors, Consumer<RenderContext> later) {
+        pushMatrix();
+        if (escapeScissors == ScissorBehaviour.ESCAPE) {
+            pushRawScissor(0, 0, IMinecraft.INSTANCE.getScaledWidth(), IMinecraft.INSTANCE.getScaledHeight());
+        }
+
+        getMatrices().translate(0F, 0F, layer.getSortIndex());
+
+        later.accept(this);
+
+        if (escapeScissors == ScissorBehaviour.ESCAPE) {
+            popScissor();
+        }
+        popMatrix();
+    }
+    #endif
 
     @Override
     public void drawColouredQuads(int color, float... coordinates) {
@@ -103,6 +123,7 @@ public class MoulConfigRenderContext implements RenderContext {
         for (int i = 0; i < coordinates.length; i += 2) {
             rect = rect.includePoint((int) coordinates[i], (int) coordinates[i + 1]);
         }
+        #if MC217
         var scissors = drawContext.scissorStack.peekLast();
         var matrix = new Matrix3x2f(getMatrices());
         var bounds = new ScreenRect(rect.getX(), rect.getY(), rect.getW(), rect.getH());
@@ -141,6 +162,16 @@ public class MoulConfigRenderContext implements RenderContext {
                 return finalBounds;
             }
         });
+        #else
+        drawContext.draw(consumers -> {
+            var matrix = getMatrices().peek().getPositionMatrix();
+            var vertices = consumers.getBuffer(RenderLayer.getGui());
+            for (int i = 0; i < coordinates.length; i += 2) {
+                vertices.vertex(matrix, coordinates[i], coordinates[i + 1], 0F)
+                    .color(color);
+            }
+        });
+        #endif
     }
 
     @Override
@@ -268,6 +299,17 @@ public class MoulConfigRenderContext implements RenderContext {
         );
     }
 
+    #if MC217
+    @Value
+    static class DrawAction {
+        Consumer<RenderContext> action;
+        @Nullable
+        ScreenRect scissorTop;
+        Matrix3x2f transform;
+    }
+
+    NavigableMap<Layer, List<DrawAction>> queuedLayers = new TreeMap<>();
+
     @Override
     public void renderExtraLayers() {
         var currentLayer = Layer.ROOT;
@@ -300,4 +342,11 @@ public class MoulConfigRenderContext implements RenderContext {
             }
         }
     }
+    #else
+
+    @Override
+    public void renderExtraLayers() {
+        // Left blank: [drawOnTop] renders directly.
+    }
+    #endif
 }
