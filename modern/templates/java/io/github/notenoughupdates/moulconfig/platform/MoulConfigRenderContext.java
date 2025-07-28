@@ -197,8 +197,12 @@ public class MoulConfigRenderContext implements RenderContext {
         int topI = (int) top;
         int rightI = (int) right;
         int bottomI = (int) bottom;
+        #if MC217
         drawContext.fill(RenderPipelines.GUI_INVERT, TextureSetup.empty(), leftI, topI, rightI, bottomI, 0, -1);
         drawContext.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, TextureSetup.empty(), leftI, topI, rightI, bottomI, 0, additiveColor);
+        #else
+        drawContext.fill(RenderLayer.getGuiTextHighlight(), leftI, topI, rightI, bottomI, 0, additiveColor);
+        #endif
     }
 
     @Override
@@ -215,7 +219,7 @@ public class MoulConfigRenderContext implements RenderContext {
                 false
             );
         drawContext.drawTexturedQuad(
-            RenderPipelines.GUI_TEXTURED,
+            #if MC217 RenderPipelines.GUI_TEXTURED #else RenderLayer::getGuiTextured #endif,
             identifier,
             (int) x, (int) (x + width), (int) y, (int) (y + height),
             u1, u2, v1, v2,
@@ -286,17 +290,29 @@ public class MoulConfigRenderContext implements RenderContext {
 
     @Override
     public void drawTooltipNow(int x, int y, List<StructuredText> tooltipLines) {
+        var lines = tooltipLines.stream()
+            .map(MoulConfigPlatform::unwrap)
+            #if MC217
+            .map(Language.getInstance()::reorder)
+            .map(TooltipComponent::of)
+            #endif
+            .toList();
+        #if MC217
         drawContext.drawTooltipImmediately(
             mc.textRenderer,
-            tooltipLines.stream()
-                .map(MoulConfigPlatform::unwrap)
-                .map(Language.getInstance()::reorder)
-                .map(TooltipComponent::of)
-                .toList(),
+            lines,
             x, y,
             HoveredTooltipPositioner.INSTANCE,
             null
         );
+        #else
+        drawContext.drawTooltip(
+            mc.textRenderer,
+            lines,
+            x, y,
+            null
+        );
+        #endif
     }
 
     #if MC217
