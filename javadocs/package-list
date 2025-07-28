@@ -20,6 +20,7 @@ module:common
 io.github.notenoughupdates.moulconfig
 io.github.notenoughupdates.moulconfig.annotations
 io.github.notenoughupdates.moulconfig.common
+io.github.notenoughupdates.moulconfig.common.text
 io.github.notenoughupdates.moulconfig.gui
 io.github.notenoughupdates.moulconfig.gui.component
 io.github.notenoughupdates.moulconfig.gui.editors
@@ -38,14 +39,11 @@ io.github.notenoughupdates.moulconfig.internal
 io.github.notenoughupdates.moulconfig.test
 io.github.notenoughupdates.moulconfig.tweaker
 module:modern-1.21.4
-io.github.notenoughupdates.moulconfig.gui
 io.github.notenoughupdates.moulconfig.platform
 io.github.notenoughupdates.moulconfig.test
 module:modern-1.21.5
-io.github.notenoughupdates.moulconfig.gui
 io.github.notenoughupdates.moulconfig.platform
 io.github.notenoughupdates.moulconfig.test
 module:modern-1.21.7
-io.github.notenoughupdates.moulconfig.gui
 io.github.notenoughupdates.moulconfig.platform
 io.github.notenoughupdates.moulconfig.test
