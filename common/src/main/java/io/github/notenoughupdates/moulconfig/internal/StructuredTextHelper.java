@@ -12,7 +12,7 @@ public class StructuredTextHelper {
         if (object instanceof StructuredText) {
             return (StructuredText) object;
         }
-        var structured = IMinecraft.instance.createStructuredTextInternal(object);
+        var structured = IMinecraft.INSTANCE.createStructuredTextInternal(object);
         if (structured != null) {
             return structured;
         }

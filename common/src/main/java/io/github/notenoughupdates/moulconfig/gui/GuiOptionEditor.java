@@ -96,7 +96,7 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
     public int getHeight() {
         if (option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
             return HEIGHT;
-        var fr = IMinecraft.instance.getDefaultFontRenderer();
+        var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
         return Math.max(45, fr.splitText(option.getDescription(), 250 * 2 / 3 - 10).size() * (fr.getHeight() + 1) + 10);
     }
 

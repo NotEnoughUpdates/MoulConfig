@@ -51,7 +51,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
     public GuiImmediateContext getImmContext(
         int x, int y, int width, int height, RenderContext renderContext
     ) {
-        IMinecraft instance = IMinecraft.instance;
+        IMinecraft instance = IMinecraft.INSTANCE;
         return new GuiImmediateContext(
             renderContext,
             x, y,
@@ -79,7 +79,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
         public int getHeight() {
             if (option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
                 return super.getHeight();
-            var fr = IMinecraft.instance.getDefaultFontRenderer();
+            var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
             return Math.max(45, fr.splitText(option.getDescription(), 250 * 2 / 3 - 10).size() * (fr.getHeight() + 1) + 10);
         }
 
@@ -156,12 +156,12 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
     @Override
     public final boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
-        return getDelegate().mouseEvent(mouseEvent, getImmContext(x, y, width, getHeight(), IMinecraft.instance.provideTopLevelRenderContext()));
+        return getDelegate().mouseEvent(mouseEvent, getImmContext(x, y, width, getHeight(), IMinecraft.INSTANCE.provideTopLevelRenderContext()));
     }
 
     @Override
     public final boolean keyboardInput(KeyboardEvent keyboardEvent) {
-        val ctx = getImmContext(lastRenderX, lastRenderY, lastRenderWidth, lastRenderHeight, IMinecraft.instance.provideTopLevelRenderContext());
+        val ctx = getImmContext(lastRenderX, lastRenderY, lastRenderWidth, lastRenderHeight, IMinecraft.INSTANCE.provideTopLevelRenderContext());
         val overlay = getOverlayDelegate();
         if (overlay != null) {
             overlay.foldRecursive((Void) null, (comp, _void) -> {
@@ -206,7 +206,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             comp.setContext(getDelegate().getContext());
             return _void;
         });
-        return overlay.mouseEvent(event, getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), IMinecraft.instance.provideTopLevelRenderContext()));
+        return overlay.mouseEvent(event, getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), IMinecraft.INSTANCE.provideTopLevelRenderContext()));
     }
 
     @Override

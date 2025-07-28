@@ -64,7 +64,7 @@ public abstract class Social {
             try {
                 Desktop.getDesktop().browse(url);
             } catch (Exception e) {
-                IMinecraft.instance.sendClickableChatMessage(StructuredText.of("Click here to open ").append(name), url.toString(), ClickType.OPEN_LINK);
+                IMinecraft.INSTANCE.sendClickableChatMessage(StructuredText.of("Click here to open ").append(name), url.toString(), ClickType.OPEN_LINK);
             }
         }
 

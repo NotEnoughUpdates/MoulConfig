@@ -30,10 +30,10 @@ import java.util.HashSet;
 import java.util.List;
 
 public class Warnings {
-    public static boolean isDevEnv = IMinecraft.instance.isDevelopmentEnvironment();
+    public static boolean isDevEnv = IMinecraft.INSTANCE.isDevelopmentEnvironment();
     public static boolean shouldWarn = PropertyUtil.getBooleanWithFallback("moulconfig.warn", isDevEnv);
     public static boolean shouldCrash = shouldWarn && PropertyUtil.getBooleanWithFallback("moulconfig.warn.crash", isDevEnv);
-    public static MCLogger logger = IMinecraft.instance.getLogger("MoulConfig");
+    public static MCLogger logger = IMinecraft.INSTANCE.getLogger("MoulConfig");
     public static String basePackage = GuiTextures.class.getPackage().getName() + ".";
     public static String testPackage = basePackage + "test.";
     public static HashSet<Object> warnedObjects = new HashSet<>();

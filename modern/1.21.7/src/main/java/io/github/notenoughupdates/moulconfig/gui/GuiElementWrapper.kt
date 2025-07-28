@@ -35,7 +35,7 @@ class GuiElementWrapper(
     override fun mouseMoved(d: Double, e: Double) {
         val di = d.toInt()
         val ei = e.toInt()
-        val event = MouseEvent.Move(d.toFloat() - IMinecraft.instance.mouseX, e.toFloat() - IMinecraft.instance.mouseY)
+        val event = MouseEvent.Move(d.toFloat() - IMinecraft.INSTANCE.mouseX, e.toFloat() - IMinecraft.INSTANCE.mouseY)
         guiElement.mouseInput(di, ei, event)
     }
 

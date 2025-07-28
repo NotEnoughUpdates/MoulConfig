@@ -57,7 +57,7 @@ public interface RenderContext {
      * Returns whether the control key is held down on Windows and Linux, and for macOS checks if the command key is held down.
      */
     default boolean isLogicalCtrlDown() {
-        if (getMinecraft().isOnMacOS()) {
+        if (getMinecraft().isOnMacOs()) {
             return isCmdDown();
         } else {
             return isPhysicalCtrlDown();
@@ -238,6 +238,6 @@ public interface RenderContext {
     void renderExtraLayers();
 
     default @NotNull IMinecraft getMinecraft() {
-        return IMinecraft.instance;
+        return IMinecraft.INSTANCE;
     }
 }

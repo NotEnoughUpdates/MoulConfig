@@ -66,7 +66,7 @@ public class GuiOptionEditorKeybindL extends GuiOptionEditor {
 
         int resetX = x + width / 6 - 24 + 48 + 3;
         int resetY = y + height - 7 - 14 + 3;
-        val mc = IMinecraft.instance;
+        val mc = IMinecraft.INSTANCE;
         renderContext.drawComplexTexture(GuiTextures.RESET, resetX, resetY, 10, 11, it -> it.filter(TextureFilter.NEAREST));
         // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
         if (lastMousePosition != null &&

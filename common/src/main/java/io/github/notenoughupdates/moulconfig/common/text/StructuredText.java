@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 @ApiStatus.NonExtendable
 public interface StructuredText {
     static @NotNull StructuredText of(@NotNull String text) {
-        return IMinecraft.instance.createLiteral(text);
+        return IMinecraft.INSTANCE.createLiteral(text);
     }
 
     static @NotNull StructuredText empty() {
@@ -18,7 +18,7 @@ public interface StructuredText {
     }
 
     static @NotNull StructuredText translatable(@NotNull String translationKey, @NotNull StructuredText @NotNull ... args) {
-        return IMinecraft.instance.createTranslatable(translationKey, args);
+        return IMinecraft.INSTANCE.createTranslatable(translationKey, args);
     }
 
     /**

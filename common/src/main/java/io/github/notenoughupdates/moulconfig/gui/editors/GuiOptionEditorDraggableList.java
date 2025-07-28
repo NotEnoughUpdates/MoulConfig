@@ -112,7 +112,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     public int getHeight() {
         int height = super.getHeight() + 13;
 
-        var fr = IMinecraft.instance.getDefaultFontRenderer();
+        var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
         for (Object object : activeText) {
             StructuredText str = getExampleText(object);
             height += 10 * fr.splitLines(str).size();
@@ -129,7 +129,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     public void render(RenderContext renderContext, int x, int y, int width) {
         super.render(renderContext, x, y, width);
         int height = getHeight();
-        var mc = IMinecraft.instance;
+        var mc = IMinecraft.INSTANCE;
         var fr = mc.getDefaultFontRenderer();
 
         renderContext.drawTexturedRect(GuiTextures.BUTTON, x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
@@ -173,7 +173,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         for (Object indexObject : activeText) {
             StructuredText str = getExampleText(indexObject);
 
-            var multilines = IMinecraft.instance.getDefaultFontRenderer().splitLines(str);
+            var multilines = IMinecraft.INSTANCE.getDefaultFontRenderer().splitLines(str);
 
             int ySize = multilines.size() * 10;
 
@@ -201,7 +201,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
     @Override
     public void renderOverlay(RenderContext context, int x, int y, int width) {
         super.renderOverlay(context, x, y, width);
-        var fr = IMinecraft.instance.getDefaultFontRenderer();
+        var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
         if (dropdownOpen) {
             List<Object> remaining = new ArrayList<>(exampleText.keySet());
             remaining.removeAll(activeText);
@@ -250,8 +250,8 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 
             if (opacity < 20) return;
 
-            int mouseX = IMinecraft.instance.getMouseX();
-            int mouseY = IMinecraft.instance.getMouseY();
+            int mouseX = IMinecraft.INSTANCE.getMouseX();
+            int mouseY = IMinecraft.INSTANCE.getMouseY();
 
             StructuredText str = getExampleText(currentDragging);
             var multilines = fr.splitLines(str);
@@ -301,7 +301,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
             return false;
         }
 
-        if (!IMinecraft.instance.isMouseButtonDown(0) || dropdownOpen) {
+        if (!IMinecraft.INSTANCE.isMouseButtonDown(0) || dropdownOpen) {
             currentDragging = null;
             dragStartIndex = -1;
             if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
@@ -361,7 +361,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 mouseY > y + 45 && mouseY < y + height - 6) {
                 int yOff = 0;
                 int i = 0;
-                var fr = IMinecraft.instance.getDefaultFontRenderer();
+                var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
                 for (Object objectIndex : activeText) {
                     StructuredText str = getExampleText(objectIndex);
                     int ySize = 10 * fr.splitLines(str).size();
@@ -380,7 +380,7 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         } else if (mouseEvent instanceof MouseEvent.Move && currentDragging != null) {
             int yOff = 0;
             int i = 0;
-            var fr = IMinecraft.instance.getDefaultFontRenderer();
+            var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
             for (Object objectIndex : activeText) {
                 if (dragOffsetY + mouseY + 4 < y + 50 + yOff + 10) {
                     activeText.remove(dragStartIndex);

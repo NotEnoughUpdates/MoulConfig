@@ -24,7 +24,7 @@ class ModernItemStack private constructor(val backing: ItemStack) : IItemStack {
     }
 
     override fun getItemId(): MyResourceLocation {
-        return MoulConfigPlatform.fromIdentifier(Registries.ITEM.getId(backing.item))
+        return MoulConfigPlatform.wrap(Registries.ITEM.getId(backing.item))
     }
 
     companion object {

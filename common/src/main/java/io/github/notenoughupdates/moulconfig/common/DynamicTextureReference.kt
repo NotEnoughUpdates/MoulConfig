@@ -35,6 +35,6 @@ abstract class DynamicTextureReference : Closeable {
 
     protected fun finalize() { // TODO: replace with a reference queue and Warnings.warn
         if (!wasDestroyed)
-            IMinecraft.instance.getLogger("DynamicTextureReference").warn("Dangling DynamicTextureReference")
+            IMinecraft.INSTANCE.getLogger("DynamicTextureReference").warn("Dangling DynamicTextureReference")
     }
 }

@@ -19,7 +19,7 @@ open class TextFieldComponent(
     private val preferredWidth: Int,
     val editable: Supplier<Boolean> = GetSetter.constant(true),
     val suggestion: String = "",
-    val font: IFontRenderer = IMinecraft.instance.defaultFontRenderer,
+    val font: IFontRenderer = IMinecraft.INSTANCE.defaultFontRenderer,
 ) : GuiComponent() {
     private var cursor = 0
     private var selection = -1
@@ -193,7 +193,7 @@ open class TextFieldComponent(
                 }
 
                 KeyboardConstants.keyC -> if (context.renderContext.isLogicalCtrlDown) {
-                    IMinecraft.instance.copyToClipboard(
+                    IMinecraft.INSTANCE.copyToClipboard(
                         getSelection()
                     )
                     return true
@@ -202,7 +202,7 @@ open class TextFieldComponent(
                 }
 
                 KeyboardConstants.keyX -> if (context.renderContext.isLogicalCtrlDown) {
-                    IMinecraft.instance.copyToClipboard(
+                    IMinecraft.INSTANCE.copyToClipboard(
                         getSelection()
                     )
                     writeText("", context.width)
@@ -212,7 +212,7 @@ open class TextFieldComponent(
                 }
 
                 KeyboardConstants.keyV -> if (context.renderContext.isLogicalCtrlDown) {
-                    writeText(IMinecraft.instance.copyFromClipboard(), context.width)
+                    writeText(IMinecraft.INSTANCE.copyFromClipboard(), context.width)
                     return true
                 } else {
                     return false

@@ -30,7 +30,7 @@ public class GuiOptionEditorText extends ComponentEditor {
                 80,
                 GetSetter.constant(true),
                 "",
-                IMinecraft.instance.getDefaultFontRenderer()
+                IMinecraft.INSTANCE.getDefaultFontRenderer()
             ));
         }
         return component;

@@ -129,7 +129,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
         color: Int, filter: TextureFilter,
     ) {
         FilterAssertionCache.assertTextureFilter(texture, filter)
-        val identifier = MoulConfigPlatform.fromMyResourceLocation(texture)
+        val identifier = MoulConfigPlatform.unwrap(texture)
         MinecraftClient.getInstance()
             .textureManager
             .getTexture(identifier)

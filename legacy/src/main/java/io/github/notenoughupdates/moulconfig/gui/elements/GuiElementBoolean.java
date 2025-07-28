@@ -85,7 +85,7 @@ public class GuiElementBoolean extends GuiElement {
 
     @Override
     public void render() {
-        RenderContext renderContext = IMinecraft.instance.provideTopLevelRenderContext();
+        RenderContext renderContext = IMinecraft.INSTANCE.provideTopLevelRenderContext();
         renderContext.drawTexturedRect(GuiTextures.TOGGLE_BAR, x, y, xSize, ySize);
 
         MyResourceLocation buttonLoc = GuiTextures.TOGGLE_ON;

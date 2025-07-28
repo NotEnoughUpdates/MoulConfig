@@ -5,6 +5,7 @@ plugins {
     `maven-publish`
 	id("moulconfig.base")
     id("moulconfig.test")
+    id("moulconfig.manifold")
 }
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))

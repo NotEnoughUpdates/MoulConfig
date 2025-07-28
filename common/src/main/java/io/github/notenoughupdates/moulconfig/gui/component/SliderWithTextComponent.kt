@@ -89,7 +89,7 @@ open class SliderWithTextComponent(
             20,
             GetSetter.constant(true),
             "",
-            IMinecraft.instance.defaultFontRenderer
+            IMinecraft.INSTANCE.defaultFontRenderer
         )
     }
 

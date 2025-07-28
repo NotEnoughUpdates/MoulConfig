@@ -34,7 +34,7 @@ import java.util.function.BiFunction;
  * Additionally, these elements now properly handle focus.
  */
 public abstract class GuiComponent {
-    protected final IMinecraft mc = IMinecraft.instance;
+    protected final IMinecraft mc = IMinecraft.INSTANCE;
     @Setter
     @Getter
     GuiContext context;

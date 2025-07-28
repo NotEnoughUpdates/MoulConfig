@@ -19,9 +19,9 @@ class BasicCollapsibleLoader : XMLGuiLoader.Basic<CollapsibleComponent> {
         val body = context.getChildFragment(element)
         val title = context.getPropertyFromAttribute(element, QName("title"), String::class.java)!!
         val textComponent = TextComponent(
-            IMinecraft.instance.defaultFontRenderer,
+            IMinecraft.INSTANCE.defaultFontRenderer,
             { StructuredText.of(title.get()) },
-            IMinecraft.instance.defaultFontRenderer.getStringWidth(title.get()),
+            IMinecraft.INSTANCE.defaultFontRenderer.getStringWidth(title.get()),
             TextComponent.TextAlignment.LEFT,
             false,
             false

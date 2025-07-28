@@ -36,7 +36,7 @@ class MoulConfigPlatform : IMinecraft {
 
     companion object {
         init {
-            IMinecraft.instance
+            IMinecraft.INSTANCE
         }
 
         lateinit var instance: MoulConfigPlatform

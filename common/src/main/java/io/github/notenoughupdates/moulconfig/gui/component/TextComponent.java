@@ -50,15 +50,15 @@ public class TextComponent extends GuiComponent {
     private static final Pattern colorPattern = Pattern.compile("§[a-f0-9r]");
 
     public TextComponent(StructuredText string, int width, TextAlignment alignment) {
-        this(IMinecraft.instance.getDefaultFontRenderer(), () -> string, width, alignment, false, false);
+        this(IMinecraft.INSTANCE.getDefaultFontRenderer(), () -> string, width, alignment, false, false);
     }
 
     public TextComponent(StructuredText string, int width) {
-        this(IMinecraft.instance.getDefaultFontRenderer(), () -> string, width, TextAlignment.LEFT, false, false);
+        this(IMinecraft.INSTANCE.getDefaultFontRenderer(), () -> string, width, TextAlignment.LEFT, false, false);
     }
 
     public TextComponent(StructuredText string) {
-        this(string, IMinecraft.instance.getDefaultFontRenderer().getStringWidth(string));
+        this(string, IMinecraft.INSTANCE.getDefaultFontRenderer().getStringWidth(string));
     }
 
     public TextComponent(String string) {

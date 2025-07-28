@@ -30,7 +30,7 @@ class FabricMain : ModInitializer {
                 MinecraftClient.getInstance().send {
                     val editor = config.getEditor()
                     editor.setWide(config.instance.testCategoryA.isWide)
-                    IMinecraft.instance.openWrappedScreen(editor)
+                    IMinecraft.INSTANCE.openWrappedScreen(editor)
                 }
                 0
             })

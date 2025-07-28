@@ -83,7 +83,7 @@ class ManagedConfig<T : Config>(private val builder: ManagedConfigBuilder<T>) :
     }
 
     fun openConfigGui() {
-        IMinecraft.instance.openWrappedScreen(getEditor())
+        IMinecraft.INSTANCE.openWrappedScreen(getEditor())
     }
 }
 

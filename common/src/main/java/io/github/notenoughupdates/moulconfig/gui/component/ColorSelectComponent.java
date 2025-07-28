@@ -77,7 +77,7 @@ public class ColorSelectComponent extends GuiComponent {
         48,
         GetSetter.constant(true),
         "#000000",
-        IMinecraft.instance.getDefaultFontRenderer()
+        IMinecraft.INSTANCE.getDefaultFontRenderer()
     );
 
     private int xSize = 119;
@@ -143,7 +143,7 @@ public class ColorSelectComponent extends GuiComponent {
 
     private static DynamicTextureReference loadOrUpdate(DynamicTextureReference ref, BufferedImage image) {
         if (ref != null) ref.destroy();
-        return IMinecraft.instance.generateDynamicTexture(image);
+        return IMinecraft.INSTANCE.generateDynamicTexture(image);
     }
 
     private DynamicTextureReference getOpacitySlider(int currentColour) {

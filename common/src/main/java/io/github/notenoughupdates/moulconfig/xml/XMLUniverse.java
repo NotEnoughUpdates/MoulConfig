@@ -135,7 +135,7 @@ public class XMLUniverse {
 
     @NotNull
     public GuiComponent load(@NotNull Object bind, @NotNull MyResourceLocation location) {
-        return load(bind, IMinecraft.instance.loadResourceLocation(location));
+        return load(bind, IMinecraft.INSTANCE.loadResourceLocation(location));
     }
 
     public <E> E mapXMLObject(String attributeValue, Class<E> type) {

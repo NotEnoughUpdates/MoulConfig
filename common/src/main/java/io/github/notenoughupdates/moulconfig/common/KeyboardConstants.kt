@@ -1,3 +1,3 @@
 package io.github.notenoughupdates.moulconfig.common
 
-object KeyboardConstants : IKeyboardConstants by IMinecraft.instance.keyboardConstants
+object KeyboardConstants : IKeyboardConstants by IMinecraft.getInstance().keyboardConstants

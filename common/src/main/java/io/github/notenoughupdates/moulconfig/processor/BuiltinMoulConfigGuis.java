@@ -74,6 +74,6 @@ public class BuiltinMoulConfigGuis {
                 }
             };
         }));
-        IMinecraft.instance.addExtraBuiltinConfigProcessors(processor);
+        IMinecraft.INSTANCE.addExtraBuiltinConfigProcessors(processor);
     }
 }

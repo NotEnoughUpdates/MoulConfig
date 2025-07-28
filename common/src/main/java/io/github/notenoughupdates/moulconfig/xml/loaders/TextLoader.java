@@ -23,9 +23,9 @@ public class TextLoader implements XMLGuiLoader.Basic<TextComponent> {
         var string = context.getPropertyFromAttribute(element, new QName("text"), StructuredText.class);
         assert string != null;
         return new TextComponent(
-            IMinecraft.instance.getDefaultFontRenderer(),
+            IMinecraft.INSTANCE.getDefaultFontRenderer(),
             string,
-            context.getPropertyFromAttribute(element, new QName("width"), int.class, IMinecraft.instance.getDefaultFontRenderer().getStringWidth(string.get())),
+            context.getPropertyFromAttribute(element, new QName("width"), int.class, IMinecraft.INSTANCE.getDefaultFontRenderer().getStringWidth(string.get())),
             context.getPropertyFromAttribute(element, new QName("textAlign"), TextComponent.TextAlignment.class, TextComponent.TextAlignment.LEFT),
             context.getPropertyFromAttribute(element, new QName("shadow"), boolean.class, true),
             context.getPropertyFromAttribute(element, new QName("split"), boolean.class, true)

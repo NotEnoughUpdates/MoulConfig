@@ -132,7 +132,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
 
             context.getRenderContext().drawColoredRect(left + 1, top + 14 - 1, left + dropdownWidth - 1, top + 14, outlineColour); //Bar
             int dropdownY = 13;
-            IFontRenderer fr = IMinecraft.instance.getDefaultFontRenderer();
+            IFontRenderer fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
             for (StructuredText option : values) {
                 if (option.getText().isEmpty()) {
                     option = StructuredText.of("<NONE>");
@@ -208,7 +208,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
                 true, context.getWidth() - 10, 4, 6, 6, -1
             );
             context.getRenderContext().drawStringScaledMaxWidth(
-                selectedString, IMinecraft.instance.getDefaultFontRenderer(),
+                selectedString, IMinecraft.INSTANCE.getDefaultFontRenderer(),
                 3, 3, false, context.getWidth() - 16, 0xffa0a0a0
             );
         }

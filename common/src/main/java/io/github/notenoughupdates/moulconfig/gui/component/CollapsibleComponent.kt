@@ -17,7 +17,7 @@ class CollapsibleComponent(
 ) : GuiComponent() {
 
     companion object {
-        val fr = IMinecraft.instance.defaultFontRenderer
+        val fr = IMinecraft.INSTANCE.defaultFontRenderer
         val padding = 2
         val trim = 3
         val iconWidth = 9

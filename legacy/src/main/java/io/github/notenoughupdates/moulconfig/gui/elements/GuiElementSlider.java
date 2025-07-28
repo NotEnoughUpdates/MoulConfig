@@ -78,7 +78,7 @@ public class GuiElementSlider extends GuiElement {
 
         float sliderAmount = Math.max(0, Math.min(1, (value - minValue) / (maxValue - minValue)));
         int sliderAmountI = (int) (width * sliderAmount);
-        RenderContext renderContext = IMinecraft.instance.provideTopLevelRenderContext();
+        RenderContext renderContext = IMinecraft.INSTANCE.provideTopLevelRenderContext();
 
         renderContext.drawTexturedRect(GuiTextures.SLIDER_ON_CAP, x, y, 4, HEIGHT);
         renderContext.drawTexturedRect(GuiTextures.SLIDER_OFF_CAP, x + width - 4, y, 4, HEIGHT);

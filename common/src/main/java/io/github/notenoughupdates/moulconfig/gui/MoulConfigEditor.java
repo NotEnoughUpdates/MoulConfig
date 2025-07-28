@@ -317,8 +317,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         long currentTime = System.currentTimeMillis();
         long delta = currentTime - openedMillis;
 
-        IMinecraft iMinecraft = IMinecraft.instance;
-        RenderContext context = IMinecraft.instance.provideTopLevelRenderContext();
+        IMinecraft iMinecraft = IMinecraft.INSTANCE;
+        RenderContext context = IMinecraft.INSTANCE.provideTopLevelRenderContext();
 
         int width = iMinecraft.getScaledWidth();
         int height = iMinecraft.getScaledHeight();
@@ -735,7 +735,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
     public boolean mouseInput(int mouseX, int mouseY, MouseEvent mouseEvent) {
         lastMouseX = mouseX;
-        val iMinecraft = IMinecraft.instance;
+        val iMinecraft = IMinecraft.INSTANCE;
         int width = iMinecraft.getScaledWidth();
         int height = iMinecraft.getScaledHeight();
         int scaleFactor = iMinecraft.getScaleFactor();
@@ -1061,7 +1061,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
     }
 
     public boolean keyboardInput(KeyboardEvent event) {
-        val iMinecraft = IMinecraft.instance;
+        val iMinecraft = IMinecraft.INSTANCE;
         int width = iMinecraft.getScaledWidth();
         int height = iMinecraft.getScaledHeight();
         int scaleFactor = iMinecraft.getScaleFactor();
@@ -1115,8 +1115,8 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
         }
 
         if (event instanceof KeyboardEvent.KeyPressed && ((KeyboardEvent.KeyPressed) event).getPressed()) {
-            if (IMinecraft.instance.isKeyboardKeyDown(IMinecraft.instance.getKeyboardConstants().getCtrlLeft())
-                && IMinecraft.instance.isKeyboardKeyDown(IMinecraft.instance.getKeyboardConstants().getKeyF())) {
+            if (IMinecraft.INSTANCE.isKeyboardKeyDown(IMinecraft.INSTANCE.getKeyboardConstants().getCtrlLeft())
+                && IMinecraft.INSTANCE.isKeyboardKeyDown(IMinecraft.INSTANCE.getKeyboardConstants().getKeyF())) {
                 searchField.setFocus(!searchField.isFocused());
                 return true;
             }
@@ -1132,7 +1132,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             new GuiImmediateContext(iMinecraft.provideTopLevelRenderContext(), 0, 0, 0, 0, 0, 0, 0, 0, 0F, 0F));
 
         if (!searchFieldContent.get().equals(old)) {
-            searchFieldContent.set(IMinecraft.instance.getDefaultFontRenderer().trimStringToWidth(
+            searchFieldContent.set(IMinecraft.INSTANCE.getDefaultFontRenderer().trimStringToWidth(
                 searchFieldContent.get(),
                 innerWidth / 2 - 20
             ));
@@ -1145,17 +1145,17 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
 
     private void handleKeyboardPresses() {
         LerpingInteger target = lastMouseX < keyboardScrollXCutoff ? categoryScroll : optionsScroll;
-        if (IMinecraft.instance.isKeyboardKeyDown(IMinecraft.instance.getKeyboardConstants().getDown())) {
+        if (IMinecraft.INSTANCE.isKeyboardKeyDown(IMinecraft.INSTANCE.getKeyboardConstants().getDown())) {
             target.setTimeToReachTarget(50);
             target.resetTimer();
             target.setTarget(target.getTarget() + 5);
-        } else if (IMinecraft.instance.isKeyboardKeyDown(IMinecraft.instance.getKeyboardConstants().getUp())) {
+        } else if (IMinecraft.INSTANCE.isKeyboardKeyDown(IMinecraft.INSTANCE.getKeyboardConstants().getUp())) {
             target.setTimeToReachTarget(50);
             target.resetTimer();
             if (target.getTarget() >= 0) {
                 target.setTarget(Math.max(0, target.getTarget() - 5));
             }
-        } else if (IMinecraft.instance.isKeyboardKeyDown(IMinecraft.instance.getKeyboardConstants().getEscape())) {
+        } else if (IMinecraft.INSTANCE.isKeyboardKeyDown(IMinecraft.INSTANCE.getKeyboardConstants().getEscape())) {
             getConfigObject().saveNow();
         }
     }

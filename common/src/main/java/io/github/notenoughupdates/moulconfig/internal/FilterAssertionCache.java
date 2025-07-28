@@ -39,7 +39,7 @@ public class FilterAssertionCache {
      * Assert that a texture uses a certain global filter state. If this is the first time the texture is seen, the state is remembered in this class. On subsequent calls this function warns if a different filter is passed.
      */
     public static void assertTextureFilter(MyResourceLocation resourceLocation, TextureFilter filter) {
-        val set = IMinecraft.instance.isGeneratedSentinel(resourceLocation)
+        val set = IMinecraft.INSTANCE.isGeneratedSentinel(resourceLocation)
             ? TEMPORARY
             : PERMANENT;
         val existing = set.get(resourceLocation);

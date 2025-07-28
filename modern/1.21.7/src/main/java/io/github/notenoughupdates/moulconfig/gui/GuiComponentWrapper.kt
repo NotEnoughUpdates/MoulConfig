@@ -10,7 +10,7 @@ import net.minecraft.text.Text
 /**
  * Wrapper for a [GuiContext]. Fabric specific equivalent of GuiScreenElementWrapperNew.
  */
-open class GuiComponentWrapper(
+open class GuiComponentWrapper @JvmOverloads constructor(
     val context: GuiContext,
     label: Text = Text.literal("")
 ) : Screen(label) {
