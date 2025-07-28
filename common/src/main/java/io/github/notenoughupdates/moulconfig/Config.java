@@ -65,6 +65,10 @@ public abstract class Config {
         return DescriptionRendereringBehaviour.SCALE_TEXT;
     }
 
+    public TitleRenderingBehaviour getTitleRenderingBehaviour(ProcessedOption option) {
+        return TitleRenderingBehaviour.LEFT;
+    }
+
     public boolean shouldAutoFocusSearchbar() {
         return false;
     }

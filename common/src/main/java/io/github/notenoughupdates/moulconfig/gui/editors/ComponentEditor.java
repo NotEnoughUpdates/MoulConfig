@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.DescriptionRendereringBehaviour;
+import io.github.notenoughupdates.moulconfig.TitleRenderingBehaviour;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
@@ -18,6 +19,7 @@ import java.util.List;
 
 public abstract class ComponentEditor extends GuiOptionEditor {
     private static final int HEIGHT = 45;
+
     protected ComponentEditor(ProcessedOption option) {
         super(option);
     }
@@ -75,12 +77,19 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             return super.getWidth() + 150;
         }
 
-        @Override
-        public int getHeight() {
-            if (option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
+        protected int getDescriptionHeight() {
+            if (option.getConfig().getDescriptionBehaviour(option) == DescriptionRendereringBehaviour.SCALE_TEXT)
                 return super.getHeight();
             var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
             return Math.max(45, fr.splitText(option.getDescription(), 250 * 2 / 3 - 10).size() * (fr.getHeight() + 1) + 10);
+        }
+
+        @Override
+        public int getHeight() {
+            int height = getDescriptionHeight();
+            if (option.getConfig().getTitleRenderingBehaviour(option) == TitleRenderingBehaviour.WIDE_CENTERED)
+                height += IMinecraft.INSTANCE.getDefaultFontRenderer().getHeight() + 1;
+            return height;
         }
 
         @Override
@@ -110,18 +119,28 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             int width = context.getWidth();
             var minecraft = context.getRenderContext().getMinecraft();
             var fr = minecraft.getDefaultFontRenderer();
-            context.getRenderContext().drawStringCenteredScaledMaxWidth(
-                option.getName(), fr, width / 6, 13, true, width / 3 - 10, 0xc0c0c0
-            );
+            switch (option.getConfig().getTitleRenderingBehaviour(option)) {
+                case WIDE_CENTERED:
+                    context.getRenderContext().drawStringCenteredScaledMaxWidth(
+                        option.getName(), fr, width / 2, 13, true, width - 10, 0xe0e0e0
+                    );
+                    break;
+                case LEFT:
+                    context.getRenderContext().drawStringCenteredScaledMaxWidth(
+                        option.getName(), fr, width / 6, 13, true, width / 3 - 10, 0xe0e0e0
+                    );
+                    break;
+            }
         }
 
         protected void renderDescription(@NotNull GuiImmediateContext context) {
             int width = context.getWidth();
             var minecraft = context.getRenderContext().getMinecraft();
             var fr = minecraft.getDefaultFontRenderer();
+            int yOffset = option.getConfig().getTitleRenderingBehaviour(option) == TitleRenderingBehaviour.WIDE_CENTERED ? fr.getHeight() + 1 : 5;
             float scale = 1;
             List<StructuredText> lines;
-            int descriptionHeight = option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : context.getHeight();
+            int descriptionHeight = (option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL ? HEIGHT : context.getHeight()) - yOffset;
             while (true) {
                 lines = fr.splitText(option.getDescription(), (int) (width * 2 / 3 / scale - 10));
                 if (lines.size() * scale * (fr.getHeight() + 1) + 10 < descriptionHeight)
@@ -130,7 +149,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
                 if (scale < 1 / 16f) break;
             }
             context.getRenderContext().pushMatrix();
-            context.getRenderContext().translate(5 + width / 3, 5);
+            context.getRenderContext().translate(5 + width / 3, yOffset);
             context.getRenderContext().scale(scale, scale);
             context.getRenderContext().translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F);
             for (var line : lines) {
@@ -178,7 +197,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
 
     @Override
     public void setGuiContext(GuiContext guiContext) {
-        getDelegate().foldRecursive((Void) null, (comp, _void)-> {
+        getDelegate().foldRecursive((Void) null, (comp, _void) -> {
             comp.setContext(guiContext);
             return _void;
         });

@@ -72,7 +72,7 @@ class TestCategoryA {
     )
     var notice: String = ""
 
-    @ConfigOption(name = "Text Box", desc = "Lets you put strings.")
+    @ConfigOption(name = "Text Box", desc = "Lets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.\nLets you put strings.")
     @ConfigEditorText
     var customText: Property<String> = Property.of("abc")
 
