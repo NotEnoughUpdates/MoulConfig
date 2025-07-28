@@ -261,6 +261,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                         closeOverlay();
                         if (canDeleteRightNow() && trashCanBoundingBox.includesPoint(context.getAbsoluteMouseX(), context.getAbsoluteMouseY())) {
                             activeText.remove(dragStartIndex);
+                            saveChanges();
                         }
                         dragStartIndex = -1;
                         return true;
@@ -279,7 +280,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
             public void render(@NotNull GuiImmediateContext context) {
                 var renderContext = context.getRenderContext();
                 var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
-                var text = exampleText.get(indexObject);
+                var text = getExampleText(indexObject);
                 var firstLine = fr.splitLines(text).get(0);
                 renderContext.drawString(
                     fr,
@@ -326,6 +327,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
             i++;
             yOff += ySize;
         }
+        saveChanges();
     }
 
     GuiComponent makeDropDownOverlay() {
