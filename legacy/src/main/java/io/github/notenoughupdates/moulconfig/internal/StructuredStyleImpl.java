@@ -19,6 +19,10 @@ public class StructuredStyleImpl implements StructuredStyle {
         return new StructuredStyleImpl(chatStyle);
     }
 
+    public static ChatStyle unwrap(StructuredStyle style) {
+        return ((StructuredStyleImpl) style).chatStyle;
+    }
+
     @Override
     public @NotNull StructuredStyle withColour(int rgb) {
         return withColour(DefaultFormattingColour.estimate(rgb));

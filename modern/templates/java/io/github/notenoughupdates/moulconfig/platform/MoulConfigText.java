@@ -10,12 +10,21 @@ import org.jetbrains.annotations.NotNull;
 import java.util.stream.Stream;
 
 @Value
-public class MoulConfigText implements StructuredText {
+public class MoulConfigText implements StructuredText.Mutable {
     Text text;
+
+    @Override
+    public Mutable copyShallow() {
+        return new MoulConfigText(text.copy());
+    }
 
     @Override
     public @NotNull String getText() {
         return text.getString();
+    }
+
+    public static StructuredText.Mutable wrap(MutableText text) {
+        return new MoulConfigText(text);
     }
 
     public static StructuredText wrap(Text text) {
@@ -33,7 +42,7 @@ public class MoulConfigText implements StructuredText {
 
     @NotNull
     @Override
-    public StructuredText append(@NotNull StructuredText text) {
+    public StructuredText.Mutable append(@NotNull StructuredText text) {
         ((MutableText) this.text).append(unwrap(text));
         return this;
     }

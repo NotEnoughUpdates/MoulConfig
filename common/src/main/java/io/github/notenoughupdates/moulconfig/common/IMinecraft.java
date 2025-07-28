@@ -88,9 +88,9 @@ public interface IMinecraft {
 
     StructuredText getKeyName(int keyCode);
 
-    StructuredText createLiteral(String text);
+    StructuredText.Mutable createLiteral(String text);
 
-    StructuredText createTranslatable(String key, StructuredText... args);
+    StructuredText.Mutable createTranslatable(String key, StructuredText... args);
 
     /**
      * Create a structured text from an untyped platform object. Must be a platform type exactly, not a string or a structured text.

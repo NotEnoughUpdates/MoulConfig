@@ -9,15 +9,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.stream.Stream;
 
 @Value
-public class StructuredTextImpl implements StructuredText {
+public class StructuredTextImpl implements StructuredText.Mutable {
     IChatComponent chatComponent;
 
     public static @NotNull IChatComponent unwrap(@NotNull StructuredText structuredText) {
         return ((StructuredTextImpl) structuredText).chatComponent;
     }
 
-    public static @NotNull StructuredText wrap(@NotNull IChatComponent it) {
+    public static @NotNull StructuredText.Mutable wrap(@NotNull IChatComponent it) {
         return new StructuredTextImpl(it);
+    }
+
+    @Override
+    public Mutable copyShallow() {
+        return new StructuredTextImpl(chatComponent.createCopy());
     }
 
     @Override
@@ -31,7 +36,7 @@ public class StructuredTextImpl implements StructuredText {
     }
 
     @Override
-    public @NotNull StructuredText append(@NotNull StructuredText text) {
+    public @NotNull StructuredText.Mutable append(@NotNull StructuredText text) {
         chatComponent.appendSibling(unwrap(text));
         return this;
     }
@@ -43,6 +48,6 @@ public class StructuredTextImpl implements StructuredText {
 
     @Override
     public void setStyle(StructuredStyle style) {
-
+        chatComponent.setChatStyle(StructuredStyleImpl.unwrap(style));
     }
 }

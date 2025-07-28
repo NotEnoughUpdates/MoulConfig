@@ -19,6 +19,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -70,6 +71,10 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     public static StructuredText wrap(Text text) {
+        return MoulConfigText.wrap(text);
+    }
+
+    public static StructuredText.Mutable wrap(MutableText text) {
         return MoulConfigText.wrap(text);
     }
 
@@ -234,12 +239,12 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     @Override
-    public StructuredText createLiteral(String text) {
+    public StructuredText.Mutable createLiteral(String text) {
         return wrap(Text.literal(text));
     }
 
     @Override
-    public StructuredText createTranslatable(String key, StructuredText... args) {
+    public StructuredText.Mutable createTranslatable(String key, StructuredText... args) {
         return wrap(Text.translatable(key, Stream.of(args).map(MoulConfigPlatform::unwrap).toArray()));
     }
 

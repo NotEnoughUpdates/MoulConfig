@@ -148,11 +148,11 @@ class ForgeMinecraft : IMinecraft {
         return StructuredText.of(KeybindHelper.getKeyName(keyCode))
     }
 
-    override fun createLiteral(text: String): StructuredText {
+    override fun createLiteral(text: String): StructuredText.Mutable {
         return StructuredTextImpl.wrap(ChatComponentText(text))
     }
 
-    override fun createTranslatable(key: String, vararg args: StructuredText): StructuredText {
+    override fun createTranslatable(key: String, vararg args: StructuredText): StructuredText.Mutable {
         return StructuredTextImpl.wrap(ChatComponentTranslation(key, *args))
     }
 

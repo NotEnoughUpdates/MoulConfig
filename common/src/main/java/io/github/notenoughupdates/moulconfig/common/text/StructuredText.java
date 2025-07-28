@@ -9,17 +9,118 @@ import java.util.stream.Stream;
 
 @ApiStatus.NonExtendable
 public interface StructuredText {
-    static @NotNull StructuredText of(@NotNull String text) {
+    interface Mutable extends StructuredText {
+        @NotNull Mutable append(@NotNull StructuredText text);
+
+        default @NotNull Mutable append(@NotNull String text) {
+            return append(StructuredText.of(text));
+        }
+
+        default @NotNull Mutable withStyle(@NotNull StructuredStyle style) {
+            setStyle(style);
+            return this;
+        }
+
+        default @NotNull Mutable modifyStyle(@NotNull Function<@NotNull StructuredStyle, @NotNull StructuredStyle> operator) {
+            // ew, non linear types
+            return withStyle(operator.apply(getStyle()));
+        }
+
+        default @NotNull Mutable withColour(int rgb) {
+            return modifyStyle(it -> it.withColour(rgb));
+        }
+
+        default @NotNull Mutable withColour(@NotNull DefaultFormattingColour colour) {
+            return withColour(colour.getRgb());
+        }
+
+        default @NotNull Mutable bold() {
+            return modifyStyle(it -> it.withBold(true));
+        }
+
+        default @NotNull Mutable underlined() {
+            return modifyStyle(it -> it.withUnderline(true));
+        }
+
+        default @NotNull Mutable black() {
+            return withColour(DefaultFormattingColour.BLACK);
+        }
+
+        default @NotNull Mutable darkBlue() {
+            return withColour(DefaultFormattingColour.DARK_BLUE);
+        }
+
+        default @NotNull Mutable darkGreen() {
+            return withColour(DefaultFormattingColour.DARK_GREEN);
+        }
+
+        default @NotNull Mutable darkAqua() {
+            return withColour(DefaultFormattingColour.DARK_AQUA);
+        }
+
+        default @NotNull Mutable darkRed() {
+            return withColour(DefaultFormattingColour.DARK_RED);
+        }
+
+        default @NotNull Mutable darkPurple() {
+            return withColour(DefaultFormattingColour.DARK_PURPLE);
+        }
+
+        default @NotNull Mutable gold() {
+            return withColour(DefaultFormattingColour.GOLD);
+        }
+
+        default @NotNull Mutable grey() {
+            return withColour(DefaultFormattingColour.GREY);
+        }
+
+        default @NotNull Mutable darkGrey() {
+            return withColour(DefaultFormattingColour.DARK_GREY);
+        }
+
+        default @NotNull Mutable blue() {
+            return withColour(DefaultFormattingColour.BLUE);
+        }
+
+        default @NotNull Mutable green() {
+            return withColour(DefaultFormattingColour.GREEN);
+        }
+
+        default @NotNull Mutable aqua() {
+            return withColour(DefaultFormattingColour.AQUA);
+        }
+
+        default @NotNull Mutable red() {
+            return withColour(DefaultFormattingColour.RED);
+        }
+
+        default @NotNull Mutable lightPurple() {
+            return withColour(DefaultFormattingColour.LIGHT_PURPLE);
+        }
+
+        default @NotNull Mutable yellow() {
+            return withColour(DefaultFormattingColour.YELLOW);
+        }
+
+        default @NotNull Mutable white() {
+            return withColour(DefaultFormattingColour.WHITE);
+        }
+
+    }
+
+    static @NotNull StructuredText.Mutable of(@NotNull String text) {
         return IMinecraft.INSTANCE.createLiteral(text);
     }
 
-    static @NotNull StructuredText empty() {
+    static @NotNull StructuredText.Mutable empty() {
         return of("");
     }
 
-    static @NotNull StructuredText translatable(@NotNull String translationKey, @NotNull StructuredText @NotNull ... args) {
+    static @NotNull StructuredText.Mutable translatable(@NotNull String translationKey, @NotNull StructuredText @NotNull ... args) {
         return IMinecraft.INSTANCE.createTranslatable(translationKey, args);
     }
+
+    Mutable copyShallow();
 
     /**
      * @return a string containing the text of this and any children. this is a lossy conversion.
@@ -29,103 +130,8 @@ public interface StructuredText {
     @NotNull
     Stream<@NotNull StructuredText> getChildren();
 
-    @NotNull StructuredText append(@NotNull StructuredText text);
-    default @NotNull StructuredText append(@NotNull String text) {
-        return append(StructuredText.of(text));
-    }
-
     @NotNull StructuredStyle getStyle();
 
     void setStyle(StructuredStyle style);
-
-    default @NotNull StructuredText withStyle(@NotNull StructuredStyle style) {
-        setStyle(style);
-        return this;
-    }
-
-    default @NotNull StructuredText modifyStyle(@NotNull Function<@NotNull StructuredStyle, @NotNull StructuredStyle> operator) {
-        // ew, non linear types
-        return withStyle(operator.apply(getStyle()));
-    }
-
-    default @NotNull StructuredText withColour(int rgb) {
-        return modifyStyle(it -> it.withColour(rgb));
-    }
-
-    default @NotNull StructuredText withColour(@NotNull DefaultFormattingColour colour) {
-        return withColour(colour.getRgb());
-    }
-
-    default @NotNull StructuredText bold() {
-        return modifyStyle(it -> it.withBold(true));
-    }
-
-    default @NotNull StructuredText underlined() {
-        return modifyStyle(it -> it.withUnderline(true));
-    }
-
-    default @NotNull StructuredText black() {
-        return withColour(DefaultFormattingColour.BLACK);
-    }
-
-    default @NotNull StructuredText darkBlue() {
-        return withColour(DefaultFormattingColour.DARK_BLUE);
-    }
-
-    default @NotNull StructuredText darkGreen() {
-        return withColour(DefaultFormattingColour.DARK_GREEN);
-    }
-
-    default @NotNull StructuredText darkAqua() {
-        return withColour(DefaultFormattingColour.DARK_AQUA);
-    }
-
-    default @NotNull StructuredText darkRed() {
-        return withColour(DefaultFormattingColour.DARK_RED);
-    }
-
-    default @NotNull StructuredText darkPurple() {
-        return withColour(DefaultFormattingColour.DARK_PURPLE);
-    }
-
-    default @NotNull StructuredText gold() {
-        return withColour(DefaultFormattingColour.GOLD);
-    }
-
-    default @NotNull StructuredText grey() {
-        return withColour(DefaultFormattingColour.GREY);
-    }
-
-    default @NotNull StructuredText darkGrey() {
-        return withColour(DefaultFormattingColour.DARK_GREY);
-    }
-
-    default @NotNull StructuredText blue() {
-        return withColour(DefaultFormattingColour.BLUE);
-    }
-
-    default @NotNull StructuredText green() {
-        return withColour(DefaultFormattingColour.GREEN);
-    }
-
-    default @NotNull StructuredText aqua() {
-        return withColour(DefaultFormattingColour.AQUA);
-    }
-
-    default @NotNull StructuredText red() {
-        return withColour(DefaultFormattingColour.RED);
-    }
-
-    default @NotNull StructuredText lightPurple() {
-        return withColour(DefaultFormattingColour.LIGHT_PURPLE);
-    }
-
-    default @NotNull StructuredText yellow() {
-        return withColour(DefaultFormattingColour.YELLOW);
-    }
-
-    default @NotNull StructuredText white() {
-        return withColour(DefaultFormattingColour.WHITE);
-    }
 
 }

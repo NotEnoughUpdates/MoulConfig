@@ -46,7 +46,7 @@ public class TestConfig extends Config {
 
     @Override
     public StructuredText formatCategoryName(ProcessedCategory category, boolean isSelected) {
-        return super.formatCategoryName(category, isSelected).append("AAAAAAAAAAAA");
+        return super.formatCategoryName(category, isSelected).copyShallow().append("AAAAAAAAAAAA");
     }
 
     @Override

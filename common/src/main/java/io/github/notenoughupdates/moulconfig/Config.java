@@ -39,11 +39,11 @@ public abstract class Config {
 
     public StructuredText formatCategoryName(ProcessedCategory category, boolean isSelected) {
         if (isSelected) {
-            return category.getDisplayName().underlined().aqua();
+            return category.getDisplayName().copyShallow().underlined().aqua();
         } else if (category.getParentCategoryId() == null) {
-            return category.getDisplayName().grey();
+            return category.getDisplayName().copyShallow().grey();
         } else {
-            return category.getDisplayName().darkGrey();
+            return category.getDisplayName().copyShallow().darkGrey();
         }
     }
 
