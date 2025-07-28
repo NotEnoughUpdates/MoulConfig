@@ -22,40 +22,32 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
-import io.github.notenoughupdates.moulconfig.common.KeyboardConstants;
-import io.github.notenoughupdates.moulconfig.common.RenderContext;
-import io.github.notenoughupdates.moulconfig.common.TextureFilter;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
-import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
-import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
+import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
+import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
-import io.github.notenoughupdates.moulconfig.internal.ColourUtil;
-import io.github.notenoughupdates.moulconfig.internal.LerpUtils;
-import io.github.notenoughupdates.moulconfig.internal.TypeUtils;
-import io.github.notenoughupdates.moulconfig.internal.Warnings;
+import io.github.notenoughupdates.moulconfig.gui.component.*;
+import io.github.notenoughupdates.moulconfig.internal.*;
+import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import kotlin.Pair;
 import lombok.var;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class GuiOptionEditorDraggableList extends GuiOptionEditor {
+public class GuiOptionEditorDraggableList extends ComponentEditor {
     private Map<Object, StructuredText> exampleText = new HashMap<>();
     private boolean enableDeleting;
     private List<Object> activeText;
     private final boolean requireNonEmpty;
-    private Object currentDragging = null;
     private int dragStartIndex = -1;
 
-    private Pair<Integer, Integer> lastMousePosition = null;
+    private LerpingInteger2 trashAnimation = new LerpingInteger2(255, 3, 2);
+    private Pair<Integer, Integer> lastListRenderPos = new Pair<>(0, 0);
 
-    private long trashHoverTime = -1;
-
-    private int dragOffsetX = -1;
-    private int dragOffsetY = -1;
-    private boolean dropdownOpen = false;
     private Enum<?>[] enumConstants;
     private String exampleTextConcat;
     // TODO: rework this entire thing to accept StructuredTexts and/or classes implementing a custom interfaces and/or a custom text mapper
@@ -108,295 +100,312 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
         return str;
     }
 
-    @Override
-    public int getHeight() {
-        int height = super.getHeight() + 13;
-
-        var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
-        for (Object object : activeText) {
-            StructuredText str = getExampleText(object);
-            height += 10 * fr.splitLines(str).size();
-        }
-
-        return height;
-    }
-
     public boolean canDeleteRightNow() {
         return enableDeleting && (activeText.size() > 1 || !requireNonEmpty);
     }
 
+    GuiComponent delegate;
+
+    Rect trashCanBoundingBox;
+
     @Override
-    public void render(RenderContext renderContext, int x, int y, int width) {
-        super.render(renderContext, x, y, width);
-        int height = getHeight();
-        var mc = IMinecraft.INSTANCE;
-        var fr = mc.getDefaultFontRenderer();
+    public @NotNull GuiComponent getDelegate() {
+        if (delegate == null)
+            delegate = wrapComponent(
+                new FixedComponent(
+                    new RowComponent(
+                        new ButtonComponent(new CenterComponent(new TextComponent(StructuredText.of(" Add "))), 2, () -> {
+                            var pos = IMinecraft.INSTANCE.getMousePosition();
+                            if (activeText.size() == exampleText.size())
+                                return;
+                            openOverlay(makeDropDownOverlay(), pos.getFirst(), pos.getSecond());
+                        }),
+                        new SpacerComponent(GetSetter.constant(5), GetSetter.constant(0)),
+                        new GuiComponent() {
+                            @Override
+                            public int getWidth() {
+                                return 11;
+                            }
 
-        renderContext.drawTexturedRect(GuiTextures.BUTTON, x + width / 6 - 24, y + 45 - 7 - 14, 48, 16);
+                            @Override
+                            public int getHeight() {
+                                return 14;
+                            }
 
-        renderContext.drawStringCenteredScaledMaxWidth(StructuredText.of("Add"), fr,
-            x + width / 6, y + 45 - 7 - 6,
-            false, 44, 0xFF303030
-        );
+                            @Override
+                            public void render(@NotNull GuiImmediateContext context) {
+                                if (context.isHovered() && dragStartIndex >= 0 && canDeleteRightNow()) {
+                                    trashAnimation.setTarget(0);
+                                } else {
+                                    trashAnimation.setTarget(255);
+                                }
+                                int nonRedTints = trashAnimation.getValue();
+                                context.getRenderContext().drawComplexTexture(
+                                    GuiTextures.DELETE,
+                                    0F, 0F, 11F, 14F,
+                                    draw -> draw.color(ColourUtil.packARGB(255, 255, nonRedTints, nonRedTints))
+                                );
+                                trashCanBoundingBox = Rect.ofGuiImmediateContext(context);
+                            }
+                        }),
+                    48, 16),
+                new GuiComponent() {
+                    @Override
+                    public int getWidth() {
+                        return 0;
+                    }
 
-        if (canDeleteRightNow()) {
-            long currentTime = System.currentTimeMillis();
-            // TODO: replace with lerpinginteger
-            float greenBlue = trashHoverTime < 0
-                ? LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f)
-                : LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
-            int deleteX = x + width / 6 + 27;
-            int deleteY = y + 45 - 7 - 13;
-            int color = ColourUtil.packARGB(1, greenBlue, greenBlue, 1);
-            renderContext.drawComplexTexture(GuiTextures.DELETE,
-                deleteX, deleteY, 11, 14,
-                it -> it.color(color).filter(TextureFilter.LINEAR) // TODO: is this linear on master?
-            );
-            // TODO: make use of the mouseX and mouseY from the context when switching this to a proper multi-version component
-            if (lastMousePosition != null && currentDragging == null &&
-                lastMousePosition.getFirst() >= deleteX && lastMousePosition.getFirst() < deleteX + 11 &&
-                lastMousePosition.getSecond() >= deleteY && lastMousePosition.getSecond() < deleteY + 14 &&
-                !dropdownOpen) {
-                renderContext.scheduleDrawTooltip(
-                    mc.getMouseX(), mc.getMouseY(),
-                    Collections.singletonList(
-                        StructuredText.of("Delete Item").red()
-                    ));
-            }
-        }
+                    @Override
+                    public int getHeight() {
+                        int height = 5;
+                        var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
+                        for (Object object : activeText) {
+                            StructuredText str = getExampleText(object);
+                            height += (fr.getHeight() + 1) * fr.splitLines(str).size();
+                        }
+                        return height;
+                    }
 
-        renderContext.drawColoredRect(x + 5, y + 45, x + width - 5, y + height - 5, 0xffdddddd);
-        renderContext.drawColoredRect(x + 6, y + 46, x + width - 6, y + height - 6, 0xff000000);
+                    @Override
+                    public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
+                        if (mouseEvent instanceof MouseEvent.Click) {
+                            var click = (MouseEvent.Click) mouseEvent;
+                            var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
+                            if (click.getMouseState()) {
+                                int i = 0;
+                                int yOff = 0;
+                                for (Object indexObject : activeText) {
+                                    StructuredText str = getExampleText(indexObject);
+                                    var multilines = fr.splitLines(str);
+                                    int ySize = multilines.size() * (fr.getHeight() + 1);
+                                    var trans = context.translated(0, yOff, context.getWidth(), ySize);
+                                    if (trans.isHovered()) {
+                                        dragStartIndex = i;
+                                        var mouseY = trans.getMouseY() - 4;
+                                        openOverlay(makeDragComponent(indexObject, trans.getMouseX(), mouseY, context.getWidth()),
+                                            // context.getRenderOffsetX()
+                                            context.getAbsoluteMouseX() - trans.getMouseX(),
+                                            context.getAbsoluteMouseY() - mouseY);
+                                        return true;
+                                    }
+                                    i++;
+                                    yOff += ySize;
+                                }
+                            }
+                        }
+                        return super.mouseEvent(mouseEvent, context);
+                    }
 
-        int i = 0;
-        int yOff = 0;
-        for (Object indexObject : activeText) {
-            StructuredText str = getExampleText(indexObject);
+                    @Override
+                    public void render(@NotNull GuiImmediateContext context) {
+                        lastListRenderPos = new Pair<>(context.getRenderOffsetX(), context.getRenderOffsetY());
+                        var renderContext = context.getRenderContext();
+                        var width = context.getWidth();
+                        var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
+                        var height = context.getHeight();
+                        renderContext.drawColoredRect(0, 0, width, height, 0xffdddddd);
+                        renderContext.drawColoredRect(1, 1, width - 1, height - 1, 0xff000000);
 
-            var multilines = IMinecraft.INSTANCE.getDefaultFontRenderer().splitLines(str);
+                        int i = 0;
+                        int yOff = 0;
+                        for (Object indexObject : activeText) {
+                            StructuredText str = getExampleText(indexObject);
 
-            int ySize = multilines.size() * 10;
+                            var multilines = fr.splitLines(str);
 
-            if (i++ != dragStartIndex) {
-                for (int multilineIndex = 0; multilineIndex < multilines.size(); multilineIndex++) {
-                    var line = multilines.get(multilineIndex);
-                    renderContext.drawStringScaledMaxWidth(line, fr,
-                        x + 20, y + 50 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
-                    );
+                            int ySize = multilines.size() * (fr.getHeight() + 1);
+
+                            if (i++ != dragStartIndex) {
+                                for (int multilineIndex = 0; multilineIndex < multilines.size(); multilineIndex++) {
+                                    var line = multilines.get(multilineIndex);
+                                    renderContext.drawStringScaledMaxWidth(line, fr,
+                                        15, 5 + yOff + multilineIndex * 10, true, width - 20, 0xffffffff
+                                    );
+                                }
+                                renderContext.drawString(
+                                    fr,
+                                    StructuredText.of("≡"),
+                                    5,
+                                    4 + yOff + ySize / 2 - 4,
+                                    0xffffff,
+                                    true
+                                );
+                            }
+
+                            yOff += ySize;
+                        }
+                    }
                 }
+            );
+        return delegate;
+    }
+
+
+    GuiComponent makeDragComponent(Object indexObject, int mouseOffsetX, int mouseOffsetY, int width) {
+        return new GuiComponent() {
+            @Override
+            public int getWidth() {
+                return width;
+            }
+
+            @Override
+            public int getHeight() {
+                return 11;
+            }
+
+            @Override
+            public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
+                if (mouseEvent instanceof MouseEvent.Click) {
+                    var click = (MouseEvent.Click) mouseEvent;
+                    if (!click.getMouseState()) {
+                        closeOverlay();
+                        if (canDeleteRightNow() && trashCanBoundingBox.includesPoint(context.getAbsoluteMouseX(), context.getAbsoluteMouseY())) {
+                            activeText.remove(dragStartIndex);
+                        }
+                        dragStartIndex = -1;
+                        return true;
+                    }
+                }
+                if (mouseEvent instanceof MouseEvent.Move) {
+                    var mx = context.getAbsoluteMouseX() - mouseOffsetX;
+                    var my = context.getAbsoluteMouseY() - mouseOffsetY;
+                    openOverlay(getOverlayDelegate(), mx, my);
+                    reorderElements(width, mx, my);
+                }
+                return super.mouseEvent(mouseEvent, context);
+            }
+
+            @Override
+            public void render(@NotNull GuiImmediateContext context) {
+                var renderContext = context.getRenderContext();
+                var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
+                var text = exampleText.get(indexObject);
+                var firstLine = fr.splitLines(text).get(0);
                 renderContext.drawString(
                     fr,
                     StructuredText.of("≡"),
-                    x + 10,
-                    y + 49 + yOff + ySize / 2 - 4,
+                    5,
+                    1,
                     0xffffff,
                     true
                 );
+                renderContext.drawStringScaledMaxWidth(firstLine, fr,
+                    15, 1, true, context.getWidth() - 20, 0xffffffff
+                );
+                // TODO: make this transparent via texty things
+            }
+        };
+    }
+
+    private void reorderElements(int width, int mouseX, int mouseY) {
+        assert lastListRenderPos != null;
+        int renderX = lastListRenderPos.getFirst();
+        if (mouseX < renderX || mouseX > renderX + width)
+            return;
+        int renderY = lastListRenderPos.getSecond();
+        var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
+        int i = 0;
+        int yOff = renderY;
+        for (Object indexObject : activeText) {
+            StructuredText str = getExampleText(indexObject);
+
+            var multilines = fr.splitLines(str);
+
+            int ySize = multilines.size() * (fr.getHeight() + 1);
+            if (yOff > mouseY && mouseY < yOff + ySize) {
+                var toSwap = activeText.get(i);
+                var moving = activeText.get(dragStartIndex);
+                activeText.set(i, moving);
+                activeText.set(dragStartIndex, toSwap);
+                // TODO: technically you arent supposed to swap here, instead move all the in between elements over by one
+                //       in practice this is fine as long as you dont take the element the long way around.
+                dragStartIndex = i;
+                return;
             }
 
+            i++;
             yOff += ySize;
         }
     }
 
-    @Override
-    public void renderOverlay(RenderContext context, int x, int y, int width) {
-        super.renderOverlay(context, x, y, width);
-        var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
-        if (dropdownOpen) {
-            List<Object> remaining = new ArrayList<>(exampleText.keySet());
-            remaining.removeAll(activeText);
+    GuiComponent makeDropDownOverlay() {
+        return new GuiComponent() {
 
-            int dropdownWidth = Math.min(width / 2 - 10, 150);
-            int left = dragOffsetX;
-            int top = dragOffsetY;
-
-            int dropdownHeight = -1 + 12 * remaining.size();
-
-            int main = 0xff202026;
-            int outline = 0xff404046;
-            context.drawColoredRect(left, top, left + 1, top + dropdownHeight, outline); //Left
-            context.drawColoredRect(left + 1, top, left + dropdownWidth, top + 1, outline); //Top
-            context.drawColoredRect(left + dropdownWidth - 1, top + 1, left + dropdownWidth, top + dropdownHeight, outline); //Right
-            context.drawColoredRect(
-                left + 1,
-                top + dropdownHeight - 1,
-                left + dropdownWidth - 1,
-                top + dropdownHeight,
-                outline
-            ); //Bottom
-            context.drawColoredRect(left + 1, top + 1, left + dropdownWidth - 1, top + dropdownHeight - 1, main); //Middle
-
-            int dropdownY = -1;
-            for (Object indexObject : remaining) {
-                StructuredText str = getExampleText(indexObject);
-                if (str.getText().isEmpty()) {
-                    str = StructuredText.of("<NONE>");
-                }
-                context.drawStringScaledMaxWidth(fr.splitLines(str).get(0),
-                    fr, left + 3, top + 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
-                );
-                dropdownY += 12;
-            }
-        } else if (currentDragging != null) {
-            int opacity = 0x80;
-            long currentTime = System.currentTimeMillis();
-            if (trashHoverTime < 0) {
-                float greenBlue = LerpUtils.clampZeroOne((currentTime + trashHoverTime) / 250f);
-                opacity = (int) (opacity * greenBlue);
-            } else {
-                float greenBlue = LerpUtils.clampZeroOne((250 + trashHoverTime - currentTime) / 250f);
-                opacity = (int) (opacity * greenBlue);
+            @Override
+            public int getWidth() {
+                return 100; // TODO: dynamically decide on a size
             }
 
-            if (opacity < 20) return;
-
-            int mouseX = IMinecraft.INSTANCE.getMouseX();
-            int mouseY = IMinecraft.INSTANCE.getMouseY();
-
-            StructuredText str = getExampleText(currentDragging);
-            var multilines = fr.splitLines(str);
-
-            // TODO: context.enableBlend();
-            for (int multilineIndex = 0; multilineIndex < multilines.size(); multilineIndex++) {
-                StructuredText line = multilines.get(multilineIndex);
-                context.drawStringScaledMaxWidth(
-                    line,
-                    fr,
-                    dragOffsetX + mouseX + 10,
-                    dragOffsetY + mouseY + multilineIndex * 10,
-                    true,
-                    width - 20,
-                    0xffffff | (opacity << 24)
-                );
-            }
-
-            int ySize = multilines.size() * 10;
-
-            context.drawString(fr, StructuredText.of("≡"),
-                dragOffsetX + mouseX,
-                dragOffsetY - 1 + mouseY + ySize / 2 - 4, 0xffffff, true
-            );
-        }
-    }
-
-    @Override
-    public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
-        lastMousePosition = new Pair<>(mouseX, mouseY);
-        if (mouseEvent instanceof MouseEvent.Scroll) {
-            this.dropdownOpen = false;
-            return false;
-        }
-        var click = mouseEvent instanceof MouseEvent.Click ? (MouseEvent.Click) mouseEvent : null;
-        if (click != null &&
-            !click.getMouseState() && !dropdownOpen &&
-            dragStartIndex >= 0 && click.getMouseButton() == 0 &&
-            mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
-            mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
-            if (canDeleteRightNow()) {
-                activeText.remove(dragStartIndex);
-                saveChanges();
-            }
-            currentDragging = null;
-            dragStartIndex = -1;
-            return false;
-        }
-
-        if (!IMinecraft.INSTANCE.isMouseButtonDown(0) || dropdownOpen) {
-            currentDragging = null;
-            dragStartIndex = -1;
-            if (trashHoverTime > 0 && canDeleteRightNow()) trashHoverTime = -System.currentTimeMillis();
-        } else if (currentDragging != null &&
-            mouseX >= x + width / 6 + 27 - 3 && mouseX <= x + width / 6 + 27 + 11 + 3 &&
-            mouseY >= y + 45 - 7 - 13 - 3 && mouseY <= y + 45 - 7 - 13 + 14 + 3) {
-            if (trashHoverTime < 0 && canDeleteRightNow()) trashHoverTime = System.currentTimeMillis();
-        } else if (!canDeleteRightNow()) {
-            trashHoverTime = Long.MAX_VALUE;
-        } else if (trashHoverTime > 0) {
-            trashHoverTime = -System.currentTimeMillis();
-        }
-
-        if (click != null && click.getMouseState()) {
-            int height = getHeight();
-
-            if (dropdownOpen) {
+            @Override
+            public int getHeight() {
                 List<Object> remaining = new ArrayList<>(exampleText.keySet());
                 remaining.removeAll(activeText);
+                return -1 + 12 * remaining.size();
+            }
 
-                int dropdownWidth = Math.min(width / 2 - 10, 150);
-                int left = dragOffsetX;
-                int top = dragOffsetY;
-
-                int dropdownHeight = -1 + 12 * remaining.size();
-
-                if (mouseX > left && mouseX < left + dropdownWidth &&
-                    mouseY > top && mouseY < top + dropdownHeight) {
-                    int dropdownY = -1;
-                    for (Object objectIndex : remaining) {
-                        if (mouseY < top + dropdownY + 12) {
-                            activeText.add(0, objectIndex);
-                            saveChanges();
-                            if (remaining.size() == 1) dropdownOpen = false;
-                            return true;
+            @Override
+            public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
+                if (mouseEvent instanceof MouseEvent.Click) {
+                    var click = (MouseEvent.Click) mouseEvent;
+                    if (click.getMouseState() && context.isHovered()) {
+                        List<Object> remaining = new ArrayList<>(exampleText.keySet());
+                        remaining.removeAll(activeText);
+                        int dropdownY = -1;
+                        for (Object indexObject : remaining) {
+                            if (context.translated(0, dropdownY + 3, context.getWidth(), 10).isHovered()) {
+                                activeText.add(indexObject);
+                                return true;
+                            }
+                            dropdownY += 12;
                         }
-
-                        dropdownY += 12;
                     }
                 }
-
-                dropdownOpen = false;
-                return true;
+                return super.mouseEvent(mouseEvent, context);
             }
 
-            if (activeText.size() < exampleText.size() &&
-                mouseX > x + width / 6 - 24 && mouseX < x + width / 6 + 24 &&
-                mouseY > y + 45 - 7 - 14 && mouseY < y + 45 - 7 + 2) {
-                dropdownOpen = true;
-                dragOffsetX = mouseX;
-                dragOffsetY = mouseY;
-                return true;
-            }
+            @Override
+            public void render(@NotNull GuiImmediateContext context) {
+                List<Object> remaining = new ArrayList<>(exampleText.keySet());
+                remaining.removeAll(activeText);
+                if (remaining.isEmpty()) {
+                    closeOverlay();
+                    return;
+                }
 
-            if (click.getMouseButton() == 0 &&
-                mouseX > x + 5 && mouseX < x + width - 5 &&
-                mouseY > y + 45 && mouseY < y + height - 6) {
-                int yOff = 0;
-                int i = 0;
+
+                int dropdownHeight = context.getHeight();
+                int dropdownWidth = context.getWidth();
                 var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
-                for (Object objectIndex : activeText) {
-                    StructuredText str = getExampleText(objectIndex);
-                    int ySize = 10 * fr.splitLines(str).size();
-                    if (mouseY < y + 50 + yOff + ySize) {
-                        dragOffsetX = x + 10 - mouseX;
-                        dragOffsetY = y + 50 + yOff - mouseY;
+                var renderContext = context.getRenderContext();
+                int main = 0xff202026;
+                int outline = 0xff404046;
+                renderContext.drawColoredRect(0, 0, 1, dropdownHeight, outline); //0
+                renderContext.drawColoredRect(1, 0, dropdownWidth, 1, outline); //0
+                renderContext.drawColoredRect(dropdownWidth - 1, 1, dropdownWidth, dropdownHeight, outline); //Right
+                renderContext.drawColoredRect(
+                    1,
+                    dropdownHeight - 1,
+                    dropdownWidth - 1,
+                    dropdownHeight,
+                    outline
+                ); //Bottom
+                renderContext.drawColoredRect(1, 1, dropdownWidth - 1, dropdownHeight - 1, main); //Middle
 
-                        currentDragging = objectIndex;
-                        dragStartIndex = i;
-                        break;
+                int dropdownY = -1;
+                for (Object indexObject : remaining) {
+                    StructuredText str = getExampleText(indexObject);
+                    if (str.getText().isEmpty()) {
+                        str = StructuredText.of("<NONE>");
                     }
-                    yOff += ySize;
-                    i++;
+                    renderContext.drawStringScaledMaxWidth(fr.splitLines(str).get(0),
+                        fr, 3, 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
+                    );
+                    dropdownY += 12;
                 }
             }
-        } else if (mouseEvent instanceof MouseEvent.Move && currentDragging != null) {
-            int yOff = 0;
-            int i = 0;
-            var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();
-            for (Object objectIndex : activeText) {
-                if (dragOffsetY + mouseY + 4 < y + 50 + yOff + 10) {
-                    activeText.remove(dragStartIndex);
-                    activeText.add(i, currentDragging);
-                    saveChanges();
-                    dragStartIndex = i;
-                    break;
-                }
-                StructuredText str = getExampleText(objectIndex);
-                yOff += 10 * fr.splitLines(str).size();
-                i++;
-            }
-        }
-
-        return false;
+        };
     }
+
 
     @Override
     public boolean fulfillsSearch(String word) {
@@ -405,16 +414,5 @@ public class GuiOptionEditorDraggableList extends GuiOptionEditor {
                 .toLowerCase(Locale.ROOT);
         }
         return super.fulfillsSearch(word) || exampleTextConcat.contains(word);
-    }
-
-    @Override
-    public boolean keyboardInput(KeyboardEvent event) {
-        if (event instanceof KeyboardEvent.KeyPressed) {
-            int key = ((KeyboardEvent.KeyPressed) event).getKeycode();
-            if (key == KeyboardConstants.INSTANCE.getUp() || key == KeyboardConstants.INSTANCE.getDown()) {
-                dropdownOpen = false;
-            }
-        }
-        return super.keyboardInput(event);
     }
 }

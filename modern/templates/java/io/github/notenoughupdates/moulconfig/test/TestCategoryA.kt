@@ -80,7 +80,7 @@ class TestCategoryA {
     @ConfigEditorDraggableList(
         exampleText = ["abc", "dec", "blah", "surel it works really cool and great :))"]
     )
-    var draggableList: List<Int> = ArrayList(mutableListOf(0, 1, 2, 3))
+    var draggableList: List<Int> = ArrayList(mutableListOf(0))
 
     @Expose
     @ConfigOption(name = "Enum Draggable List", desc = "Draggable list but doesnt work properly.")

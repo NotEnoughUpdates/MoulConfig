@@ -53,6 +53,12 @@ public class PanelComponent extends GuiComponent {
                 renderContext.drawNinePatch(NinePatches.INSTANCE.createButton(), x, y, width, height);
             }
         },
+        BUTTON_WHITE {
+            @Override
+            public void render(RenderContext renderContext, int x, int y, int width, int height) {
+                renderContext.drawNinePatch(NinePatches.INSTANCE.createWhiteButton(), x, y, width, height);
+            }
+        },
         VANILLA {
             @Override
             public void render(RenderContext renderContext, int x, int y, int width, int height) {

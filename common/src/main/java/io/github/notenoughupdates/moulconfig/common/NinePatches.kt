@@ -11,6 +11,13 @@ object NinePatches {
             .mode(NinePatch.Mode.STRETCHING)
             .build()
     }
+    fun createWhiteButton(): NinePatch<MyResourceLocation> {
+        return NinePatch.builder(GuiTextures.BUTTON_WHITE)
+            .cornerSize(14)
+            .cornerUv(14 / 32f, 14 / 96F)
+            .mode(NinePatch.Mode.STRETCHING)
+            .build()
+    }
 
     fun createVanillaPanel(): NinePatch<MyResourceLocation> {
         return NinePatch.builder(GuiTextures.VANILLA_PANEL)

@@ -6,7 +6,11 @@ public class ColourUtil {
         int gi = float1ToInt255(g);
         int bi = float1ToInt255(b);
         int ai = float1ToInt255(a);
-        return (ai << ALPHA_SHIFT) | (ri << RED_SHIFT) | (gi << GREEN_SHIFT) | (bi << BLUE_SHIFT);
+        return packARGB(ri, gi, bi, ai);
+    }
+
+    public static int packARGB(int a, int r, int g, int b) {
+        return ((a & BYTE_MASK) << ALPHA_SHIFT) | ((r & BYTE_MASK) << RED_SHIFT) | ((g & BYTE_MASK) << GREEN_SHIFT) | ((b & BYTE_MASK) << BLUE_SHIFT);
     }
 
     public static float int255ToFloat1(int element) {

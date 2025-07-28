@@ -1,8 +1,10 @@
 package io.github.notenoughupdates.moulconfig.internal;
 
+import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
 
 @Value
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,6 +21,10 @@ public class Rect {
 
     public static Rect ofXYWH(int x, int y, int w, int h) {
         return new Rect(x, y, x + w, y + h);
+    }
+
+    public static Rect ofGuiImmediateContext(@NotNull GuiImmediateContext context) {
+        return ofXYWH(context.getRenderOffsetX(), context.getRenderOffsetY(), context.getWidth(), context.getHeight());
     }
 
     public int getX() {
@@ -44,6 +50,10 @@ public class Rect {
             Math.max(right, other.right),
             Math.max(bottom, other.bottom)
         );
+    }
+
+    public boolean includesPoint(int x, int y) {
+        return left <= x && x <= right && top <= y && y <= bottom;
     }
 
     public Rect includePoint(int x, int y) {

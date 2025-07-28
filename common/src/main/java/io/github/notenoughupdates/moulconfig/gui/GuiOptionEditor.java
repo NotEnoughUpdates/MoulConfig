@@ -21,6 +21,7 @@
 package io.github.notenoughupdates.moulconfig.gui;
 
 import io.github.notenoughupdates.moulconfig.DescriptionRendereringBehaviour;
+import io.github.notenoughupdates.moulconfig.TitleRenderingBehaviour;
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
@@ -66,11 +67,20 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
 
         var minecraft = context.getMinecraft();
         var fr = minecraft.getDefaultFontRenderer();
+        boolean wideTitle = option.getConfig().getTitleRenderingBehaviour(option) != TitleRenderingBehaviour.LEFT;
+        int yOffset = wideTitle
+            ? fr.getHeight() + 1 : 5;
 
         context.drawDarkRect(x, y, width, height, true);
-        context.drawStringCenteredScaledMaxWidth(option.getName(),
-                                                 fr, x + width / 6, y + 13, true, width / 3 - 10, 0xc0c0c0
-        );
+        if (wideTitle) {
+            context.drawStringCenteredScaledMaxWidth(option.getName(),
+                fr, x + width / 2, y + 13, true, width - 10, 0xe0e0e0
+            );
+        } else {
+            context.drawStringCenteredScaledMaxWidth(option.getName(),
+                fr, x + width / 6, y + 13, true, width / 3 - 10, 0xe0e0e0
+            );
+        }
 
         float scale = 1;
         List<StructuredText> lines;
@@ -83,7 +93,7 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
             if (scale < 1 / 16f) break;
         }
         context.pushMatrix();
-        context.translate(x + 5 + width / 3, y + 5);
+        context.translate(x + 5 + width / 3, y + yOffset);
         context.scale(scale, scale);
         context.translate(0, ((descriptionHeight - 10) - (fr.getHeight() + 1) * (lines.size() - 1) * scale) / 2F);
         for (var line : lines) {
@@ -94,6 +104,10 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
     }
 
     public int getHeight() {
+        return getDescriptionHeight() + (option.getConfig().getTitleRenderingBehaviour(option) != TitleRenderingBehaviour.LEFT ? IMinecraft.INSTANCE.getDefaultFontRenderer().getHeight() + 1 : 5);
+    }
+
+    public int getDescriptionHeight() {
         if (option.getConfig().getDescriptionBehaviour(option) != DescriptionRendereringBehaviour.EXPAND_PANEL)
             return HEIGHT;
         var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();

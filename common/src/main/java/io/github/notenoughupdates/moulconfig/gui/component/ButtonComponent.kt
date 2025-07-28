@@ -7,11 +7,12 @@ import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent.Click
 
-class ButtonComponent(
+class ButtonComponent @JvmOverloads constructor(
     element: GuiComponent,
     insets: Int,
-    val onClick: Runnable
-) : PanelComponent(element, insets, DefaultBackgroundRenderer.DARK_RECT) {
+    val onClick: Runnable,
+    panel: BackgroundRenderer = DefaultBackgroundRenderer.DARK_RECT
+) : PanelComponent(element, insets, panel) {
     override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
         if (context.isHovered && mouseEvent is Click) {
             val (mouseButton, mouseState) = mouseEvent
