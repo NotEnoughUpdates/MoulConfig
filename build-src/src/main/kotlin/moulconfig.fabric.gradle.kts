@@ -6,13 +6,15 @@ plugins {
 	id("org.jetbrains.dokka")
 	id("moulconfig.kotlin")
 	id("moulconfig.leaf")
+	id("moulconfig.manifold")
 }
 
 val fabricVersion = property("moulconfig.fabric") as String
+val minecraftVersion = property("moulconfig.minecraft") as String
 val aF = project.file("src/main/resources/moulconfig.accesswidener")
 val hasAW = aF.exists()
 the<UniminedExtension>().minecraft {
-	version(property("moulconfig.minecraft") as String)
+	version(minecraftVersion)
 	mappings {
 		intermediary()
 		yarn(property("moulconfig.yarn") as String)
@@ -37,6 +39,23 @@ the<UniminedExtension>().minecraft {
 //			env.putAll(parseEnvFile(file(".env")))
 		}
 	}
+}
+
+val numericMinecraftVersion = minecraftVersion.split(".")
+	.map { it.toInt() }
+	.let {
+		if (it.size < 3)
+			it + listOf(0)
+		else if (it.size == 3)
+			it
+		else error("Unparsable minecraft version $minecraftVersion")
+	}
+	.reduce { a, b -> a * 100 + b }
+println("Numeric version for $minecraftVersion is $numericMinecraftVersion")
+the<PreProcessorArgs>().forDefaultCompilation {
+	define("MC", numericMinecraftVersion)
+	if (numericMinecraftVersion >= 12107)
+		define("MC217", "true")
 }
 
 val fabricDeps = extensions.create("fabricDeps", FabricUtils::class, fabricVersion)
@@ -71,11 +90,11 @@ tasks.processResources {
 }
 
 val generateFilteredSource = tasks.register("generateFilteredSource", Copy::class) {
-	from(project(":modern").file("templates/kotlin"))
+	from(project(":modern").file("templates/java"))
 	rootSpec.into(layout.buildDirectory.dir("sharedModernSource"))
 }
 sourceSets.main {
-	kotlin {
+	java {
 		srcDir(files(generateFilteredSource))
 	}
 }

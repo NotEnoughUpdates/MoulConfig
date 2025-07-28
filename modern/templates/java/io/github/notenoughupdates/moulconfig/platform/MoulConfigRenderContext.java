@@ -1,5 +1,4 @@
 package io.github.notenoughupdates.moulconfig.platform;
-
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import io.github.notenoughupdates.moulconfig.common.*;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
@@ -12,16 +11,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.texture.TextureSetup;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Language;
-import org.joml.Matrix3x2f;
-import org.joml.Matrix3x2fStack;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+#if MC217
+import net.minecraft.client.texture.TextureSetup;
+import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
+import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fStack;
+#endif
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,18 +52,26 @@ public class MoulConfigRenderContext implements RenderContext {
     }
 
 
-    public Matrix3x2fStack getMatrices() {
+    public #if MC217 Matrix3x2fStack #else MatrixStack #endif getMatrices() {
         return drawContext.getMatrices();
     }
 
     @Override
     public void pushMatrix() {
-        getMatrices().pushMatrix();
+        #if MC217
+            getMatrices().pushMatrix();
+        #else
+        getMatrices().push();
+        #endif
     }
 
     @Override
     public void popMatrix() {
-        getMatrices().popMatrix();
+        #if MC217
+            getMatrices().popMatrix();
+        #else
+        getMatrices().pop();
+        #endif
     }
 
     @Override
