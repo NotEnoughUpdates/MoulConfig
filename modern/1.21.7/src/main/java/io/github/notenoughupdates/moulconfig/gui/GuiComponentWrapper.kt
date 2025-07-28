@@ -1,7 +1,7 @@
 package io.github.notenoughupdates.moulconfig.gui
 
-import io.github.notenoughupdates.moulconfig.platform.ModernRenderContext
 import io.github.notenoughupdates.moulconfig.platform.MoulConfigPlatform
+import io.github.notenoughupdates.moulconfig.platform.MoulConfigRenderContext
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
@@ -24,7 +24,7 @@ open class GuiComponentWrapper @JvmOverloads constructor(
         val x = (mouse.x * window.scaledWidth.toDouble() / window.width.toDouble()).toInt()
         val y = (mouse.y * window.scaledHeight.toDouble() / window.height.toDouble()).toInt()
         return GuiImmediateContext(
-            ModernRenderContext(
+            MoulConfigRenderContext(
                 drawContext ?: MoulConfigPlatform.makeDrawContext()
             ),
             0, 0,

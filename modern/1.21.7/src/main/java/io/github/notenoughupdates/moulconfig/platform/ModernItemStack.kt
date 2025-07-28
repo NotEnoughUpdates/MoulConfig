@@ -10,7 +10,7 @@ import net.minecraft.item.tooltip.TooltipType
 import net.minecraft.registry.Registries
 import net.minecraft.world.World
 
-class ModernItemStack private constructor(val backing: ItemStack) : IItemStack {
+class ModernItemStack(val backing: ItemStack) : IItemStack {
     override fun getLore(): List<StructuredText> {
         return backing.getTooltip(Item.TooltipContext.create(null as World?), MinecraftClient.getInstance().player, TooltipType.BASIC).map { MoulConfigText.wrap(it) }
     }

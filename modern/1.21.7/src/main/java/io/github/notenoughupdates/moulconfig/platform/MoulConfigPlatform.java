@@ -15,10 +15,12 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -57,12 +59,28 @@ public class MoulConfigPlatform implements IMinecraft {
         return new MyResourceLocation(identifier.getNamespace(), identifier.getPath());
     }
 
+    public static ItemStack unwrap(IItemStack itemStack) {
+        return ((ModernItemStack) itemStack).getBacking();
+    }
+
+    public static IItemStack wrap(ItemStack itemStack) {
+        return new ModernItemStack(itemStack);
+    }
+
     public static Text unwrap(StructuredText structuredText) {
         return MoulConfigText.unwrap(structuredText);
     }
 
     public static StructuredText wrap(Text text) {
         return MoulConfigText.wrap(text);
+    }
+
+    public static TextRenderer unwrap(IFontRenderer fontRenderer) {
+        return ((MoulConfigFontRenderer) fontRenderer).getFont();
+    }
+
+    public static IFontRenderer wrap(TextRenderer font) {
+        return new MoulConfigFontRenderer(font);
     }
     //</editor-fold>
 
@@ -246,7 +264,7 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public RenderContext provideTopLevelRenderContext() {
-        return new ModernRenderContext(makeDrawContext());
+        return new MoulConfigRenderContext(makeDrawContext());
     }
 
     public void openWrappedScreen(Screen screen) {

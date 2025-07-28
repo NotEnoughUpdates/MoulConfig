@@ -4,6 +4,7 @@ accessible method net/minecraft/client/gui/DrawContext setScissor (Lnet/minecraf
 accessible field net/minecraft/client/gui/DrawContext scissorStack Lnet/minecraft/client/gui/DrawContext$ScissorStack;
 accessible method net/minecraft/client/gui/DrawContext drawTexturedQuad (Ljava/util/function/Function;Lnet/minecraft/util/Identifier;IIIIFFFFI)V
 accessible class net/minecraft/client/gui/DrawContext$ScissorStack
+accessible method net/minecraft/client/gui/DrawContext fill (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/texture/TextureSetup;IIIIILjava/lang/Integer;)V
 accessible field net/minecraft/client/gui/DrawContext$ScissorStack stack Ljava/util/Deque;
 accessible method net/minecraft/client/gui/DrawContext fill (Lcom/mojang/blaze3d/pipeline/RenderPipeline;IIIII)V
 accessible method net/minecraft/client/gui/DrawContext drawTexturedQuad (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/util/Identifier;IIIIFFFFI)V

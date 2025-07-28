@@ -4,13 +4,14 @@ import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.internal.NinePatchRenderer;
 import juuxel.libninepatch.NinePatch;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 @ApiStatus.NonExtendable
+@NullMarked
 public interface RenderContext {
     void pushMatrix();
 
@@ -32,11 +33,15 @@ public interface RenderContext {
     /**
      * draws more content that should be laid on top of other later render calls. the consumer will be invoked linearly, but with no guarantee for when.
      */
-    void drawOnTop(@NotNull Layer layer, @NotNull ScissorBehaviour escapeScissors, @NotNull Consumer<@NotNull RenderContext> later); // TODO: assert well ordering of layers in all child classes
+    void drawOnTop(Layer layer, ScissorBehaviour escapeScissors, Consumer<RenderContext> later); // TODO: assert well ordering of layers in all child classes
 
-    boolean isMouseButtonDown(int mouseButton);
+    default boolean isMouseButtonDown(int mouseButton) {
+        return IMinecraft.INSTANCE.isMouseButtonDown(mouseButton);
+    }
 
-    boolean isKeyboardKeyDown(int keyboardKey);
+    default boolean isKeyboardKeyDown(int keyboardKey) {
+        return IMinecraft.INSTANCE.isKeyboardKeyDown(keyboardKey);
+    }
 
     default boolean isShiftDown() {
         return isKeyboardKeyDown(KeyboardConstants.INSTANCE.getShiftLeft()) || isKeyboardKeyDown(KeyboardConstants.INSTANCE.getShiftRight());
@@ -64,7 +69,7 @@ public interface RenderContext {
         }
     }
 
-    default void drawStringScaledMaxWidth(@NotNull StructuredText text, @NotNull IFontRenderer fontRenderer, int x, int y, boolean shadow, int width, int color) {
+    default void drawStringScaledMaxWidth(StructuredText text, IFontRenderer fontRenderer, int x, int y, boolean shadow, int width, int color) {
         pushMatrix();
         translate(x, y);
         float scale = Math.min(1F, Math.max(0.1F, width / (float) fontRenderer.getStringWidth(text)));
@@ -74,8 +79,8 @@ public interface RenderContext {
     }
 
     default void drawStringCenteredScaledMaxWidth(
-        @NotNull StructuredText text,
-        @NotNull IFontRenderer fr,
+        StructuredText text,
+        IFontRenderer fr,
         float x, float y,
         boolean shadow,
         int length, int color
@@ -107,7 +112,29 @@ public interface RenderContext {
         drawColoredRect(startX, y, endX + 1, y + 1, color);
     }
 
-    void drawColoredTriangles(int color, float... coordinates);
+    /**
+     * Renders a list of triangles.
+     * @param colour the color to render the triangles in
+     * @param coordinates The coordinates of the triangles, encoded as 3 vertices consisting of 6 floats arranged as {@code [x0, y0, x1, y1, x2, y2]}
+     */
+    default void drawColoredTriangles(int colour, float... coordinates) {
+        assert coordinates.length % 6 == 0;
+        float[] newCoordinates =  new float[coordinates.length / 3 * 4];
+        for (int i = 0; i < coordinates.length / 6; i++) {
+            newCoordinates[i * 8] = coordinates[i * 6];
+            newCoordinates[i * 8 + 1] = coordinates[i * 6 + 1];
+            newCoordinates[i * 8 + 2] = coordinates[i * 6 + 2];
+            newCoordinates[i * 8 + 3] = coordinates[i * 6 + 3];
+            newCoordinates[i * 8 + 4] = coordinates[i * 6 + 4];
+            newCoordinates[i * 8 + 5] = coordinates[i * 6 + 5];
+            newCoordinates[i * 8 + 6] = coordinates[i * 6 + 4];
+            newCoordinates[i * 8 + 7] = coordinates[i * 6 + 5];
+        }
+        drawColouredQuads(colour, newCoordinates);
+    }
+
+    void drawColouredQuads(int colour, float... coordinates);
+
 
     default void drawOpenCloseTriangle(boolean isOpen, float x, float y, float width, float height, int color) {
         if (isOpen) {
@@ -127,33 +154,33 @@ public interface RenderContext {
         }
     }
 
-    void drawString(@NotNull IFontRenderer fontRenderer, @NotNull StructuredText text, int x, int y, int color, boolean shadow);
+    void drawString(IFontRenderer fontRenderer, StructuredText text, int x, int y, int color, boolean shadow);
 
     void drawColoredRect(float left, float top, float right, float bottom, int color);
 
     void invertedRect(float left, float top, float right, float bottom, int additiveColor); // TODO: worth a consideration (is this a stable API)???
 
-    default void drawTexturedRect(@NotNull MyResourceLocation texture, float x, float y, float width, float height) {
+    default void drawTexturedRect(MyResourceLocation texture, float x, float y, float width, float height) {
         drawComplexTexture(texture, x, y, width, height, drawTextureBuilder -> {
         });
     }
 
-    void drawTexturedTintedRect(@NotNull MyResourceLocation texture,
+    void drawTexturedTintedRect(MyResourceLocation texture,
                                 float x, float y, float width, float height,
                                 float u1, float v1, float u2, float v2,
-                                int color, @NotNull TextureFilter filter);
+                                int color, TextureFilter filter);
 
     class DrawTextureBuilder {
-        @NotNull MyResourceLocation texture;
+        MyResourceLocation texture;
         float x;
         float y;
         float width;
         float height;
         float u1 = 0, v1 = 0, u2 = 1, v2 = 1;
         int color = -1;
-        @NotNull TextureFilter filter = TextureFilter.NEAREST;
+        TextureFilter filter = TextureFilter.NEAREST;
 
-        public DrawTextureBuilder(@NotNull MyResourceLocation texture, float x, float y, float width, float height) {
+        public DrawTextureBuilder(MyResourceLocation texture, float x, float y, float width, float height) {
             this.texture = texture;
             this.x = x;
             this.y = y;
@@ -185,13 +212,13 @@ public interface RenderContext {
     }
 
 
-    default void drawComplexTexture(@NotNull MyResourceLocation texture, float x, float y, float width, float height, Consumer<DrawTextureBuilder> block) {
+    default void drawComplexTexture(MyResourceLocation texture, float x, float y, float width, float height, Consumer<DrawTextureBuilder> block) {
         DrawTextureBuilder drawBuilder = new DrawTextureBuilder(texture, x, y, width, height);
         block.accept(drawBuilder);
         drawBuilder.applyTo(this);
     }
 
-    default void drawNinePatch(@NotNull NinePatch<@NotNull MyResourceLocation> patch, float x, float y, int width, int height) {
+    default void drawNinePatch(NinePatch<MyResourceLocation> patch, float x, float y, int width, int height) {
         pushMatrix();
         translate(x, y);
         patch.draw(NinePatchRenderer.INSTANCE, this, width, height);
@@ -220,14 +247,17 @@ public interface RenderContext {
 
     void assertNoScissors();
 
+    /**
+     * @deprecated this silently discards any errors in the scissor stack. use {@link #assertNoScissors()} to be sure about the current scissor stack instead.
+     */
     @Deprecated
     void clearScissor();  // TODO: this sort of escapes out of the current context.
 
-    void renderItemStack(@NotNull IItemStack itemStack, int x, int y, @Nullable StructuredText overlayText);
+    void renderItemStack(IItemStack itemStack, int x, int y, @Nullable StructuredText overlayText);
 
-    void drawTooltipNow(int x, int y, @NotNull List<@NotNull StructuredText> tooltipLines);
+    void drawTooltipNow(int x, int y, List<StructuredText> tooltipLines);
 
-    default void scheduleDrawTooltip(int x, int y, @NotNull List<StructuredText> tooltipLines) {
+    default void scheduleDrawTooltip(int x, int y, List<StructuredText> tooltipLines) {
         // TODO: should this do some form of conflict resolution?
         drawOnTop(Layer.TOOLTIP, ScissorBehaviour.ESCAPE, it -> it.drawTooltipNow(x, y, tooltipLines));
     }
@@ -237,7 +267,7 @@ public interface RenderContext {
      */
     void renderExtraLayers();
 
-    default @NotNull IMinecraft getMinecraft() {
+    default IMinecraft getMinecraft() {
         return IMinecraft.INSTANCE;
     }
 }
