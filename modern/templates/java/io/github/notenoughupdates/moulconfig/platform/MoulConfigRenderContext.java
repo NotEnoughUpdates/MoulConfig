@@ -1,6 +1,9 @@
 package io.github.notenoughupdates.moulconfig.platform;
 
+#if MC > 12104
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import net.minecraft.client.gl.RenderPipelines;
+#endif
 import io.github.notenoughupdates.moulconfig.common.*;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache;
@@ -9,7 +12,6 @@ import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import lombok.Getter;
 import lombok.Value;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;

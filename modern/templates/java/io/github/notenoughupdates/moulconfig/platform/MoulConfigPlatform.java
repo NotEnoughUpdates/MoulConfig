@@ -131,7 +131,7 @@ public class MoulConfigPlatform implements IMinecraft {
     @Override
     public DynamicTextureReference generateDynamicTexture(BufferedImage img) {
         var identifier = Identifier.of("moulconfig", "dynamic/${java.util.concurrent.ThreadLocalRandom.current().nextLong()}");
-        var texture = new NativeImageBackedTexture(identifier.getPath(), img.getWidth(), img.getHeight(), true);
+        var texture = new NativeImageBackedTexture(#if MC>12104 identifier.getPath(), #endif img.getWidth(), img.getHeight(), true);
         setTextureData(texture, img);
         texture.upload();
         mc.getTextureManager().registerTexture(identifier, texture);
@@ -221,8 +221,8 @@ public class MoulConfigPlatform implements IMinecraft {
         var text = MoulConfigText.unwrap(message);
         if (type != null) {
             text = text.copy().styled(it -> it.withClickEvent(switch (type) {
-                case OPEN_LINK -> new ClickEvent.OpenUrl(URI.create(action));
-                case RUN_COMMAND -> new ClickEvent.RunCommand(action);
+                case OPEN_LINK -> #if MC > 12104 new ClickEvent.OpenUrl(URI.create(action)) #else new ClickEvent(ClickEvent.Action.OPEN_URL, action) #endif;
+                case RUN_COMMAND -> #if MC > 12104 new ClickEvent.RunCommand(action) #else new ClickEvent(ClickEvent.Action.RUN_COMMAND, action) #endif;
             }));
         }
         MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(text);
