@@ -105,7 +105,7 @@ class ModernRenderContext(val drawContext: DrawContext) : RenderContext {
     }
 
     override fun drawString(fontRenderer: IFontRenderer, text: StructuredText, x: Int, y: Int, color: Int, shadow: Boolean) {
-        drawContext.drawText((fontRenderer as ModernFontRenderer).textRenderer, MoulConfigText.unwrap(text), x, y, ColourUtil.makeOpaque(color), shadow)
+        drawContext.drawText((fontRenderer as MoulConfigFontRenderer).font, MoulConfigText.unwrap(text), x, y, ColourUtil.makeOpaque(color), shadow)
     }
 
     override fun drawColoredRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {

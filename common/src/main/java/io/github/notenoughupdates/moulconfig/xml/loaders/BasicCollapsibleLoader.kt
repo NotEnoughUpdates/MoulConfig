@@ -1,6 +1,7 @@
 package io.github.notenoughupdates.moulconfig.xml.loaders
 
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.gui.component.CollapsibleComponent
 import io.github.notenoughupdates.moulconfig.gui.component.TextComponent
 import io.github.notenoughupdates.moulconfig.observer.GetSetter
@@ -19,7 +20,7 @@ class BasicCollapsibleLoader : XMLGuiLoader.Basic<CollapsibleComponent> {
         val title = context.getPropertyFromAttribute(element, QName("title"), String::class.java)!!
         val textComponent = TextComponent(
             IMinecraft.instance.defaultFontRenderer,
-            title,
+            { StructuredText.of(title.get()) },
             IMinecraft.instance.defaultFontRenderer.getStringWidth(title.get()),
             TextComponent.TextAlignment.LEFT,
             false,

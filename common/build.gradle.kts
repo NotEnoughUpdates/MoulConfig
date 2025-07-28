@@ -13,6 +13,7 @@ dependencies {
     annotationProcessor(Dependencies.LOMBOK)
     compileOnly(Dependencies.LOMBOK)
     compileOnly(Dependencies.JB_ANNOTATIONS)
+    compileOnly(Dependencies.JSPECIFY)
     implementation(Dependencies.LIB_NINE_PATCH)
     compileOnly(Dependencies.LEGACY_GSON)
 }

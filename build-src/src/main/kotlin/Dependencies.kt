@@ -1,6 +1,7 @@
 object Dependencies {
     val LIB_NINE_PATCH = "io.github.juuxel:libninepatch:1.2.0"
     val JB_ANNOTATIONS = "org.jetbrains:annotations:24.0.1"
+    val JSPECIFY = "org.jspecify:jspecify:1.0.0"
 
     /**
      * Intentionally old version of GSON to properly compile on 1.8.9

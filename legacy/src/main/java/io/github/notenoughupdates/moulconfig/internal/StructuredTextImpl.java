@@ -27,7 +27,7 @@ public class StructuredTextImpl implements StructuredText {
 
     @Override
     public @NotNull Stream<@NotNull StructuredText> getChildren() {
-        return Stream.empty();
+        return chatComponent.getSiblings().stream().map(StructuredTextImpl::wrap);
     }
 
     @Override

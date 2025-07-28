@@ -100,7 +100,7 @@ class MoulConfigPlatform : IMinecraft {
     }
 
     override val defaultFontRenderer: IFontRenderer
-        get() = ModernFontRenderer(MinecraftClient.getInstance().textRenderer)
+        get() = MoulConfigFontRenderer(MinecraftClient.getInstance().textRenderer)
     override val keyboardConstants: IKeyboardConstants
         get() = ModernKeyboardConstants
     override val scaledWidth: Int
