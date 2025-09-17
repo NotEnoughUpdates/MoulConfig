@@ -12,6 +12,10 @@ class TestConfig : Config() {
     override fun isValidRunnable(runnableId: Int): Boolean {
         return false
     }
+
     @Category(name = "Cat a", desc = "Cat a desc")
     var testCategoryA: TestCategoryA = TestCategoryA()
+
+    @Category(name = "Cat b", desc = "Cat b desc")
+    var testCategoryB: TestCategoryB = TestCategoryB()
 }
