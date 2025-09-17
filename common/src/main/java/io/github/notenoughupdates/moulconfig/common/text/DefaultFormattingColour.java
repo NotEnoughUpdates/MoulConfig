@@ -57,8 +57,10 @@ public enum DefaultFormattingColour {
                 MathUtil.squaredDistance(cr, r)
                     + MathUtil.squaredDistance(cg, g)
                     + MathUtil.squaredDistance(cb, b);
-            if (sqDist < minDistance)
+            if (sqDist < minDistance) {
                 best = candidate;
+                minDistance = sqDist;
+            }
         }
         assert best != null;
         return best;
