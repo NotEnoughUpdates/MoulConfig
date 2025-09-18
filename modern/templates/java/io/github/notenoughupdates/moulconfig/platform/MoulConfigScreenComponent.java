@@ -6,6 +6,7 @@ import lombok.Getter;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 #if MC > 12107
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 #endif
@@ -87,12 +88,6 @@ public class MoulConfigScreenComponent extends Screen {
     #if MC < 12109
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        #else
-        @Override
-        public boolean keyPressed(KeyInput input) {
-            int keyCode = input.key();
-            int scanCode = input.scancode();
-            #endif
         if (guiContext.root.keyboardEvent(new KeyboardEvent.KeyPressed(keyCode, scanCode, true), createContext()))
             return true;
         if (keyCode == InputUtil.GLFW_KEY_ESCAPE) {
@@ -105,21 +100,40 @@ public class MoulConfigScreenComponent extends Screen {
         }
         return false;
     }
+    #else
+    @Override
+    public boolean keyPressed(KeyInput input) {
+        if (guiContext.root.keyboardEvent(new KeyboardEvent.KeyPressed(input.key(), input.scancode(), true), createContext()))
+            return true;
+        if (input.key() == InputUtil.GLFW_KEY_ESCAPE) {
+            if (guiContext.getFocusedElement() != null) {
+                guiContext.setFocusedElement(null);
+            } else {
+                close();
+            }
+            return true;
+        }
+        return false;
+    }
+    #endif
 
     #if MC < 12109
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        #else
-        @Override
-        public boolean keyReleased(KeyInput input) {
-            int keyCode = input.key();
-            int scanCode = input.scancode();
-        #endif
         return guiContext.root.keyboardEvent(
             new KeyboardEvent.KeyPressed(keyCode, scanCode, false),
             createContext()
         );
     }
+    #else
+    @Override
+    public boolean keyReleased(KeyInput input) {
+        return guiContext.root.keyboardEvent(
+            new KeyboardEvent.KeyPressed(input.key(), input.scancode(), false),
+            createContext()
+        );
+    }
+    #endif
 
     @Override
     public void mouseMoved(double mouseX, double mouseY) {
@@ -144,19 +158,37 @@ public class MoulConfigScreenComponent extends Screen {
         guiContext.getRoot().mouseEvent(event, ctx);
     }
 
+    #if MC < 12109
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return guiContext.root.mouseEvent(
             new MouseEvent.Click(button, true), createContext()
         );
     }
+    #else
+    @Override
+    public boolean mouseClicked(Click click, boolean doubled) {
+        return guiContext.root.mouseEvent(
+            new MouseEvent.Click(click.button(), true), createContext()
+        );
+    }
+    #endif
 
+    #if MC < 12109
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         return guiContext.root.mouseEvent(
             new MouseEvent.Click(button, false), createContext()
         );
     }
+    #else
+    @Override
+    public boolean mouseReleased(Click click) {
+        return guiContext.root.mouseEvent(
+            new MouseEvent.Click(click.button(), false), createContext()
+        );
+    }
+    #endif
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
@@ -168,8 +200,15 @@ public class MoulConfigScreenComponent extends Screen {
         );
     }
 
+    #if MC < 12109
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         return true;
     }
+    #else
+    @Override
+    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
+        return true;
+    }
+    #endif
 }
