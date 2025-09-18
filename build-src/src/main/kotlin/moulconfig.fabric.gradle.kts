@@ -21,7 +21,7 @@ the<UniminedExtension>().minecraft {
 	}
 
 	fabric {
-		loader("0.16.14")
+		loader("0.17.2")
 		if (hasAW)
 			accessWidener(aF)
 	}
