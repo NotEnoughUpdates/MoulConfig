@@ -22,6 +22,9 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+#if MC > 12107
+import net.minecraft.util.Util;
+#endif
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.ApiStatus;
@@ -203,7 +206,11 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public boolean isOnMacOs() {
+        #if MC < 12109
         return MinecraftClient.IS_SYSTEM_MAC;
+        #else
+        return Util.getOperatingSystem() == Util.OperatingSystem.OSX;
+        #endif
     }
 
     @Override
@@ -213,7 +220,7 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public boolean isKeyboardKeyDown(int keyboardKey) {
-        return InputUtil.isKeyPressed(mc.getWindow().getHandle(), keyboardKey);
+        return InputUtil.isKeyPressed(#if MC < 12109 mc.getWindow().getHandle() #else mc.getWindow() #endif, keyboardKey);
     }
 
     @Override
@@ -235,7 +242,7 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public StructuredText getKeyName(int keyCode) {
-        return ModernKeybindHelper.INSTANCE.getKeyName(keyCode);
+        return ModernKeybindHelper.getKeyName(keyCode);
     }
 
     @Override

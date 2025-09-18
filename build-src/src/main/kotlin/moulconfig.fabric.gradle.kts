@@ -41,7 +41,7 @@ the<UniminedExtension>().minecraft {
 	}
 }
 
-val numericMinecraftVersion = minecraftVersion.split(".")
+val numericMinecraftVersion = minecraftVersion.split("-").first().split(".")
 	.map { it.toInt() }
 	.let {
 		if (it.size < 3)

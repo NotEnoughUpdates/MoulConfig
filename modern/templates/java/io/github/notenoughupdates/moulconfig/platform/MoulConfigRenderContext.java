@@ -137,9 +137,9 @@ public class MoulConfigRenderContext implements RenderContext {
         var finalBounds = bounds;
         drawContext.state.addSimpleElement(new SimpleGuiElementRenderState() {
             @Override
-            public void setupVertices(VertexConsumer vertices, float depth) {
+            public void setupVertices(VertexConsumer vertices #if MC < 12109 , float depth #endif) {
                 for (int i = 0; i < coordinates.length; i += 2) {
-                    vertices.vertex(matrix, coordinates[i], coordinates[i + 1], depth)
+                    vertices.vertex(matrix, coordinates[i], coordinates[i + 1] #if MC < 12109 , depth #endif)
                         .color(color);
                 }
             }

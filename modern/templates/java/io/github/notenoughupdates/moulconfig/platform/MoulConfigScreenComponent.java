@@ -5,6 +5,10 @@ import io.github.notenoughupdates.moulconfig.gui.*;
 import lombok.Getter;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+#if MC > 12107
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
+#endif
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import org.jspecify.annotations.NullMarked;
@@ -68,14 +72,27 @@ public class MoulConfigScreenComponent extends Screen {
         ctx.getRenderContext().renderExtraLayers();
     }
 
+    #if MC < 12109
     @Override
     public boolean charTyped(char chr, int modifiers) {
-        return guiContext.getRoot()
-            .keyboardEvent(new KeyboardEvent.CharTyped(chr), createContext());
+        return guiContext.getRoot().keyboardEvent(new KeyboardEvent.CharTyped(chr), createContext());
     }
+    #else
+    @Override
+    public boolean charTyped(CharInput input){
+        return guiContext.getRoot().keyboardEvent(new KeyboardEvent.CharTyped((char) input.codepoint()), createContext());
+    }
+    #endif
 
+    #if MC < 12109
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        #else
+        @Override
+        public boolean keyPressed(KeyInput input) {
+            int keyCode = input.key();
+            int scanCode = input.scancode();
+            #endif
         if (guiContext.root.keyboardEvent(new KeyboardEvent.KeyPressed(keyCode, scanCode, true), createContext()))
             return true;
         if (keyCode == InputUtil.GLFW_KEY_ESCAPE) {
@@ -89,8 +106,15 @@ public class MoulConfigScreenComponent extends Screen {
         return false;
     }
 
+    #if MC < 12109
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        #else
+        @Override
+        public boolean keyReleased(KeyInput input) {
+            int keyCode = input.key();
+            int scanCode = input.scancode();
+        #endif
         return guiContext.root.keyboardEvent(
             new KeyboardEvent.KeyPressed(keyCode, scanCode, false),
             createContext()
