@@ -28,6 +28,9 @@ unimined.minecraft {
 			jvmArgs("-Dmoulconfig.testmod=true")
             jvmArgs("-Dmoulconfig.warn.crash=false")
         }
+		config("server") {
+			isEnabled = false
+		}
     }
 }
 

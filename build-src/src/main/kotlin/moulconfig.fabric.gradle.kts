@@ -38,6 +38,9 @@ the<UniminedExtension>().minecraft {
 			jvmArgs("-Dmoulconfig.warn.crash=false")
 //			env.putAll(parseEnvFile(file(".env")))
 		}
+		config("server") {
+			enabled = false
+		}
 	}
 }
 
