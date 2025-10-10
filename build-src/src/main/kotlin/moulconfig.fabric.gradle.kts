@@ -36,6 +36,9 @@ the<UniminedExtension>().minecraft {
 		config("client") {
 			jvmArgs("-Dmoulconfig.testmod=true")
 			jvmArgs("-Dmoulconfig.warn.crash=false")
+			parseEnvFile(rootProject.file(".env")).forEach { (name, value) ->
+				environment(name, value)
+			}
 			parseEnvFile(file(".env")).forEach { (name, value) ->
 				environment(name, value)
 			}
