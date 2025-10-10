@@ -213,13 +213,14 @@ public class MoulConfigRenderContext implements RenderContext {
         var identifier = MoulConfigPlatform.unwrap(texture);
         mc.getTextureManager()
             .getTexture(identifier)
+            #if MC < 12111
             .setFilter(
                 switch (filter) {
                     case LINEAR -> true;
                     case NEAREST -> false;
                 },
                 false
-            );
+            )#endif;
         drawContext.drawTexturedQuad(
             #if MC217 RenderPipelines.GUI_TEXTURED #else RenderLayer::getGuiTextured #endif,
             identifier,

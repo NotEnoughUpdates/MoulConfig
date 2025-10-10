@@ -11,17 +11,18 @@ plugins {
 
 val fabricVersion = property("moulconfig.fabric") as String
 val minecraftVersion = property("moulconfig.minecraft") as String
+val snapshotVersion = findProperty("moulconfig.snapshot") as String?
 val aF = project.file("src/main/resources/moulconfig.accesswidener")
 val hasAW = aF.exists()
 the<UniminedExtension>().minecraft {
-	version(minecraftVersion)
+	version(snapshotVersion ?: minecraftVersion)
 	mappings {
 		intermediary()
 		yarn(property("moulconfig.yarn") as String)
 	}
 
 	fabric {
-		loader("0.17.2")
+		loader("0.17.3")
 		if (hasAW)
 			accessWidener(aF)
 	}
