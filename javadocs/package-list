@@ -38,6 +38,9 @@ io.github.notenoughupdates.moulconfig.gui.elements
 io.github.notenoughupdates.moulconfig.internal
 io.github.notenoughupdates.moulconfig.test
 io.github.notenoughupdates.moulconfig.tweaker
+module:modern-1.21.10
+io.github.notenoughupdates.moulconfig.platform
+io.github.notenoughupdates.moulconfig.test
 module:modern-1.21.4
 io.github.notenoughupdates.moulconfig.platform
 io.github.notenoughupdates.moulconfig.test
