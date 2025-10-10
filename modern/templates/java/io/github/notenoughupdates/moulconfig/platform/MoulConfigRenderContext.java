@@ -200,8 +200,8 @@ public class MoulConfigRenderContext implements RenderContext {
         int rightI = (int) right;
         int bottomI = (int) bottom;
         #if MC217
-        drawContext.fill(RenderPipelines.GUI_INVERT, TextureSetup.empty(), leftI, topI, rightI, bottomI, 0, -1);
-        drawContext.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, TextureSetup.empty(), leftI, topI, rightI, bottomI, 0, additiveColor);
+        drawContext.fill(RenderPipelines.GUI_INVERT, TextureSetup.empty(), leftI, topI, rightI, bottomI, -1, null);
+        drawContext.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, TextureSetup.empty(), leftI, topI, rightI, bottomI, additiveColor, null);
         #else
         drawContext.fill(RenderLayer.getGuiTextHighlight(), leftI, topI, rightI, bottomI, 0, additiveColor);
         #endif
