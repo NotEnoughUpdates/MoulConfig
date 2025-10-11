@@ -3,7 +3,7 @@ plugins {
 }
 
 manifold {
-	manifoldVersion.set("2025.1.25")
+	manifoldVersion.set("2025.1.27")
 }
 
 dependencies {
