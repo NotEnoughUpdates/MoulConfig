@@ -1,6 +1,7 @@
 package moe.nea.shale.render.minecraft
 
 import io.github.notenoughupdates.moulconfig.common.RenderContext
+import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import moe.nea.shale.layout.Area
 import moe.nea.shale.layout.MeasuredText
 import moe.nea.shale.layout.Position
@@ -27,7 +28,7 @@ class MinecraftGraphicsContext(
     val font = renderContext.minecraft.defaultFontRenderer
 
     override fun measureWrappedText(text: String, width: Int): MeasuredText {
-        val lines = font.splitText(text, width)
+        val lines = font.splitText(StructuredText.of(text), width)
         val size = Size(
             lines.maxOfOrNull { font.getStringWidth(it) } ?: 0,
             font.height * lines.size

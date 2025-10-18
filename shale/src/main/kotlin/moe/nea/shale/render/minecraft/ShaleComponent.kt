@@ -24,6 +24,6 @@ class ShaleComponent(val tree: RootElement) : GuiComponent() {
     }
 
     fun openScreen() {
-        IMinecraft.instance.openWrappedScreen(this)
+        IMinecraft.INSTANCE.openWrappedScreen(this)
     }
 }
