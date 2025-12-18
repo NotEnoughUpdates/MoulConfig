@@ -1,9 +1,7 @@
 package io.github.notenoughupdates.moulconfig.platform;
 
-#if MC > 12104
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import net.minecraft.client.gl.RenderPipelines;
-#endif
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.notenoughupdates.moulconfig.common.*;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache;
@@ -11,23 +9,24 @@ import io.github.notenoughupdates.moulconfig.internal.Rect;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import lombok.Getter;
 import lombok.Value;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Language;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.locale.Language;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 #if MC217
-import net.minecraft.client.texture.TextureSetup;
-import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.gui.render.state.GuiElementRenderState;
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import net.minecraft.client.renderer.RenderPipelines;
 #endif
 
 import java.util.ArrayList;
@@ -39,16 +38,16 @@ import java.util.function.Consumer;
 @NullMarked
 public class MoulConfigRenderContext implements RenderContext {
     @Getter
-    final DrawContext drawContext;
-    MinecraftClient mc = MinecraftClient.getInstance();
+    final GuiGraphics drawContext;
+    Minecraft mc = Minecraft.getInstance();
 
-    public MoulConfigRenderContext(DrawContext drawContext) {
+    public MoulConfigRenderContext(GuiGraphics drawContext) {
         this.drawContext = drawContext;
     }
 
 
-    public #if MC217 Matrix3x2fStack #else MatrixStack #endif getMatrices() {
-        return drawContext.getMatrices();
+    public #if MC217 Matrix3x2fStack #else PoseStack #endif getMatrices() {
+        return drawContext.pose();
     }
 
     @Override
@@ -56,7 +55,7 @@ public class MoulConfigRenderContext implements RenderContext {
         #if MC217
             getMatrices().pushMatrix();
         #else
-        getMatrices().push();
+        getMatrices().pushPose();
         #endif
     }
 
@@ -65,7 +64,7 @@ public class MoulConfigRenderContext implements RenderContext {
         #if MC217
             getMatrices().popMatrix();
         #else
-        getMatrices().pop();
+        getMatrices().popPose();
         #endif
     }
 
@@ -95,7 +94,7 @@ public class MoulConfigRenderContext implements RenderContext {
             later,
             switch (escapeScissors) {
                 case ESCAPE -> null;
-                case INHERIT -> drawContext.scissorStack.peekLast();
+                case INHERIT -> drawContext.scissorStack.stack.peekLast();
             },
             new Matrix3x2f(getMatrices())));
     }
@@ -126,21 +125,21 @@ public class MoulConfigRenderContext implements RenderContext {
             rect = rect.includePoint((int) coordinates[i], (int) coordinates[i + 1]);
         }
         #if MC217
-        var scissors = drawContext.scissorStack.peekLast();
+        var scissors = drawContext.scissorStack.stack.peekLast();
         var matrix = new Matrix3x2f(getMatrices());
-        var bounds = new ScreenRect(rect.getX(), rect.getY(), rect.getW(), rect.getH());
-        bounds = bounds.transform(matrix);
+        var bounds = new ScreenRectangle(rect.getX(), rect.getY(), rect.getW(), rect.getH());
+        bounds = bounds.transformMaxBounds(matrix);
         if (scissors != null)
             bounds = bounds.intersection(scissors);
         if (bounds == null)
             return;
         var finalBounds = bounds;
-        drawContext.state.addSimpleElement(new SimpleGuiElementRenderState() {
+        drawContext.guiRenderState.submitGuiElement(new GuiElementRenderState() {
             @Override
-            public void setupVertices(VertexConsumer vertices #if MC < 12109 , float depth #endif) {
+            public void buildVertices(VertexConsumer vertices #if MC < 12109 , float depth #endif) {
                 for (int i = 0; i < coordinates.length; i += 2) {
-                    vertices.vertex(matrix, coordinates[i], coordinates[i + 1] #if MC < 12109 , depth #endif)
-                        .color(color);
+                    vertices.addVertexWith2DPose(matrix, coordinates[i], coordinates[i + 1] #if MC < 12109 , depth #endif)
+                        .setColor(color);
                 }
             }
 
@@ -151,26 +150,26 @@ public class MoulConfigRenderContext implements RenderContext {
 
             @Override
             public TextureSetup textureSetup() {
-                return TextureSetup.empty();
+                return TextureSetup.noTexture();
             }
 
             @Override
-            public @Nullable ScreenRect scissorArea() {
+            public @Nullable ScreenRectangle scissorArea() {
                 return scissors;
             }
 
             @Override
-            public ScreenRect bounds() {
+            public ScreenRectangle bounds() {
                 return finalBounds;
             }
         });
         #else
-        drawContext.draw(consumers -> {
-            var matrix = getMatrices().peek().getPositionMatrix();
-            var vertices = consumers.getBuffer(RenderLayer.getGui());
+        drawContext.drawSpecial(consumers -> {
+            var matrix = getMatrices().last().pose();
+            var vertices = consumers.getBuffer(RenderType.gui());
             for (int i = 0; i < coordinates.length; i += 2) {
-                vertices.vertex(matrix, coordinates[i], coordinates[i + 1], 0F)
-                    .color(color);
+                vertices.addVertex(matrix, coordinates[i], coordinates[i + 1], 0F)
+                    .setColor(color);
             }
         });
         #endif
@@ -178,7 +177,7 @@ public class MoulConfigRenderContext implements RenderContext {
 
     @Override
     public void drawString(IFontRenderer fontRenderer, StructuredText text, int x, int y, int color, boolean shadow) {
-        drawContext.drawText(
+        drawContext.drawString(
             MoulConfigPlatform.unwrap(fontRenderer),
             MoulConfigPlatform.unwrap(text),
             x,
@@ -200,10 +199,10 @@ public class MoulConfigRenderContext implements RenderContext {
         int rightI = (int) right;
         int bottomI = (int) bottom;
         #if MC217
-        drawContext.fill(RenderPipelines.GUI_INVERT, TextureSetup.empty(), leftI, topI, rightI, bottomI, -1, null);
-        drawContext.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, TextureSetup.empty(), leftI, topI, rightI, bottomI, additiveColor, null);
+        drawContext.submitColoredRectangle(RenderPipelines.GUI_INVERT, TextureSetup.noTexture(), leftI, topI, rightI, bottomI, -1, null);
+        drawContext.submitColoredRectangle(RenderPipelines.GUI_TEXT_HIGHLIGHT, TextureSetup.noTexture(), leftI, topI, rightI, bottomI, additiveColor, null);
         #else
-        drawContext.fill(RenderLayer.getGuiTextHighlight(), leftI, topI, rightI, bottomI, 0, additiveColor);
+        drawContext.fill(RenderType.guiTextHighlight(), leftI, topI, rightI, bottomI, 0, additiveColor);
         #endif
     }
 
@@ -220,8 +219,8 @@ public class MoulConfigRenderContext implements RenderContext {
                 },
                 false
             );
-        drawContext.drawTexturedQuad(
-            #if MC217 RenderPipelines.GUI_TEXTURED #else RenderLayer::getGuiTextured #endif,
+        drawContext.innerBlit(
+            #if MC217 RenderPipelines.GUI_TEXTURED #else RenderType::guiTextured #endif,
             identifier,
             (int) x, (int) (x + width), (int) y, (int) (y + height),
             u1, u2, v1, v2,
@@ -257,7 +256,7 @@ public class MoulConfigRenderContext implements RenderContext {
 
     @Override
     public void pushRawScissor(int left, int top, int right, int bottom) {
-        drawContext.scissorStack.stack.addLast(new ScreenRect(left, top, right, bottom));
+        drawContext.scissorStack.stack.addLast(new ScreenRectangle(left, top, right, bottom));
     }
 
     @Override
@@ -280,10 +279,10 @@ public class MoulConfigRenderContext implements RenderContext {
     @Override
     public void renderItemStack(IItemStack itemStack, int x, int y, @Nullable StructuredText overlayText) {
         var item = MoulConfigPlatform.unwrap(itemStack);
-        drawContext.drawItem(item, x, y);
+        drawContext.renderItem(item, x, y);
         if (overlayText != null)
-            drawContext.drawStackOverlay(
-                mc.textRenderer,
+            drawContext.renderItemDecorations(
+                mc.font,
                 item,
                 x, y,
                 overlayText.getText()
@@ -292,27 +291,28 @@ public class MoulConfigRenderContext implements RenderContext {
 
     @Override
     public void drawTooltipNow(int x, int y, List<StructuredText> tooltipLines) {
+        #if MC217
         var lines = tooltipLines.stream()
             .map(MoulConfigPlatform::unwrap)
-            #if MC217
-            .map(Language.getInstance()::reorder)
-            .map(TooltipComponent::of)
-            #endif
+            .map(Language.getInstance()::getVisualOrder)
+            .map(ClientTooltipComponent::create)
             .toList();
-        #if MC217
-        drawContext.drawTooltipImmediately(
-            mc.textRenderer,
+        drawContext.renderTooltip(
+            mc.font,
             lines,
             x, y,
-            HoveredTooltipPositioner.INSTANCE,
+            DefaultTooltipPositioner.INSTANCE,
             null
         );
         #else
-        drawContext.drawTooltip(
-            mc.textRenderer,
+        var lines = tooltipLines.stream()
+            .map(MoulConfigPlatform::unwrap)
+            .map(Language.getInstance()::getVisualOrder)
+            .toList();
+        drawContext.renderTooltip(
+            mc.font,
             lines,
-            x, y,
-            null
+            x, y
         );
         #endif
     }
@@ -322,7 +322,7 @@ public class MoulConfigRenderContext implements RenderContext {
     static class DrawAction {
         Consumer<RenderContext> action;
         @Nullable
-        ScreenRect scissorTop;
+        ScreenRectangle scissorTop;
         Matrix3x2f transform;
     }
 
@@ -344,7 +344,7 @@ public class MoulConfigRenderContext implements RenderContext {
                 }
 
                 if (draw.scissorTop != null) {
-                    pushRawScissor(draw.scissorTop.getLeft(), draw.scissorTop.getTop(), draw.scissorTop.getRight(), draw.scissorTop.getBottom());
+                    pushRawScissor(draw.scissorTop.left(), draw.scissorTop.top(), draw.scissorTop.right(), draw.scissorTop.bottom());
                 }
 
                 pushMatrix();

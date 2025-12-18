@@ -1,17 +1,17 @@
 package io.github.notenoughupdates.moulconfig.platform;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.*;
 import lombok.Getter;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 #if MC > 12107
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 #endif
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -23,21 +23,21 @@ public class MoulConfigScreenComponent extends Screen {
     final @Nullable Screen previousScreen;
 
     public MoulConfigScreenComponent(
-        Text title,
+        Component title,
         GuiContext guiContext,
         @Nullable Screen previousScreen) {
         super(title);
         this.guiContext = guiContext;
         this.previousScreen = previousScreen;
-        guiContext.setCloseRequestHandler(this::close);
+        guiContext.setCloseRequestHandler(this::onClose);
     }
 
     public GuiImmediateContext createContext() {
         return createContext(null);
     }
 
-    public GuiImmediateContext createContext(@Nullable DrawContext drawContext) {
-        assert client != null;
+    public GuiImmediateContext createContext(@Nullable GuiGraphics drawContext) {
+        assert minecraft != null;
         var im = IMinecraft.INSTANCE;
         var mousePos = im.getMousePositionHF();
         var x = mousePos.getFirst().intValue();
@@ -54,9 +54,9 @@ public class MoulConfigScreenComponent extends Screen {
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         if (guiContext.onBeforeClose() == CloseEventListener.CloseAction.NO_OBJECTIONS_TO_CLOSE)
-            super.close();
+            super.onClose();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class MoulConfigScreenComponent extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         super.render(context, mouseX, mouseY, deltaTicks);
         var ctx = createContext(context);
         guiContext.getRoot().render(ctx);
@@ -80,7 +80,7 @@ public class MoulConfigScreenComponent extends Screen {
     }
     #else
     @Override
-    public boolean charTyped(CharInput input){
+    public boolean charTyped(CharacterEvent input){
         return guiContext.getRoot().keyboardEvent(new KeyboardEvent.CharTyped((char) input.codepoint()), createContext());
     }
     #endif
@@ -90,17 +90,17 @@ public class MoulConfigScreenComponent extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
     #else
     @Override
-    public boolean keyPressed(KeyInput input) {
+    public boolean keyPressed(KeyEvent input) {
         int keyCode = input.key();
         int scanCode = input.scancode();
     #endif
         if (guiContext.root.keyboardEvent(new KeyboardEvent.KeyPressed(keyCode, scanCode, true), createContext()))
             return true;
-        if (keyCode == InputUtil.GLFW_KEY_ESCAPE) {
+        if (keyCode == InputConstants.KEY_ESCAPE) {
             if (guiContext.getFocusedElement() != null) {
                 guiContext.setFocusedElement(null);
             } else {
-                close();
+                onClose();
             }
             return true;
         }
@@ -112,7 +112,7 @@ public class MoulConfigScreenComponent extends Screen {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
     #else
     @Override
-    public boolean keyReleased(KeyInput input) {
+    public boolean keyReleased(KeyEvent input) {
         int keyCode = input.key();
         int scanCode = input.scancode();
     #endif
@@ -146,14 +146,14 @@ public class MoulConfigScreenComponent extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(#if MC < 12109 double mouseX, double mouseY, int button #else Click click, boolean doubled #endif) {
+    public boolean mouseClicked(#if MC < 12109 double mouseX, double mouseY, int button #else MouseButtonEvent click, boolean doubled #endif) {
         return guiContext.root.mouseEvent(
             new MouseEvent.Click(#if MC < 12109 button #else click.button() #endif, true), createContext()
         );
     }
 
     @Override
-    public boolean mouseReleased(#if MC < 12109 double mouseX, double mouseY, int button #else Click click #endif) {
+    public boolean mouseReleased(#if MC < 12109 double mouseX, double mouseY, int button #else MouseButtonEvent click #endif) {
         return guiContext.root.mouseEvent(
             new MouseEvent.Click(#if MC < 12109 button #else click.button() #endif, false), createContext()
         );
@@ -175,7 +175,7 @@ public class MoulConfigScreenComponent extends Screen {
         #if MC < 12109
         double mouseX, double mouseY, int button, double deltaX, double deltaY
         #else
-        Click click, double offsetX, double offsetY
+        MouseButtonEvent click, double offsetX, double offsetY
         #endif
     ) {
         return true;

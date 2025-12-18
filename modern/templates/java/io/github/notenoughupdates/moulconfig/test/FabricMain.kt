@@ -13,14 +13,13 @@ import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
-import net.minecraft.block.Blocks
-import net.minecraft.client.MinecraftClient
-import net.minecraft.item.ItemStack
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.client.Minecraft
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.block.Blocks
 import java.io.File
-import java.util.Arrays
-import java.util.Random
+import java.util.*
 
 class FabricMain : ModInitializer {
     override fun onInitialize() {
@@ -28,7 +27,7 @@ class FabricMain : ModInitializer {
         val config = ManagedConfig.create(File("config/moulconfig/test.json"), TestConfig::class.java)
         ClientCommandRegistrationCallback.EVENT.register { a, b ->
             a.register(literal("moulconfig").executes {
-                MinecraftClient.getInstance().send {
+                Minecraft.getInstance().schedule {
                     val editor = config.getEditor()
                     editor.setWide(config.instance.testCategoryA.isWide)
                     IMinecraft.INSTANCE.openWrappedScreen(editor)
@@ -36,17 +35,17 @@ class FabricMain : ModInitializer {
                 0
             })
             a.register(literal("moulconfigxml").executes {
-                MinecraftClient.getInstance().send {
+                Minecraft.getInstance().schedule {
                     val xmlUniverse =
                         XMLUniverse.getDefaultUniverse()
                     val scene = xmlUniverse.load(
-                        ObjectBound(), MinecraftClient.getInstance().resourceManager.open(
-                            Identifier.of("moulconfig:test.xml")
+                        ObjectBound(), Minecraft.getInstance().resourceManager.open(
+                            ResourceLocation.parse("moulconfig:test.xml")
                         )
                     )
-                    MinecraftClient.getInstance().setScreen(
+                    Minecraft.getInstance().setScreen(
                         MoulConfigScreenComponent(
-                            Text.empty(),
+                            Component.empty(),
                             GuiContext(
                                 scene
                             ),

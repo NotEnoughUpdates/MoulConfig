@@ -1,5 +1,6 @@
 package io.github.notenoughupdates.moulconfig.platform;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.notenoughupdates.moulconfig.common.*;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiContext;
@@ -11,22 +12,22 @@ import kotlin.Pair;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
 #if MC > 12107
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 #endif
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.pattern.TextRenderer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
@@ -43,7 +44,7 @@ import java.util.stream.Stream;
 @NullMarked
 public class MoulConfigPlatform implements IMinecraft {
     public static @Nullable MoulConfigPlatform instance;
-    MinecraftClient mc = MinecraftClient.getInstance();
+    Minecraft mc = Minecraft.getInstance();
 
     public MoulConfigPlatform() {
         if (instance != null) {
@@ -53,11 +54,11 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     //<editor-fold desc="Wrap / Unwrap helpers">
-    public static Identifier unwrap(MyResourceLocation resourceLocation) {
-        return Identifier.of(resourceLocation.getRoot(), resourceLocation.getPath());
+    public static ResourceLocation unwrap(MyResourceLocation resourceLocation) {
+        return ResourceLocation.fromNamespaceAndPath(resourceLocation.getRoot(), resourceLocation.getPath());
     }
 
-    public static MyResourceLocation wrap(Identifier identifier) {
+    public static MyResourceLocation wrap(ResourceLocation identifier) {
         return new MyResourceLocation(identifier.getNamespace(), identifier.getPath());
     }
 
@@ -69,23 +70,23 @@ public class MoulConfigPlatform implements IMinecraft {
         return new MoulConfigItemStack(itemStack);
     }
 
-    public static Text unwrap(StructuredText structuredText) {
+    public static Component unwrap(StructuredText structuredText) {
         return MoulConfigText.unwrap(structuredText);
     }
 
-    public static StructuredText wrap(Text text) {
+    public static StructuredText wrap(Component text) {
         return MoulConfigText.wrap(text);
     }
 
-    public static StructuredText.Mutable wrap(MutableText text) {
+    public static StructuredText.Mutable wrap(MutableComponent text) {
         return MoulConfigText.wrap(text);
     }
 
-    public static TextRenderer unwrap(IFontRenderer fontRenderer) {
+    public static Font unwrap(IFontRenderer fontRenderer) {
         return ((MoulConfigFontRenderer) fontRenderer).getFont();
     }
 
-    public static IFontRenderer wrap(TextRenderer font) {
+    public static IFontRenderer wrap(Font font) {
         return new MoulConfigFontRenderer(font);
     }
     //</editor-fold>
@@ -95,7 +96,7 @@ public class MoulConfigPlatform implements IMinecraft {
     public InputStream loadResourceLocation(MyResourceLocation resourceLocation) {
         return mc.getResourceManager()
             .getResourceOrThrow(unwrap(resourceLocation))
-            .getInputStream();
+            .open();
     }
 
     @Override
@@ -125,24 +126,24 @@ public class MoulConfigPlatform implements IMinecraft {
             && resourceLocation.getPath().startsWith("dynamic/");
     }
 
-    private static void setTextureData(NativeImageBackedTexture texture, BufferedImage image) {
-        var destinationImage = texture.getImage();
+    private static void setTextureData(DynamicTexture texture, BufferedImage image) {
+        var destinationImage = texture.getPixels();
         assert destinationImage != null;
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 var argb = image.getRGB(i, j);
-                destinationImage.setColorArgb(i, j, argb);
+                destinationImage.setPixel(i, j, argb);
             }
         }
     }
 
     @Override
     public DynamicTextureReference generateDynamicTexture(BufferedImage img) {
-        var identifier = Identifier.of("moulconfig", "dynamic/${java.util.concurrent.ThreadLocalRandom.current().nextLong()}");
-        var texture = new NativeImageBackedTexture(#if MC>12104 identifier.getPath(), #endif img.getWidth(), img.getHeight(), true);
+        var identifier = ResourceLocation.fromNamespaceAndPath("moulconfig", "dynamic/${java.util.concurrent.ThreadLocalRandom.current().nextLong()}");
+        var texture = new DynamicTexture(#if MC>12104 identifier.getPath(), #endif img.getWidth(), img.getHeight(), true);
         setTextureData(texture, img);
         texture.upload();
-        mc.getTextureManager().registerTexture(identifier, texture);
+        mc.getTextureManager().register(identifier, texture);
         return new DynamicTextureReference() {
             @Override
             public @NotNull MyResourceLocation getIdentifier() {
@@ -158,18 +159,18 @@ public class MoulConfigPlatform implements IMinecraft {
             @Override
             protected void doDestroy() {
                 FilterAssertionCache.destroyGlobalFilter(wrap(identifier));
-                mc.getTextureManager().destroyTexture(identifier);
+                mc.getTextureManager().release(identifier);
             }
         };
     }
 
     @Override
     public Pair<Double, Double> getMousePositionHF() {
-        var mouse = mc.mouse;
+        var mouse = mc.mouseHandler;
         var window = mc.getWindow();
         // TODO: on newer versions we can use mouse.getScaledY() directly. would be a place for a preprocessor
-        var y = (mouse.getY() * (double) window.getScaledHeight() / window.getHeight());
-        var x = (mouse.getX() * (double) window.getScaledWidth() / window.getWidth());
+        var y = (mouse.ypos() * (double) window.getGuiScaledHeight() / window.getHeight());
+        var x = (mouse.xpos() * (double) window.getGuiScaledWidth() / window.getWidth());
         return new Pair<>(x, y);
     }
 
@@ -180,7 +181,7 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public IFontRenderer getDefaultFontRenderer() {
-        return new MoulConfigFontRenderer(mc.textRenderer);
+        return new MoulConfigFontRenderer(mc.font);
     }
 
     @Override
@@ -190,37 +191,37 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public int getScaledWidth() {
-        return mc.getWindow().getScaledWidth();
+        return mc.getWindow().getGuiScaledWidth();
     }
 
     @Override
     public int getScaledHeight() {
-        return mc.getWindow().getScaledHeight();
+        return mc.getWindow().getGuiScaledHeight();
     }
 
     @Override
     public int getScaleFactor() {
-        return (int) mc.getWindow().getScaleFactor();
+        return (int) mc.getWindow().getGuiScale();
     }
 
 
     @Override
     public boolean isOnMacOs() {
         #if MC < 12109
-        return MinecraftClient.IS_SYSTEM_MAC;
+        return Minecraft.ON_OSX;
         #else
-        return Util.getOperatingSystem() == Util.OperatingSystem.OSX;
+        return Util.getPlatform() == Util.OS.OSX;
         #endif
     }
 
     @Override
     public boolean isMouseButtonDown(int mouseButton) {
-        return GLFW.glfwGetMouseButton(mc.getWindow().getHandle(), mouseButton) == GLFW.GLFW_PRESS;
+        return GLFW.glfwGetMouseButton(#if MC < 12109 mc.getWindow().getWindow() #else mc.getWindow().handle() #endif, mouseButton) == GLFW.GLFW_PRESS;
     }
 
     @Override
     public boolean isKeyboardKeyDown(int keyboardKey) {
-        return InputUtil.isKeyPressed(#if MC < 12109 mc.getWindow().getHandle() #else mc.getWindow() #endif, keyboardKey);
+        return InputConstants.isKeyDown(#if MC < 12109 mc.getWindow().getWindow() #else mc.getWindow() #endif, keyboardKey);
     }
 
     @Override
@@ -232,12 +233,12 @@ public class MoulConfigPlatform implements IMinecraft {
     public void sendClickableChatMessage(StructuredText message, String action, @Nullable ClickType type) {
         var text = MoulConfigText.unwrap(message);
         if (type != null) {
-            text = text.copy().styled(it -> it.withClickEvent(switch (type) {
+            text = text.copy().withStyle(it -> it.withClickEvent(switch (type) {
                 case OPEN_LINK -> #if MC > 12104 new ClickEvent.OpenUrl(URI.create(action)) #else new ClickEvent(ClickEvent.Action.OPEN_URL, action) #endif;
                 case RUN_COMMAND -> #if MC > 12104 new ClickEvent.RunCommand(action) #else new ClickEvent(ClickEvent.Action.RUN_COMMAND, action) #endif;
             }));
         }
-        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(text);
+        mc.gui.getChat().addMessage(text);
     }
 
     @Override
@@ -247,29 +248,30 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public StructuredText.Mutable createLiteral(String text) {
-        return wrap(Text.literal(text));
+        return wrap(Component.literal(text));
     }
 
     @Override
     public StructuredText.Mutable createTranslatable(String key, StructuredText... args) {
-        return wrap(Text.translatable(key, Stream.of(args).map(MoulConfigPlatform::unwrap).toArray()));
+        return wrap(Component.translatable(key, Stream.of(args).map(MoulConfigPlatform::unwrap).toArray()));
     }
 
     @Override
     public @Nullable StructuredText createStructuredTextInternal(Object obj) {
-        if (obj instanceof Text text)
+        if (obj instanceof Component text)
             return wrap(text);
         return null;
     }
 
     @ApiStatus.Internal
-    public static DrawContext makeDrawContext() {
-        return new DrawContext(
-            MinecraftClient.getInstance(),
+    public static GuiGraphics makeDrawContext() {
+        var mc = Minecraft.getInstance();
+        return new GuiGraphics(
+            mc,
             #if MC217
-            MinecraftClient.getInstance().gameRenderer.guiState
+            mc.gameRenderer.guiRenderState
             #else
-            MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers()
+            mc.renderBuffers().bufferSource()
             #endif
         );
     }
@@ -285,16 +287,16 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public void openWrappedScreen(GuiContext gui) {
-        openWrappedScreen(new MoulConfigScreenComponent(Text.empty(), gui, null));
+        openWrappedScreen(new MoulConfigScreenComponent(Component.empty(), gui, null));
     }
 
     @Override
     public void copyToClipboard(String string) {
-        mc.keyboard.setClipboard(string);
+        mc.keyboardHandler.setClipboard(string);
     }
 
     @Override
     public String copyFromClipboard() {
-        return mc.keyboard.getClipboard();
+        return mc.keyboardHandler.getClipboard();
     }
 }

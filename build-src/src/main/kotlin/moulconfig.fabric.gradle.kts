@@ -17,7 +17,7 @@ the<UniminedExtension>().minecraft {
 	version(minecraftVersion)
 	mappings {
 		intermediary()
-		yarn(property("moulconfig.yarn") as String)
+		mojmap()
 	}
 
 	fabric {

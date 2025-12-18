@@ -3,9 +3,9 @@ package io.github.notenoughupdates.moulconfig.platform;
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import lombok.Value;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -14,31 +14,31 @@ import java.util.Optional;
 
 @Value
 public class MoulConfigFontRenderer implements IFontRenderer {
-    @NotNull TextRenderer font;
+    @NotNull Font font;
 
     @Override
     public int getHeight() {
-        return font.fontHeight;
+        return font.lineHeight;
     }
 
     @Override
     public int getStringWidth(@NotNull StructuredText string) {
-        return font.getWidth(MoulConfigText.unwrap(string));
+        return font.width(MoulConfigText.unwrap(string));
     }
 
     @Override
     public int getCharWidth(char c) {
-        return font.getWidth(String.valueOf(c));
+        return font.width(String.valueOf(c));
     }
 
     @Override
     public @NotNull List<@NotNull StructuredText> splitText(@NotNull StructuredText text, int width) {
         var list = new ArrayList<StructuredText>();
-        font.getTextHandler().wrapLines(MoulConfigText.unwrap(text), width, Style.EMPTY, (stringVisitable, isWrapped) -> {
-            var appendable = Text.empty();
+        font.getSplitter().splitLines(MoulConfigText.unwrap(text), width, Style.EMPTY, (stringVisitable, isWrapped) -> {
+            var appendable = Component.empty();
             list.add(MoulConfigText.wrap(appendable));
             stringVisitable.visit((style, string) -> {
-                appendable.append(Text.literal(string).setStyle(style));
+                appendable.append(Component.literal(string).setStyle(style));
                 return Optional.empty();
             }, Style.EMPTY);
         });
@@ -48,6 +48,6 @@ public class MoulConfigFontRenderer implements IFontRenderer {
     @Override
     @NotNull
     public String trimStringToWidth(@NotNull String string, int width, boolean reverse) {
-        return font.trimToWidth(string, width, reverse);
+        return font.plainSubstrByWidth(string, width, reverse);
     }
 }

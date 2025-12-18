@@ -2,7 +2,7 @@ package io.github.notenoughupdates.moulconfig.platform;
 
 import io.github.notenoughupdates.moulconfig.common.text.StructuredStyle;
 import lombok.Value;
-import net.minecraft.text.Style;
+import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.NotNull;
 
 @Value
@@ -38,7 +38,7 @@ public class MoulConfigStyle implements StructuredStyle {
     @NotNull
     @Override
     public StructuredStyle withUnderline(boolean underline) {
-        return new MoulConfigStyle(style.withUnderline(underline));
+        return new MoulConfigStyle(style.withUnderlined(underline));
     }
 
     @NotNull
