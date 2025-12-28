@@ -1,5 +1,9 @@
 package io.github.notenoughupdates.moulconfig.platform;
 
+#if MC <= 12111
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.FilterMode;
+#endif
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.notenoughupdates.moulconfig.common.*;
@@ -12,7 +16,9 @@ import lombok.Value;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+#if MC < 12111
 import net.minecraft.client.renderer.RenderType;
+#endif
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -212,13 +218,15 @@ public class MoulConfigRenderContext implements RenderContext {
         var identifier = MoulConfigPlatform.unwrap(texture);
         mc.getTextureManager()
             .getTexture(identifier)
+            #if MC < 12111
             .setFilter(
                 switch (filter) {
                     case LINEAR -> true;
                     case NEAREST -> false;
                 },
                 false
-            );
+            )#endif;
+        #if MC < 12111
         drawContext.innerBlit(
             #if MC217 RenderPipelines.GUI_TEXTURED #else RenderType::guiTextured #endif,
             identifier,
@@ -226,6 +234,26 @@ public class MoulConfigRenderContext implements RenderContext {
             u1, u2, v1, v2,
             color
         );
+        #else
+        FilterMode filterMode = switch (filter) {
+            case TextureFilter.LINEAR -> FilterMode.LINEAR;
+            case TextureFilter.NEAREST -> FilterMode.NEAREST;
+        };
+        drawContext.submitBlit(
+            RenderPipelines.GUI_TEXTURED,
+            mc.getTextureManager().getTexture(identifier).getTextureView(),
+            RenderSystem.getSamplerCache().getClampToEdge(filterMode),
+            (int) x,
+            (int) (x + width),
+            (int) y,
+            (int) (y + height),
+            u1,
+            u2,
+            v1,
+            v2,
+            color
+        );
+        #endif
     }
 
     @Override
