@@ -15,7 +15,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Blocks
 import java.io.File
@@ -40,7 +40,7 @@ class FabricMain : ModInitializer {
                         XMLUniverse.getDefaultUniverse()
                     val scene = xmlUniverse.load(
                         ObjectBound(), Minecraft.getInstance().resourceManager.open(
-                            ResourceLocation.parse("moulconfig:test.xml")
+                            Identifier.parse("moulconfig:test.xml")
                         )
                     )
                     Minecraft.getInstance().setScreen(

@@ -1,0 +1,20 @@
+accessWidener v2 named
+
+accessible method net/minecraft/client/gui/GuiGraphics setScissor (Lnet/minecraft/client/gui/navigation/ScreenRectangle;)V
+accessible field net/minecraft/client/gui/GuiGraphics scissorStack Lnet/minecraft/client/gui/GuiGraphics$ScissorStack;
+accessible method net/minecraft/client/gui/GuiGraphics drawTexturedQuad (Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIIIFFFFI)V
+accessible class net/minecraft/client/gui/GuiGraphics$ScissorStack
+accessible method net/minecraft/client/gui/GuiGraphics fill (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;IIIIILjava/lang/Integer;)V
+accessible field net/minecraft/client/gui/GuiGraphics$ScissorStack stack Ljava/util/Deque;
+accessible method net/minecraft/client/gui/GuiGraphics fill (Lcom/mojang/blaze3d/pipeline/RenderPipeline;IIIII)V
+accessible method net/minecraft/client/gui/GuiGraphics drawTexturedQuad (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIIFFFFI)V
+accessible field net/minecraft/client/renderer/GameRenderer guiRenderState Lnet/minecraft/client/gui/render/state/GuiRenderState;
+accessible field net/minecraft/client/renderer/RenderPipelines GUI_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
+accessible method net/minecraft/client/renderer/RenderType of (Ljava/lang/String;ILcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/renderer/RenderType$CompositeRenderType$Parameters;)Lnet/minecraft/client/renderer/RenderType$CompositeRenderType;
+accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
+accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType$Parameters
+accessible method net/minecraft/client/renderer/RenderType$CompositeRenderType$Parameters$Builder build (Z)Lnet/minecraft/client/renderer/RenderType$CompositeRenderType$Parameters;
+accessible field net/minecraft/client/gui/GuiGraphics guiRenderState Lnet/minecraft/client/gui/render/state/GuiRenderState;
+accessible method net/minecraft/client/gui/GuiGraphics submitColoredRectangle (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;IIIIILjava/lang/Integer;)V
+accessible method net/minecraft/client/gui/GuiGraphics innerBlit (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIIFFFFI)V
+accessible method net/minecraft/client/gui/GuiGraphics submitBlit (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lcom/mojang/blaze3d/textures/GpuTextureView;Lcom/mojang/blaze3d/textures/GpuSampler;IIIIFFFFI)V

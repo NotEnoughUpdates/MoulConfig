@@ -13,9 +13,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-#if MC > 12107
-import net.minecraft.Util;
-#endif
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -23,7 +20,11 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+#if MC < 12111
 import net.minecraft.resources.ResourceLocation;
+#else
+import net.minecraft.resources.Identifier;
+#endif
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,11 +55,15 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     //<editor-fold desc="Wrap / Unwrap helpers">
-    public static ResourceLocation unwrap(MyResourceLocation resourceLocation) {
+    public static #if MC < 12111 ResourceLocation #else Identifier #endif unwrap(MyResourceLocation resourceLocation) {
+        #if MC < 12111
         return ResourceLocation.fromNamespaceAndPath(resourceLocation.getRoot(), resourceLocation.getPath());
+        #else
+        return Identifier.fromNamespaceAndPath(resourceLocation.getRoot(), resourceLocation.getPath());
+        #endif
     }
 
-    public static MyResourceLocation wrap(ResourceLocation identifier) {
+    public static MyResourceLocation wrap(#if MC < 12111 ResourceLocation #else Identifier #endif identifier) {
         return new MyResourceLocation(identifier.getNamespace(), identifier.getPath());
     }
 
@@ -139,7 +144,11 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public DynamicTextureReference generateDynamicTexture(BufferedImage img) {
+        #if MC < 12111
         var identifier = ResourceLocation.fromNamespaceAndPath("moulconfig", "dynamic/${java.util.concurrent.ThreadLocalRandom.current().nextLong()}");
+        #else
+        var identifier = Identifier.fromNamespaceAndPath("moulconfig", "dynamic/${java.util.concurrent.ThreadLocalRandom.current().nextLong()}");
+        #endif
         var texture = new DynamicTexture(#if MC>12104 identifier.getPath(), #endif img.getWidth(), img.getHeight(), true);
         setTextureData(texture, img);
         texture.upload();
@@ -209,8 +218,10 @@ public class MoulConfigPlatform implements IMinecraft {
     public boolean isOnMacOs() {
         #if MC < 12109
         return Minecraft.ON_OSX;
+        #elif MC < 12111
+        return net.minecraft.Util.getPlatform() == net.minecraft.Util.OS.OSX;
         #else
-        return Util.getPlatform() == Util.OS.OSX;
+        return net.minecraft.util.Util.getPlatform() == net.minecraft.util.Util.OS.OSX;
         #endif
     }
 
@@ -268,10 +279,17 @@ public class MoulConfigPlatform implements IMinecraft {
         var mc = Minecraft.getInstance();
         return new GuiGraphics(
             mc,
-            #if MC217
+            #if MC >= 12107
             mc.gameRenderer.guiRenderState
             #else
             mc.renderBuffers().bufferSource()
+            #endif
+            // The mouseX and mouseY params are only used for the ActiveTextCollector which MoulConfig does not currently use
+            // so these will just be 0 for porting simplicity, if this changes then the real x and y should be passed instead
+            #if MC >= 12111
+            ,
+            0,
+            0
             #endif
         );
     }
