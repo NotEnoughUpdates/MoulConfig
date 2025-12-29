@@ -285,12 +285,10 @@ public class MoulConfigPlatform implements IMinecraft {
             #else
             mc.renderBuffers().bufferSource()
             #endif
-            // The mouseX and mouseY params are only used for the ActiveTextCollector which MoulConfig does not currently use
-            // so these will just be 0 for porting simplicity, if this changes then the real x and y should be passed instead
             #if MC >= 12111
             ,
-            0,
-            0
+            (int) mc.mouseHandler.getScaledXPos(mc.getWindow()),
+            (int) mc.mouseHandler.getScaledYPos(mc.getWindow())
             #endif
         );
     }
