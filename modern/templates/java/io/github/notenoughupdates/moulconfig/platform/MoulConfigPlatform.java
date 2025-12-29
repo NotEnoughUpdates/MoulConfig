@@ -177,9 +177,13 @@ public class MoulConfigPlatform implements IMinecraft {
     public Pair<Double, Double> getMousePositionHF() {
         var mouse = mc.mouseHandler;
         var window = mc.getWindow();
-        // TODO: on newer versions we can use mouse.getScaledY() directly. would be a place for a preprocessor
-        var y = (mouse.ypos() * (double) window.getGuiScaledHeight() / window.getHeight());
+        #if MC < 12111
         var x = (mouse.xpos() * (double) window.getGuiScaledWidth() / window.getWidth());
+        var y = (mouse.ypos() * (double) window.getGuiScaledHeight() / window.getHeight());
+        #else
+        double x = mouse.getScaledXPos(window);
+        double y = mouse.getScaledYPos(window);
+        #endif
         return new Pair<>(x, y);
     }
 
