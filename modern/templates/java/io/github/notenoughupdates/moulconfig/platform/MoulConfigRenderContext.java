@@ -216,16 +216,17 @@ public class MoulConfigRenderContext implements RenderContext {
     public void drawTexturedTintedRect(MyResourceLocation texture, float x, float y, float width, float height, float u1, float v1, float u2, float v2, int color, TextureFilter filter) {
         FilterAssertionCache.assertTextureFilter(texture, filter);
         var identifier = MoulConfigPlatform.unwrap(texture);
+        #if MC < 12111
         mc.getTextureManager()
             .getTexture(identifier)
-            #if MC < 12111
             .setFilter(
                 switch (filter) {
                     case LINEAR -> true;
                     case NEAREST -> false;
                 },
                 false
-            )#endif;
+            );
+        #endif
         #if MC < 12111
         drawContext.innerBlit(
             #if MC217 RenderPipelines.GUI_TEXTURED #else RenderType::guiTextured #endif,
@@ -242,10 +243,10 @@ public class MoulConfigRenderContext implements RenderContext {
         drawContext.submitBlit(
             RenderPipelines.GUI_TEXTURED,
             mc.getTextureManager().getTexture(identifier).getTextureView(),
-            RenderSystem.getSamplerCache().getClampToEdge(filterMode),
+            RenderSystem.getSamplerCache().getRepeat(filterMode),
             (int) x,
-            (int) (x + width),
             (int) y,
+            (int) (x + width),
             (int) (y + height),
             u1,
             u2,
