@@ -226,8 +226,6 @@ public class MoulConfigRenderContext implements RenderContext {
                 },
                 false
             );
-        #endif
-        #if MC < 12111
         drawContext.innerBlit(
             #if MC217 RenderPipelines.GUI_TEXTURED #else RenderType::guiTextured #endif,
             identifier,
