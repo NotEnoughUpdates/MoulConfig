@@ -30,6 +30,7 @@ io.github.notenoughupdates.moulconfig.observer
 io.github.notenoughupdates.moulconfig.processor
 io.github.notenoughupdates.moulconfig.xml
 io.github.notenoughupdates.moulconfig.xml.loaders
+io.github.notenoughupdates.moulconfig.xml.trans
 module:legacy
 io.github.notenoughupdates.moulconfig.forge
 io.github.notenoughupdates.moulconfig.gui
@@ -39,6 +40,9 @@ io.github.notenoughupdates.moulconfig.internal
 io.github.notenoughupdates.moulconfig.test
 io.github.notenoughupdates.moulconfig.tweaker
 module:modern-1.21.10
+io.github.notenoughupdates.moulconfig.platform
+io.github.notenoughupdates.moulconfig.test
+module:modern-1.21.11
 io.github.notenoughupdates.moulconfig.platform
 io.github.notenoughupdates.moulconfig.test
 module:modern-1.21.4
