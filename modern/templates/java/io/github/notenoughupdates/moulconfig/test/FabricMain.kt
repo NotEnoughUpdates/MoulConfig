@@ -2,6 +2,7 @@ package io.github.notenoughupdates.moulconfig.test
 
 import io.github.notenoughupdates.moulconfig.common.IItemStack
 import io.github.notenoughupdates.moulconfig.common.IMinecraft
+import io.github.notenoughupdates.moulconfig.common.MyResourceLocation
 import io.github.notenoughupdates.moulconfig.gui.CloseEventListener
 import io.github.notenoughupdates.moulconfig.gui.GuiContext
 import io.github.notenoughupdates.moulconfig.managed.ManagedConfig
@@ -15,7 +16,6 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.Identifier
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Blocks
 import java.io.File
@@ -38,11 +38,9 @@ class FabricMain : ModInitializer {
                 Minecraft.getInstance().schedule {
                     val xmlUniverse =
                         XMLUniverse.getDefaultUniverse()
+
                     val scene = xmlUniverse.load(
-                        ObjectBound(), Minecraft.getInstance().resourceManager.open(
-                            Identifier.parse("moulconfig:test.xml")
-                        )
-                    )
+                        ObjectBound(), IMinecraft.INSTANCE.loadResourceLocation(MyResourceLocation.parse("moulconfig:test.xml")))
                     Minecraft.getInstance().setScreen(
                         MoulConfigScreenComponent(
                             Component.empty(),

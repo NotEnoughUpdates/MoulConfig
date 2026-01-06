@@ -1,6 +1,6 @@
 package io.github.notenoughupdates.moulconfig.platform;
 
-#if MC <= 12111
+#if MC >= 12111
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 #endif
