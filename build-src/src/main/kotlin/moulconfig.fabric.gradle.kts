@@ -96,11 +96,23 @@ tasks.processResources {
 		}
 	}
 }
+val fSourceDest = layout.buildDirectory.dir("sharedModernSource")
+val generateFilteredSource =
+	if (project.hasProperty("moulconfig.symlinkSharedSources"))
+		tasks.register("generateFilteredSourc", SymlinkTask::class) {
+			from = project(":modern").file("templates/java")
+			into = fSourceDest
+		}
+	else
+		tasks.register("generateFilteredSource", Copy::class) {
+			doFirst {
+				if (fSourceDest.get().asFile.isFile)
+					fSourceDest.get().asFile.delete()
+			}
+			from(project(":modern").file("templates/java"))
+			rootSpec.into(fSourceDest)
+		}
 
-val generateFilteredSource = tasks.register("generateFilteredSource", Copy::class) {
-	from(project(":modern").file("templates/java"))
-	rootSpec.into(layout.buildDirectory.dir("sharedModernSource"))
-}
 sourceSets.main {
 	java {
 		srcDir(files(generateFilteredSource))

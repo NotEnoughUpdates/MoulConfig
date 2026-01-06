@@ -13,6 +13,7 @@ import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorKeybindL
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorSliderL
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorTextL
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
+import io.github.notenoughupdates.moulconfig.xml.XMLUniverse
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
@@ -160,6 +161,10 @@ class ForgeMinecraft : IMinecraft {
         if (obj is IChatComponent)
             return StructuredTextImpl.wrap(obj)
         return null
+    }
+
+    override fun registerPlatformTypeMorphisms(universe: XMLUniverse) {
+        // TODO: add more platform morphisms.. oh well this platform is basically EOL anyways...
     }
 
     override fun isMouseButtonDown(mouseButton: Int): Boolean {

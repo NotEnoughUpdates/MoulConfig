@@ -8,6 +8,7 @@ import io.github.notenoughupdates.moulconfig.internal.FilterAssertionCache;
 import io.github.notenoughupdates.moulconfig.internal.MCLogger;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
+import io.github.notenoughupdates.moulconfig.xml.XMLUniverse;
 import kotlin.Pair;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -288,6 +289,11 @@ public class MoulConfigPlatform implements IMinecraft {
     @Override
     public void openWrappedScreen(GuiContext gui) {
         openWrappedScreen(new MoulConfigScreenComponent(Component.empty(), gui, null));
+    }
+
+    @Override
+    public void registerPlatformTypeMorphisms(XMLUniverse universe) {
+        universe.registerTypeMorphism(new BoxNativeMorphisms.StructuredTextMorphism());
     }
 
     @Override

@@ -9,6 +9,7 @@ import io.github.notenoughupdates.moulconfig.internal.InitUtil;
 import io.github.notenoughupdates.moulconfig.internal.MCLogger;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
+import io.github.notenoughupdates.moulconfig.xml.XMLUniverse;
 import kotlin.Pair;
 import lombok.var;
 import org.jetbrains.annotations.ApiStatus;
@@ -98,6 +99,9 @@ public interface IMinecraft {
     @ApiStatus.Internal
     @Nullable
     StructuredText createStructuredTextInternal(Object object);
+
+    @ApiStatus.Experimental
+    void registerPlatformTypeMorphisms(XMLUniverse universe);
 
     /**
      * This is a method to provide a render context. Note that constructing this context directly will potentially give

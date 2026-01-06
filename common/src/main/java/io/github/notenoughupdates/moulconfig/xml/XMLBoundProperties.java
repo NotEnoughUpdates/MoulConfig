@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 
 @Data
 public class XMLBoundProperties {
+    final XMLUniverse universe;
     final Map<String, Field> namedProperties = new HashMap<>();
     final Map<String, Method> namedFunctions = new HashMap<>();
     private static MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -85,43 +86,41 @@ public class XMLBoundProperties {
             Method method = namedFunctions.get(name);
             if (method == null)
                 throw new NullPointerException("Could not find bind target for " + name + " in " + object);
-            if (!TypeUtils.doesAExtendB(method.getReturnType(), clazz))
-                throw new IllegalArgumentException("Bind target " + method + " is of the wrong type " + method.getReturnType() + " instead of " + clazz);
             if (method.getParameterCount() != 0)
                 throw new RuntimeException("Bind target " + method + " is not a pure getter");
             var unreflect = bindSometimes(lookup.unreflect(method), method.getModifiers(), object);
-            return new GetSetter<T>() {
+
+            //noinspection unchecked
+            return (GetSetter<T>) universe.mapObject(new GetSetter<Object>() {
                 @SneakyThrows
                 @Override
-                public T get() {
-                    return (T) unreflect.invoke();
+                public Object get() {
+                    return unreflect.invoke();
                 }
 
                 @Override
-                public void set(T newValue) {
+                public void set(Object newValue) {
                     throw new UnsupportedOperationException();
                 }
-            };
+            }, method.getGenericReturnType(), clazz);
         }
-        if (!TypeUtils.doesAExtendB(field.getType(), clazz))
-            throw new IllegalArgumentException("Bind target " + name + " is of the wrong type " + field.getType() + " instead of " + clazz);
         field.setAccessible(true);
         var getter = bindSometimes(lookup.unreflectGetter(field), field.getModifiers(), object);
         var setter = bindSometimes(lookup.unreflectSetter(field), field.getModifiers(), object);
-        return new GetSetter<T>() {
-
+        //noinspection unchecked
+        return (GetSetter<T>) universe.mapObject(new GetSetter<Object>() {
             @SneakyThrows
             @Override
-            public T get() {
-                return (T) getter.invoke();
+            public Object get() {
+                return getter.invoke();
             }
 
             @SneakyThrows
             @Override
-            public void set(T newValue) {
+            public void set(Object newValue) {
                 setter.invoke(newValue);
             }
-        };
+        }, field.getGenericType(), clazz);
     }
 
     private static MethodHandle bindSometimes(MethodHandle methodHandle, int modifiers, Object object) {
