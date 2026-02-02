@@ -179,8 +179,8 @@ public class MoulConfigPlatform implements IMinecraft {
         var mouse = mc.mouseHandler;
         var window = mc.getWindow();
         #if MC < 12111
-        var x = (mouse.xpos() * (double) window.getGuiScaledWidth() / window.getWidth());
-        var y = (mouse.ypos() * (double) window.getGuiScaledHeight() / window.getHeight());
+        var x = (mouse.xpos() * (double) window.getGuiScaledWidth() / window.getScreenWidth());
+        var y = (mouse.ypos() * (double) window.getGuiScaledHeight() / window.getScreenHeight());
         #else
         double x = mouse.getScaledXPos(window);
         double y = mouse.getScaledYPos(window);
