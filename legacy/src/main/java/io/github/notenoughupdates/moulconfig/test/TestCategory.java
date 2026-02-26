@@ -36,6 +36,12 @@ import java.util.List;
 
 public class TestCategory {
 
+    @Expose
+    @ConfigOptionOrder(Integer.MAX_VALUE)
+    @ConfigOption(name = "Bottom option!", desc = "Declared at top, but should appear at the bottom by Order annotation.")
+    @ConfigEditorInfoText(infoTitle = "Bottom option")
+    public boolean bottomOption = false;
+
     @ConfigEditorButton(buttonText = "RUN!")
     @Expose
     @ConfigOption(name = "Button using runnable", desc = "Click to run")
@@ -201,5 +207,11 @@ public class TestCategory {
             return label;
         }
     }
+
+    @Expose
+    @ConfigOptionOrder(-1)
+    @ConfigOption(name = "Top option", desc = "Declared at the bottom, floated to top by Order annotation.")
+    @ConfigEditorInfoText(infoTitle = "Top option")
+    public boolean topOption = false;
 
 }

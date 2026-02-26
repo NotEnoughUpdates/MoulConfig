@@ -9,6 +9,12 @@ import java.util.*
 
 class TestCategoryA {
 
+    @Expose
+    @ConfigOptionOrder(Integer.MAX_VALUE)
+    @ConfigOption(name = "Bottom option!", desc = "Declared at top, but should appear at the bottom by Order annotation.")
+    @ConfigEditorInfoText(infoTitle = "Bottom option")
+    var bottomOption: Boolean = false
+
     @ConfigOption(name ="Open Wide", desc= "Use a wider config menu")
     @ConfigEditorBoolean
     var isWide: Boolean = false
@@ -137,5 +143,11 @@ class TestCategoryA {
         runnableId = 10,
         buttonText = "Click me")
     val runnableId = Unit
+
+    @Expose
+    @ConfigOptionOrder(-1)
+    @ConfigOption(name = "Top option!", desc = "Declared at the bottom, floated to top by Order annotation.")
+    @ConfigEditorInfoText(infoTitle = "Top option")
+    var topOption: Boolean = false
 
 }
