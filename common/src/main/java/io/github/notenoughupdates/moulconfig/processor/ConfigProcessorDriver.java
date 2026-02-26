@@ -29,6 +29,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOptionOrder;
 import io.github.notenoughupdates.moulconfig.internal.BoundField;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import lombok.var;
@@ -38,6 +39,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,10 +63,20 @@ public class ConfigProcessorDriver {
         this.reader = reader;
     }
 
-    private static List<Field> getAllFields(Class<?> type) {
+    private static int getConfigOptionOrder(Field field) {
+        ConfigOptionOrder orderAnnotation = field.getAnnotation(ConfigOptionOrder.class);
+        return orderAnnotation != null ? orderAnnotation.value() : 0;
+    }
+
+    private static final Comparator<Field> optionOrderComparator = Comparator.comparingInt(
+        ConfigProcessorDriver::getConfigOptionOrder
+    );
+
+    private static List<Field> getSortedFields(Class<?> type) {
         if (type == null) return new ArrayList<>();
-        List<Field> fields = getAllFields(type.getSuperclass());
+        List<Field> fields = getSortedFields(type.getSuperclass());
         fields.addAll(Arrays.asList(type.getDeclaredFields()));
+        fields.sort(optionOrderComparator);
         return fields;
     }
 
@@ -73,7 +85,7 @@ public class ConfigProcessorDriver {
         Class<?> categoryClass = categoryObject.getClass();
         Stack<Integer> accordionStack = new Stack<>();
         Set<Integer> usedAccordionIds = new HashSet<>();
-        for (Field field : getAllFields(categoryClass)) {
+        for (Field field : getSortedFields(categoryClass)) {
             if (field.getAnnotation(Category.class) != null) {
                 deferredSubCategories.add(new BoundField(field, categoryObject));
             }
@@ -187,7 +199,7 @@ public class ConfigProcessorDriver {
 
     public void processConfig(Config configObject) {
         reader.beginConfig(configObject.getClass(), this, configObject);
-        for (Field categoryField : getAllFields(configObject.getClass())) {
+        for (Field categoryField : getSortedFields(configObject.getClass())) {
             processCategoryMeta(configObject, categoryField, null);
         }
         reader.endConfig();
