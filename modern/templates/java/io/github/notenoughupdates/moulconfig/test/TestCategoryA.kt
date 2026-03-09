@@ -10,7 +10,7 @@ import java.util.*
 class TestCategoryA {
 
     @Expose
-    @ConfigOptionOrder(Integer.MAX_VALUE)
+    @ConfigOrder(Integer.MAX_VALUE)
     @ConfigOption(name = "Bottom option!", desc = "Declared at top, but should appear at the bottom by Order annotation.")
     @ConfigEditorInfoText(infoTitle = "Bottom option")
     var bottomOption: Boolean = false
@@ -145,7 +145,7 @@ class TestCategoryA {
     val runnableId = Unit
 
     @Expose
-    @ConfigOptionOrder(-1)
+    @ConfigOrder(-1)
     @ConfigOption(name = "Top option!", desc = "Declared at the bottom, floated to top by Order annotation.")
     @ConfigEditorInfoText(infoTitle = "Top option")
     var topOption: Boolean = false
