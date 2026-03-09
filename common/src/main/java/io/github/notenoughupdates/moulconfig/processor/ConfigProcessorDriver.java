@@ -42,7 +42,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -64,30 +66,50 @@ public class ConfigProcessorDriver {
         this.reader = reader;
     }
 
-    private static int getConfigOrder(Field field) {
-        ConfigOverride override = field.getAnnotation(ConfigOverride.class);
-        if (override != null) return override.order();
-        ConfigOrder order = field.getAnnotation(ConfigOrder.class);
-        return order != null ? order.value() : 0;
-    }
-
-    private static final Comparator<Field> optionOrderComparator = Comparator.comparingInt(
-        ConfigProcessorDriver::getConfigOrder
-    );
-
     private static List<Field> getSortedFields(Class<?> type) {
         if (type == null) return new ArrayList<>();
         List<Field> fields = getSortedFields(type.getSuperclass());
-        for (Field field : type.getDeclaredFields()) {
-            boolean removed = fields.removeIf(existing -> existing.getName().equals(field.getName()));
-            if (removed && field.getAnnotation(ConfigOverride.class) == null) {
-                Warnings.warn(
-                    "Field " + field.getName() + " in " + type + " shadows a parent field. Add @ConfigOverride to suppress this warning."
-                );
-            }
-            fields.add(field);
+        Map<Field, Integer> effectiveOrders = new IdentityHashMap<>();
+        for (Field f : fields) {
+            ConfigOrder order = f.getAnnotation(ConfigOrder.class);
+            effectiveOrders.put(f, order != null ? order.value() : 0);
         }
-        fields.sort(optionOrderComparator);
+
+        for (Field field : type.getDeclaredFields()) {
+            int parentIndex = -1;
+            Field parent = null;
+            for (int i = 0; i < fields.size(); i++) {
+                if (fields.get(i).getName().equals(field.getName())) {
+                    parentIndex = i;
+                    parent = fields.get(i);
+                    break;
+                }
+            }
+            if (parent != null) {
+                fields.remove(parentIndex);
+                if (field.getAnnotation(ConfigOverride.class) == null) {
+                    Warnings.warn("Field " + field.getName() + " in " + type + " shadows a parent field. Add @ConfigOverride to suppress this warning.");
+                }
+            }
+
+            ConfigOverride override = field.getAnnotation(ConfigOverride.class);
+            ConfigOrder order = field.getAnnotation(ConfigOrder.class);
+            int effectiveOrder;
+            if (override != null && override.overrideOrder() == Integer.MIN_VALUE && parent != null) {
+                effectiveOrder = effectiveOrders.getOrDefault(parent, 0);
+            } else if (order != null) {
+                effectiveOrder = order.value();
+            } else {
+                effectiveOrder = 0;
+            }
+            effectiveOrders.put(field, effectiveOrder);
+
+            // Slot into parents' position, if it exists
+            if (parentIndex >= 0) fields.add(parentIndex, field);
+            else fields.add(field);
+        }
+
+        fields.sort(Comparator.comparingInt(effectiveOrders::get));
         return fields;
     }
 
