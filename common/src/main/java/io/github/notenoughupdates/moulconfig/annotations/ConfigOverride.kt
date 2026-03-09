@@ -4,8 +4,10 @@ package io.github.notenoughupdates.moulconfig.annotations
 @Target(AnnotationTarget.FIELD)
 annotation class ConfigOverride(
     /**
-     * Marks this field as intentionally overriding a parent class field of the same name.
-     * Optionally specify an order to control placement relative to siblings; lower values appear first.
+     * Controls placement of this field relative to its siblings, inheriting the overridden parent
+     * field's [ConfigOrder] value by default. Set explicitly to override that behaviour.
+     *
+     * Uses [Int.MIN_VALUE] as a sentinel to indicate inheritance — do not use that value directly.
      */
-    val order: Int = 0
+    val overrideOrder: Int = Int.MIN_VALUE
 )
