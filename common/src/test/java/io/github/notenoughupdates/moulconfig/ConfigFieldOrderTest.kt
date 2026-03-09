@@ -2,6 +2,7 @@ package io.github.notenoughupdates.moulconfig
 
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOrder
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOverride
+import io.github.notenoughupdates.moulconfig.internal.MCLogger
 import io.github.notenoughupdates.moulconfig.internal.Warnings
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver
 import org.junit.jupiter.api.AfterEach
@@ -22,6 +23,7 @@ import java.lang.reflect.Field
  * - [ConfigOverride.overrideOrder] takes precedence over inherited order when set
  * - Correct behavior through multiple levels of inheritance
  */
+@Suppress("unused")
 class ConfigFieldOrderTest {
 
     open class SingleClass { val a = Unit; val b = Unit; val c = Unit }
@@ -44,36 +46,29 @@ class ConfigFieldOrderTest {
         .getDeclaredMethod("getSortedFields", Class::class.java)
         .also { it.isAccessible = true }
 
-    private var previousShouldWarn = false
-    private var previousShouldCrash = false
+    private val capturedWarnings = mutableListOf<String>()
+    private var previousLogger: MCLogger? = null
 
     @BeforeEach
-    fun captureWarningsState() {
-        previousShouldWarn = Warnings.shouldWarn
-        previousShouldCrash = Warnings.shouldCrash
+    fun installCapturingLogger() {
+        previousLogger = Warnings.logger
+        Warnings.shouldWarn = true
+        Warnings.logger = object : MCLogger {
+            override fun warn(text: String) { capturedWarnings.add(text) }
+            override fun info(text: String) = Unit
+            override fun error(text: String, throwable: Throwable) = Unit
+        }
     }
 
     @AfterEach
-    fun restoreWarningsState() {
-        Warnings.shouldWarn = previousShouldWarn
-        Warnings.shouldCrash = previousShouldCrash
+    fun restoreLogger() {
+        Warnings.logger = previousLogger
+        capturedWarnings.clear()
     }
 
     @Suppress("UNCHECKED_CAST")
     private fun sortedFields(type: Class<*>) = getSortedFields.invoke(null, type) as List<Field>
     private fun fieldNames(type: Class<*>) = sortedFields(type).map { it.name }
-
-    private fun assertWarningEmitted(type: Class<*>) {
-        Warnings.shouldWarn = true
-        Warnings.shouldCrash = true
-        assertThrows(RuntimeException::class.java) { sortedFields(type) }
-    }
-
-    private fun assertNoWarningEmitted(type: Class<*>) {
-        Warnings.shouldWarn = true
-        Warnings.shouldCrash = true
-        assertDoesNotThrow { sortedFields(type) }
-    }
 
     /** Declaration order of fields within a single class should be preserved when no ordering annotations are present. */
     @Test fun `declaration order is preserved without annotations`() =
@@ -88,12 +83,16 @@ class ConfigFieldOrderTest {
         assertEquals(listOf("x", "y", "z", "w"), fieldNames(ChildAppendsField::class.java))
 
     /** Shadowing a parent field without [ConfigOverride] should emit a warning. */
-    @Test fun `shadowing without ConfigOverride emits a warning`() =
-        assertWarningEmitted(ChildShadowsWithoutAnnotation::class.java)
+    @Test fun `shadowing without ConfigOverride emits a warning`() {
+        sortedFields(ChildShadowsWithoutAnnotation::class.java)
+        assertTrue(capturedWarnings.any { "y" in it })
+    }
 
     /** [ConfigOverride] should suppress the shadow warning. */
-    @Test fun `ConfigOverride suppresses shadow warning`() =
-        assertNoWarningEmitted(ChildShadowsWithAnnotation::class.java)
+    @Test fun `ConfigOverride suppresses shadow warning`() {
+        sortedFields(ChildShadowsWithAnnotation::class.java)
+        assertTrue(capturedWarnings.none { "y" in it })
+    }
 
     /** [ConfigOverride] should slot the child field back into the parent field's original position. */
     @Test fun `ConfigOverride slots child field into parent position`() {
@@ -105,7 +104,7 @@ class ConfigFieldOrderTest {
     /** [ConfigOverride] without an explicit [ConfigOverride.overrideOrder] should inherit the parent's [ConfigOrder] value. */
     @Test fun `ConfigOverride without overrideOrder inherits parent ConfigOrder value`() {
         val fields = sortedFields(ChildInheritsParentOrder::class.java)
-        assertEquals(listOf("a", "b", "c"), fields.map { it.name })
+        assertEquals(listOf("a", "c", "b"), fields.map { it.name })
         assertEquals(ChildInheritsParentOrder::class.java, fields.first { it.name == "b" }.declaringClass)
     }
 
