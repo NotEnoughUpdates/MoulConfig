@@ -26,21 +26,70 @@ import java.lang.reflect.Field
 @Suppress("unused")
 class ConfigFieldOrderTest {
 
-    open class SingleClass { val a = Unit; val b = Unit; val c = Unit }
-    open class OrderedSingleClass { @ConfigOrder(3) val c = Unit; @ConfigOrder(1) val a = Unit; @ConfigOrder(2) val b = Unit }
+    open class SingleClass {
+        val a = Unit
+        val b = Unit
+        val c = Unit
+    }
 
-    open class Parent { val x = Unit; open val y = Unit; val z = Unit }
-    open class ChildAppendsField : Parent() { val w = Unit }
-    open class ChildShadowsWithoutAnnotation : Parent() { override val y = Unit }
-    open class ChildShadowsWithAnnotation : Parent() { @ConfigOverride override val y = Unit }
+    open class OrderedSingleClass {
+        @ConfigOrder(3)
+        val c = Unit
+        @ConfigOrder(1)
+        val a = Unit
+        @ConfigOrder(2)
+        val b = Unit
+    }
 
-    open class ParentWithOrderedField { val a = Unit; @ConfigOrder(5) open val b = Unit; val c = Unit }
-    open class ChildInheritsParentOrder : ParentWithOrderedField() { @ConfigOverride override val b = Unit }
-    open class ChildExplicitOverrideOrder : ParentWithOrderedField() { @ConfigOverride(overrideOrder = 99) override val b = Unit }
+    open class Parent {
+        val x = Unit
+        open val y = Unit
+        val z = Unit
+    }
 
-    open class GrandParent { val p = Unit; open val q = Unit }
-    open class MiddleParent : GrandParent() { val r = Unit }
-    open class GrandChild : MiddleParent() { @ConfigOverride override val q = Unit }
+    open class ChildAppendsField : Parent() {
+        val w = Unit
+    }
+
+    open class ChildShadowsWithoutAnnotation : Parent() {
+        override val y = Unit
+    }
+
+    open class ChildShadowsWithAnnotation : Parent() {
+        @ConfigOverride
+        override val y = Unit
+    }
+
+    open class ParentWithOrderedField {
+        val a = Unit
+        @ConfigOrder(5)
+        open val b = Unit
+        val c = Unit
+    }
+
+    open class ChildInheritsParentOrder : ParentWithOrderedField() {
+        @ConfigOverride
+        override val b = Unit
+    }
+
+    open class ChildExplicitOverrideOrder : ParentWithOrderedField() {
+        @ConfigOverride(overrideOrder = 99)
+        override val b = Unit
+    }
+
+    open class GrandParent {
+        val p = Unit
+        open val q = Unit
+    }
+
+    open class MiddleParent : GrandParent() {
+        val r = Unit
+    }
+
+    open class GrandChild : MiddleParent() {
+        @ConfigOverride
+        override val q = Unit
+    }
 
     private val getSortedFields = ConfigProcessorDriver::class.java
         .getDeclaredMethod("getSortedFields", Class::class.java)
