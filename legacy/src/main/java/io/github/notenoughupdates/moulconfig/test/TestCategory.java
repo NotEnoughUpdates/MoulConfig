@@ -37,7 +37,7 @@ import java.util.List;
 public class TestCategory {
 
     @Expose
-    @ConfigOptionOrder(Integer.MAX_VALUE)
+    @ConfigOrder(Integer.MAX_VALUE)
     @ConfigOption(name = "Bottom option!", desc = "Declared at top, but should appear at the bottom by Order annotation.")
     @ConfigEditorInfoText(infoTitle = "Bottom option")
     public boolean bottomOption = false;
@@ -209,7 +209,7 @@ public class TestCategory {
     }
 
     @Expose
-    @ConfigOptionOrder(-1)
+    @ConfigOrder(-1)
     @ConfigOption(name = "Top option", desc = "Declared at the bottom, floated to top by Order annotation.")
     @ConfigEditorInfoText(infoTitle = "Top option")
     public boolean topOption = false;

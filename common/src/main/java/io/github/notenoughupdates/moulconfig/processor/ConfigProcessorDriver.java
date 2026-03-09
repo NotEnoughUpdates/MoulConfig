@@ -29,7 +29,8 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorAccordion;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText;
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
-import io.github.notenoughupdates.moulconfig.annotations.ConfigOptionOrder;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOrder;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOverride;
 import io.github.notenoughupdates.moulconfig.internal.BoundField;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import lombok.var;
@@ -63,19 +64,29 @@ public class ConfigProcessorDriver {
         this.reader = reader;
     }
 
-    private static int getConfigOptionOrder(Field field) {
-        ConfigOptionOrder orderAnnotation = field.getAnnotation(ConfigOptionOrder.class);
-        return orderAnnotation != null ? orderAnnotation.value() : 0;
+    private static int getConfigOrder(Field field) {
+        ConfigOverride override = field.getAnnotation(ConfigOverride.class);
+        if (override != null) return override.order();
+        ConfigOrder order = field.getAnnotation(ConfigOrder.class);
+        return order != null ? order.value() : 0;
     }
 
     private static final Comparator<Field> optionOrderComparator = Comparator.comparingInt(
-        ConfigProcessorDriver::getConfigOptionOrder
+        ConfigProcessorDriver::getConfigOrder
     );
 
     private static List<Field> getSortedFields(Class<?> type) {
         if (type == null) return new ArrayList<>();
         List<Field> fields = getSortedFields(type.getSuperclass());
-        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+        for (Field field : type.getDeclaredFields()) {
+            boolean removed = fields.removeIf(existing -> existing.getName().equals(field.getName()));
+            if (removed && field.getAnnotation(ConfigOverride.class) == null) {
+                Warnings.warn(
+                    "Field " + field.getName() + " in " + type + " shadows a parent field. Add @ConfigOverride to suppress this warning."
+                );
+            }
+            fields.add(field);
+        }
         fields.sort(optionOrderComparator);
         return fields;
     }
