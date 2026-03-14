@@ -20,6 +20,7 @@ open class TextFieldComponent(
     val editable: Supplier<Boolean> = GetSetter.constant(true),
     val suggestion: String = "",
     val font: IFontRenderer = IMinecraft.INSTANCE.defaultFontRenderer,
+    val forbiddenChars: Set<Char> = setOf('§')
 ) : GuiComponent() {
     private var cursor = 0
     private var selection = -1

@@ -38,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -77,7 +78,8 @@ public class ColorSelectComponent extends GuiComponent {
         48,
         GetSetter.constant(true),
         "#000000",
-        IMinecraft.INSTANCE.getDefaultFontRenderer()
+        IMinecraft.INSTANCE.getDefaultFontRenderer(),
+        Collections.singleton('§')
     );
 
     private int xSize = 119;
