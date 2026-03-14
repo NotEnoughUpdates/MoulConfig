@@ -10,14 +10,20 @@ import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GuiOptionEditorText extends ComponentEditor {
 
     GuiComponent component;
+    private final Set<Character> forbiddenChars;
 
     public GuiOptionEditorText(ProcessedOption option, String forbidden) {
         super(option);
+
+        this.forbiddenChars = forbidden.chars()
+            .mapToObj(c -> (char) c)
+            .collect(Collectors.toSet());
 
         if (option.getType() != String.class) {
             Warnings.warn("@ConfigEditorText " + option.getDebugDeclarationLocation() + " is not a string option.");
@@ -32,7 +38,8 @@ public class GuiOptionEditorText extends ComponentEditor {
                 80,
                 GetSetter.constant(true),
                 "",
-                IMinecraft.INSTANCE.getDefaultFontRenderer()
+                IMinecraft.INSTANCE.getDefaultFontRenderer(),
+                forbiddenChars
             ));
         }
         return component;
