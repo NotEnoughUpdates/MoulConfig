@@ -28,4 +28,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ConfigEditorText {
+    /**
+     * @return set forbidden characters as a string, e.g. "§z" for '§' and 'z' to disable them from being allowed to write inside the text field
+     */
+    String forbidden() default "§";
 }

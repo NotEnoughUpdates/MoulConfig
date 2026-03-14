@@ -10,11 +10,13 @@ import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.stream.Collectors;
+
 public class GuiOptionEditorText extends ComponentEditor {
 
     GuiComponent component;
 
-    public GuiOptionEditorText(ProcessedOption option) {
+    public GuiOptionEditorText(ProcessedOption option, String forbidden) {
         super(option);
 
         if (option.getType() != String.class) {
