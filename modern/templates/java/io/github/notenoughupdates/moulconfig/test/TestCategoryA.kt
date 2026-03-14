@@ -78,7 +78,7 @@ class TestCategoryA {
     var notice: String = ""
 
     @ConfigOption(name = "Text Box", desc = "Lets you put strings.")
-    @ConfigEditorText
+    @ConfigEditorText(forbidden = "§z")
     var customText: Property<String> = Property.of("abc")
 
     @ConfigOption(name = "Draggable List", desc = "§eDrag text to change the order of the list.")
