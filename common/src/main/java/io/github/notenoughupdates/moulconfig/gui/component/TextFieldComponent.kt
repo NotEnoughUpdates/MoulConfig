@@ -232,12 +232,14 @@ open class TextFieldComponent(
             }
         } else if (event is KeyboardEvent.CharTyped) {
             val it = event.char
-            var anyWritten = false
-            if (it >= ' ' && it != '§' && it.code != 127) {
-                writeText(it + "", context.width)
-                anyWritten = true
-            }
-            return anyWritten
+
+            if (it < ' ' || it.code == 127) return false
+
+            // consume event, so we don't write into the searchbar the moment we type a forbidden char
+            if (forbiddenChars.contains(it)) return true
+
+            writeText(it + "", context.width)
+            return true
         } else {
             return false
         }
@@ -287,15 +289,22 @@ open class TextFieldComponent(
     }
 
     fun writeText(s: String, width: Int) {
+        val filteredString = s.filter { it !in forbiddenChars }
+
+        // we cancel if and only if the user tried to write / insert text, but everything got filtered out
+        // e.g. backspace delivers an empty string, thus should not be canceled
+        // -> only checking, if filteredString is empty is not sufficient (backspace = empty -> filtered = empty)
+        if (filteredString.isEmpty() && s.isNotEmpty()) return
+
         val t = text.get()
         if (selection == -1) {
-            text.set(safeSubString(t, 0, cursor) + s + safeSubString(t, cursor))
-            cursor += s.length
+            text.set(safeSubString(t, 0, cursor) + filteredString + safeSubString(t, cursor))
+            cursor += filteredString.length
         } else {
             val l = min(cursor, selection)
             val r = max(cursor, selection)
-            text.set(safeSubString(t, 0, l) + s + safeSubString(t, r))
-            cursor = l + s.length
+            text.set(safeSubString(t, 0, l) + filteredString + safeSubString(t, r))
+            cursor = l + filteredString.length
             selection = -1
         }
         scrollCursorIntoView(width)
