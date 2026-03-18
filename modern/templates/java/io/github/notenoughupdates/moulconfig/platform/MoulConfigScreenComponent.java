@@ -4,7 +4,11 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.*;
 import lombok.Getter;
+#if MC < 260100
 import net.minecraft.client.gui.GuiGraphics;
+#else
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+#endif
 import net.minecraft.client.gui.screens.Screen;
 #if MC > 12107
 import net.minecraft.client.input.CharacterEvent;
@@ -36,7 +40,7 @@ public class MoulConfigScreenComponent extends Screen {
         return createContext(null);
     }
 
-    public GuiImmediateContext createContext(@Nullable GuiGraphics drawContext) {
+    public GuiImmediateContext createContext(@Nullable #if MC < 260100 GuiGraphics #else GuiGraphicsExtractor #endif drawContext) {
         assert minecraft != null;
         var im = IMinecraft.INSTANCE;
         var mousePos = im.getMousePositionHF();
@@ -66,8 +70,8 @@ public class MoulConfigScreenComponent extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
-        super.render(context, mouseX, mouseY, deltaTicks);
+    public void #if MC < 260100 render(GuiGraphics #else extractRenderState(GuiGraphicsExtractor #endif context, int mouseX, int mouseY, float deltaTicks) {
+        super.#if MC < 260100 render #else extractRenderState #endif(context, mouseX, mouseY, deltaTicks);
         var ctx = createContext(context);
         guiContext.getRoot().render(ctx);
         ctx.getRenderContext().renderExtraLayers();

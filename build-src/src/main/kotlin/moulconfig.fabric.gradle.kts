@@ -11,14 +11,19 @@ plugins {
 
 val fabricVersion = property("moulconfig.fabric") as String
 val minecraftVersion = property("moulconfig.minecraft") as String
+val isDeobfuscated = findProperty("moulconfig.deobfuscated") as String?
+val useResourceLoaderv1 = findProperty("moulconfig.rlv1") as String?
 val aF = project.file("src/main/resources/moulconfig.accesswidener")
 val hasAW = aF.exists()
 the<UniminedExtension>().minecraft {
 	version(minecraftVersion)
-	mappings {
-		intermediary()
-		mojmap()
-	}
+
+    if (isDeobfuscated == null) {
+        mappings {
+            intermediary()
+            mojmap()
+        }
+    }
 
 	fabric {
 		loader("0.18.4")
@@ -68,7 +73,11 @@ the<PreProcessorArgs>().forDefaultCompilation {
 
 val fabricDeps = extensions.create("fabricDeps", FabricUtils::class, fabricVersion)
 
-fabricDeps.impl("fabric-resource-loader-v0")
+if (useResourceLoaderv1 != null) {
+    fabricDeps.impl("fabric-resource-loader-v1")
+} else {
+    fabricDeps.impl("fabric-resource-loader-v0")
+}
 
 val remapJar by tasks.named("remapJar", RemapJarTask::class) {
 	asJar {

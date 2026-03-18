@@ -15,7 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+#if MC < 260100
 import net.minecraft.client.gui.GuiGraphics;
+#else
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+#endif
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.ClickEvent;
@@ -254,7 +258,11 @@ public class MoulConfigPlatform implements IMinecraft {
                 case RUN_COMMAND -> #if MC > 12104 new ClickEvent.RunCommand(action) #else new ClickEvent(ClickEvent.Action.RUN_COMMAND, action) #endif;
             }));
         }
+        #if MC < 260100
         mc.gui.getChat().addMessage(text);
+        #else
+        mc.gui.getChat().addClientSystemMessage(text);
+        #endif
     }
 
     @Override
@@ -280,12 +288,16 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     @ApiStatus.Internal
-    public static GuiGraphics makeDrawContext() {
+    public static #if MC < 260100 GuiGraphics #else GuiGraphicsExtractor #endif makeDrawContext() {
         var mc = Minecraft.getInstance();
-        return new GuiGraphics(
+        return new #if MC < 260100 GuiGraphics #else GuiGraphicsExtractor #endif(
             mc,
             #if MC >= 12107
+            #if MC < 260100
             mc.gameRenderer.guiRenderState
+            #else
+            mc.gameRenderer.getGameRenderState().guiRenderState
+            #endif
             #else
             mc.renderBuffers().bufferSource()
             #endif
