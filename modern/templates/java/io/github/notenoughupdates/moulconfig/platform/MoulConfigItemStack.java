@@ -18,7 +18,6 @@ import java.util.List;
 public class MoulConfigItemStack implements IItemStack {
     ItemStack itemStack;
 
-
     @Override
     public List<StructuredText> getLore() {
         return itemStack.getTooltipLines(Item.TooltipContext.EMPTY, Minecraft.getInstance().player, TooltipFlag.NORMAL)

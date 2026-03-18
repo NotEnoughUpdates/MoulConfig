@@ -14,7 +14,11 @@ import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import lombok.Getter;
 import lombok.Value;
 import net.minecraft.client.Minecraft;
+#if MC < 260100
 import net.minecraft.client.gui.GuiGraphics;
+#else
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+#endif
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 #if MC < 12111
 import net.minecraft.client.renderer.RenderType;
@@ -28,7 +32,11 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 #if MC217
 import net.minecraft.client.gui.render.TextureSetup;
+#if MC < 260100
 import net.minecraft.client.gui.render.state.GuiElementRenderState;
+#else
+import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
+#endif
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -44,10 +52,10 @@ import java.util.function.Consumer;
 @NullMarked
 public class MoulConfigRenderContext implements RenderContext {
     @Getter
-    final GuiGraphics drawContext;
+    final #if MC < 260100 GuiGraphics #else GuiGraphicsExtractor #endif drawContext;
     Minecraft mc = Minecraft.getInstance();
 
-    public MoulConfigRenderContext(GuiGraphics drawContext) {
+    public MoulConfigRenderContext(#if MC < 260100 GuiGraphics #else GuiGraphicsExtractor #endif drawContext) {
         this.drawContext = drawContext;
     }
 
@@ -140,7 +148,7 @@ public class MoulConfigRenderContext implements RenderContext {
         if (bounds == null)
             return;
         var finalBounds = bounds;
-        drawContext.guiRenderState.submitGuiElement(new GuiElementRenderState() {
+        drawContext.guiRenderState.#if MC < 260100 submitGuiElement #else addGuiElement #endif(new GuiElementRenderState() {
             @Override
             public void buildVertices(VertexConsumer vertices #if MC < 12109 , float depth #endif) {
                 for (int i = 0; i < coordinates.length; i += 2) {
@@ -183,7 +191,7 @@ public class MoulConfigRenderContext implements RenderContext {
 
     @Override
     public void drawString(IFontRenderer fontRenderer, StructuredText text, int x, int y, int color, boolean shadow) {
-        drawContext.drawString(
+        drawContext.#if MC < 260100 drawString #else text #endif(
             MoulConfigPlatform.unwrap(fontRenderer),
             MoulConfigPlatform.unwrap(text),
             x,
@@ -205,8 +213,13 @@ public class MoulConfigRenderContext implements RenderContext {
         int rightI = (int) right;
         int bottomI = (int) bottom;
         #if MC217
+        #if MC < 260100
         drawContext.submitColoredRectangle(RenderPipelines.GUI_INVERT, TextureSetup.noTexture(), leftI, topI, rightI, bottomI, -1, null);
         drawContext.submitColoredRectangle(RenderPipelines.GUI_TEXT_HIGHLIGHT, TextureSetup.noTexture(), leftI, topI, rightI, bottomI, additiveColor, null);
+        #else
+        drawContext.innerFill(RenderPipelines.GUI_INVERT, TextureSetup.noTexture(), leftI, topI, rightI, bottomI, -1, null);
+        drawContext.innerFill(RenderPipelines.GUI_TEXT_HIGHLIGHT, TextureSetup.noTexture(), leftI, topI, rightI, bottomI, additiveColor, null);
+        #endif
         #else
         drawContext.fill(RenderType.guiTextHighlight(), leftI, topI, rightI, bottomI, 0, additiveColor);
         #endif
@@ -238,7 +251,7 @@ public class MoulConfigRenderContext implements RenderContext {
             case TextureFilter.LINEAR -> FilterMode.LINEAR;
             case TextureFilter.NEAREST -> FilterMode.NEAREST;
         };
-        drawContext.submitBlit(
+        drawContext.#if MC < 260100 submitBlit #else innerBlit #endif(
             RenderPipelines.GUI_TEXTURED,
             mc.getTextureManager().getTexture(identifier).getTextureView(),
             RenderSystem.getSamplerCache().getRepeat(filterMode),
@@ -306,9 +319,9 @@ public class MoulConfigRenderContext implements RenderContext {
     @Override
     public void renderItemStack(IItemStack itemStack, int x, int y, @Nullable StructuredText overlayText) {
         var item = MoulConfigPlatform.unwrap(itemStack);
-        drawContext.renderItem(item, x, y);
+        drawContext.#if MC < 260100 renderItem #else item #endif(item, x, y);
         if (overlayText != null)
-            drawContext.renderItemDecorations(
+            drawContext.#if MC < 260100 renderItemDecorations #else itemDecorations #endif(
                 mc.font,
                 item,
                 x, y,
@@ -324,7 +337,7 @@ public class MoulConfigRenderContext implements RenderContext {
             .map(Language.getInstance()::getVisualOrder)
             .map(ClientTooltipComponent::create)
             .toList();
-        drawContext.renderTooltip(
+        drawContext.#if MC < 260100 renderTooltip #else tooltip #endif(
             mc.font,
             lines,
             x, y,
