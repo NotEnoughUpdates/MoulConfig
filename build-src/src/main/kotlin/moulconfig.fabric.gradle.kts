@@ -17,11 +17,12 @@ val aF = project.file("src/main/resources/moulconfig.accesswidener")
 val hasAW = aF.exists()
 the<UniminedExtension>().minecraft {
 	version(minecraftVersion)
-
     if (!isDeobfuscated) {
         mappings {
             intermediary()
             mojmap()
+            // unimined currently incorrectly renames 1.21.11 namespaces to official instead of above 1.21.11
+            devNamespace("mojmap")
         }
     }
 
