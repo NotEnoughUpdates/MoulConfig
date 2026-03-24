@@ -23,6 +23,8 @@ repositories {
 
 dependencies {
 	api("xyz.wagyourtail.unimined:unimined:1.4.2-SNAPSHOT")
+    implementation("net.fabricmc:class-tweaker:0.2")
+    implementation("net.fabricmc:tiny-remapper:0.9.0")
     api("xyz.wagyourtail.unimined.mapping:unimined-mapping-library-jvm:1.2.2")
 	api("commons-io:commons-io:2.16.1")
 	api("org.ow2.asm:asm-util:9.9.1")

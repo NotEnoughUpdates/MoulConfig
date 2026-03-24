@@ -11,14 +11,14 @@ plugins {
 
 val fabricVersion = property("moulconfig.fabric") as String
 val minecraftVersion = property("moulconfig.minecraft") as String
-val isDeobfuscated = findProperty("moulconfig.deobfuscated") as String?
+val isDeobfuscated = findProperty("moulconfig.deobfuscated") != null
 val useResourceLoaderv1 = findProperty("moulconfig.rlv1") as String?
 val aF = project.file("src/main/resources/moulconfig.accesswidener")
 val hasAW = aF.exists()
 the<UniminedExtension>().minecraft {
 	version(minecraftVersion)
 
-    if (isDeobfuscated == null) {
+    if (!isDeobfuscated) {
         mappings {
             intermediary()
             mojmap()
