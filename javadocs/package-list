@@ -54,3 +54,6 @@ io.github.notenoughupdates.moulconfig.test
 module:modern-1.21.7
 io.github.notenoughupdates.moulconfig.platform
 io.github.notenoughupdates.moulconfig.test
+module:modern-26.1
+io.github.notenoughupdates.moulconfig.platform
+io.github.notenoughupdates.moulconfig.test
