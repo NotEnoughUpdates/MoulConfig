@@ -17,10 +17,10 @@ interface CloseEventListener {
      * Called just before a voluntary close. Return [CloseAction.DENY_CLOSE] to override the close. Make sure to update
      * your state such that the user can close the gui afterward.
      */
-    fun onBeforeClose(): CloseAction
+    fun onBeforeClose(): CloseAction = CloseAction.NO_OBJECTIONS_TO_CLOSE
 
     /**
      * Called after the gui has been closed, both by the component gui, or by other actors, such as a teleport packet.
      */
-    fun onAfterClose()
+    fun onAfterClose() = Unit
 }

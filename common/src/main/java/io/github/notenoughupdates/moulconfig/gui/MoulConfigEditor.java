@@ -51,7 +51,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class MoulConfigEditor<T extends Config> extends GuiElement {
+public class MoulConfigEditor<T extends Config> extends GuiElement implements CloseEventListener {
     private final long openedMillis;
     private final LerpingInteger optionsScroll = new LerpingInteger(0, 150);
     private final LerpingInteger categoryScroll = new LerpingInteger(0, 150);
@@ -1155,9 +1155,12 @@ public class MoulConfigEditor<T extends Config> extends GuiElement {
             if (target.getTarget() >= 0) {
                 target.setTarget(Math.max(0, target.getTarget() - 5));
             }
-        } else if (IMinecraft.INSTANCE.isKeyboardKeyDown(IMinecraft.INSTANCE.getKeyboardConstants().getEscape())) {
-            getConfigObject().saveNow();
         }
+    }
+
+    @Override
+    public void onAfterClose() {
+        getConfigObject().saveNow();
     }
 
     public boolean goToOption(@NotNull ProcessedOption option) {
