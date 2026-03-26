@@ -8,5 +8,5 @@ object Dependencies {
      */
     val LEGACY_GSON = "com.google.code.gson:gson:2.1"
 
-    val LOMBOK = "org.projectlombok:lombok:1.18.32"
+    val LOMBOK = "org.projectlombok:lombok:1.18.44"
 }

@@ -1,22 +1,19 @@
-import org.jetbrains.dokka.gradle.AbstractDokkaLeafTask
-import java.net.URL
-
 plugins {
-	id("moulconfig.dokka.base")
+    id("moulconfig.dokka.base")
 }
-afterEvaluate {
-	tasks.withType(AbstractDokkaLeafTask::class).configureEach {
-		dokkaSourceSets.configureEach {
-			println("Configuring $this")
-			sourceLink {
-				localDirectory.set(project.file("src/"))
-				remoteUrl.set(URL("https://github.com/NotEnoughUpdates/MoulConfig/blob/${Version.hash}/${project.name}/src"))
-				remoteLineSuffix.set("#L")
-			}
-		}
-	}
+
+dokka {
+    dokkaSourceSets.configureEach {
+        sourceLink {
+            localDirectory.set(project.file("src/"))
+            remoteUrl("https://github.com/NotEnoughUpdates/MoulConfig/blob/${Version.hash}/${project.name}/src")
+            remoteLineSuffix.set("#L")
+        }
+        sourceRoots.setFrom(project.file("src/main/kotlin"), project.file("src/main/java"))
+    }
+    modulePath.set(project.path.removePrefix(":").replace(":", "/"))
 }
 
 dependencies {
-	"dokkaPlugin"("org.jetbrains.dokka:kotlin-as-java-plugin:1.9.20")
+    dokkaHtmlPlugin("org.jetbrains.dokka:kotlin-as-java-plugin:2.1.0")
 }

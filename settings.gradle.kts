@@ -10,7 +10,12 @@ pluginManagement {
 		maven("https://maven.neoforged.net/releases")
 		maven("https://maven.minecraftforge.net/")
 		maven("https://repo.spongepowered.org/maven/")
-		maven("https://repo.sk1er.club/repository/maven-releases/")
+        maven {
+            url = uri("https://repo.sk1er.club/repository/maven-releases/")
+            content {
+                excludeGroup("xyz.wagyourtail.unimined.mapping")
+            }
+        }
 	}
 	resolutionStrategy {
 		eachPlugin {
@@ -32,6 +37,7 @@ listOf(
 	"1.21.7",
 	"1.21.10",
 	"1.21.11",
+    "26.1",
 ).forEach { version ->
 	val modPath = "modern:$version"
 	include(modPath)
