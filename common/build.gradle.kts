@@ -1,9 +1,9 @@
 plugins {
     java
-	id("moulconfig.kotlin")
-    id("moulconfig.dokka")
+    id("moulconfig.kotlin")
+    id("moulconfig.dokka.base")
     `maven-publish`
-	id("moulconfig.base")
+    id("moulconfig.base")
     id("moulconfig.test")
     id("moulconfig.manifold")
 }
@@ -41,5 +41,15 @@ publishing {
     }
 }
 
+dokka {
+    val modern2611 = project(":modern:modern-26.1")
+    modern2611.afterEvaluate {
+        dokkaSourceSets.configureEach {
+            val modernSource =
+                modern2611.sourceSets.main.map { it.allSource }
+//            sourceRoots.from(modernSource)
+        }
+    }
+}
 
 

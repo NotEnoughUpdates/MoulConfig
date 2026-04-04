@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
 plugins {
-    id("moulconfig.dokka")
+    id("moulconfig.dokka.base")
 	id("moulconfig.leaf")
 	id("moulconfig.kotlin")
 }
