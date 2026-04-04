@@ -93,7 +93,7 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     public static Font unwrap(IFontRenderer fontRenderer) {
-        return ((MoulConfigFontRenderer) fontRenderer).getFont();
+        return ((MoulConfigFontRenderer) fontRenderer).font();
     }
 
     public static IFontRenderer wrap(Font font) {

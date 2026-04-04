@@ -2,7 +2,6 @@ package io.github.notenoughupdates.moulconfig.platform;
 
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
-import lombok.Value;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -12,9 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Value
-public class MoulConfigFontRenderer implements IFontRenderer {
-    @NotNull Font font;
+public record MoulConfigFontRenderer(@NotNull Font font) implements IFontRenderer {
 
     @Override
     public int getHeight() {
