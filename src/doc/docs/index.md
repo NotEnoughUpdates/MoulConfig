@@ -11,8 +11,46 @@ under an LGPL 3.0 license, and this version keeps that license.
 This version of MoulConfig is published to the [NEU Maven Repository][neurepo]. The latest
 version number can be [found there as well][versionlisting].
 
-There are two versions of MoulConfig: `legacy` for 1.8.9 and `modern` for 1.20.2. Legacy has support for the config gui
-and for the gui library, while modern only supports the gui library.
+MoulConfig is split into two parts:
+
+- `common`, which contains logic for rendering, annotation processing, and most of the code you will interact with
+- `platform`, which contains code for coupling rendering and input with one specific platform
+    - `modern-<version>`, which contains compatibility code for modern minecraft versions (1.20+)
+    - `legacy`, which contains 1.8.9 compatibility code
+
+### Modern installation
+
+Just shadow MoulConfig like any other mod. It is *highly* recommended that you relocate MoulConfig to another package,
+since our internals do not obey any backwards compatibility guarantees. No other buildscript configuration is necessary.
+
+Each minecraft version has its own `modern-<minecraftVersion>` module. Those modules automatically contain the corresponding
+`common` code for the relevant MoulConfig version.
+
+You will also need to copy the relevant `moulconfig.accesswidener` to your own. Check the relevant source directory for
+used accesswideners. In the future there might be a plugin to automatically shade / combine accesswideners.
+
+```kt
+repositories {
+    maven("https://maven.notenoughupdates.org/releases/")
+}
+
+// Your gradle template probably already includes something like this configuration.
+// **Make sure that the configuration is extending modImplementation, otherwise you will run into name issues**
+val shadowModImpl by configurations.creating {
+    configurations.modImplementation.get().extendsFrom(this)
+}
+
+dependencies {
+    // Where shadowModImpl is a gradle configuration that remaps and shades the jar.
+    "shadowModImpl"("org.notenoughupdates.moulconfig:modern-<mcversion>:<version>")
+}
+
+tasks.shadowJar {
+    // Make sure to relocate MoulConfig to avoid version clashes with other mods
+    configurations = listOf(shadowModImpl)
+    relocate("io.github.notenoughupdates.moulconfig", "my.mod.deps.moulconfig")
+}
+```
 
 ### Legacy installation
 
@@ -29,7 +67,7 @@ repositories {
     maven("https://maven.notenoughupdates.org/releases/")
 }
 
-// Your gradle template probably already includes something like this configuration.
+// Your Gradle template probably already includes something like this configuration.
 // **Make sure that the configuration is extending modImplementation, otherwise you will run into name issues**
 val shadowModImpl by configurations.creating {
     configurations.modImplementation.get().extendsFrom(this)
@@ -38,43 +76,6 @@ val shadowModImpl by configurations.creating {
 dependencies {
     // Where shadowModImpl is a gradle configuration that remaps and shades the jar.
     "shadowModImpl"("org.notenoughupdates.moulconfig:legacy:<version>")
-}
-
-// This snippet is required in order to correctly load resources in the development environment
-loom {
-    launchConfigs {
-        "client" {
-            arg("--tweakClass", "io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker")
-        }
-    }
-}
-
-tasks.shadowJar {
-    // Make sure to relocate MoulConfig to avoid version clashes with other mods
-    configurations = listOf(shadowModImpl)
-    relocate("io.github.notenoughupdates.moulconfig", "my.mod.deps.moulconfig")
-}
-```
-
-### Modern installation
-
-Just shadow MoulConfig like any other mod. It is *highly* recommended that you relocate MoulConfig to another package,
-since our internals do not obey any backwards compatibility guarantees. No other buildscript configuration is necessary.
-
-```kt
-repositories {
-    maven("https://maven.notenoughupdates.org/releases/")
-}
-
-// Your gradle template probably already includes something like this configuration.
-// **Make sure that the configuration is extending modImplementation, otherwise you will run into name issues**
-val shadowModImpl by configurations.creating {
-    configurations.modImplementation.get().extendsFrom(this)
-}
-
-dependencies {
-    // Where shadowModImpl is a gradle configuration that remaps and shades the jar.
-    "shadowModImpl"("org.notenoughupdates.moulconfig:modern:<version>")
 }
 
 tasks.shadowJar {
@@ -88,7 +89,7 @@ tasks.shadowJar {
 ## Usage
 
 See
-the [TestMod](https://github.com/NotEnoughUpdates/MoulConfig/blob/master/modern/src/main/kotlin/io/github/notenoughupdates/moulconfig/test)
+the [FabricMain](https://github.com/NotEnoughUpdates/MoulConfig/blob/v4/modern/templates/java/io/github/notenoughupdates/moulconfig/test/FabricMain.java)
 for usage examples, or check out the annotation
 package documentation to see the kind of config variable editors MoulConfig has built in.
 
