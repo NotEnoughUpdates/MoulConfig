@@ -1,15 +1,19 @@
 # Config GUI
 
-The config GUI is the main selling point of MoulConfig.
+The config GUI is the main selling point of MoulConfig. It can be manually constructed using a [`ConfigStructureReader` subclass](../javadocs/common/io.github.notenoughupdates.moulconfig.processor/-config-structure-reader/index.html),
+or by using [`ConfigProcessorDriver`](../javadocs/common/io.github.notenoughupdates.moulconfig.processor/-config-processor-driver/index.html) or the [`ManagedConfig` (for full automation of config saving and displaying)](../javadocs/common/io.github.notenoughupdates.moulconfig.managed/-managed-config/index.html)
 
 ## Structure
 
 The config structure is roughly mapped to Java classes. Each category, subcategory and accordion is its own Java object.
 
-The base class needs to extend `Config` and each field needs to be non-static. This way your config is also easily
+The base class needs to extend [`Config`](../javadocs/common/io.github.notenoughupdates.moulconfig/-config/index.html) and each field needs to be non-static. This way your config is also easily
 serializable as a Json Object. MoulConfig is however completely agnostic towards your configs save format. The only
 requirement is that instances do not get reassigned. So updating the config object after you have processed a config
 requires that config to be reprocessed (and old MoulConfig to be discarded).
+
+If you specifically do want MoulConfig to load and save files for you, consider obtaining the instance of your config
+through [`ManagedConfig`](../javadocs/common/io.github.notenoughupdates.moulconfig.managed/-managed-config/index.html)
 
 ### Top Level Structure
 
