@@ -1,0 +1,319 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ChromaColour</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    MoulConfig
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">4.6.0+7902a33
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":common/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":common/main" data-filter=":common/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://notenoughupdates.org/MoulConfig/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    MoulConfig
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="common::io.github.notenoughupdates.moulconfig/ChromaColour///PointingToDeclaration//1278595499">
+  <div class="breadcrumbs"><a href="../../index.html">common</a><span class="delimiter">/</span><a href="../index.html">io.github.notenoughupdates.moulconfig</a><span class="delimiter">/</span><span class="current">ChromaColour</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Chroma</span><wbr><span><span>Colour</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">ChromaColour</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>hue<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>saturation<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>brightness<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>timeForFullRotationInMillis<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>alpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/NotEnoughUpdates/MoulConfig/blob/7902a33/common/src/main/java/io/github/notenoughupdates/moulconfig/ChromaColour.kt#L9">source</a>)</span></span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="-1833242417%2FConstructors%2F1278595499" anchor-label="ChromaColour" id="-1833242417%2FConstructors%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-chroma-colour.html"><span>Chroma</span><wbr><span><span>Colour</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1833242417%2FConstructors%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">hue<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">saturation<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">brightness<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">timeForFullRotationInMillis<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">alpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="700581249%2FClasslikes%2F1278595499" anchor-label="Companion" id="700581249%2FClasslikes%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="700581249%2FClasslikes%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">object </span><a href="-companion/index.html">Companion</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-472977636%2FProperties%2F1278595499" anchor-label="alpha" id="-472977636%2FProperties%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="alpha.html"><span><span>alpha</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-472977636%2FProperties%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="alpha.html">alpha</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Alpha in a range from 0 to 255 (with 255 being fully opaque).</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="868664239%2FProperties%2F1278595499" anchor-label="brightness" id="868664239%2FProperties%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="brightness.html"><span><span>brightness</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="868664239%2FProperties%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="brightness.html">brightness</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Brightness in a range from 0 to 1</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="647759874%2FProperties%2F1278595499" anchor-label="hue" id="647759874%2FProperties%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="hue.html"><span><span>hue</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="647759874%2FProperties%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="hue.html">hue</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Hue in a range from 0 to 1. For a chroma colour this is added to the time as an offset.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1692383054%2FProperties%2F1278595499" anchor-label="saturation" id="1692383054%2FProperties%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="saturation.html"><span><span>saturation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1692383054%2FProperties%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="saturation.html">saturation</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">Saturation in a range from 0 to 1</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="156522118%2FProperties%2F1278595499" anchor-label="timeForFullRotationInMillis" id="156522118%2FProperties%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="time-for-full-rotation-in-millis.html"><span>time</span><wbr><span>For</span><wbr><span>Full</span><wbr><span>Rotation</span><wbr><span>In</span><wbr><span><span>Millis</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="156522118%2FProperties%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="time-for-full-rotation-in-millis.html">timeForFullRotationInMillis</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">If set to 0, this indicates a static colour. If set to a value above 0, indicates the amount of milliseconds that pass until the same colour is met again. This value may be saved lossy.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="1137029579%2FFunctions%2F1278595499" anchor-label="getEffectiveColour" id="1137029579%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-effective-colour.html"><span>get</span><wbr><span>Effective</span><wbr><span><span>Colour</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1137029579%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-effective-colour.html"><span class="token function">getEffectiveColour</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/awt/Color.html">Color</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-effective-colour.html"><span class="token function">getEffectiveColour</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">offset<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/awt/Color.html">Color</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1665703843%2FFunctions%2F1278595499" anchor-label="getEffectiveColourRGB" id="-1665703843%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-effective-colour-r-g-b.html"><span>get</span><wbr><span>Effective</span><wbr><span>Colour</span><wbr><span><span>RGB</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1665703843%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-effective-colour-r-g-b.html"><span class="token function">getEffectiveColourRGB</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-effective-colour-r-g-b.html"><span class="token function">getEffectiveColourRGB</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">offset<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-294213445%2FFunctions%2F1278595499" anchor-label="getEffectiveColourWithTimeOffset" id="-294213445%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-effective-colour-with-time-offset.html"><span>get</span><wbr><span>Effective</span><wbr><span>Colour</span><wbr><span>With</span><wbr><span>Time</span><wbr><span><span>Offset</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-294213445%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-effective-colour-with-time-offset.html"><span class="token function">getEffectiveColourWithTimeOffset</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">offset<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/awt/Color.html">Color</a></div><div class="brief "><p class="paragraph">Unlike <a href="get-effective-colour.html">getEffectiveColour</a>, this offset does not change anything if not using an animated colour.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1244186194%2FFunctions%2F1278595499" anchor-label="getEffectiveColourWithTimeOffsetRGB" id="-1244186194%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-effective-colour-with-time-offset-r-g-b.html"><span>get</span><wbr><span>Effective</span><wbr><span>Colour</span><wbr><span>With</span><wbr><span>Time</span><wbr><span>Offset</span><wbr><span><span>RGB</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1244186194%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-effective-colour-with-time-offset-r-g-b.html"><span class="token function">getEffectiveColourWithTimeOffsetRGB</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">offset<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Unlike <a href="get-effective-colour-r-g-b.html">getEffectiveColourRGB</a>, this offset does not change anything if not using an animated colour.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2071874475%2FFunctions%2F1278595499" anchor-label="toLegacyString" id="2071874475%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="to-legacy-string.html"><span>to</span><wbr><span>Legacy</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2071874475%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="to-legacy-string.html"><span class="token function"><strike>toLegacyString</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

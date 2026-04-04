@@ -66,7 +66,11 @@
 </li>
                                     
 <li>
-    <a href="javadocs/legacy/index.html" class="dropdown-item">Legacy</a>
+    <a href="javadocs/modern/index.html" class="dropdown-item">Modern Platform</a>
+</li>
+                                    
+<li>
+    <a href="javadocs/legacy/index.html" class="dropdown-item">Legacy Platform</a>
 </li>
                                     
 <li>
@@ -86,7 +90,7 @@
                       <!---->
                         <!---->
                             <!--<li class="nav-item">-->
-                                <!--<a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/master/src/doc/docs/index.md" class="nav-link">-->
+                                <!--<a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/v4/src/doc/docs/index.md" class="nav-link">-->
                                     <!---->
                                     <!--Edit on MoulConfig-->
                                     <!---->
@@ -108,7 +112,7 @@
           
         </div>
         <div class="col-4 text-right date">
-            <a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/master/src/doc/docs/index.md" class="hidden-hyperlink">
+            <a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/v4/src/doc/docs/index.md" class="hidden-hyperlink">
           
               <span>
                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil clickable" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -131,49 +135,22 @@ under an LGPL 3.0 license, and this version keeps that license.</p>
 <h2 id="installation">Installation</h2>
 <p>This version of MoulConfig is published to the <a href="https://maven.notenoughupdates.org/#/">NEU Maven Repository</a>. The latest
 version number can be <a href="https://maven.notenoughupdates.org/#/releases/org/notenoughupdates/moulconfig/">found there as well</a>.</p>
-<p>There are two versions of MoulConfig: <code>legacy</code> for 1.8.9 and <code>modern</code> for 1.20.2. Legacy has support for the config gui
-and for the gui library, while modern only supports the gui library.</p>
-<h3 id="legacy-installation">Legacy installation</h3>
-<p>On 1.8.9 Forge you will need to shadow MoulConfig like any other mod dependency. It is <em>highly</em> recommended that
-you relocate MoulConfig to another package, since our internals do not obey any backwards compatibility guarantees.
-In order to get resources loaded in your development environment is is recommended that you also make use of the
-<code>io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker</code>. Do not specify this tweaker in your JAR manifest,
-<em>only</em> as a command line argument during development time. See a snippet on how to use MoulConfig with architectury loom
-below:</p>
-<pre><code class="language-kotlin">
-repositories {
-    maven(&quot;https://maven.notenoughupdates.org/releases/&quot;)
-}
-
-// Your gradle template probably already includes something like this configuration.
-// **Make sure that the configuration is extending modImplementation, otherwise you will run into name issues**
-val shadowModImpl by configurations.creating {
-    configurations.modImplementation.get().extendsFrom(this)
-}
-
-dependencies {
-    // Where shadowModImpl is a gradle configuration that remaps and shades the jar.
-    &quot;shadowModImpl&quot;(&quot;org.notenoughupdates.moulconfig:legacy:&lt;version&gt;&quot;)
-}
-
-// This snippet is required in order to correctly load resources in the development environment
-loom {
-    launchConfigs {
-        &quot;client&quot; {
-            arg(&quot;--tweakClass&quot;, &quot;io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker&quot;)
-        }
-    }
-}
-
-tasks.shadowJar {
-    // Make sure to relocate MoulConfig to avoid version clashes with other mods
-    configurations = listOf(shadowModImpl)
-    relocate(&quot;io.github.notenoughupdates.moulconfig&quot;, &quot;my.mod.deps.moulconfig&quot;)
-}
-</code></pre>
+<p>MoulConfig is split into two parts:</p>
+<ul>
+<li><code>common</code>, which contains logic for rendering, annotation processing, and most of the code you will interact with</li>
+<li><code>platform</code>, which contains code for coupling rendering and input with one specific platform<ul>
+<li><code>modern-&lt;version&gt;</code>, which contains compatibility code for modern minecraft versions (1.20+)</li>
+<li><code>legacy</code>, which contains 1.8.9 compatibility code</li>
+</ul>
+</li>
+</ul>
 <h3 id="modern-installation">Modern installation</h3>
 <p>Just shadow MoulConfig like any other mod. It is <em>highly</em> recommended that you relocate MoulConfig to another package,
 since our internals do not obey any backwards compatibility guarantees. No other buildscript configuration is necessary.</p>
+<p>Each minecraft version has its own <code>modern-&lt;minecraftVersion&gt;</code> module. Those modules automatically contain the corresponding
+<code>common</code> code for the relevant MoulConfig version.</p>
+<p>You will also need to copy the relevant <code>moulconfig.accesswidener</code> to your own. Check the relevant source directory for
+used accesswideners. In the future there might be a plugin to automatically shade / combine accesswideners.</p>
 <pre><code class="language-kt">repositories {
     maven(&quot;https://maven.notenoughupdates.org/releases/&quot;)
 }
@@ -186,7 +163,36 @@ val shadowModImpl by configurations.creating {
 
 dependencies {
     // Where shadowModImpl is a gradle configuration that remaps and shades the jar.
-    &quot;shadowModImpl&quot;(&quot;org.notenoughupdates.moulconfig:modern:&lt;version&gt;&quot;)
+    &quot;shadowModImpl&quot;(&quot;org.notenoughupdates.moulconfig:modern-&lt;mcversion&gt;:&lt;version&gt;&quot;)
+}
+
+tasks.shadowJar {
+    // Make sure to relocate MoulConfig to avoid version clashes with other mods
+    configurations = listOf(shadowModImpl)
+    relocate(&quot;io.github.notenoughupdates.moulconfig&quot;, &quot;my.mod.deps.moulconfig&quot;)
+}
+</code></pre>
+<h3 id="legacy-installation">Legacy installation</h3>
+<p>On 1.8.9 Forge you will need to shadow MoulConfig like any other mod dependency. It is <em>highly</em> recommended that
+you relocate MoulConfig to another package, since our internals do not obey any backwards compatibility guarantees.
+In order to get resources loaded in your development environment is is recommended that you also make use of the
+<code>io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker</code>. Do not specify this tweaker in your JAR manifest,
+<em>only</em> as a command line argument during development time. See a snippet on how to use MoulConfig with architectury loom
+below:</p>
+<pre><code class="language-kotlin">
+repositories {
+    maven(&quot;https://maven.notenoughupdates.org/releases/&quot;)
+}
+
+// Your Gradle template probably already includes something like this configuration.
+// **Make sure that the configuration is extending modImplementation, otherwise you will run into name issues**
+val shadowModImpl by configurations.creating {
+    configurations.modImplementation.get().extendsFrom(this)
+}
+
+dependencies {
+    // Where shadowModImpl is a gradle configuration that remaps and shades the jar.
+    &quot;shadowModImpl&quot;(&quot;org.notenoughupdates.moulconfig:legacy:&lt;version&gt;&quot;)
 }
 
 tasks.shadowJar {
@@ -197,7 +203,7 @@ tasks.shadowJar {
 </code></pre>
 <h2 id="usage">Usage</h2>
 <p>See
-the <a href="https://github.com/NotEnoughUpdates/MoulConfig/blob/master/modern/src/main/kotlin/io/github/notenoughupdates/moulconfig/test">TestMod</a>
+the <a href="https://github.com/NotEnoughUpdates/MoulConfig/blob/v4/modern/templates/java/io/github/notenoughupdates/moulconfig/test/FabricMain.java">FabricMain</a>
 for usage examples, or check out the annotation
 package documentation to see the kind of config variable editors MoulConfig has built in.</p>
     </div>
@@ -207,7 +213,7 @@ package documentation to see the kind of config variable editors MoulConfig has 
 
         <footer class="col-md-12">
             <hr>
-                <p>Copyright &copy; 2023 Linnea Gräf</p>
+                <p>Copyright &copy; 2025 Linnea Gräf</p>
             <p>Zettelkasten built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>

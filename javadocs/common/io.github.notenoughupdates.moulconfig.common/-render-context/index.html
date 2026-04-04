@@ -1,0 +1,735 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>RenderContext</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    MoulConfig
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">4.6.0+7902a33
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":common/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":common/main" data-filter=":common/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+                <a class="navigation-controls--btn navigation-controls--btn_homepage" id="homepage-link" href="https://notenoughupdates.org/MoulConfig/"></a>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    MoulConfig
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="common::io.github.notenoughupdates.moulconfig.common/RenderContext///PointingToDeclaration//1278595499">
+  <div class="breadcrumbs"><a href="../../index.html">common</a><span class="delimiter">/</span><a href="../index.html">io.github.notenoughupdates.moulconfig.common</a><span class="delimiter">/</span><span class="current">RenderContext</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Render</span><wbr><span><span>Context</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/ApiStatus.NonExtendable///PointingToDeclaration/"><span class="token annotation builtin">ApiStatus.NonExtendable</span></span></div><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jspecify.annotations/NullMarked///PointingToDeclaration/"><span class="token annotation builtin">NullMarked</span></span></div></div><span class="token keyword">interface </span><a href="index.html">RenderContext</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/NotEnoughUpdates/MoulConfig/blob/7902a33/common/src/main/java/io/github/notenoughupdates/moulconfig/common/RenderContext.java#L15">source</a>)</span></span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button><button class="section-tab" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION,EXTENSION_PROPERTY,EXTENSION_FUNCTION">Members &amp; Extensions</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="1100230243%2FClasslikes%2F1278595499" anchor-label="DrawTextureBuilder" id="1100230243%2FClasslikes%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-draw-texture-builder/index.html"><span>Draw</span><wbr><span>Texture</span><wbr><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1100230243%2FClasslikes%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-draw-texture-builder/index.html">DrawTextureBuilder</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-985245018%2FClasslikes%2F1278595499" anchor-label="ScissorBehaviour" id="-985245018%2FClasslikes%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-scissor-behaviour/index.html"><span>Scissor</span><wbr><span><span>Behaviour</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-985245018%2FClasslikes%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-scissor-behaviour/index.html">ScissorBehaviour</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="915864436%2FFunctions%2F1278595499" anchor-label="assertNoScissors" id="915864436%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="assert-no-scissors.html"><span>assert</span><wbr><span>No</span><wbr><span><span>Scissors</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="915864436%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="assert-no-scissors.html"><span class="token function">assertNoScissors</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-770792669%2FFunctions%2F1278595499" anchor-label="clearScissor" id="-770792669%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-scissor.html"><span>clear</span><wbr><span><span>Scissor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-770792669%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="clear-scissor.html"><span class="token function"><strike>clearScissor</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-47056727%2FFunctions%2F1278595499" anchor-label="drawColoredRect" id="-47056727%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-colored-rect.html"><span>draw</span><wbr><span>Colored</span><wbr><span><span>Rect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-47056727%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="draw-colored-rect.html"><span class="token function">drawColoredRect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="557008799%2FFunctions%2F1278595499" anchor-label="drawColoredTriangles" id="557008799%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-colored-triangles.html"><span>draw</span><wbr><span>Colored</span><wbr><span><span>Triangles</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="557008799%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-colored-triangles.html"><span class="token function">drawColoredTriangles</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">colour<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">coordinates<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief ">Renders a list of triangles.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1397620923%2FFunctions%2F1278595499" anchor-label="drawColouredQuads" id="-1397620923%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-coloured-quads.html"><span>draw</span><wbr><span>Coloured</span><wbr><span><span>Quads</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1397620923%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="draw-coloured-quads.html"><span class="token function">drawColouredQuads</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">colour<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">coordinates<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1819234330%2FFunctions%2F1278595499" anchor-label="drawComplexTexture" id="-1819234330%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-complex-texture.html"><span>draw</span><wbr><span>Complex</span><wbr><span><span>Texture</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1819234330%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-complex-texture.html"><span class="token function">drawComplexTexture</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">texture<span class="token operator">: </span><a href="../-my-resource-location/index.html">MyResourceLocation</a><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">block<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">Consumer</a><span class="token operator">&lt;</span><a href="-draw-texture-builder/index.html">RenderContext.DrawTextureBuilder</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1054627567%2FFunctions%2F1278595499" anchor-label="drawDarkRect" id="-1054627567%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-dark-rect.html"><span>draw</span><wbr><span>Dark</span><wbr><span><span>Rect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1054627567%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-dark-rect.html"><span class="token function">drawDarkRect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="draw-dark-rect.html"><span class="token function">drawDarkRect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="472019357%2FFunctions%2F1278595499" anchor-label="drawGradientRect" id="472019357%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-gradient-rect.html"><span>draw</span><wbr><span>Gradient</span><wbr><span><span>Rect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="472019357%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="draw-gradient-rect.html"><span class="token function">drawGradientRect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">startColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">endColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1724493383%2FFunctions%2F1278595499" anchor-label="drawHorizontalLine" id="-1724493383%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-horizontal-line.html"><span>draw</span><wbr><span>Horizontal</span><wbr><span><span>Line</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1724493383%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-horizontal-line.html"><span class="token function">drawHorizontalLine</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">startX<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">endX<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-978298649%2FFunctions%2F1278595499" anchor-label="drawNinePatch" id="-978298649%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-nine-patch.html"><span>draw</span><wbr><span>Nine</span><wbr><span><span>Patch</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-978298649%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-nine-patch.html"><span class="token function">drawNinePatch</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">patch<span class="token operator">: </span><span data-unresolved-link="juuxel.libninepatch/NinePatch///PointingToDeclaration/">NinePatch</span><span class="token operator">&lt;</span><a href="../-my-resource-location/index.html">MyResourceLocation</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1981981708%2FFunctions%2F1278595499" anchor-label="drawOnTop" id="1981981708%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-on-top.html"><span>draw</span><wbr><span>On</span><wbr><span><span>Top</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1981981708%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="draw-on-top.html"><span class="token function">drawOnTop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">layer<span class="token operator">: </span><a href="../-layer/index.html">Layer</a><span class="token punctuation">, </span></span><span class="parameter ">escapeScissors<span class="token operator">: </span><a href="-scissor-behaviour/index.html">RenderContext.ScissorBehaviour</a><span class="token punctuation">, </span></span><span class="parameter ">later<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">Consumer</a><span class="token operator">&lt;</span><a href="index.html">RenderContext</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief ">draws more content that should be laid on top of other later render calls.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2070844716%2FFunctions%2F1278595499" anchor-label="drawOpenCloseTriangle" id="-2070844716%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-open-close-triangle.html"><span>draw</span><wbr><span>Open</span><wbr><span>Close</span><wbr><span><span>Triangle</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2070844716%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-open-close-triangle.html"><span class="token function">drawOpenCloseTriangle</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">isOpen<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-872779467%2FFunctions%2F1278595499" anchor-label="drawString" id="-872779467%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-string.html"><span>draw</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-872779467%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="draw-string.html"><span class="token function">drawString</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">fontRenderer<span class="token operator">: </span><a href="../-i-font-renderer/index.html">IFontRenderer</a><span class="token punctuation">, </span></span><span class="parameter ">text<span class="token operator">: </span><a href="../../io.github.notenoughupdates.moulconfig.common.text/-structured-text/index.html">StructuredText</a><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="778331303%2FFunctions%2F1278595499" anchor-label="drawStringCenteredScaledMaxWidth" id="778331303%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-string-centered-scaled-max-width.html"><span>draw</span><wbr><span>String</span><wbr><span>Centered</span><wbr><span>Scaled</span><wbr><span>Max</span><wbr><span><span>Width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="778331303%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-string-centered-scaled-max-width.html"><span class="token function">drawStringCenteredScaledMaxWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">text<span class="token operator">: </span><a href="../../io.github.notenoughupdates.moulconfig.common.text/-structured-text/index.html">StructuredText</a><span class="token punctuation">, </span></span><span class="parameter ">fr<span class="token operator">: </span><a href="../-i-font-renderer/index.html">IFontRenderer</a><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">length<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1830229203%2FFunctions%2F1278595499" anchor-label="drawStringScaledMaxWidth" id="-1830229203%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-string-scaled-max-width.html"><span>draw</span><wbr><span>String</span><wbr><span>Scaled</span><wbr><span>Max</span><wbr><span><span>Width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1830229203%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-string-scaled-max-width.html"><span class="token function">drawStringScaledMaxWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">text<span class="token operator">: </span><a href="../../io.github.notenoughupdates.moulconfig.common.text/-structured-text/index.html">StructuredText</a><span class="token punctuation">, </span></span><span class="parameter ">fontRenderer<span class="token operator">: </span><a href="../-i-font-renderer/index.html">IFontRenderer</a><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1168513626%2FFunctions%2F1278595499" anchor-label="drawTexturedRect" id="1168513626%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-textured-rect.html"><span>draw</span><wbr><span>Textured</span><wbr><span><span>Rect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1168513626%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-textured-rect.html"><span class="token function">drawTexturedRect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">texture<span class="token operator">: </span><a href="../-my-resource-location/index.html">MyResourceLocation</a><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-940836900%2FFunctions%2F1278595499" anchor-label="drawTexturedTintedRect" id="-940836900%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-textured-tinted-rect.html"><span>draw</span><wbr><span>Textured</span><wbr><span>Tinted</span><wbr><span><span>Rect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-940836900%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="draw-textured-tinted-rect.html"><span class="token function">drawTexturedTintedRect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">texture<span class="token operator">: </span><a href="../-my-resource-location/index.html">MyResourceLocation</a><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">width<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">height<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">u1<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">v1<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">u2<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">v2<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">filter<span class="token operator">: </span><a href="../-texture-filter/index.html">TextureFilter</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="321853822%2FFunctions%2F1278595499" anchor-label="drawTooltipNow" id="321853822%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-tooltip-now.html"><span>draw</span><wbr><span>Tooltip</span><wbr><span><span>Now</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="321853822%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="draw-tooltip-now.html"><span class="token function">drawTooltipNow</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">tooltipLines<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="../../io.github.notenoughupdates.moulconfig.common.text/-structured-text/index.html">StructuredText</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1186514485%2FFunctions%2F1278595499" anchor-label="drawVerticalLine" id="-1186514485%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="draw-vertical-line.html"><span>draw</span><wbr><span>Vertical</span><wbr><span><span>Line</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1186514485%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="draw-vertical-line.html"><span class="token function">drawVerticalLine</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">startY<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">endY<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="826843643%2FFunctions%2F1278595499" anchor-label="getMinecraft" id="826843643%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-minecraft.html"><span>get</span><wbr><span><span>Minecraft</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="826843643%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-minecraft.html"><span class="token function">getMinecraft</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-i-minecraft/index.html">IMinecraft</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-223683530%2FFunctions%2F1278595499" anchor-label="invertedRect" id="-223683530%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="inverted-rect.html"><span>inverted</span><wbr><span><span>Rect</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-223683530%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="inverted-rect.html"><span class="token function">invertedRect</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">additiveColor<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1912732074%2FFunctions%2F1278595499" anchor-label="isCmdDown" id="-1912732074%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-cmd-down.html"><span>is</span><wbr><span>Cmd</span><wbr><span><span>Down</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1912732074%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="is-cmd-down.html"><span class="token function">isCmdDown</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-8563813%2FFunctions%2F1278595499" anchor-label="isKeyboardKeyDown" id="-8563813%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-keyboard-key-down.html"><span>is</span><wbr><span>Keyboard</span><wbr><span>Key</span><wbr><span><span>Down</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-8563813%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="is-keyboard-key-down.html"><span class="token function">isKeyboardKeyDown</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">keyboardKey<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1030446404%2FFunctions%2F1278595499" anchor-label="isLogicalCtrlDown" id="-1030446404%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-logical-ctrl-down.html"><span>is</span><wbr><span>Logical</span><wbr><span>Ctrl</span><wbr><span><span>Down</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1030446404%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="is-logical-ctrl-down.html"><span class="token function">isLogicalCtrlDown</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Returns whether the control key is held down on Windows and Linux, and for macOS checks if the command key is held down.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-100646182%2FFunctions%2F1278595499" anchor-label="isMouseButtonDown" id="-100646182%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-mouse-button-down.html"><span>is</span><wbr><span>Mouse</span><wbr><span>Button</span><wbr><span><span>Down</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-100646182%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="is-mouse-button-down.html"><span class="token function">isMouseButtonDown</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">mouseButton<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2135595996%2FFunctions%2F1278595499" anchor-label="isPhysicalCtrlDown" id="-2135595996%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-physical-ctrl-down.html"><span>is</span><wbr><span>Physical</span><wbr><span>Ctrl</span><wbr><span><span>Down</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2135595996%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="is-physical-ctrl-down.html"><span class="token function">isPhysicalCtrlDown</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="333942478%2FFunctions%2F1278595499" anchor-label="isShiftDown" id="333942478%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-shift-down.html"><span>is</span><wbr><span>Shift</span><wbr><span><span>Down</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="333942478%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="is-shift-down.html"><span class="token function">isShiftDown</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="357950806%2FFunctions%2F1278595499" anchor-label="popMatrix" id="357950806%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pop-matrix.html"><span>pop</span><wbr><span><span>Matrix</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="357950806%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="pop-matrix.html"><span class="token function">popMatrix</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-770645913%2FFunctions%2F1278595499" anchor-label="popScissor" id="-770645913%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="pop-scissor.html"><span>pop</span><wbr><span><span>Scissor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-770645913%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="pop-scissor.html"><span class="token function">popScissor</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="9814839%2FFunctions%2F1278595499" anchor-label="pushMatrix" id="9814839%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="push-matrix.html"><span>push</span><wbr><span><span>Matrix</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="9814839%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="push-matrix.html"><span class="token function">pushMatrix</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1967962645%2FFunctions%2F1278595499" anchor-label="pushRawScissor" id="-1967962645%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="push-raw-scissor.html"><span>push</span><wbr><span>Raw</span><wbr><span><span>Scissor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1967962645%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="push-raw-scissor.html"><span class="token function">pushRawScissor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief ">push a raw scissor rectangle.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1235738295%2FFunctions%2F1278595499" anchor-label="pushScissor" id="-1235738295%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="push-scissor.html"><span>push</span><wbr><span><span>Scissor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1235738295%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="push-scissor.html"><span class="token function">pushScissor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">left<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">top<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">right<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">bottom<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief ">push a scissor rectangle, clamped to the current scissor rectangle, relative to the current render position.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1514702580%2FFunctions%2F1278595499" anchor-label="renderExtraLayers" id="-1514702580%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="render-extra-layers.html"><span>render</span><wbr><span>Extra</span><wbr><span><span>Layers</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1514702580%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="render-extra-layers.html"><span class="token function">renderExtraLayers</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Must be called only by the implementor after all rendering is done.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1174983597%2FFunctions%2F1278595499" anchor-label="renderItemStack" id="-1174983597%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="render-item-stack.html"><span>render</span><wbr><span>Item</span><wbr><span><span>Stack</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1174983597%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="render-item-stack.html"><span class="token function">renderItemStack</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">itemStack<span class="token operator">: </span><a href="../-i-item-stack/index.html">IItemStack</a><span class="token punctuation">, </span></span><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span>overlayText<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span><a href="../../io.github.notenoughupdates.moulconfig.common.text/-structured-text/index.html">StructuredText</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1693812171%2FFunctions%2F1278595499" anchor-label="scale" id="1693812171%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="scale.html"><span><span>scale</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1693812171%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="scale.html"><span class="token function">scale</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">scalar<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="scale.html"><span class="token function">scale</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1678756291%2FFunctions%2F1278595499" anchor-label="scheduleDrawTooltip" id="1678756291%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="schedule-draw-tooltip.html"><span>schedule</span><wbr><span>Draw</span><wbr><span><span>Tooltip</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1678756291%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="schedule-draw-tooltip.html"><span class="token function">scheduleDrawTooltip</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">tooltipLines<span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="../../io.github.notenoughupdates.moulconfig.common.text/-structured-text/index.html">StructuredText</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-311215501%2FFunctions%2F1278595499" anchor-label="translate" id="-311215501%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="translate.html"><span><span>translate</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-311215501%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="translate.html"><span class="token function">translate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">x<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a><span class="token punctuation">, </span></span><span class="parameter ">y<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="EXTENSION_FUNCTION">
+        <h2 class="tableheader">Inherited functions</h2>
+        <div class="table"><a data-name="-273826951%2FFunctions%2F1278595499" anchor-label="drawStringCenteredScalingDownWithMaxWidth" id="-273826951%2FFunctions%2F1278595499" data-filterable-set=":common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":common/main" data-filterable-set=":common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../../io.github.notenoughupdates.moulconfig.internal/-draw-context-ext/draw-string-centered-scaling-down-with-max-width.html"><span>draw</span><wbr><span>String</span><wbr><span>Centered</span><wbr><span>Scaling</span><wbr><span>Down</span><wbr><span>With</span><wbr><span>Max</span><wbr><span><span>Width</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-273826951%2FFunctions%2F1278595499"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a></div><div class="block"><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.jvm/-jvm-static/index.html"><span class="token annotation builtin">JvmStatic</span></a></div></div><span class="token keyword">fun </span><a href="index.html">RenderContext</a><span class="token punctuation">.</span><a href="../../io.github.notenoughupdates.moulconfig.internal/-draw-context-ext/draw-string-centered-scaling-down-with-max-width.html"><span class="token function">drawStringCenteredScalingDownWithMaxWidth</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">text<span class="token operator">: </span><a href="../../io.github.notenoughupdates.moulconfig.common.text/-structured-text/index.html">StructuredText</a><span class="token punctuation">, </span></span><span class="parameter ">centerX<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">centerY<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">maxWidth<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">color<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">shadow<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">fr<span class="token operator">: </span><a href="../-i-font-renderer/index.html">IFontRenderer</a><span class="token operator"> = </span>minecraft.defaultFontRenderer</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

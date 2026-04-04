@@ -66,7 +66,11 @@
 </li>
                                     
 <li>
-    <a href="../javadocs/legacy/index.html" class="dropdown-item">Legacy</a>
+    <a href="../javadocs/modern/index.html" class="dropdown-item">Modern Platform</a>
+</li>
+                                    
+<li>
+    <a href="../javadocs/legacy/index.html" class="dropdown-item">Legacy Platform</a>
 </li>
                                     
 <li>
@@ -86,7 +90,7 @@
                       <!---->
                         <!---->
                             <!--<li class="nav-item">-->
-                                <!--<a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/master/src/doc/docs/config/index.md" class="nav-link">-->
+                                <!--<a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/v4/src/doc/docs/config/index.md" class="nav-link">-->
                                     <!---->
                                     <!--Edit on MoulConfig-->
                                     <!---->
@@ -108,7 +112,7 @@
           
         </div>
         <div class="col-4 text-right date">
-            <a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/master/src/doc/docs/config/index.md" class="hidden-hyperlink">
+            <a href="https://github.com/NotEnoughUpdates/MoulConfig/edit/v4/src/doc/docs/config/index.md" class="hidden-hyperlink">
           
               <span>
                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil clickable" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -124,13 +128,16 @@
     
     <div class="file-body">
       <h1 id="config-gui">Config GUI</h1>
-<p>The config GUI is the main selling point of MoulConfig.</p>
+<p>The config GUI is the main selling point of MoulConfig. It can be manually constructed using a <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.processor/-config-structure-reader/index.html"><code>ConfigStructureReader</code> subclass</a>,
+or by using <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.processor/-config-processor-driver/index.html"><code>ConfigProcessorDriver</code></a> or the <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.managed/-managed-config/index.html"><code>ManagedConfig</code> (for full automation of config saving and displaying)</a></p>
 <h2 id="structure">Structure</h2>
 <p>The config structure is roughly mapped to Java classes. Each category, subcategory and accordion is its own Java object.</p>
-<p>The base class needs to extend <code>Config</code> and each field needs to be non-static. This way your config is also easily
+<p>The base class needs to extend <a href="../javadocs/common/io.github.notenoughupdates.moulconfig/-config/index.html"><code>Config</code></a> and each field needs to be non-static. This way your config is also easily
 serializable as a Json Object. MoulConfig is however completely agnostic towards your configs save format. The only
 requirement is that instances do not get reassigned. So updating the config object after you have processed a config
 requires that config to be reprocessed (and old MoulConfig to be discarded).</p>
+<p>If you specifically do want MoulConfig to load and save files for you, consider obtaining the instance of your config
+through <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.managed/-managed-config/index.html"><code>ManagedConfig</code></a></p>
 <h3 id="top-level-structure">Top Level Structure</h3>
 <p>You can specify categories
 using <a href="../javadocs/common/io.github.notenoughupdates.moulconfig.annotations/-category/index.html"><code>@Category</code></a>.
@@ -210,7 +217,7 @@ more information on how to use Properties.</p>
 
         <footer class="col-md-12">
             <hr>
-                <p>Copyright &copy; 2023 Linnea Gräf</p>
+                <p>Copyright &copy; 2025 Linnea Gräf</p>
             <p>Zettelkasten built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>
