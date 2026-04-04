@@ -1,4 +1,6 @@
+
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.getByName
 import javax.inject.Inject
@@ -7,8 +9,10 @@ abstract class PreProcessorArgs {
     @get:Inject
     protected abstract val project: Project
 
+    val preprocessedSources: DirectoryProperty by lazy { project.objects.directoryProperty() }
+
     companion object {
-        val nameRegex = "^[A-Z_][A-Z_0-9]*$".toRegex()
+        val nameRegex = "^[A-Za-z_][.a-zA-Z_0-9]*$".toRegex()
     }
 
     class Args(val task: JavaCompile) {

@@ -1,5 +1,6 @@
 
 import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.dokka.gradle.tasks.DokkaBaseTask
 import xyz.wagyourtail.unimined.api.UniminedExtension
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
@@ -67,7 +68,8 @@ val numericMinecraftVersion = minecraftVersion.split("-").first().split(".")
     }
     .reduce { a, b -> a * 100 + b }
 println("Numeric version for $minecraftVersion is $numericMinecraftVersion")
-the<PreProcessorArgs>().forDefaultCompilation {
+val preProcessorArgs = the<PreProcessorArgs>()
+preProcessorArgs.forDefaultCompilation {
     define("MC", numericMinecraftVersion)
     if (numericMinecraftVersion >= 12107)
         define("MC217", "true")
@@ -151,23 +153,30 @@ configure<PublishingExtension> {
 }
 
 val thisProj = project
-project(":modern")
-    .configure<DokkaExtension> {
-        this.dokkaSourceSets {
-            this.register(thisProj.name) {
+val modernProj = project(":modern")
+modernProj.tasks.withType<DokkaBaseTask> {
+    dependsOn(thisProj.tasks.compileJava)
+}
+modernProj.configure<DokkaExtension> {
+    this.dokkaSourceSets {
+        this.register(thisProj.name) {
 //                if (false && !thisProj.name.contains("26")) {
 //                    val modernId = project.objects.newInstance(SourceSetIdSpec::class, "modern", "modern-26.1")
 //                    this.dependentSourceSets.add(modernId)
 //                }
-                this.sourceSetScope.set("modern")
-                this.classpath.from(thisProj.sourceSets.main.map { it.compileClasspath })
-                this.displayName.set(minecraftVersion)
-                this.sourceRoots.setFrom(thisProj.sourceSets.main.map { it.allSource })
-                this.sourceLink {
-                    this.localDirectory.set(fSourceDest)
-                    this.remoteUrl("https://github.com/NotEnoughUpdates/MoulConfig/blob/${Version.hash}/modern/templates/java")
-                    this.remoteLineSuffix.set("#L")
-                }
+            this.sourceSetScope.set("modern")
+            this.classpath.from(thisProj.sourceSets.main.map { it.compileClasspath })
+            this.displayName.set(minecraftVersion)
+            this.sourceRoots.setFrom(
+                listOf(
+                    preProcessorArgs.preprocessedSources
+                )
+            )
+            this.sourceLink {
+                this.localDirectory.set(preProcessorArgs.preprocessedSources)
+                this.remoteUrl("https://github.com/NotEnoughUpdates/MoulConfig/blob/${Version.hash}/modern/templates/java")
+                this.remoteLineSuffix.set("#L")
             }
         }
     }
+}
