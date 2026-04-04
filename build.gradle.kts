@@ -30,3 +30,9 @@ val docJar = tasks.register("docJar", Zip::class) {
 val docConfig = configurations.create("documentation")
 artifacts.add(docConfig.name, docJar)
 tasks.assemble { dependsOn(docJar) }
+
+dependencies {
+    dokka(project(":common"))
+    dokka(project(":legacy"))
+    dokka(project(":modern"))
+}

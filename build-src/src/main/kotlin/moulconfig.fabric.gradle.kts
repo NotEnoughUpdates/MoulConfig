@@ -1,12 +1,13 @@
+
+import org.jetbrains.dokka.gradle.DokkaExtension
 import xyz.wagyourtail.unimined.api.UniminedExtension
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
 plugins {
-	id("xyz.wagyourtail.unimined")
-	id("org.jetbrains.dokka")
-	id("moulconfig.kotlin")
-	id("moulconfig.leaf")
-	id("moulconfig.manifold")
+    id("xyz.wagyourtail.unimined")
+    id("moulconfig.kotlin")
+    id("moulconfig.leaf")
+    id("moulconfig.manifold")
 }
 
 val fabricVersion = property("moulconfig.fabric") as String
@@ -16,7 +17,7 @@ val useResourceLoaderv1 = findProperty("moulconfig.rlv1") as String?
 val aF = project.file("src/main/resources/moulconfig.accesswidener")
 val hasAW = aF.exists()
 the<UniminedExtension>().minecraft {
-	version(minecraftVersion)
+    version(minecraftVersion)
     if (!isDeobfuscated) {
         mappings {
             intermediary()
@@ -26,50 +27,50 @@ the<UniminedExtension>().minecraft {
         }
     }
 
-	fabric {
-		loader("0.18.4")
-		if (hasAW)
-			accessWidener(aF)
-	}
-	mods {
-		this.modImplementation {
-			this.mixinRemap {
-				this.enableBaseMixin()
-			}
-		}
-	}
-	runs {
-		config("client") {
-			jvmArgs("-Dmoulconfig.testmod=true")
-			jvmArgs("-Dmoulconfig.warn.crash=false")
-			parseEnvFile(rootProject.file(".env")).forEach { (name, value) ->
-				environment(name, value)
-			}
-			parseEnvFile(file(".env")).forEach { (name, value) ->
-				environment(name, value)
-			}
-		}
-		config("server") {
-			enabled = false
-		}
-	}
+    fabric {
+        loader("0.18.4")
+        if (hasAW)
+            accessWidener(aF)
+    }
+    mods {
+        this.modImplementation {
+            this.mixinRemap {
+                this.enableBaseMixin()
+            }
+        }
+    }
+    runs {
+        config("client") {
+            jvmArgs("-Dmoulconfig.testmod=true")
+            jvmArgs("-Dmoulconfig.warn.crash=false")
+            parseEnvFile(rootProject.file(".env")).forEach { (name, value) ->
+                environment(name, value)
+            }
+            parseEnvFile(file(".env")).forEach { (name, value) ->
+                environment(name, value)
+            }
+        }
+        config("server") {
+            enabled = false
+        }
+    }
 }
 
 val numericMinecraftVersion = minecraftVersion.split("-").first().split(".")
-	.map { it.toInt() }
-	.let {
-		if (it.size < 3)
-			it + listOf(0)
-		else if (it.size == 3)
-			it
-		else error("Unparsable minecraft version $minecraftVersion")
-	}
-	.reduce { a, b -> a * 100 + b }
+    .map { it.toInt() }
+    .let {
+        if (it.size < 3)
+            it + listOf(0)
+        else if (it.size == 3)
+            it
+        else error("Unparsable minecraft version $minecraftVersion")
+    }
+    .reduce { a, b -> a * 100 + b }
 println("Numeric version for $minecraftVersion is $numericMinecraftVersion")
 the<PreProcessorArgs>().forDefaultCompilation {
-	define("MC", numericMinecraftVersion)
-	if (numericMinecraftVersion >= 12107)
-		define("MC217", "true")
+    define("MC", numericMinecraftVersion)
+    if (numericMinecraftVersion >= 12107)
+        define("MC217", "true")
 }
 
 val fabricDeps = extensions.create("fabricDeps", FabricUtils::class, fabricVersion)
@@ -81,72 +82,92 @@ if (useResourceLoaderv1 != null) {
 }
 
 val remapJar by tasks.named("remapJar", RemapJarTask::class) {
-	asJar {
-		archiveClassifier.set("")
-	}
+    asJar {
+        archiveClassifier.set("")
+    }
 
-	dependsOn(tasks.shadowJar)
-	inputFile.set(tasks.shadowJar.flatMap { it.archiveFile })
+    dependsOn(tasks.shadowJar)
+    inputFile.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
 
 tasks.named("jar", Jar::class) {
-	archiveClassifier.set("small")
-	dependsOn(tasks.processResources)
+    archiveClassifier.set("small")
+    dependsOn(tasks.processResources)
 }
 
 tasks.processResources {
-	from(project(":modern").file("templates/resources")) {
-		filesMatching("fabric.mod.json") {
-			filter {
-				if (!it.contains("accessWidener") || hasAW)
-					it
-				else
-					""
-			}
-		}
-	}
+    from(project(":modern").file("templates/resources")) {
+        filesMatching("fabric.mod.json") {
+            filter {
+                if (!it.contains("accessWidener") || hasAW)
+                    it
+                else
+                    ""
+            }
+        }
+    }
 }
 val fSourceDest = layout.buildDirectory.dir("sharedModernSource")
 val generateFilteredSource =
-	if (project.hasProperty("moulconfig.symlinkSharedSources"))
-		tasks.register("generateFilteredSourc", SymlinkTask::class) {
-			from = project(":modern").file("templates/java")
-			into = fSourceDest
-		}
-	else
-		tasks.register("generateFilteredSource", Copy::class) {
-			doFirst {
-				if (fSourceDest.get().asFile.isFile)
-					fSourceDest.get().asFile.delete()
-			}
-			from(project(":modern").file("templates/java"))
-			rootSpec.into(fSourceDest)
-		}
+    if (project.hasProperty("moulconfig.symlinkSharedSources"))
+        tasks.register("generateFilteredSourc", SymlinkTask::class) {
+            from = project(":modern").file("templates/java")
+            into = fSourceDest
+        }
+    else
+        tasks.register("generateFilteredSource", Copy::class) {
+            doFirst {
+                if (fSourceDest.get().asFile.isFile)
+                    fSourceDest.get().asFile.delete()
+            }
+            from(project(":modern").file("templates/java"))
+            rootSpec.into(fSourceDest)
+        }
 
 sourceSets.main {
-	java {
-		srcDir(files(generateFilteredSource))
-	}
+    java {
+        srcDir(files(generateFilteredSource))
+    }
 }
 
 tasks.withType(Jar::class) {
-	this.filesMatching(listOf("fabric.mod.json")) {
-		filter {
-			if (it.contains("FabricMain")) ""
-			else it
-		}
-	}
-	exclude("io/github/notenoughupdates/moulconfig/test/**")
+    this.filesMatching(listOf("fabric.mod.json")) {
+        filter {
+            if (it.contains("FabricMain")) ""
+            else it
+        }
+    }
+    exclude("io/github/notenoughupdates/moulconfig/test/**")
 }
 
 configure<PublishingExtension> {
-	publications {
-		defaultMaven {
-			artifact(remapJar) {
-				classifier = ""
-			}
-		}
-	}
+    publications {
+        defaultMaven {
+            artifact(remapJar) {
+                classifier = ""
+            }
+        }
+    }
 }
 
-
+val thisProj = project
+project(":modern")
+    .configure<DokkaExtension> {
+        this.dokkaSourceSets {
+            this.register(thisProj.name) {
+//                if (false && !thisProj.name.contains("26")) {
+//                    val modernId = project.objects.newInstance(SourceSetIdSpec::class, "modern", "modern-26.1")
+//                    this.dependentSourceSets.add(modernId)
+//                }
+                this.sourceSetScope.set("modern")
+                this.classpath.from(thisProj.sourceSets.main.map { it.compileClasspath })
+                this.displayName.set(minecraftVersion)
+                this.sourceRoots.setFrom(thisProj.sourceSets.main.map { it.allSource })
+                this.sourceLink {
+                    this.localDirectory.set(fSourceDest)
+                    this.remoteUrl("https://github.com/NotEnoughUpdates/MoulConfig/blob/${Version.hash}/modern/templates/java")
+                    this.remoteLineSuffix.set("#L")
+                }
+            }
+        }
+    }
