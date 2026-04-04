@@ -23,5 +23,3 @@ io.github.notenoughupdates.moulconfig.gui.editors
 io.github.notenoughupdates.moulconfig.gui.elements
 io.github.notenoughupdates.moulconfig.internal
 io.github.notenoughupdates.moulconfig.tweaker
-module:modern
-io.github.notenoughupdates.moulconfig.platform
