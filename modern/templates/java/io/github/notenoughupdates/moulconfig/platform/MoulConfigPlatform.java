@@ -260,8 +260,10 @@ public class MoulConfigPlatform implements IMinecraft {
         }
         #if MC < 260100
         mc.gui.getChat().addMessage(text);
-        #else
+        #elif MC < 260200
         mc.gui.getChat().addClientSystemMessage(text);
+        #else
+        mc.gui.hud.getChat().addClientSystemMessage(text);
         #endif
     }
 
@@ -315,7 +317,11 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     public void openWrappedScreen(Screen screen) {
+        #if MC < 260200
         mc.setScreen(screen);
+        #else
+        mc.gui.setScreen(screen);
+        #endif
     }
 
     @Override
