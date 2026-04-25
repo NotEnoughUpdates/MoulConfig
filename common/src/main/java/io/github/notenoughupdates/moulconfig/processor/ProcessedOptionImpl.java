@@ -122,12 +122,7 @@ public class ProcessedOptionImpl implements ProcessedOption, ProcessedOption.Has
     @Override
     public boolean set(Object value) {
         try {
-            Object toSet;
-            if (getType() == int.class && value instanceof Number) {
-                toSet = ((Number) value).intValue();
-            } else {
-                toSet = value;
-            }
+            Object toSet = coerceValue(value);
             if (isProperty) {
                 ((Property<Object>) field.get(container)).set(toSet);
             } else {
@@ -137,6 +132,31 @@ public class ProcessedOptionImpl implements ProcessedOption, ProcessedOption.Has
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    private Object coerceValue(Object value) {
+        Type type = getType();
+        if (!(value instanceof Number) || !(type instanceof Class<?>)) {
+            return value;
+        }
+
+        Number number = (Number) value;
+        Class<?> targetType = (Class<?>) type;
+        if (targetType == int.class || targetType == Integer.class) {
+            return number.intValue();
+        } else if (targetType == float.class || targetType == Float.class) {
+            return number.floatValue();
+        } else if (targetType == double.class || targetType == Double.class) {
+            return number.doubleValue();
+        } else if (targetType == long.class || targetType == Long.class) {
+            return number.longValue();
+        } else if (targetType == short.class || targetType == Short.class) {
+            return number.shortValue();
+        } else if (targetType == byte.class || targetType == Byte.class) {
+            return number.byteValue();
+        } else {
+            return value;
         }
     }
 

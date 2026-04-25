@@ -41,7 +41,7 @@ public class FabricMain implements ModInitializer {
                     XMLUniverse xmlUniverse = XMLUniverse.getDefaultUniverse();
                     var scene = xmlUniverse.load(
                         new ObjectBound(),
-                        IMinecraft.INSTANCE.loadResourceLocation(MyResourceLocation.Companion.parse("moulconfig:test.xml"))
+                        IMinecraft.INSTANCE.loadResourceLocation(MyResourceLocation.parse("moulconfig:test.xml"))
                     );
                     IMinecraft.getInstance()
                             .openWrappedScreen(scene);

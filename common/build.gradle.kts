@@ -1,6 +1,5 @@
 plugins {
     java
-    id("moulconfig.kotlin")
     id("moulconfig.dokka.base")
     `maven-publish`
     id("moulconfig.base")
@@ -51,5 +50,3 @@ dokka {
         }
     }
 }
-
-

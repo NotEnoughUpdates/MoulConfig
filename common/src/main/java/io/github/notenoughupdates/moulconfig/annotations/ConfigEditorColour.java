@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  * Used for colours. The field associated with this option may only be of type {@link String}.
  * <p>
  * To interpret the String value see {@link ChromaColour#forLegacyString}. You can use a
- * {@link Property Property<String>} and {@link Property#map} for more ergonomic use.
+ * {@link Property Property&lt;String&gt;} and {@link Property#map} for more ergonomic use.
  * To create a default value use {@link ChromaColour#special(int, int, int, int, int)}.
  * <p>
  * In the future, {@link ChromaColour} may also be used as a field type.

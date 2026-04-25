@@ -37,7 +37,6 @@ import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 import io.github.notenoughupdates.moulconfig.xml.Bind;
 import io.github.notenoughupdates.moulconfig.xml.XMLUniverse;
 import lombok.SneakyThrows;
-import lombok.var;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
@@ -120,8 +119,8 @@ public class MoulConfigTest {
                         ))
                     ));
                 } else if (args.length > 0 && "testxml".equals(args[0])) {
-                    var xmlUniverse = XMLUniverse.getDefaultUniverse();
-                    var gui = xmlUniverse.load(new ObjectBound(), Minecraft.getMinecraft().getResourceManager()
+                    XMLUniverse xmlUniverse = XMLUniverse.getDefaultUniverse();
+                    GuiComponent gui = xmlUniverse.load(new ObjectBound(), Minecraft.getMinecraft().getResourceManager()
                         .getResource(new ResourceLocation("moulconfig:test.xml")).getInputStream());
                     screenToOpen = new GuiComponentWrapper(new GuiContext(gui));
                 } else {

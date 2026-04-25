@@ -9,7 +9,6 @@ import io.github.notenoughupdates.moulconfig.internal.MCLogger;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
 import io.github.notenoughupdates.moulconfig.xml.XMLUniverse;
-import kotlin.Pair;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.fabricmc.loader.api.FabricLoader;
@@ -179,7 +178,7 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     @Override
-    public Pair<Double, Double> getMousePositionHF() {
+    public MoulConfigPair<Double, Double> getMousePositionHF() {
         var mouse = mc.mouseHandler;
         var window = mc.getWindow();
         #if MC < 12111
@@ -189,7 +188,7 @@ public class MoulConfigPlatform implements IMinecraft {
         double x = mouse.getScaledXPos(window);
         double y = mouse.getScaledYPos(window);
         #endif
-        return new Pair<>(x, y);
+        return new MoulConfigPair<>(x, y);
     }
 
     @Override

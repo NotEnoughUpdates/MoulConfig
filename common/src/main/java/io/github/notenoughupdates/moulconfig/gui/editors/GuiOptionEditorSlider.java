@@ -13,7 +13,7 @@ public class GuiOptionEditorSlider extends ComponentEditor {
         super(option);
         if (minStep < 0) minStep = 0.01f;
 
-        component = wrapComponent(new SliderWithTextComponent((GetSetter<Float>) option.intoProperty(), minValue, maxValue, minStep, 55));
+        component = wrapComponent(new SliderWithTextComponent((GetSetter<? extends Number>) option.intoProperty(), minValue, maxValue, minStep, 55));
     }
 
     public float getFloatValue() {

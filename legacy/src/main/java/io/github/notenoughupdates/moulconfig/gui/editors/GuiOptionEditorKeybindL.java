@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.MoulConfigPair;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.common.TextureFilter;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
@@ -29,7 +30,6 @@ import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.internal.KeybindHelper;
 import io.github.notenoughupdates.moulconfig.internal.TextRenderUtils;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
-import kotlin.Pair;
 import lombok.val;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
@@ -41,7 +41,7 @@ public class GuiOptionEditorKeybindL extends GuiOptionEditor {
     private final int defaultKeyCode;
     private boolean editingKeycode;
 
-    private Pair<Integer, Integer> lastMousePosition = null;
+    private MoulConfigPair<Integer, Integer> lastMousePosition = null;
 
     public GuiOptionEditorKeybindL(ProcessedOption option, int defaultKeyCode) {
         super(option);
@@ -82,7 +82,7 @@ public class GuiOptionEditorKeybindL extends GuiOptionEditor {
 
     @Override
     public boolean mouseInput(int x, int y, int width, int mouseX, int mouseY) {
-        lastMousePosition = new Pair<>(mouseX, mouseY);
+        lastMousePosition = new MoulConfigPair<>(mouseX, mouseY);
         if (Mouse.getEventButtonState() && Mouse.getEventButton() != -1 && editingKeycode) {
             editingKeycode = false;
             option.set(Mouse.getEventButton() - 100);

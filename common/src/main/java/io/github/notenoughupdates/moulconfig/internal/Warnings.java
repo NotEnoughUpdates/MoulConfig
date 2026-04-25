@@ -59,7 +59,7 @@ public class Warnings {
         for (StackTraceElement stackTraceElement : stackTrace) {
             if (i++ < depth
                 || stackTraceElement.getClassName().startsWith("java.")
-                || stackTraceElement.getClassName().startsWith("kotlin.")
+                || stackTraceElement.getClassName().startsWith(kotlinPackage())
                 || (stackTraceElement.getClassName().startsWith(basePackage) &&
                 !stackTraceElement.getClassName().startsWith(testPackage)))
                 continue;
@@ -71,6 +71,10 @@ public class Warnings {
 
     public static void warn(@NotNull String warningText, int depth) {
         if (shouldWarn) warn0(warningText, depth);
+    }
+
+    private static String kotlinPackage() {
+        return new String(new char[]{'k', 'o', 't', 'l', 'i', 'n', '.'});
     }
 
     public static void warn(@NotNull String warningText) {

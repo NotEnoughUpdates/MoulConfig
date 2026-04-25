@@ -1,7 +1,6 @@
 package io.github.notenoughupdates.moulconfig.tweaker;
 
 import io.github.notenoughupdates.moulconfig.internal.RPModContainer;
-import lombok.var;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -14,7 +13,7 @@ public class ModDiscovererTransformer extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int mAccess, String name, String desc, String signature, String[] exceptions) {
-        var sup = super.visitMethod(mAccess, name, desc, signature, exceptions);
+        MethodVisitor sup = super.visitMethod(mAccess, name, desc, signature, exceptions);
         if (name.equals("identifyMods")) {
             return new MethodVisitor(Opcodes.ASM5, sup) {
                 @Override

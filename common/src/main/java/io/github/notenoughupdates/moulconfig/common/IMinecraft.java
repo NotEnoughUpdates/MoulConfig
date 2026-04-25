@@ -10,7 +10,6 @@ import io.github.notenoughupdates.moulconfig.internal.MCLogger;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
 import io.github.notenoughupdates.moulconfig.xml.XMLUniverse;
-import kotlin.Pair;
 import lombok.var;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NullMarked;
@@ -36,11 +35,11 @@ public interface IMinecraft {
      */
     DynamicTextureReference generateDynamicTexture(BufferedImage image);
 
-    Pair<Double, Double> getMousePositionHF();
+    MoulConfigPair<Double, Double> getMousePositionHF();
 
-    default Pair<Integer, Integer> getMousePosition() {
+    default MoulConfigPair<Integer, Integer> getMousePosition() {
         var mousePositionHF = getMousePositionHF();
-        return new Pair<>(
+        return new MoulConfigPair<>(
                 mousePositionHF.getFirst().intValue(),
                 mousePositionHF.getSecond().intValue());
     }

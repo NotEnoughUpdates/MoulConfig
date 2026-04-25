@@ -6,7 +6,6 @@ import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
 plugins {
     id("xyz.wagyourtail.unimined")
-    id("moulconfig.kotlin")
     id("moulconfig.leaf")
     id("moulconfig.manifold")
 }
@@ -130,6 +129,11 @@ sourceSets.main {
     java {
         srcDir(files(generateFilteredSource))
     }
+}
+
+tasks.named<Javadoc>("javadoc") {
+    dependsOn(tasks.compileJava)
+    setSource(preProcessorArgs.preprocessedSources)
 }
 
 tasks.withType(Jar::class) {
