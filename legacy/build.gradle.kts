@@ -1,11 +1,9 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
 plugins {
+    java
     id("moulconfig.dokka.base")
 	id("moulconfig.leaf")
-	id("moulconfig.kotlin")
 }
 
 tasks.withType(JavaCompile::class) {
@@ -58,12 +56,6 @@ tasks.processResources {
     exclude("fabric.mod.json")
 }
 
-tasks.withType(KotlinCompile::class) {
-    this.compilerOptions {
-        this.jvmTarget.set(JvmTarget.JVM_1_8)
-    }
-}
-
 tasks.jar {
     archiveClassifier.set("small")
 }
@@ -96,5 +88,3 @@ publishing {
         }
     }
 }
-
-

@@ -58,10 +58,14 @@ public class StackUtil {
             it.getClassName().equals(StackUtil.class.getName())
                 || it.getClassName().equals(Warnings.class.getName())
                 || it.getClassName().startsWith("java.")
-                || it.getClassName().startsWith("kotlin.");
+                || it.getClassName().startsWith(kotlinPackage());
     }
 
     public static final String MOULCONFIG_BASE_PACKAGE = GuiTextures.class.getPackage().getName();
+
+    private static String kotlinPackage() {
+        return new String(new char[]{'k', 'o', 't', 'l', 'i', 'n', '.'});
+    }
 
     public static StackUtil getWalker() {
         return new StackUtil(new Exception().getStackTrace()).skip(1);

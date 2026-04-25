@@ -82,7 +82,7 @@ public class XMLUniverse {
         xmlUniverse.registerTypeMorphism(new UnboxPrimitives());
         IMinecraft.getInstance().registerPlatformTypeMorphisms(xmlUniverse);
         xmlUniverse.registerMapper(List.class, str -> Arrays.asList(str.split(";")));
-        xmlUniverse.registerMapper(MyResourceLocation.class, MyResourceLocation.Companion::parse);
+        xmlUniverse.registerMapper(MyResourceLocation.class, MyResourceLocation::parse);
         xmlUniverse.registerMapper(PanelComponent.BackgroundRenderer.class, PanelComponent.DefaultBackgroundRenderer::valueOf);
         xmlUniverse.registerMapper(HorizontalAlign.class, HorizontalAlign::valueOf);
         xmlUniverse.registerMapper(VerticalAlign.class, VerticalAlign::valueOf);

@@ -1,8 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import xyz.wagyourtail.unimined.util.sourceSets
 
 plugins {
+	java
 	`maven-publish`
 	idea
 	id("moulconfig.base")
@@ -11,6 +10,7 @@ plugins {
 }
 
 val shadowInclude by configurations.creating
+pluginManager.apply("java")
 dependencies {
 	"implementation"(project(":common"))
 	shadowInclude(project(":common", configuration = "singleFile"))
@@ -18,6 +18,8 @@ dependencies {
 	shadowInclude(Dependencies.LIB_NINE_PATCH)
 	compileOnly(Dependencies.JB_ANNOTATIONS)
 	compileOnly(Dependencies.JSPECIFY)
+	"annotationProcessor"(Dependencies.LOMBOK)
+	compileOnly(Dependencies.LOMBOK)
 }
 
 val shadowJar by tasks.named("shadowJar", ShadowJar::class) {
@@ -29,12 +31,9 @@ val processResources = tasks.named("processResources", Copy::class) {
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
-	from(sourceSets.named("main").map { it.allSource })
-	from(project(":common").the<SourceSetContainer>().getByName("main").allSource)
+	from(file("src/main/java"))
+	from(project(":common").file("src/main/java"))
 	archiveClassifier.set("sources")
-}
-tasks.withType<KotlinCompile> {
-	compilerOptions.freeCompilerArgs.add("-Xmetadata-version=2.0.0")
 }
 configure<PublishingExtension> {
 	publications {

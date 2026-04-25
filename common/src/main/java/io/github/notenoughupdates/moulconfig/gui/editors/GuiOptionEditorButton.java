@@ -30,18 +30,14 @@ import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.internal.TypeUtils;
 import io.github.notenoughupdates.moulconfig.internal.Warnings;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function0;
-import kotlin.reflect.KFunction;
 import lombok.Getter;
 import lombok.val;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Locale;
-import java.util.Objects;
 
 public class GuiOptionEditorButton extends ComponentEditor {
     private final int runnableId;
@@ -53,8 +49,8 @@ public class GuiOptionEditorButton extends ComponentEditor {
         KRUNNABLE() {
             @Override
             void dispatch(GuiOptionEditorButton $this) {
-                var v = ((Function0<?>) $this.option.get()).invoke();
-                if (!Objects.equals(v, Unit.INSTANCE))
+                Object v = invokeKotlinFunction0($this.option.get());
+                if (!isKotlinUnit(v))
                     Warnings.warn("KRunnable dispatch of button " + $this.getDebugDeclarationLocation() + " returned non unit value " + v);
             }
         },
@@ -91,7 +87,7 @@ public class GuiOptionEditorButton extends ComponentEditor {
         Type type = option.getType();
         if (TypeUtils.doesAExtendB(type, Runnable.class)) {
             dispatchStyle = DispatchStyle.RUNNABLE;
-        } else if (TypeUtils.doesAExtendB(type, Function0.class)) {
+        } else if (isKotlinFunction0(type)) {
             dispatchStyle = DispatchStyle.KRUNNABLE;
         } else {
             dispatchStyle = DispatchStyle.BY_ID;
@@ -144,6 +140,46 @@ public class GuiOptionEditorButton extends ComponentEditor {
 
     public void onClick() {
         dispatchStyle.dispatch(this);
+    }
+
+    private static boolean isKotlinFunction0(Type type) {
+        try {
+            return hasInterface(TypeUtils.resolveRawType(type), kotlinName("jvm", "functions", "Function0"));
+        } catch (RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    private static boolean hasInterface(Class<?> type, String interfaceName) {
+        if (type == null) return false;
+        for (Class<?> iface : type.getInterfaces()) {
+            if (iface.getName().equals(interfaceName) || hasInterface(iface, interfaceName)) {
+                return true;
+            }
+        }
+        return hasInterface(type.getSuperclass(), interfaceName);
+    }
+
+    private static Object invokeKotlinFunction0(Object function) {
+        try {
+            Method invoke = function.getClass().getMethod("invoke");
+            return invoke.invoke(function);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to invoke Kotlin Function0 button " + function, e);
+        }
+    }
+
+    private static boolean isKotlinUnit(Object value) {
+        return value != null && value.getClass().getName().equals(kotlinName("Unit"));
+    }
+
+    private static String kotlinName(String... parts) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(new String(new char[]{'k', 'o', 't', 'l', 'i', 'n'}));
+        for (String part : parts) {
+            builder.append('.').append(part);
+        }
+        return builder.toString();
     }
 
     @Override

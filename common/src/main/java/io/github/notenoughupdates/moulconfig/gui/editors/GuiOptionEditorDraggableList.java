@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.common.MoulConfigPair;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
@@ -30,7 +31,6 @@ import io.github.notenoughupdates.moulconfig.gui.component.*;
 import io.github.notenoughupdates.moulconfig.internal.*;
 import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
-import kotlin.Pair;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +46,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
     private int dragStartIndex = -1;
 
     private LerpingInteger2 trashAnimation = new LerpingInteger2(255, 3, 2);
-    private Pair<Integer, Integer> lastListRenderPos = new Pair<>(0, 0);
+    private MoulConfigPair<Integer, Integer> lastListRenderPos = new MoulConfigPair<>(0, 0);
 
     private Enum<?>[] enumConstants;
     private String exampleTextConcat;
@@ -198,7 +198,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
                     @Override
                     public void render(@NotNull GuiImmediateContext context) {
-                        lastListRenderPos = new Pair<>(context.getRenderOffsetX(), context.getRenderOffsetY());
+                        lastListRenderPos = new MoulConfigPair<>(context.getRenderOffsetX(), context.getRenderOffsetY());
                         var renderContext = context.getRenderContext();
                         var width = context.getWidth();
                         var fr = IMinecraft.INSTANCE.getDefaultFontRenderer();

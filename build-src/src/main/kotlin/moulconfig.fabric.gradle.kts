@@ -6,7 +6,6 @@ import xyz.wagyourtail.unimined.api.minecraft.task.RemapJarTask
 
 plugins {
     id("xyz.wagyourtail.unimined")
-    id("moulconfig.kotlin")
     id("moulconfig.leaf")
     id("moulconfig.manifold")
 }
