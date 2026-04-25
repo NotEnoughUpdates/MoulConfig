@@ -18,7 +18,14 @@ public final class ChromaColour {
     @Expose
     private final int alpha;
 
+    /**
+     * The value of {@link #evaluateColourWithShift(double)} at {@link #cachedRGBHueOffset}.
+     */
     private transient int cachedRGB;
+
+    /**
+     * The last queried value of {@link #evaluateColourWithShift(double)}.
+     */
     private transient double cachedRGBHueOffset = Double.NaN;
 
     public ChromaColour(float hue, float saturation, float brightness, int timeForFullRotationInMillis, int alpha) {
@@ -29,22 +36,38 @@ public final class ChromaColour {
         this.alpha = alpha;
     }
 
+    /**
+     * Hue in a range from 0 to 1. For a chroma colour this is added to the time as an offset.
+     */
     public float getHue() {
         return hue;
     }
 
+    /**
+     * Saturation in a range from 0 to 1.
+     */
     public float getSaturation() {
         return saturation;
     }
 
+    /**
+     * Brightness in a range from 0 to 1.
+     */
     public float getBrightness() {
         return brightness;
     }
 
+    /**
+     * If set to 0, this indicates a static colour. If set to a value above 0, indicates the amount of milliseconds that pass until the same colour is met again.
+     * This value may be saved lossy.
+     */
     public int getTimeForFullRotationInMillis() {
         return timeForFullRotationInMillis;
     }
 
+    /**
+     * Alpha in a range from 0 to 255 (with 255 being fully opaque).
+     */
     public int getAlpha() {
         return alpha;
     }
@@ -60,6 +83,10 @@ public final class ChromaColour {
         return ret;
     }
 
+    /**
+     * @param offset offset the colour by a hue amount.
+     * @return the colour, at the current time if this is a chrome colour
+     */
     public int getEffectiveColourRGB(float offset) {
         double effectiveHueOffset = timeForFullRotationInMillis > 0
             ? System.currentTimeMillis() / (double) timeForFullRotationInMillis
@@ -68,10 +95,20 @@ public final class ChromaColour {
         return evaluateColourWithShift(effectiveHueOffset);
     }
 
+    /**
+     * @param offset offset the colour by a hue amount.
+     * @return the colour, at the current time if this is a chrome colour
+     */
     public Color getEffectiveColour(float offset) {
         return new Color(getEffectiveColourRGB(offset), true);
     }
 
+    /**
+     * Unlike {@link #getEffectiveColourRGB(float)}, this offset does not change anything if not using an animated colour.
+     *
+     * @param offset offset the colour by a time amount in milliseconds.
+     * @return the colour, at the current time if this is a chrome colour
+     */
     public int getEffectiveColourWithTimeOffsetRGB(int offset) {
         if (timeForFullRotationInMillis == 0) {
             return evaluateColourWithShift(0.0);
@@ -80,14 +117,26 @@ public final class ChromaColour {
         return evaluateColourWithShift(effectiveHue);
     }
 
+    /**
+     * Unlike {@link #getEffectiveColour(float)}, this offset does not change anything if not using an animated colour.
+     *
+     * @param offset offset the colour by a time amount in milliseconds.
+     * @return the colour, at the current time if this is a chrome colour
+     */
     public Color getEffectiveColourWithTimeOffset(int offset) {
         return new Color(getEffectiveColourWithTimeOffsetRGB(offset), true);
     }
 
+    /**
+     * @return the colour, at the current time if this is a chrome colour
+     */
     public int getEffectiveColourRGB() {
         return getEffectiveColourWithTimeOffsetRGB(0);
     }
 
+    /**
+     * @return the colour, at the current time if this is a chrome colour
+     */
     public Color getEffectiveColour() {
         return getEffectiveColourWithTimeOffset(0);
     }

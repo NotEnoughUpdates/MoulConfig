@@ -8,6 +8,10 @@ import io.github.notenoughupdates.moulconfig.observer.GetSetter;
 
 import java.util.function.Supplier;
 
+/**
+ * Component providing XML wrappers and such the ability to wrap meta operations that operate on the entire screen.
+ * This component should be permanently mounted and does not impact layouting or rendering.
+ */
 public class MetaComponent extends GuiComponent implements CloseEventListener {
     private final Supplier<CloseAction> beforeClose;
     private final Runnable afterClose;

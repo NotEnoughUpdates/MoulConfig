@@ -131,6 +131,11 @@ sourceSets.main {
     }
 }
 
+tasks.named<Javadoc>("javadoc") {
+    dependsOn(tasks.compileJava)
+    setSource(preProcessorArgs.preprocessedSources)
+}
+
 tasks.withType(Jar::class) {
     this.filesMatching(listOf("fabric.mod.json")) {
         filter {

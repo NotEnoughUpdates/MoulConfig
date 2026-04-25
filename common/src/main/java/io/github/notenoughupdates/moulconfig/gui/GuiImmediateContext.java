@@ -68,42 +68,72 @@ public final class GuiImmediateContext {
         return renderContext;
     }
 
+    /**
+     * The current absolute offset for this gui context. This should not need to be accessed, unless you are contacting some API that does not access GlStateManager.
+     */
     public int getRenderOffsetX() {
         return renderOffsetX;
     }
 
+    /**
+     * The current absolute offset for this gui context. This should not need to be accessed, unless you are contacting some API that does not access GlStateManager.
+     */
     public int getRenderOffsetY() {
         return renderOffsetY;
     }
 
+    /**
+     * The available width for that gui element to render in.
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * The available height for that gui element to render in.
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * The position of the mouse, relative to this gui element.
+     */
     public int getMouseX() {
         return mouseX;
     }
 
+    /**
+     * The position of the mouse, relative to this gui element.
+     */
     public int getMouseY() {
         return mouseY;
     }
 
+    /**
+     * The position of the mouse, relative to the root element.
+     */
     public int getAbsoluteMouseX() {
         return absoluteMouseX;
     }
 
+    /**
+     * The position of the mouse, relative to the root element.
+     */
     public int getAbsoluteMouseY() {
         return absoluteMouseY;
     }
 
+    /**
+     * The position of the mouse, relative to this gui element in as high of a resolution as possible.
+     */
     public float getMouseXHF() {
         return mouseXHF;
     }
 
+    /**
+     * The position of the mouse, relative to this gui element in as high of a resolution as possible.
+     */
     public float getMouseYHF() {
         return mouseYHF;
     }
@@ -115,6 +145,13 @@ public final class GuiImmediateContext {
         return mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height;
     }
 
+    /**
+     * Construct a new context that bleeds out over the boundaries of the existing context.
+     * This is usually used for more fuzzy click detection.
+     *
+     * @param xBleed extra size in the negative and positive x direction
+     * @param yBleed extra size in the negative and positive y direction
+     */
     public GuiImmediateContext withBleed(int xBleed, int yBleed) {
         return new GuiImmediateContext(
             renderContext,
@@ -131,6 +168,14 @@ public final class GuiImmediateContext {
         );
     }
 
+    /**
+     * Construct a new context representing that is located within this context.
+     *
+     * @param xOffset relative x position of the new context in the current context
+     * @param yOffset relative y position of the new context in the current context
+     * @param width   width of the new sub context
+     * @param height  height of the new sub context
+     */
     public GuiImmediateContext translated(int xOffset, int yOffset, int width, int height) {
         return new GuiImmediateContext(
             renderContext,
@@ -147,6 +192,14 @@ public final class GuiImmediateContext {
         );
     }
 
+    /**
+     * Construct a new context representing that is located within this context. Does not translate the rendering offset.
+     *
+     * @param xOffset relative x position of the new context in the current context
+     * @param yOffset relative y position of the new context in the current context
+     * @param width   width of the new sub context
+     * @param height  height of the new sub context
+     */
     public GuiImmediateContext translatedNonRendering(int xOffset, int yOffset, int width, int height) {
         return new GuiImmediateContext(
             renderContext,
@@ -163,6 +216,12 @@ public final class GuiImmediateContext {
         );
     }
 
+    /**
+     * Construct a new context, which has not been translated, but possible smaller if the arguments demand so.
+     *
+     * @param maxWidth max width of the new context. this argument will be ignored if it is larger than the current width
+     * @param maxHeight max height of the new context. this argument will be ignored if it is larger than the current height
+     */
     public GuiImmediateContext limitSize(int maxWidth, int maxHeight) {
         return translated(0, 0, Math.min(width, maxWidth), Math.min(height, maxHeight));
     }

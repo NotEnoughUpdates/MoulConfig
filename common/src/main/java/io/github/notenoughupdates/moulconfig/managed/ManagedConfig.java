@@ -2,12 +2,16 @@ package io.github.notenoughupdates.moulconfig.managed;
 
 import io.github.notenoughupdates.moulconfig.Config;
 import io.github.notenoughupdates.moulconfig.common.IMinecraft;
+import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor;
 import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
 import io.github.notenoughupdates.moulconfig.processor.BuiltinMoulConfigGuis;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
+import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class ManagedConfig<T extends Config> extends ManagedDataFile<T> {
@@ -57,14 +61,25 @@ public class ManagedConfig<T extends Config> extends ManagedDataFile<T> {
         processor = buildProcessor(builder);
     }
 
+    /**
+     * Helper function to introduce the {@code A} type parameter so that two objects can be cast to be that same {@code A} variable.
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <T extends Config, A extends Annotation> void cast(
+        MoulConfigProcessor<T> processor,
+        Class<? extends Annotation> annotation,
+        BiFunction<ProcessedOption, Annotation, GuiOptionEditor> method
+    ) {
+        processor.registerConfigEditor((Class<A>) annotation, (BiFunction) method);
+    }
+
     private MoulConfigProcessor<T> buildProcessor(ManagedConfigBuilder<T> builder) {
         MoulConfigProcessor<T> processor = new MoulConfigProcessor<>(getInstance());
         if (builder.getUseDefaultProcessors()) {
             BuiltinMoulConfigGuis.addProcessors(processor);
         }
         for (ManagedConfigBuilder.CustomProcessor customProcessor : builder.getCustomProcessors()) {
-            processor.registerConfigEditor((Class) customProcessor.annotation, customProcessor.method);
+            cast(processor, customProcessor.annotation, customProcessor.method);
         }
         ConfigProcessorDriver driver = new ConfigProcessorDriver(processor);
         driver.checkExpose = builder.getCheckExpose();

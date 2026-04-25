@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 /**
- * Used for draggable lists. The field associated with this option may only be of type {@link List List<T>}.
+ * Used for draggable lists. The field associated with this option may only be of type {@link List List&lt;T&gt;}.
  * That {@code T} may only be either an {@code int}, or an enum. If an {@code int} is used, {@link #exampleText()}
  * needs to be provided, otherwise it needs to be kept empty.
  * <p>

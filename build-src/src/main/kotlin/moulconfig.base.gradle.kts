@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import java.nio.charset.StandardCharsets
 import java.util.zip.ZipFile
 
@@ -16,6 +17,11 @@ version = if (Version.isSnapshot) "9999.9999.9999" else Version.tag!!
 
 tasks.withType(JavaCompile::class) {
 	options.encoding = StandardCharsets.UTF_8.name()
+}
+
+// TODO: fix warnings instead of suppressing them
+tasks.withType(Javadoc::class).configureEach {
+	(options as StandardJavadocDocletOptions).addBooleanOption("Xdoclint:all,-missing", true)
 }
 
 tasks.withType(ShadowJar::class).configureEach {
