@@ -39,6 +39,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class GuiOptionEditorDraggableList extends ComponentEditor {
+    private static final int DROPDOWN_WIDTH = 100;
+    private static final int DROPDOWN_ITEM_HEIGHT = 12;
+    private static final int DROPDOWN_SCREEN_MARGIN = 4;
+
     private Map<Object, StructuredText> exampleText = new HashMap<>();
     private boolean enableDeleting;
     private List<Object> activeText;
@@ -118,7 +122,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                             var pos = IMinecraft.INSTANCE.getMousePosition();
                             if (activeText.size() == exampleText.size())
                                 return;
-                            openOverlay(makeDropDownOverlay(), pos.getFirst(), pos.getSecond());
+                            openDropDownOverlay(pos.getFirst(), pos.getSecond());
                         }),
                         new SpacerComponent(GetSetter.constant(5), GetSetter.constant(0)),
                         new GuiComponent() {
@@ -330,35 +334,73 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
         saveChanges();
     }
 
-    GuiComponent makeDropDownOverlay() {
+    private List<Object> getRemainingDropDownEntries() {
+        List<Object> remaining = new ArrayList<>(exampleText.keySet());
+        remaining.removeAll(activeText);
+        return remaining;
+    }
+
+    private int getDropDownContentHeight() {
+        return Math.max(0, -1 + DROPDOWN_ITEM_HEIGHT * getRemainingDropDownEntries().size());
+    }
+
+    private int getDropDownVisibleHeight(int overlayY) {
+        int screenHeight = IMinecraft.INSTANCE.getScaledHeight();
+        int maxHeight = Math.max(DROPDOWN_ITEM_HEIGHT, screenHeight - overlayY - DROPDOWN_SCREEN_MARGIN);
+        return Math.min(getDropDownContentHeight(), maxHeight);
+    }
+
+    private void openDropDownOverlay(int mouseX, int mouseY) {
+        int screenHeight = IMinecraft.INSTANCE.getScaledHeight();
+        int screenWidth = IMinecraft.INSTANCE.getScaledWidth();
+        int contentHeight = getDropDownContentHeight();
+        int maxVisibleHeight = Math.max(DROPDOWN_ITEM_HEIGHT, screenHeight - DROPDOWN_SCREEN_MARGIN * 2);
+        int visibleHeight = Math.min(contentHeight, maxVisibleHeight);
+        int overlayX = Math.min(mouseX, screenWidth - DROPDOWN_WIDTH - DROPDOWN_SCREEN_MARGIN);
+        int overlayY = Math.min(mouseY, screenHeight - visibleHeight - DROPDOWN_SCREEN_MARGIN);
+        overlayX = Math.max(DROPDOWN_SCREEN_MARGIN, overlayX);
+        overlayY = Math.max(DROPDOWN_SCREEN_MARGIN, overlayY);
+        openOverlay(makeDropDownOverlay(overlayY), overlayX, overlayY);
+    }
+
+    GuiComponent makeDropDownOverlay(int overlayY) {
         return new GuiComponent() {
+            int scrollOffset;
 
             @Override
             public int getWidth() {
-                return 100; // TODO: dynamically decide on a size
+                return DROPDOWN_WIDTH; // TODO: dynamically decide on a size
             }
 
             @Override
             public int getHeight() {
-                List<Object> remaining = new ArrayList<>(exampleText.keySet());
-                remaining.removeAll(activeText);
-                return -1 + 12 * remaining.size();
+                return getDropDownVisibleHeight(overlayY);
             }
 
             @Override
             public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
+                int maxScrollOffset = Math.max(0, getDropDownContentHeight() - context.getHeight());
+                if (scrollOffset > maxScrollOffset) {
+                    scrollOffset = maxScrollOffset;
+                }
+                if (context.isHovered() && mouseEvent instanceof MouseEvent.Scroll) {
+                    scrollOffset = (int) Math.max(0, Math.min(
+                        scrollOffset - (((MouseEvent.Scroll) mouseEvent).getDWheel() * 15),
+                        maxScrollOffset
+                    ));
+                    return true;
+                }
                 if (mouseEvent instanceof MouseEvent.Click) {
                     var click = (MouseEvent.Click) mouseEvent;
                     if (click.getMouseState() && context.isHovered()) {
-                        List<Object> remaining = new ArrayList<>(exampleText.keySet());
-                        remaining.removeAll(activeText);
+                        List<Object> remaining = getRemainingDropDownEntries();
                         int dropdownY = -1;
                         for (Object indexObject : remaining) {
-                            if (context.translated(0, dropdownY + 3, context.getWidth(), 10).isHovered()) {
+                            if (context.translated(0, dropdownY + 3 - scrollOffset, context.getWidth(), 10).isHovered()) {
                                 activeText.add(indexObject);
                                 return true;
                             }
-                            dropdownY += 12;
+                            dropdownY += DROPDOWN_ITEM_HEIGHT;
                         }
                     } else if (click.getMouseState()) {
                         closeOverlay();
@@ -369,13 +411,16 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
             @Override
             public void render(@NotNull GuiImmediateContext context) {
-                List<Object> remaining = new ArrayList<>(exampleText.keySet());
-                remaining.removeAll(activeText);
+                List<Object> remaining = getRemainingDropDownEntries();
                 if (remaining.isEmpty()) {
                     closeOverlay();
                     return;
                 }
 
+                int maxScrollOffset = Math.max(0, getDropDownContentHeight() - context.getHeight());
+                if (scrollOffset > maxScrollOffset) {
+                    scrollOffset = maxScrollOffset;
+                }
 
                 int dropdownHeight = context.getHeight();
                 int dropdownWidth = context.getWidth();
@@ -395,6 +440,14 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                 ); //Bottom
                 renderContext.drawColoredRect(1, 1, dropdownWidth - 1, dropdownHeight - 1, main); //Middle
 
+                renderContext.pushRawScissor(
+                    context.getRenderOffsetX() + 1,
+                    context.getRenderOffsetY() + 1,
+                    context.getRenderOffsetX() + dropdownWidth - 1,
+                    context.getRenderOffsetY() + dropdownHeight - 1
+                );
+                renderContext.pushMatrix();
+                renderContext.translate(0, -scrollOffset);
                 int dropdownY = -1;
                 for (Object indexObject : remaining) {
                     StructuredText str = getExampleText(indexObject);
@@ -404,8 +457,10 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                     renderContext.drawStringScaledMaxWidth(fr.splitLines(str).get(0),
                         fr, 3, 3 + dropdownY, false, dropdownWidth - 6, 0xffa0a0a0
                     );
-                    dropdownY += 12;
+                    dropdownY += DROPDOWN_ITEM_HEIGHT;
                 }
+                renderContext.popMatrix();
+                renderContext.popScissor();
             }
         };
     }

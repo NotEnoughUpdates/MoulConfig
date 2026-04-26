@@ -733,6 +733,65 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
 
     private GuiContext guiContext = new GuiContext(new MetaComponent());
 
+    private boolean dispatchMouseInputToOptionOverlays(
+        int optsInnerLeft,
+        int optsInnerRight,
+        int innerTop,
+        int innerPadding,
+        int mouseX,
+        int mouseY,
+        MouseEvent mouseEvent
+    ) {
+        int optionY = -optionsScroll.getValue();
+        if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
+            getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+            int optionWidthDefault = optsInnerRight - optsInnerLeft - 20;
+            ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
+            HashMap<Integer, Integer> activeAccordions = new HashMap<>();
+            for (ProcessedOption option : getOptionsInCategory(cat)) {
+                int optionWidth = optionWidthDefault;
+                if (option.getAccordionId() >= 0) {
+                    if (!activeAccordions.containsKey(option.getAccordionId())) {
+                        continue;
+                    }
+                    int accordionDepth = activeAccordions.get(option.getAccordionId());
+                    optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
+                }
+
+                GuiOptionEditor editor = option.getEditor();
+                if (editor == null) {
+                    continue;
+                }
+                editor.setGuiContext(guiContext);
+                if (editor instanceof GuiOptionEditorAccordion) {
+                    GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
+                    if (accordion.getToggled()) {
+                        int accordionDepth = 0;
+                        if (option.getAccordionId() >= 0) {
+                            accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
+                        }
+                        activeAccordions.put(accordion.getAccordionId(), accordionDepth);
+                    }
+                }
+                int finalX = (optsInnerLeft + optsInnerRight - optionWidth) / 2 - 5;
+                int finalY = innerTop + 5 + optionY;
+                int finalWidth = optionWidth;
+                if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInputOverlay(
+                    finalX,
+                    finalY,
+                    finalWidth,
+                    mouseX,
+                    mouseY,
+                    mouseEvent
+                ))) {
+                    return true;
+                }
+                optionY += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
+            }
+        }
+        return false;
+    }
+
     public boolean mouseInput(int mouseX, int mouseY, MouseEvent mouseEvent) {
         lastMouseX = mouseX;
         val iMinecraft = IMinecraft.INSTANCE;
@@ -833,6 +892,18 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
                     if (!searchFieldContent.get().equals(old)) updateSearchResults();
                 }
             }
+        }
+
+        if (mouseEvent instanceof MouseEvent.Scroll && dispatchMouseInputToOptionOverlays(
+            optsInnerLeft,
+            optsInnerRight,
+            innerTop,
+            innerPadding,
+            mouseX,
+            mouseY,
+            mouseEvent
+        )) {
+            return true;
         }
 
         int dWheel = mouseEvent instanceof MouseEvent.Scroll ? ((int) ((MouseEvent.Scroll) mouseEvent).getDWheel()) : 0;
@@ -958,57 +1029,13 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
             }
         }
 
-        int optionY = -optionsScroll.getValue();
-        if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
-            getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
-            int optionWidthDefault = optsInnerRight - optsInnerLeft - 20;
-            ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
-            HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ProcessedOption option : getOptionsInCategory(cat)) {
-                int optionWidth = optionWidthDefault;
-                if (option.getAccordionId() >= 0) {
-                    if (!activeAccordions.containsKey(option.getAccordionId())) {
-                        continue;
-                    }
-                    int accordionDepth = activeAccordions.get(option.getAccordionId());
-                    optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
-                }
-
-                GuiOptionEditor editor = option.getEditor();
-                if (editor == null) {
-                    continue;
-                }
-                editor.setGuiContext(guiContext);
-                if (editor instanceof GuiOptionEditorAccordion) {
-                    GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
-                    if (accordion.getToggled()) {
-                        int accordionDepth = 0;
-                        if (option.getAccordionId() >= 0) {
-                            accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
-                        }
-                        activeAccordions.put(accordion.getAccordionId(), accordionDepth);
-                    }
-                }
-                int finalX = (optsInnerLeft + optsInnerRight - optionWidth) / 2 - 5;
-                int finalY = innerTop + 5 + optionY;
-                int finalWidth = optionWidth;
-                if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInputOverlay(
-                    finalX,
-                    finalY,
-                    finalWidth,
-                    mouseX,
-                    mouseY,
-                    mouseEvent
-                ))) {
-                    return true;
-                }
-                optionY += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
-            }
+        if (dispatchMouseInputToOptionOverlays(optsInnerLeft, optsInnerRight, innerTop, innerPadding, mouseX, mouseY, mouseEvent)) {
+            return true;
         }
 
         boolean handled = false;
         {
-            optionY = -optionsScroll.getValue();
+            int optionY = -optionsScroll.getValue();
             if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
                 getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
                 int optionWidthDefault = optsInnerRight - optsInnerLeft - 20;
