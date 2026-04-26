@@ -387,7 +387,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                 if (mouseEvent instanceof MouseEvent.Click) {
                     var click = (MouseEvent.Click) mouseEvent;
                     if (click.getMouseState() && context.isHovered()) {
-                        int dropdownY = 11;
+                        int dropdownY = 13;
                         for (Object indexObject : filteredRemaining) {
                             if (context.translated(0, dropdownY + 3, context.getWidth(), 10).isHovered()) {
                                 activeText.add(indexObject);
@@ -438,7 +438,11 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                     StructuredText.of(searchText), fr, 3, 3, false,
                     dropdownWidth - 16, 0xffd0d0d0
                 );
-                int dropdownY = 11;
+                if (System.currentTimeMillis() % 1000 > 500) {
+                    int cursorX = 3 + fr.getStringWidth(searchText);
+                    renderContext.drawColoredRect(cursorX, 3, cursorX + 1, 11, 0xffffffff);
+                }
+                int dropdownY = 13;
                 for (Object indexObject : filteredRemaining) {
                     StructuredText str = getExampleText(indexObject);
                     if (str.getText().isEmpty()) {
