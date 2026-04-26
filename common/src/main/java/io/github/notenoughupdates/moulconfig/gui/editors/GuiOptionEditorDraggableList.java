@@ -333,12 +333,14 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
     GuiComponent makeDropDownOverlay() {
         return new GuiComponent() {
+            boolean hasRequestedFocus = false;
             List<Object> remaining = new ArrayList<>();
             List<Object> filteredRemaining = new ArrayList<>();
             String searchText = "";
 
             {
                 recalculateRemaining();
+                requestFocus();
             }
 
             void recalculateRemaining() {
@@ -365,6 +367,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                     var typed = (KeyboardEvent.CharTyped) event;
                     searchText = searchText + typed.getChar();
                     recalculateRemaining();
+                    return true;
                 } else if (event instanceof KeyboardEvent.KeyPressed) {
                     var pressed = (KeyboardEvent.KeyPressed) event;
                     if (pressed.getKeycode() == 259 && pressed.getPressed()) {
@@ -372,6 +375,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                         if (!searchText.isEmpty()) {
                             searchText = searchText.substring(0, searchText.length() - 1);
                             recalculateRemaining();
+                            return true;
                         }
                     }
                 }
@@ -383,7 +387,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                 if (mouseEvent instanceof MouseEvent.Click) {
                     var click = (MouseEvent.Click) mouseEvent;
                     if (click.getMouseState() && context.isHovered()) {
-                        int dropdownY = -1;
+                        int dropdownY = 11;
                         for (Object indexObject : filteredRemaining) {
                             if (context.translated(0, dropdownY + 3, context.getWidth(), 10).isHovered()) {
                                 activeText.add(indexObject);
@@ -401,7 +405,11 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
             @Override
             public void render(@NotNull GuiImmediateContext context) {
-                if (filteredRemaining.isEmpty()) {
+                if (!hasRequestedFocus) {
+                    hasRequestedFocus = true;
+                    requestFocus();
+                }
+                if (filteredRemaining.isEmpty() && searchText.isEmpty()) {
                     closeOverlay();
                     return;
                 }
@@ -424,10 +432,11 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                     outline
                 ); //Bottom
                 renderContext.drawColoredRect(1, 1, dropdownWidth - 1, dropdownHeight - 1, main); //Middle
+                renderContext.drawColoredRect(1, 13, dropdownWidth - 1, 14, 0xffd0d0d0);
 
                 context.getRenderContext().drawStringScaledMaxWidth(
                     StructuredText.of(searchText), fr, 3, 3, false,
-                    dropdownWidth - 16, 0xffa0a0a0
+                    dropdownWidth - 16, 0xffd0d0d0
                 );
                 int dropdownY = 11;
                 for (Object indexObject : filteredRemaining) {
