@@ -25,6 +25,7 @@ import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
+import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
 import io.github.notenoughupdates.moulconfig.gui.component.*;
 import io.github.notenoughupdates.moulconfig.internal.*;
@@ -332,6 +333,21 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
     GuiComponent makeDropDownOverlay() {
         return new GuiComponent() {
+            List<Object> remaining = new ArrayList<>();
+            List<Object> filteredRemaining = new ArrayList<>();
+            String searchText = "";
+
+            {
+                recalculateRemaining();
+            }
+
+            void recalculateRemaining() {
+                remaining = new ArrayList<>(exampleText.keySet());
+                remaining.removeAll(activeText);
+                filteredRemaining = remaining.stream()
+                    .filter(r -> getExampleText(r).getText().toLowerCase().contains(searchText.toLowerCase()))
+                    .collect(Collectors.toList());
+            }
 
             @Override
             public int getWidth() {
@@ -340,9 +356,26 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
             @Override
             public int getHeight() {
-                List<Object> remaining = new ArrayList<>(exampleText.keySet());
-                remaining.removeAll(activeText);
-                return -1 + 12 * remaining.size();
+                return 11 + 12 * filteredRemaining.size();
+            }
+
+            @Override
+            public boolean keyboardEvent(@NotNull KeyboardEvent event, @NotNull GuiImmediateContext context) {
+                if (event instanceof KeyboardEvent.CharTyped) {
+                    var typed = (KeyboardEvent.CharTyped) event;
+                    searchText = searchText + typed.getChar();
+                    recalculateRemaining();
+                } else if (event instanceof KeyboardEvent.KeyPressed) {
+                    var pressed = (KeyboardEvent.KeyPressed) event;
+                    if (pressed.getKeycode() == 259 && pressed.getPressed()) {
+                        // if backspace, remove last character
+                        if (!searchText.isEmpty()) {
+                            searchText = searchText.substring(0, searchText.length() - 1);
+                            recalculateRemaining();
+                        }
+                    }
+                }
+                return super.keyboardEvent(event, context);
             }
 
             @Override
@@ -350,12 +383,11 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                 if (mouseEvent instanceof MouseEvent.Click) {
                     var click = (MouseEvent.Click) mouseEvent;
                     if (click.getMouseState() && context.isHovered()) {
-                        List<Object> remaining = new ArrayList<>(exampleText.keySet());
-                        remaining.removeAll(activeText);
                         int dropdownY = -1;
-                        for (Object indexObject : remaining) {
+                        for (Object indexObject : filteredRemaining) {
                             if (context.translated(0, dropdownY + 3, context.getWidth(), 10).isHovered()) {
                                 activeText.add(indexObject);
+                                recalculateRemaining();
                                 return true;
                             }
                             dropdownY += 12;
@@ -369,9 +401,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
             @Override
             public void render(@NotNull GuiImmediateContext context) {
-                List<Object> remaining = new ArrayList<>(exampleText.keySet());
-                remaining.removeAll(activeText);
-                if (remaining.isEmpty()) {
+                if (filteredRemaining.isEmpty()) {
                     closeOverlay();
                     return;
                 }
@@ -395,8 +425,12 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                 ); //Bottom
                 renderContext.drawColoredRect(1, 1, dropdownWidth - 1, dropdownHeight - 1, main); //Middle
 
-                int dropdownY = -1;
-                for (Object indexObject : remaining) {
+                context.getRenderContext().drawStringScaledMaxWidth(
+                    StructuredText.of(searchText), fr, 3, 3, false,
+                    dropdownWidth - 16, 0xffa0a0a0
+                );
+                int dropdownY = 11;
+                for (Object indexObject : filteredRemaining) {
                     StructuredText str = getExampleText(indexObject);
                     if (str.getText().isEmpty()) {
                         str = StructuredText.of("<NONE>");
