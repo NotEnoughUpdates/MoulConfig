@@ -835,8 +835,50 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
             }
         }
 
+        boolean overlayConsumedScroll = false;
+        if (mouseEvent instanceof MouseEvent.Scroll) {
+            int optionY = -optionsScroll.getValue();
+            if (getSelectedCategory() != null && getCurrentlyVisibleCategories() != null &&
+                getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+                int optionWidthDefault = optsInnerRight - optsInnerLeft - 20;
+                ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
+                HashMap<Integer, Integer> activeAccordions = new HashMap<>();
+                for (ProcessedOption option : getOptionsInCategory(cat)) {
+                    int optionWidth = optionWidthDefault;
+                    if (option.getAccordionId() >= 0) {
+                        if (!activeAccordions.containsKey(option.getAccordionId())) continue;
+                        int accordionDepth = activeAccordions.get(option.getAccordionId());
+                        optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
+                    }
+                    GuiOptionEditor editor = option.getEditor();
+                    if (editor == null) continue;
+                    editor.setGuiContext(guiContext);
+                    if (editor instanceof GuiOptionEditorAccordion) {
+                        GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
+                        if (accordion.getToggled()) {
+                            int accordionDepth = 0;
+                            if (option.getAccordionId() >= 0) {
+                                accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
+                            }
+                            activeAccordions.put(accordion.getAccordionId(), accordionDepth);
+                        }
+                    }
+                    int finalX = (optsInnerLeft + optsInnerRight - optionWidth) / 2 - 5;
+                    int finalY = innerTop + 5 + optionY;
+                    int finalWidth = optionWidth;
+                    if (ContextAware.wrapErrorWithContext(editor, () -> editor.mouseInputOverlay(
+                        finalX, finalY, finalWidth, mouseX, mouseY, mouseEvent
+                    ))) {
+                        overlayConsumedScroll = true;
+                        break;
+                    }
+                    optionY += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
+                }
+            }
+        }
+
         int dWheel = mouseEvent instanceof MouseEvent.Scroll ? ((int) ((MouseEvent.Scroll) mouseEvent).getDWheel()) : 0;
-        if (mouseY > innerTop && mouseY < innerBottom && dWheel != 0) {
+        if (!overlayConsumedScroll && mouseY > innerTop && mouseY < innerBottom && dWheel != 0) {
             if (dWheel < 0) {
                 dWheel = -1;
             }
