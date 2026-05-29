@@ -15,9 +15,10 @@ class TestCategoryA {
     @ConfigEditorInfoText(infoTitle = "Bottom option")
     var bottomOption: Boolean = false
 
-    @ConfigOption(name ="Open Wide", desc= "Use a wider config menu")
+    @ConfigOption(name = "Open Wide", desc = "Use a wider config menu")
     @ConfigEditorBoolean
     var isWide: Boolean = false
+
     @ConfigOption(name = "Test Option", desc = "Test toggle")
     @ConfigEditorBoolean
     var shouldTestToggle: Boolean = false
@@ -89,7 +90,102 @@ class TestCategoryA {
 
     @ConfigOption(name = "Draggable List", desc = "§eDrag text to change the order of the list.")
     @ConfigEditorDraggableList(
-        exampleText = ["abc", "dec", "blah", "surel it works really cool and great :))"]
+        exampleText = [
+            "abc", "dec", "blah", "surel it works really cool and great :))",
+            "Lorem ipsum semper",
+            "auctor neque vitae",
+            "tempus quam pellentesque",
+            "Turpis egestas maecenas",
+            "pharetra convallis posuere",
+            "Malesuada fames ac",
+            "turpis egestas maecenas",
+            "In cursus turpis",
+            "Gravida neque convallis",
+            "a cras semper",
+            "auctor neque vitae",
+            "Dui faucibus in",
+            "Consequat nisl vel",
+            "pretium lectus quam",
+            "id leo in",
+            "Eget est lorem",
+            "ipsum dolor sit",
+            "Enim facilisis gravida",
+            "neque convallis a",
+            "Non arcu risus",
+            "quis varius quam",
+            "Enim praesent elementum",
+            "facilisis leo vel",
+            "Elementum sagittis vitae",
+            "et leo duis",
+            "Nisi lacus sed",
+            "Id aliquet lectus",
+            "proin nibh nisl",
+            "Egestas sed sed",
+            "risus pretium quam",
+            "A iaculis at",
+            "erat pellentesque adipiscing",
+            "Etiam dignissim diam",
+            "quis enim lobortis",
+            "Lacus suspendisse faucibus",
+            "interdum posuere lorem",
+            "ipsum dolor sit",
+            "Mattis nunc sed",
+            "Eu lobortis elementum",
+            "nibh tellus molestie",
+            "Eget duis at",
+            "tellus at urna",
+            "Sagittis aliquam malesuada",
+            "bibendum arcu vitae",
+            "Felis imperdiet proin",
+            "fermentum leo vel",
+            "Sed sed risus",
+            "Sed risus pretium",
+            "quam vulputate dignissim",
+            "Fames ac turpis",
+            "egestas maecenas pharetra",
+            "Lobortis scelerisque fermentum",
+            "dui faucibus in",
+            "Aenean pharetra magna",
+            "ac placerat vestibulum",
+            "Aliquet sagittis id",
+            "Netus et malesuada",
+            "Habitant morbi tristique",
+            "Habitasse platea dictumst",
+            "Egestas sed sed",
+            "risus pretium quam",
+            "Amet consectetur adipiscing",
+            "elit ut aliquam",
+            "purus sit amet",
+            "Mauris commodo quis",
+            "imperdiet massa tincidunt",
+            "Arcu felis bibendum",
+            "ut tristique et",
+            "Blandit volutpat maecenas",
+            "volutpat blandit aliquam",
+            "Quisque sagittis purus",
+            "sit amet volutpat",
+            "Mattis vulputate enim",
+            "Sit amet facilisis",
+            "magna etiam tempor",
+            "Erat nam at",
+            "lectus urna duis",
+            "Sit amet est",
+            "Nunc pulvinar sapien",
+            "et ligula ullamcorper",
+            "malesuada proin libero",
+            "Amet justo donec",
+            "enim diam vulputate",
+            "Adipiscing vitae proin",
+            "sagittis nisl rhoncus",
+            "At ultrices mi",
+            "tempus imperdiet nulla",
+            "Fermentum odio eu",
+            "feugiat pretium nibh",
+            "Felis imperdiet proin",
+            "fermentum leo vel",
+            "Consequat ac felis",
+            "donec et odio",
+        ]
     )
     var draggableList: List<Int> = ArrayList(mutableListOf(0, 1, 2, 3))
 
@@ -131,17 +227,20 @@ class TestCategoryA {
     val runnable = Runnable {
         println("JRunnable working")
     }
+
     @Expose
     @ConfigOption(name = "Test Runnable", desc = "Test a kotlin.jvm.functions.Function0")
     @ConfigEditorButton(buttonText = "Click me")
     val kRunnable = {
         println("KFunction0 working")
     }
+
     @Expose
     @ConfigOption(name = "Test Runnable", desc = "Test a (ignored) runnable using runnableId to emit a test warning")
     @ConfigEditorButton(
         runnableId = 10,
-        buttonText = "Click me")
+        buttonText = "Click me"
+    )
     val runnableId = Unit
 
     @Expose
