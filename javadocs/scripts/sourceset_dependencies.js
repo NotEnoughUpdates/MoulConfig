@@ -1,1 +1,1 @@
-sourceset_dependencies = '{":legacy/main":[],":common/main":[],"modern/modern-1.21.10":[],"modern/modern-1.21.11":[],"modern/modern-1.21.4":[],"modern/modern-1.21.5":[],"modern/modern-1.21.7":[],"modern/modern-26.1":[]}'
+sourceset_dependencies = '{":legacy/main":[],":common/main":[],"modern/modern-1.21.10":[],"modern/modern-1.21.11":[],"modern/modern-1.21.4":[],"modern/modern-1.21.5":[],"modern/modern-1.21.7":[],"modern/modern-26.1":[],"modern/modern-26.2":[]}'
