@@ -65,6 +65,11 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
     private int lastMouseX = 0;
     private int keyboardScrollXCutoff = 0;
     private boolean showSubcategories = true;
+    private boolean draggingOptions = false;
+    private boolean draggingCategory = false;
+    private float dragOffsetOptions = 0f;
+    private float dragOffsetCategory = 0f;
+    private static final int CATEGORY_ROW_HEIGHT = 15;
 
     @Setter
     private SearchFunction searchFunction = GuiOptionEditor::fulfillsSearch;
@@ -782,21 +787,106 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
         int categoryBarStartX = catsInnerLeft + 3;
         int categoryBarEndX = catsInnerLeft + 8;
         keyboardScrollXCutoff = catsInnerLeft - 10;
+
+        if (mouseEvent instanceof MouseEvent.Click && !((MouseEvent.Click) mouseEvent).getMouseState()) {
+            boolean wasDragging = draggingOptions || draggingCategory;
+            draggingOptions = false;
+            draggingCategory = false;
+            if (wasDragging) {
+                return true;
+            }
+        }
+
+        // Handle active drag-scrolling on mouse movement
+        if (mouseEvent instanceof MouseEvent.Move) {
+            if (draggingOptions) {
+                int totalHeight = getOptionsTotalHeight();
+                int visibleHeight = innerBottom - innerTop - 2;
+                float barSize = LerpUtils.clampZeroOne((float) visibleHeight / (totalHeight + 5));
+                float targetStart = ((float) (mouseY - (innerTop + 6)) / dist) - dragOffsetOptions;
+                if (targetStart < 0) {
+                    targetStart = 0;
+                }
+                if (targetStart > 1 - barSize) {
+                    targetStart = 1 - barSize;
+                }
+                int targetScroll = (int) (targetStart * (totalHeight + 5));
+                optionsScroll.setTimeToReachTarget(50);
+                optionsScroll.resetTimer();
+                optionsScroll.setTarget(targetScroll);
+                return true;
+            }
+            if (draggingCategory) {
+                int totalHeight = getCategoriesTotalHeight();
+                int visibleHeight = innerBottom - innerTop - 2;
+                float barSize = LerpUtils.clampZeroOne((float) visibleHeight / (totalHeight + 5));
+                float targetStart = ((float) (mouseY - (innerTop + 6)) / catDist) - dragOffsetCategory;
+                if (targetStart < 0) {
+                    targetStart = 0;
+                }
+                if (targetStart > 1 - barSize) {
+                    targetStart = 1 - barSize;
+                }
+                int targetScroll = (int) (targetStart * (totalHeight + 5));
+                categoryScroll.setTimeToReachTarget(50);
+                categoryScroll.resetTimer();
+                categoryScroll.setTarget(targetScroll);
+                return true;
+            }
+        }
+
         int mouseButton = mouseEvent instanceof MouseEvent.Click ? ((MouseEvent.Click) mouseEvent).getMouseButton() : -1;
         boolean mouseState = mouseEvent instanceof MouseEvent.Click && ((MouseEvent.Click) mouseEvent).getMouseState();
         if (mouseState) {
-            if ((mouseY < optionsBarStartY || mouseY > optionsBarEndY) &&
-                (mouseX >= optionsBarStartX && mouseX <= optionsBarEndX) && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
-                optionsScroll.setTimeToReachTarget(200);
+            if (mouseX >= optionsBarStartX && mouseX <= optionsBarEndX &&
+                mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
+                draggingOptions = true;
+                int totalHeight = getOptionsTotalHeight();
+                int visibleHeight = innerBottom - innerTop - 2;
+                float barSize = LerpUtils.clampZeroOne((float) visibleHeight / (totalHeight + 5));
+                float clickYPercentage = (float) (mouseY - (innerTop + 6)) / dist;
+                // Click exact position check to preserve offset
+                if (clickYPercentage >= optionsBarStart && clickYPercentage <= optionsBarend) {
+                    dragOffsetOptions = clickYPercentage - optionsBarStart;
+                } else {
+                    dragOffsetOptions = barSize / 2;
+                }
+                float targetStart = clickYPercentage - dragOffsetOptions;
+                if (targetStart < 0) {
+                    targetStart = 0;
+                }
+                if (targetStart > 1 - barSize) {
+                    targetStart = 1 - barSize;
+                }
+                int targetScroll = (int) (targetStart * (totalHeight + 5));
+                optionsScroll.setTimeToReachTarget(100);
                 optionsScroll.resetTimer();
-                optionsScroll.setTarget(mouseY - innerTop);
+                optionsScroll.setTarget(targetScroll);
                 return true;
-            } else if ((mouseY < categoryBarStartY || mouseY > categoryBarEndY) &&
-                (mouseX >= categoryBarStartX && mouseX <= categoryBarEndX) && mouseY > innerTop + 6 &&
-                mouseY < innerBottom - 6) {
-                categoryScroll.setTimeToReachTarget(200);
+            } else if (mouseX >= categoryBarStartX && mouseX <= categoryBarEndX &&
+                mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
+                draggingCategory = true;
+                int totalHeight = getCategoriesTotalHeight();
+                int visibleHeight = innerBottom - innerTop - 2;
+                float barSize = LerpUtils.clampZeroOne((float) visibleHeight / (totalHeight + 5));
+                float clickYPercentage = (float) (mouseY - (innerTop + 6)) / catDist;
+                // Category click exact position offset check
+                if (clickYPercentage >= catBarStart && clickYPercentage <= catBarEnd) {
+                    dragOffsetCategory = clickYPercentage - catBarStart;
+                } else {
+                    dragOffsetCategory = barSize / 2;
+                }
+                float targetStart = clickYPercentage - dragOffsetCategory;
+                if (targetStart < 0) {
+                    targetStart = 0;
+                }
+                if (targetStart > 1 - barSize) {
+                    targetStart = 1 - barSize;
+                }
+                int targetScroll = (int) (targetStart * (totalHeight + 5));
+                categoryScroll.setTimeToReachTarget(100);
                 categoryScroll.resetTimer();
-                categoryScroll.setTarget(mouseY - innerTop);
+                categoryScroll.setTarget(targetScroll);
                 return true;
             }
             boolean searchIconFocus = (mouseX >= optsInnerRight - 20 && mouseX <= optsInnerRight - 2 &&
@@ -1219,6 +1309,46 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
             }
         }
         return true;
+    }
+
+    private int getOptionsTotalHeight() {
+        if (getSelectedCategory() == null || getCurrentlyVisibleCategories() == null ||
+            !getCurrentlyVisibleCategories().containsKey(getSelectedCategory())) {
+            return 0;
+        }
+        ProcessedCategory cat = getCurrentlyVisibleCategories().get(getSelectedCategory());
+        HashMap<Integer, Integer> activeAccordions = new HashMap<>();
+        int totalHeight = 0;
+        for (ProcessedOption option : getOptionsInCategory(cat)) {
+            if (option.getAccordionId() >= 0) {
+                if (!activeAccordions.containsKey(option.getAccordionId())) {
+                    continue;
+                }
+            }
+            GuiOptionEditor editor = option.getEditor();
+            if (editor == null) {
+                continue;
+            }
+            if (editor instanceof GuiOptionEditorAccordion) {
+                GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
+                if (accordion.getToggled()) {
+                    int accordionDepth = 0;
+                    if (option.getAccordionId() >= 0) {
+                        accordionDepth = activeAccordions.get(option.getAccordionId()) + 1;
+                    }
+                    activeAccordions.put(accordion.getAccordionId(), accordionDepth);
+                }
+            }
+            totalHeight += ContextAware.wrapErrorWithContext(editor, editor::getHeight) + 5;
+        }
+        return totalHeight;
+    }
+
+    private int getCategoriesTotalHeight() {
+        if (getCurrentlyVisibleCategories() == null) {
+            return 0;
+        }
+        return CATEGORY_ROW_HEIGHT * getCurrentlyVisibleCategories().size();
     }
 
 }
