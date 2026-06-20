@@ -107,6 +107,68 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
         return enableDeleting && (activeText.size() > 1 || !requireNonEmpty);
     }
 
+    private GuiComponent makeRemoveButton() {
+        return new ButtonComponent(new CenterComponent(new TextComponent(StructuredText.of(" Remove "))), 2, () -> {
+            var pos = IMinecraft.INSTANCE.getMousePosition();
+            if (!canDeleteRightNow())
+                return;
+            openDropDownOverlay(pos.getFirst(), pos.getSecond(), true);
+        });
+    }
+
+    private GuiComponent makeTrashCan() {
+        return new GuiComponent() {
+            @Override
+            public int getWidth() {
+                return 11;
+            }
+
+            @Override
+            public int getHeight() {
+                return 14;
+            }
+
+            @Override
+            public void render(@NotNull GuiImmediateContext context) {
+                if (context.isHovered() && dragStartIndex >= 0 && canDeleteRightNow()) {
+                    trashAnimation.setTarget(0);
+                } else {
+                    trashAnimation.setTarget(255);
+                }
+                int nonRedTints = trashAnimation.getValue();
+                context.getRenderContext().drawComplexTexture(
+                    GuiTextures.DELETE,
+                    0F, 0F, 11F, 14F,
+                    draw -> draw.color(ColourUtil.packARGB(255, 255, nonRedTints, nonRedTints))
+                );
+                trashCanBoundingBox = Rect.ofGuiImmediateContext(context);
+            }
+        };
+    }
+
+    private GuiComponent makeButtonRow() {
+        GuiComponent addButton = new ButtonComponent(new CenterComponent(new TextComponent(StructuredText.of(" Add "))), 2, () -> {
+            var pos = IMinecraft.INSTANCE.getMousePosition();
+            if (activeText.size() == exampleText.size())
+                return;
+            openDropDownOverlay(pos.getFirst(), pos.getSecond(), false);
+        });
+        if (!enableDeleting) {
+            return new RowComponent(
+                addButton,
+                new SpacerComponent(GetSetter.constant(5), GetSetter.constant(0)),
+                makeTrashCan()
+            );
+        }
+        return new RowComponent(
+            addButton,
+            new SpacerComponent(GetSetter.constant(5), GetSetter.constant(0)),
+            makeRemoveButton(),
+            new SpacerComponent(GetSetter.constant(5), GetSetter.constant(0)),
+            makeTrashCan()
+        );
+    }
+
     GuiComponent delegate;
 
     Rect trashCanBoundingBox;
@@ -116,42 +178,8 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
         if (delegate == null)
             delegate = wrapComponent(
                 new FixedComponent(
-                    new RowComponent(
-                        new ButtonComponent(new CenterComponent(new TextComponent(StructuredText.of(" Add "))), 2, () -> {
-                            var pos = IMinecraft.INSTANCE.getMousePosition();
-                            if (activeText.size() == exampleText.size())
-                                return;
-                            openDropDownOverlay(pos.getFirst(), pos.getSecond());
-                        }),
-                        new SpacerComponent(GetSetter.constant(5), GetSetter.constant(0)),
-                        new GuiComponent() {
-                            @Override
-                            public int getWidth() {
-                                return 11;
-                            }
-
-                            @Override
-                            public int getHeight() {
-                                return 14;
-                            }
-
-                            @Override
-                            public void render(@NotNull GuiImmediateContext context) {
-                                if (context.isHovered() && dragStartIndex >= 0 && canDeleteRightNow()) {
-                                    trashAnimation.setTarget(0);
-                                } else {
-                                    trashAnimation.setTarget(255);
-                                }
-                                int nonRedTints = trashAnimation.getValue();
-                                context.getRenderContext().drawComplexTexture(
-                                    GuiTextures.DELETE,
-                                    0F, 0F, 11F, 14F,
-                                    draw -> draw.color(ColourUtil.packARGB(255, 255, nonRedTints, nonRedTints))
-                                );
-                                trashCanBoundingBox = Rect.ofGuiImmediateContext(context);
-                            }
-                        }),
-                    48, 16),
+                    makeButtonRow(),
+                    enableDeleting ? 105 : 48, 16),
                 new GuiComponent() {
                     @Override
                     public int getWidth() {
@@ -339,30 +367,40 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
         return remaining;
     }
 
-    private int getDropDownContentHeight() {
-        return Math.max(0, -1 + DROPDOWN_ITEM_HEIGHT * getRemainingDropDownEntries().size());
+    private List<Object> getRemovableDropDownEntries() {
+        if (!canDeleteRightNow())
+            return Collections.emptyList();
+        return new ArrayList<>(activeText);
     }
 
-    private int getDropDownVisibleHeight(int overlayY) {
+    private List<Object> getDropDownEntries(boolean removing) {
+        return removing ? getRemovableDropDownEntries() : getRemainingDropDownEntries();
+    }
+
+    private int getDropDownContentHeight(boolean removing) {
+        return Math.max(0, -1 + DROPDOWN_ITEM_HEIGHT * getDropDownEntries(removing).size());
+    }
+
+    private int getDropDownVisibleHeight(int overlayY, boolean removing) {
         int screenHeight = IMinecraft.INSTANCE.getScaledHeight();
         int maxHeight = Math.max(DROPDOWN_ITEM_HEIGHT, screenHeight - overlayY - DROPDOWN_SCREEN_MARGIN);
-        return Math.min(getDropDownContentHeight(), maxHeight);
+        return Math.min(getDropDownContentHeight(removing), maxHeight);
     }
 
-    private void openDropDownOverlay(int mouseX, int mouseY) {
+    private void openDropDownOverlay(int mouseX, int mouseY, boolean removing) {
         int screenHeight = IMinecraft.INSTANCE.getScaledHeight();
         int screenWidth = IMinecraft.INSTANCE.getScaledWidth();
-        int contentHeight = getDropDownContentHeight();
+        int contentHeight = getDropDownContentHeight(removing);
         int maxVisibleHeight = Math.max(DROPDOWN_ITEM_HEIGHT, screenHeight - DROPDOWN_SCREEN_MARGIN * 2);
         int visibleHeight = Math.min(contentHeight, maxVisibleHeight);
         int overlayX = Math.min(mouseX, screenWidth - DROPDOWN_WIDTH - DROPDOWN_SCREEN_MARGIN);
         int overlayY = Math.min(mouseY, screenHeight - visibleHeight - DROPDOWN_SCREEN_MARGIN);
         overlayX = Math.max(DROPDOWN_SCREEN_MARGIN, overlayX);
         overlayY = Math.max(DROPDOWN_SCREEN_MARGIN, overlayY);
-        openOverlay(makeDropDownOverlay(overlayY), overlayX, overlayY);
+        openOverlay(makeDropDownOverlay(overlayY, removing), overlayX, overlayY);
     }
 
-    GuiComponent makeDropDownOverlay(int overlayY) {
+    GuiComponent makeDropDownOverlay(int overlayY, boolean removing) {
         return new GuiComponent() {
             int scrollOffset;
 
@@ -373,12 +411,12 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
             @Override
             public int getHeight() {
-                return getDropDownVisibleHeight(overlayY);
+                return getDropDownVisibleHeight(overlayY, removing);
             }
 
             @Override
             public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
-                int maxScrollOffset = Math.max(0, getDropDownContentHeight() - context.getHeight());
+                int maxScrollOffset = Math.max(0, getDropDownContentHeight(removing) - context.getHeight());
                 if (scrollOffset > maxScrollOffset) {
                     scrollOffset = maxScrollOffset;
                 }
@@ -392,11 +430,16 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                 if (mouseEvent instanceof MouseEvent.Click) {
                     var click = (MouseEvent.Click) mouseEvent;
                     if (click.getMouseState() && context.isHovered()) {
-                        List<Object> remaining = getRemainingDropDownEntries();
+                        List<Object> entries = getDropDownEntries(removing);
                         int dropdownY = -1;
-                        for (Object indexObject : remaining) {
+                        for (Object indexObject : entries) {
                             if (context.translated(0, dropdownY + 3 - scrollOffset, context.getWidth(), 10).isHovered()) {
-                                activeText.add(indexObject);
+                                if (removing) {
+                                    activeText.remove(indexObject);
+                                } else {
+                                    activeText.add(indexObject);
+                                }
+                                saveChanges();
                                 return true;
                             }
                             dropdownY += DROPDOWN_ITEM_HEIGHT;
@@ -410,13 +453,13 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
 
             @Override
             public void render(@NotNull GuiImmediateContext context) {
-                List<Object> remaining = getRemainingDropDownEntries();
-                if (remaining.isEmpty()) {
+                List<Object> entries = getDropDownEntries(removing);
+                if (entries.isEmpty()) {
                     closeOverlay();
                     return;
                 }
 
-                int maxScrollOffset = Math.max(0, getDropDownContentHeight() - context.getHeight());
+                int maxScrollOffset = Math.max(0, getDropDownContentHeight(removing) - context.getHeight());
                 if (scrollOffset > maxScrollOffset) {
                     scrollOffset = maxScrollOffset;
                 }
@@ -442,7 +485,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                 renderContext.pushMatrix();
                 renderContext.translate(0, -scrollOffset);
                 int dropdownY = -1;
-                for (Object indexObject : remaining) {
+                for (Object indexObject : entries) {
                     StructuredText str = getExampleText(indexObject);
                     if (str.getText().isEmpty()) {
                         str = StructuredText.of("<NONE>");
@@ -454,7 +497,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
                 }
                 renderContext.popMatrix();
                 renderContext.popScissor();
-                int contentHeight = getDropDownContentHeight();
+                int contentHeight = getDropDownContentHeight(removing);
                 if (contentHeight > dropdownHeight) {
                     int scrollBarTrackTop = 1;
                     int scrollBarTrackBottom = dropdownHeight - 1;
