@@ -8,7 +8,6 @@ import io.github.notenoughupdates.moulconfig.gui.MouseEvent
 import io.github.notenoughupdates.moulconfig.observer.GetSetter
 import java.util.function.BiFunction
 import kotlin.math.max
-import kotlin.math.min
 
 open class SliderWithTextComponent(
     value: GetSetter<Float>,
@@ -17,45 +16,56 @@ open class SliderWithTextComponent(
     minStep: Float,
     width: Int,
 ) : SliderComponent(value, minValue, maxValue, minStep, width) {
+    private val sliderWidth = width
 
+    override fun getWidth(): Int = SLIDER_INSET + sliderWidth + INPUT_GAP + componentNumberInput.width
+
+    override fun getHeight(): Int = max(super.getHeight(), INPUT_HEIGHT)
 
     override fun render(context: GuiImmediateContext) {
-        context.renderContext.translate(-(width/3).toFloat(), 0f)
-        super.render(context)
-        context.renderContext.translate(60f, -5f)
-        componentNumberInput.width
-        componentNumberInput.render(context.translated(60, -5, componentNumberInput.width, 18))
-    }
-
-    // I made this because I couldn't get isHovered to work with the translation
-    private fun GuiImmediateContext.isHovered(): Boolean {
-        return mouseX in 0 - width/3 until width - 13 && mouseY in 0 until height
+        renderSlider(context)
+        renderInput(context)
     }
 
     override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
-        if (!context.renderContext.isMouseButtonDown(0)) clicked = false
-        if (context.isHovered() && mouseEvent is MouseEvent.Click && mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
-            clicked = true
-        }
-        if (clicked) {
-            setValueFromContext(context)
-            return true
-        }
-        return componentNumberInput.mouseEvent(mouseEvent, context.translated(45, -5, componentNumberInput.width, 18))
+        val sliderHandled = super.mouseEvent(mouseEvent, sliderContext(context))
+        val inputHandled = componentNumberInput.mouseEvent(mouseEvent, inputContext(context))
+        return sliderHandled || inputHandled
     }
 
     override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
         componentNumberInput.setShouldExpandToFit(true)
-        return componentNumberInput.keyboardEvent(event, context)
+        return componentNumberInput.keyboardEvent(event, inputContext(context))
     }
 
-    override fun setValueFromContext(context: GuiImmediateContext) {
-        var v: Float = (context.mouseX + width/3) * (maxValue - minValue) / context.width + minValue
-        v = min(v.toDouble(), maxValue.toDouble()).toFloat()
-        v = max(v.toDouble(), minValue.toDouble()).toFloat()
-        v = Math.round(v / minStep) * minStep
-        value.set(v)
+    private fun renderSlider(context: GuiImmediateContext) {
+        context.renderContext.pushMatrix()
+        context.renderContext.translate(SLIDER_INSET.toFloat(), sliderY().toFloat())
+        super.render(sliderContext(context))
+        context.renderContext.popMatrix()
     }
+
+    private fun renderInput(context: GuiImmediateContext) {
+        context.renderContext.pushMatrix()
+        context.renderContext.translate(inputX(context).toFloat(), inputY().toFloat())
+        componentNumberInput.render(inputContext(context))
+        context.renderContext.popMatrix()
+    }
+
+    private fun sliderContext(context: GuiImmediateContext): GuiImmediateContext =
+        context.translated(SLIDER_INSET, sliderY(), effectiveSliderWidth(context), super.getHeight())
+
+    private fun inputContext(context: GuiImmediateContext): GuiImmediateContext =
+        context.translated(inputX(context), inputY(), componentNumberInput.width, INPUT_HEIGHT)
+
+    private fun effectiveSliderWidth(context: GuiImmediateContext): Int =
+        (context.width - SLIDER_INSET - INPUT_GAP - componentNumberInput.width).coerceIn(MIN_SLIDER_WIDTH, sliderWidth)
+
+    private fun sliderY(): Int = (getHeight() - super.getHeight()) / 2
+
+    private fun inputX(context: GuiImmediateContext): Int = SLIDER_INSET + effectiveSliderWidth(context) + INPUT_GAP
+
+    private fun inputY(): Int = (getHeight() - INPUT_HEIGHT) / 2
 
     private val componentNumberInput by lazy {
         TextFieldComponent(
@@ -95,5 +105,12 @@ open class SliderWithTextComponent(
 
     override fun <T : Any?> foldChildren(initial: T, visitor: BiFunction<GuiComponent, T, T>): T {
         return visitor.apply(componentNumberInput, initial)
+    }
+
+    private companion object {
+        private const val SLIDER_INSET = 10
+        private const val INPUT_GAP = 10
+        private const val INPUT_HEIGHT = 18
+        private const val MIN_SLIDER_WIDTH = 35
     }
 }
