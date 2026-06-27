@@ -60,6 +60,10 @@ class TestCategoryA {
         @ConfigOption(name = "Enum Dropdown", desc = "1, 2, 3, 4")
         @ConfigEditorDropdown
         var enumDropdown: Property<DropdownEnum> = Property.of(DropdownEnum.FOUR)
+
+        @ConfigOption(name = "Nested Slider", desc = "A deeply suspicious slider living in an accordion.")
+        @ConfigEditorSlider(minValue = 1F, maxValue = 5F, minStep = 1F)
+        var nestedSlider: Int = 1
     }
 
     enum class DropdownEnum(private val label: String) {

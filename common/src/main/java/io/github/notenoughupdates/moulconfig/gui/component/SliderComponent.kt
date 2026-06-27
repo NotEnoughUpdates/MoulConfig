@@ -30,7 +30,7 @@ open class SliderComponent(
         }
         val value: Float = value.get()
         context.renderContext.drawTexturedRect(GuiTextures.SLIDER_ON_CAP, 0F, 0F, 4F, context.height.toFloat())
-        context.renderContext.drawTexturedRect(GuiTextures.SLIDER_OFF_CAP, (width - 4).toFloat(), 0F, 4F, context.height.toFloat())
+        context.renderContext.drawTexturedRect(GuiTextures.SLIDER_OFF_CAP, (context.width - 4).toFloat(), 0F, 4F, context.height.toFloat())
         val sliderPosition = ((value.coerceIn(minValue..maxValue) - minValue) / (maxValue - minValue) * context.width).toInt()
         if (sliderPosition > 5) {
             context.renderContext.drawTexturedRect(GuiTextures.SLIDER_ON_SEGMENT, 4F, 0F, (sliderPosition - 4).toFloat(), context.height.toFloat())
