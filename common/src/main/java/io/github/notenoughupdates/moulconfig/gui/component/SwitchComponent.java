@@ -21,6 +21,7 @@
 package io.github.notenoughupdates.moulconfig.gui.component;
 
 import io.github.notenoughupdates.moulconfig.GuiTextures;
+import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
@@ -93,7 +94,7 @@ public class SwitchComponent extends GuiComponent {
         super.mouseEvent(event, context);
         if (!(event instanceof MouseEvent.Click)) return false;
         var click = (MouseEvent.Click) event;
-        if (context.isHovered() && click.getMouseButton() == 0 && click.getMouseState()) {
+        if (context.isHovered() && click.getMouseButton() == IMinecraft.INSTANCE.getMouseConstants().left() && click.getMouseState()) {
             value.set(!value.get());
             return true;
         }

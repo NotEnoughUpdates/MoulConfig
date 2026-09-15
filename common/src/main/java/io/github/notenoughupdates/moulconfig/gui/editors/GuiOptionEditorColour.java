@@ -22,6 +22,7 @@ package io.github.notenoughupdates.moulconfig.gui.editors;
 
 import io.github.notenoughupdates.moulconfig.ChromaColour;
 import io.github.notenoughupdates.moulconfig.GuiTextures;
+import io.github.notenoughupdates.moulconfig.common.IMinecraft;
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent;
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext;
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent;
@@ -71,7 +72,7 @@ public class GuiOptionEditorColour extends ComponentEditor {
             public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
                 if (mouseEvent instanceof MouseEvent.Click) {
                     val click = ((MouseEvent.Click) mouseEvent);
-                    if (click.getMouseState() && click.getMouseButton() == 0 && context.isHovered()) {
+                    if (click.getMouseState() && click.getMouseButton() == IMinecraft.INSTANCE.getMouseConstants().left() && context.isHovered()) {
                         ColorSelectComponent colorSelectComponent = new ColorSelectComponent(0, 0, get().toLegacyString(), newString -> set(newString), () -> {
                             closeOverlay();
                         });

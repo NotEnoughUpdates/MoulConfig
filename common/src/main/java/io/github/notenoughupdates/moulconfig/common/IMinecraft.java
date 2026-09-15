@@ -67,6 +67,8 @@ public interface IMinecraft {
 
     IKeyboardConstants getKeyboardConstants();
 
+    MouseConstants getMouseConstants();
+
     int getScaledWidth();
 
     int getScaledHeight();

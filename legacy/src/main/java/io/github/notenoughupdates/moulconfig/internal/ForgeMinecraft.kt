@@ -242,6 +242,10 @@ class ForgeMinecraft : IMinecraft {
     }
 
     override fun getKeyboardConstants(): IKeyboardConstants {
-        return ForgeKeyboardConstants
+        return ForgeKeyboardConstants.INSTANCE;
+    }
+
+    override fun getMouseConstants(): MouseConstants {
+        return ForgeMouseConstants.INSTANCE;
     }
 }

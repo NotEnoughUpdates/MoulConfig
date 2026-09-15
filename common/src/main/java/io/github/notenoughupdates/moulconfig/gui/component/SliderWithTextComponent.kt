@@ -33,8 +33,8 @@ open class SliderWithTextComponent(
     }
 
     override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
-        if (!context.renderContext.isMouseButtonDown(0)) clicked = false
-        if (context.isHovered() && mouseEvent is MouseEvent.Click && mouseEvent.mouseState && mouseEvent.mouseButton == 0) {
+        if (!context.renderContext.isMouseButtonDown(IMinecraft.INSTANCE.getMouseConstants().left())) clicked = false
+        if (context.isHovered() && mouseEvent is MouseEvent.Click && mouseEvent.mouseState && mouseEvent.mouseButton == IMinecraft.INSTANCE.getMouseConstants().left()) {
             clicked = true
         }
         if (clicked) {
