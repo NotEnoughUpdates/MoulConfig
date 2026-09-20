@@ -81,6 +81,8 @@ public interface IMinecraft {
 
     boolean isKeyboardKeyDown(int keyCode);
 
+    default void startTextInput(Object owner, boolean focused) {}
+
     void addExtraBuiltinConfigProcessors(MoulConfigProcessor<?> processor);
 
     void sendClickableChatMessage(StructuredText message, String action, @Nullable ClickType clickType);

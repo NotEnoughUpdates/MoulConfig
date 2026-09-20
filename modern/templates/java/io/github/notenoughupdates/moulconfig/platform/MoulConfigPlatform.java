@@ -262,7 +262,18 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public boolean isKeyboardKeyDown(int keyboardKey) {
+        #if MC >= 260300
+        return InputConstants.isKeyDown(keyboardKey);
+        #else
         return InputConstants.isKeyDown(#if MC < 12109 mc.getWindow().getWindow() #else mc.getWindow() #endif, keyboardKey);
+        #endif
+    }
+
+    @Override
+    public void startTextInput(Object owner, boolean focused) {
+        #if MC >= 260300
+        mc.textInputManager().onTextInputFocusChange(owner, focused);
+        #endif
     }
 
     @Override

@@ -345,6 +345,9 @@ public class MoulConfigRenderContext implements RenderContext {
             .map(Language.getInstance()::getVisualOrder)
             .map(ClientTooltipComponent::create)
             .toList();
+        #if MC >= 260300
+        drawContext.tooltip(mc.font, lines, x, y, DefaultTooltipPositioner.INSTANCE, null, false);
+        #else
         drawContext.#if MC < 260100 renderTooltip #else tooltip #endif(
             mc.font,
             lines,
@@ -352,6 +355,7 @@ public class MoulConfigRenderContext implements RenderContext {
             DefaultTooltipPositioner.INSTANCE,
             null
         );
+        #endif
         #else
         var lines = tooltipLines.stream()
             .map(MoulConfigPlatform::unwrap)
