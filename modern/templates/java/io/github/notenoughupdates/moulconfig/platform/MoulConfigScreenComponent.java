@@ -96,7 +96,7 @@ public class MoulConfigScreenComponent extends Screen {
     @Override
     public boolean keyPressed(KeyEvent input) {
         int keyCode = input.key();
-        int scanCode = input.scancode();
+        int scanCode = #if MC >= 260300 input.keycode() #else input.scancode() #endif;
     #endif
         if (guiContext.root.keyboardEvent(new KeyboardEvent.KeyPressed(keyCode, scanCode, true), createContext()))
             return true;
@@ -118,7 +118,7 @@ public class MoulConfigScreenComponent extends Screen {
     @Override
     public boolean keyReleased(KeyEvent input) {
         int keyCode = input.key();
-        int scanCode = input.scancode();
+        int scanCode = #if MC >= 260300 input.keycode() #else input.scancode() #endif;
     #endif
         return guiContext.root.keyboardEvent(
             new KeyboardEvent.KeyPressed(keyCode, scanCode, false),
@@ -149,17 +149,23 @@ public class MoulConfigScreenComponent extends Screen {
         guiContext.getRoot().mouseEvent(event, ctx);
     }
 
+    #if MC >= 260300
+    private static int logicalMouseButton(int nativeButton) {
+        return switch (nativeButton) { case 1 -> 0; case 3 -> 1; case 2 -> 2; default -> nativeButton - 1; };
+    }
+    #endif
+
     @Override
     public boolean mouseClicked(#if MC < 12109 double mouseX, double mouseY, int button #else MouseButtonEvent click, boolean doubled #endif) {
         return guiContext.root.mouseEvent(
-            new MouseEvent.Click(#if MC < 12109 button #else click.button() #endif, true), createContext()
+            new MouseEvent.Click(#if MC >= 260300 logicalMouseButton(click.button()) #elif MC < 12109 button #else click.button() #endif, true), createContext()
         );
     }
 
     @Override
     public boolean mouseReleased(#if MC < 12109 double mouseX, double mouseY, int button #else MouseButtonEvent click #endif) {
         return guiContext.root.mouseEvent(
-            new MouseEvent.Click(#if MC < 12109 button #else click.button() #endif, false), createContext()
+            new MouseEvent.Click(#if MC >= 260300 logicalMouseButton(click.button()) #elif MC < 12109 button #else click.button() #endif, false), createContext()
         );
     }
 

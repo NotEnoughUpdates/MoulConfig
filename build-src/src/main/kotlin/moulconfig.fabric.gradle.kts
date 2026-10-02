@@ -29,7 +29,7 @@ the<UniminedExtension>().minecraft {
     }
 
     fabric {
-        loader("0.18.4")
+        loader(if (minecraftVersion == "26.3") "0.19.5" else "0.18.4")
         if (hasAW)
             accessWidener(aF)
     }

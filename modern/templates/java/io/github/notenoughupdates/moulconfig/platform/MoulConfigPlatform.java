@@ -38,7 +38,11 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+#if MC >= 260300
+import org.lwjgl.sdl.SDLMouse;
+#else
 import org.lwjgl.glfw.GLFW;
+#endif
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
@@ -236,12 +240,28 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public boolean isMouseButtonDown(int mouseButton) {
+        #if MC >= 260300
+        int nativeButton = switch (mouseButton) { case 0 -> 1; case 1 -> 3; case 2 -> 2; default -> mouseButton + 1; };
+        return nativeButton >= 1 && nativeButton <= 8 && (SDLMouse.SDL_GetMouseState(null, null) & (1 << (nativeButton - 1))) != 0;
+        #else
         return GLFW.glfwGetMouseButton(#if MC < 12109 mc.getWindow().getWindow() #else mc.getWindow().handle() #endif, mouseButton) == GLFW.GLFW_PRESS;
+        #endif
     }
+
+    #if MC >= 260300
+    @Override
+    public int encodeMouseKeybind(int mouseButton) {
+        return -100 - mouseButton;
+    }
+    #endif
 
     @Override
     public boolean isKeyboardKeyDown(int keyboardKey) {
+        #if MC >= 260300
+        return keyboardKey > 0 && InputConstants.isKeyDown(keyboardKey);
+        #else
         return InputConstants.isKeyDown(#if MC < 12109 mc.getWindow().getWindow() #else mc.getWindow() #endif, keyboardKey);
+        #endif
     }
 
     @Override

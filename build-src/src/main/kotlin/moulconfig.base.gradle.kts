@@ -21,9 +21,16 @@ tasks.withType(ShadowJar::class).configureEach {
 	relocate("juuxel.libninepatch", "io.github.notenoughupdates.moulconfig.deps.libninepatch")
 }
 afterEvaluate {
-	extensions.findByType<PublishingExtension>()?.apply {
-		repositories {
-			if (project.hasProperty("moulconfigPassword") && !Version.isSnapshot) {
+		extensions.findByType<PublishingExtension>()?.apply {
+			repositories {
+				providers.gradleProperty("portDependencyRepository").orNull?.let { destination ->
+					require(destination.isNotBlank()) { "portDependencyRepository must be a repository URI or path" }
+					maven {
+						name = "portDependencies"
+						url = rootProject.uri(destination)
+					}
+				}
+				if (project.hasProperty("moulconfigPassword") && !Version.isSnapshot) {
 				maven {
 					url = uri("https://maven.notenoughupdates.org/releases")
 					name = "moulconfig"

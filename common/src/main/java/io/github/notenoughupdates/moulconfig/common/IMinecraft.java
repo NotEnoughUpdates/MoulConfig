@@ -77,6 +77,11 @@ public interface IMinecraft {
 
     boolean isMouseButtonDown(int mouseButton);
 
+    /** Encode a logical GUI mouse button without colliding with platform keyboard keys. */
+    default int encodeMouseKeybind(int mouseButton) {
+        return mouseButton;
+    }
+
     boolean isKeyboardKeyDown(int keyCode);
 
     void addExtraBuiltinConfigProcessors(MoulConfigProcessor<?> processor);

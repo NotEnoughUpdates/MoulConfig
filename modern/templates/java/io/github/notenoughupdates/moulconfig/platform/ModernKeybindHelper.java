@@ -10,8 +10,8 @@ public class ModernKeybindHelper {
     public static StructuredText getKeyName(int keyCode) { // TODO: translations
         if (keyCode == -1) {
             return StructuredText.of("NONE");
-        } else if (keyCode >= 0 && keyCode <= 9) {
-            return StructuredText.of("Button " + (keyCode + 1));
+        } else if (#if MC >= 260300 keyCode <= -100 && keyCode >= -107 #else keyCode >= 0 && keyCode <= 9 #endif) {
+            return StructuredText.of("Button " + (#if MC >= 260300 -100 - keyCode #else keyCode #endif + 1));
         } else {
             #if MC < 12109
             StructuredText keyName = MoulConfigText.wrap(InputConstants.getKey(keyCode, 0).getDisplayName());

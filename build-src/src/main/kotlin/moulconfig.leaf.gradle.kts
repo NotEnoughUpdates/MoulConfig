@@ -10,6 +10,9 @@ plugins {
 	id("com.gradleup.shadow")
 }
 
+// Source archives build only the requested target; evaluate its common source dependency before wiring source sets.
+evaluationDependsOn(":common")
+
 val shadowInclude by configurations.creating
 dependencies {
 	"implementation"(project(":common"))

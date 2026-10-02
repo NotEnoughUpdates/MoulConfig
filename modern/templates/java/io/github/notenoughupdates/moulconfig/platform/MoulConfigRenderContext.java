@@ -2,7 +2,11 @@ package io.github.notenoughupdates.moulconfig.platform;
 
 #if MC >= 12111
 import com.mojang.blaze3d.systems.RenderSystem;
+#if MC >= 260300
+import com.mojang.renderpearl.api.textures.FilterMode;
+#else
 import com.mojang.blaze3d.textures.FilterMode;
+#endif
 #endif
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -39,7 +43,11 @@ import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 #endif
 import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
+#if MC >= 260300
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+#else
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+#endif
 import net.minecraft.client.renderer.RenderPipelines;
 #endif
 
@@ -343,6 +351,9 @@ public class MoulConfigRenderContext implements RenderContext {
             x, y,
             DefaultTooltipPositioner.INSTANCE,
             null
+            #if MC >= 260300
+            , true
+            #endif
         );
         #else
         var lines = tooltipLines.stream()
