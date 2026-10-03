@@ -37,7 +37,7 @@ dependencies {
 	api("org.ow2.asm:asm-analysis:$asmVersion")
 	api("com.gradleup.shadow:shadow-gradle-plugin:9.0.0-beta12")
 	api("org.jetbrains.dokka:dokka-gradle-plugin:2.2.0")
-	val kotlinVersion = "2.3.20"
+	val kotlinVersion = "2.4.20"
     api(plugin("org.jetbrains.kotlin.jvm", kotlinVersion))
     api(plugin("org.jetbrains.kotlin.plugin.lombok", kotlinVersion))
     api(plugin("systems.manifold.manifold-gradle-plugin", "0.0.2-alpha"))

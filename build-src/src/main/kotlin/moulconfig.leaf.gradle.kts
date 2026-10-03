@@ -10,7 +10,7 @@ plugins {
 	id("com.gradleup.shadow")
 }
 
-val shadowInclude by configurations.creating
+val shadowInclude = configurations.create("shadowInclude")
 dependencies {
 	"implementation"(project(":common"))
 	shadowInclude(project(":common", configuration = "singleFile"))
@@ -20,7 +20,7 @@ dependencies {
 	compileOnly(Dependencies.JSPECIFY)
 }
 
-val shadowJar by tasks.named("shadowJar", ShadowJar::class) {
+val shadowJar = tasks.named("shadowJar", ShadowJar::class) {
 	configurations = listOf(shadowInclude)
 	archiveClassifier.set("dev")
 }
@@ -28,7 +28,7 @@ val processResources = tasks.named("processResources", Copy::class) {
 	from(project(":common").tasks.named("processResources"))
 }
 
-val sourcesJar by tasks.creating(Jar::class) {
+val sourcesJar = tasks.register("sourcesJar",Jar::class) {
 	from(sourceSets.named("main").map { it.allSource })
 	from(project(":common").the<SourceSetContainer>().getByName("main").allSource)
 	archiveClassifier.set("sources")
