@@ -277,6 +277,16 @@ open class TextFieldComponent(
         return false
     }
 
+    override fun onGainedFocus() {
+        super.onGainedFocus();
+        IMinecraft.INSTANCE.startTextInput(this, true);
+    }
+
+    override fun onLostFocus() {
+        super.onLostFocus();
+        IMinecraft.INSTANCE.startTextInput(this, false);
+    }
+
     private fun safeSubString(str: String, startIndex: Int): String {
         return str.substring(min(startIndex, str.length))
     }

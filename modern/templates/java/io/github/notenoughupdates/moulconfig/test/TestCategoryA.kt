@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import io.github.notenoughupdates.moulconfig.annotations.*
 import io.github.notenoughupdates.moulconfig.observer.Property
-import org.lwjgl.glfw.GLFW
+import com.mojang.blaze3d.platform.InputConstants;
 import java.util.*
 
 class TestCategoryA {
@@ -217,8 +217,8 @@ class TestCategoryA {
 
     @Expose
     @ConfigOption(name = "Keybind", desc = "The Number One")
-    @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_1)
-    var slot1: Int = GLFW.GLFW_KEY_1
+    @ConfigEditorKeybind(defaultKey = InputConstants.KEY_1)
+    var slot1: Int = InputConstants.KEY_1
 
 
     @Expose

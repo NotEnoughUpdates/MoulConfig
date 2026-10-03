@@ -25,12 +25,24 @@ public class ModernKeyboardConstants implements IKeyboardConstants {
 
     @Override
     public int getCmdLeft() {
-        return InputConstants.#if MC > 12107 KEY_LSUPER #else KEY_LWIN #endif;
+        #if MC >= 260300
+        return InputConstants.KEY_LGUI;
+        #elif MC > 12107
+        return InputConstants.KEY_LSUPER;
+        #else
+        return InputConstants.KEY_LWIN;
+        #endif
     }
 
     @Override
     public int getCmdRight() {
-        return InputConstants.#if MC > 12107 KEY_RSUPER #else KEY_RWIN #endif;
+        #if MC >= 260300
+        return InputConstants.KEY_RGUI;
+        #elif MC > 12107
+        return InputConstants.KEY_RSUPER;
+        #else
+        return InputConstants.KEY_RWIN;
+        #endif
     }
 
     @Override
@@ -50,7 +62,7 @@ public class ModernKeyboardConstants implements IKeyboardConstants {
 
     @Override
     public int getNone() {
-        return -1;
+        return InputConstants.UNKNOWN.getValue();
     }
 
     @Override

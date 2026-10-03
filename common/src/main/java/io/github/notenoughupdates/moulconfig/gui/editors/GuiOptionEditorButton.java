@@ -133,7 +133,7 @@ public class GuiOptionEditorButton extends ComponentEditor {
         public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
             if (mouseEvent instanceof MouseEvent.Click) {
                 val click = (MouseEvent.Click) mouseEvent;
-                if (click.getMouseState() && context.isHovered() && click.getMouseButton() == 0) {
+                if (click.getMouseState() && context.isHovered() && click.getMouseButton() == IMinecraft.INSTANCE.getMouseConstants().left()) {
                     onClick();
                     return true;
                 }

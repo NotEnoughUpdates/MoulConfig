@@ -8,7 +8,7 @@ import net.minecraft.client.input.KeyEvent;
 
 public class ModernKeybindHelper {
     public static StructuredText getKeyName(int keyCode) { // TODO: translations
-        if (keyCode == -1) {
+        if (keyCode == InputConstants.UNKNOWN.getValue()) {
             return StructuredText.of("NONE");
         } else if (keyCode >= 0 && keyCode <= 9) {
             return StructuredText.of("Button " + (keyCode + 1));

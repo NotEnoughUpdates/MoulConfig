@@ -398,7 +398,7 @@ public class ColorSelectComponent extends GuiComponent {
             }
             if (context.isHovered() && click.getMouseState())
                 requestFocus();
-            if (focusedSubComponent != null && !click.getMouseState() && click.getMouseButton() == 0) {
+            if (focusedSubComponent != null && !click.getMouseState() && click.getMouseButton() == IMinecraft.INSTANCE.getMouseConstants().left()) {
                 focusedSubComponent = null;
                 return true;
             }

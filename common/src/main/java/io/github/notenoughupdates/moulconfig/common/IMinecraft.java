@@ -67,6 +67,8 @@ public interface IMinecraft {
 
     IKeyboardConstants getKeyboardConstants();
 
+    MouseConstants getMouseConstants();
+
     int getScaledWidth();
 
     int getScaledHeight();
@@ -78,6 +80,8 @@ public interface IMinecraft {
     boolean isMouseButtonDown(int mouseButton);
 
     boolean isKeyboardKeyDown(int keyCode);
+
+    default void startTextInput(Object owner, boolean focused) {}
 
     void addExtraBuiltinConfigProcessors(MoulConfigProcessor<?> processor);
 

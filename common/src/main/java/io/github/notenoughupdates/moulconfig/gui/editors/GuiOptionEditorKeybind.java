@@ -79,7 +79,7 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                     return true;
                 }
 
-                if (click.getMouseState() && click.getMouseButton() == 0) {
+                if (click.getMouseState() && click.getMouseButton() == IMinecraft.INSTANCE.getMouseConstants().left()) {
                     int height = getHeight();
                     int width = getHeight();
                     int mouseX = context.getMouseX();

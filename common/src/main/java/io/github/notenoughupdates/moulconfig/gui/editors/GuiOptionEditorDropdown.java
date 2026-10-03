@@ -83,7 +83,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
                 if (click.getMouseState()) {
                     closeOverlay();
                 }
-                if (click.getMouseState() && click.getMouseButton() == 0 && context.isHovered()) {
+                if (click.getMouseState() && click.getMouseButton() == IMinecraft.INSTANCE.getMouseConstants().left() && context.isHovered()) {
                     int top = 0;
                     int mouseY = context.getMouseY();
                     int dropdownY = 13;

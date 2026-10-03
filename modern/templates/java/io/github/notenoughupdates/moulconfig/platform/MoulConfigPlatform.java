@@ -38,7 +38,11 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
+#if MC >= 260300
+import org.lwjgl.sdl.SDLMouse;
+#else
 import org.lwjgl.glfw.GLFW;
+#endif
 
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
@@ -208,6 +212,11 @@ public class MoulConfigPlatform implements IMinecraft {
     }
 
     @Override
+    public MouseConstants getMouseConstants() {
+        return ModernMouseConstants.INSTANCE;
+    }
+
+    @Override
     public int getScaledWidth() {
         return mc.getWindow().getGuiScaledWidth();
     }
@@ -236,12 +245,35 @@ public class MoulConfigPlatform implements IMinecraft {
 
     @Override
     public boolean isMouseButtonDown(int mouseButton) {
+        #if MC >= 260300
+        int mask = switch (mouseButton) {
+            case InputConstants.MOUSE_BUTTON_LEFT -> SDLMouse.SDL_BUTTON_LMASK;
+            case InputConstants.MOUSE_BUTTON_MIDDLE -> SDLMouse.SDL_BUTTON_MMASK;
+            case InputConstants.MOUSE_BUTTON_RIGHT -> SDLMouse.SDL_BUTTON_RMASK;
+            case InputConstants.MOUSE_BUTTON_4 -> SDLMouse.SDL_BUTTON_X1MASK;
+            case InputConstants.MOUSE_BUTTON_5 -> SDLMouse.SDL_BUTTON_X2MASK;
+            default -> throw new IllegalArgumentException("Illegal Mouse Button " + mouseButton);
+        };
+        return (SDLMouse.SDL_GetMouseState(null, null) & mask) != 0;
+        #else
         return GLFW.glfwGetMouseButton(#if MC < 12109 mc.getWindow().getWindow() #else mc.getWindow().handle() #endif, mouseButton) == GLFW.GLFW_PRESS;
+        #endif
     }
 
     @Override
     public boolean isKeyboardKeyDown(int keyboardKey) {
+        #if MC >= 260300
+        return InputConstants.isKeyDown(keyboardKey);
+        #else
         return InputConstants.isKeyDown(#if MC < 12109 mc.getWindow().getWindow() #else mc.getWindow() #endif, keyboardKey);
+        #endif
+    }
+
+    @Override
+    public void startTextInput(Object owner, boolean focused) {
+        #if MC >= 260300
+        mc.textInputManager().onTextInputFocusChange(owner, focused);
+        #endif
     }
 
     @Override
