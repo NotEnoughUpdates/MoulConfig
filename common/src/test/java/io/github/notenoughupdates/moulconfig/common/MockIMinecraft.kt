@@ -23,6 +23,7 @@ class MockIMinecraft : IMinecraft {
     override fun getMousePositionHF() = TODO()
     override fun getDefaultFontRenderer() = TODO()
     override fun getKeyboardConstants() = TODO()
+    override fun getMouseConstants(): MouseConstants = TODO()
     override fun getScaledWidth() = TODO()
     override fun getScaledHeight() = TODO()
     override fun getScaleFactor() = TODO()
