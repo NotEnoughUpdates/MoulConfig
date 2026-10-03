@@ -23,7 +23,7 @@ artifacts {
     add(singleFile.name, tasks.jar)
 }
 
-val sourcesJar by tasks.creating(Jar::class) {
+val sourcesJar = tasks.register("sourcesJar", Jar::class) {
     from(sourceSets.main.get().allSource)
     archiveClassifier.set("sources")
 }
@@ -42,14 +42,14 @@ publishing {
 }
 
 dokka {
-    val modern2611 = project(":modern:modern-26.1")
-    modern2611.afterEvaluate {
-        dokkaSourceSets.configureEach {
-            val modernSource =
-                modern2611.sourceSets.main.map { it.allSource }
+//    val modern2611 = project(":modern:modern-26.1")
+//    modern2611.afterEvaluate {
+//        dokkaSourceSets.configureEach {
+//            val modernSource =
+//                modern2611.sourceSets.main.map { it.allSource }
 //            sourceRoots.from(modernSource)
-        }
-    }
+//        }
+//    }
 }
 
 

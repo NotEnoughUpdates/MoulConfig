@@ -33,6 +33,6 @@ tasks.assemble { dependsOn(docJar) }
 
 dependencies {
     dokka(project(":common"))
-    dokka(project(":legacy"))
-    dokka(project(":modern"))
+//    dokka(project(":legacy"))
+//    dokka(project(":modern"))
 }

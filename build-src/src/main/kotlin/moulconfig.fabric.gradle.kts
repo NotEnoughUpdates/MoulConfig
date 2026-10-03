@@ -17,14 +17,28 @@ val isDeobfuscated = findProperty("moulconfig.deobfuscated") != null
 val useResourceLoaderv1 = findProperty("moulconfig.rlv1") as String?
 val aF = project.file("src/main/resources/moulconfig.accesswidener")
 val hasAW = aF.exists()
+
+val numericMinecraftVersion = minecraftVersion.split("-").first().split(".")
+	.map { it.toInt() }
+	.let {
+		if (it.size < 3)
+			it + listOf(0)
+		else if (it.size == 3)
+			it
+		else error("Unparsable minecraft version $minecraftVersion")
+	}
+	.reduce { a, b -> a * 100 + b }
+println("Numeric version for $minecraftVersion is $numericMinecraftVersion")
+
 the<UniminedExtension>().minecraft {
     version(minecraftVersion)
     if (!isDeobfuscated) {
         mappings {
             intermediary()
             mojmap()
-            // unimined currently incorrectly renames 1.21.11 namespaces to official instead of above 1.21.11
-            devNamespace("mojmap")
+            // unimined currently incorrectly renames 1.21.11 namespaces to official instead of  above 1.21.11
+            if (numericMinecraftVersion > 12111)
+		        devNamespace("mojmap")
         }
     }
 
@@ -57,17 +71,6 @@ the<UniminedExtension>().minecraft {
     }
 }
 
-val numericMinecraftVersion = minecraftVersion.split("-").first().split(".")
-    .map { it.toInt() }
-    .let {
-        if (it.size < 3)
-            it + listOf(0)
-        else if (it.size == 3)
-            it
-        else error("Unparsable minecraft version $minecraftVersion")
-    }
-    .reduce { a, b -> a * 100 + b }
-println("Numeric version for $minecraftVersion is $numericMinecraftVersion")
 val preProcessorArgs = the<PreProcessorArgs>()
 preProcessorArgs.forDefaultCompilation {
     define("MC", numericMinecraftVersion)
@@ -83,7 +86,7 @@ if (useResourceLoaderv1 != null) {
     fabricDeps.impl("fabric-resource-loader-v0")
 }
 
-val remapJar by tasks.named("remapJar", RemapJarTask::class) {
+val remapJar = tasks.named("remapJar", RemapJarTask::class) {
     asJar {
         archiveClassifier.set("")
     }
@@ -117,7 +120,7 @@ val generateFilteredSource =
             into = fSourceDest
         }
     else
-        tasks.register("generateFilteredSource", Copy::class) {
+        tasks.register("generateFilteredSource", Sync::class) {
             doFirst {
                 if (fSourceDest.get().asFile.isFile)
                     fSourceDest.get().asFile.delete()
