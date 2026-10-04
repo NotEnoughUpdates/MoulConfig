@@ -108,7 +108,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
     }
 
     private GuiComponent makeRemoveButton() {
-        return new ButtonComponent(new CenterComponent(new TextComponent(StructuredText.of(" Remove "))), 2, () -> {
+        return new ButtonComponent(new CenterComponent(new TextComponent(StructuredText.of(" - "))), 2, () -> {
             var pos = IMinecraft.INSTANCE.getMousePosition();
             if (!canDeleteRightNow())
                 return;
@@ -147,7 +147,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
     }
 
     private GuiComponent makeButtonRow() {
-        GuiComponent addButton = new ButtonComponent(new CenterComponent(new TextComponent(StructuredText.of(" Add "))), 2, () -> {
+        GuiComponent addButton = new ButtonComponent(new CenterComponent(new TextComponent(StructuredText.of(" + "))), 2, () -> {
             var pos = IMinecraft.INSTANCE.getMousePosition();
             if (activeText.size() == exampleText.size())
                 return;
@@ -179,7 +179,7 @@ public class GuiOptionEditorDraggableList extends ComponentEditor {
             delegate = wrapComponent(
                 new FixedComponent(
                     makeButtonRow(),
-                    enableDeleting ? 105 : 48, 16),
+                    enableDeleting ? 65 : 48, 16),
                 new GuiComponent() {
                     @Override
                     public int getWidth() {
