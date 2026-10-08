@@ -53,6 +53,14 @@ public abstract class GuiComponent {
     public abstract int getHeight();
 
     /**
+     * Whether this element fills the horizontal space its parent offers instead of being centered at
+     * {@link #getWidth()}, which it must then treat as a minimum.
+     */
+    public boolean expandsHorizontally() {
+        return false;
+    }
+
+    /**
      * Call this method to request focus in the current gui context.
      */
     public void requestFocus() {

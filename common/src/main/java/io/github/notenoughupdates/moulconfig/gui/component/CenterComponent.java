@@ -48,16 +48,22 @@ public class CenterComponent extends GuiComponent {
         return child.getHeight();
     }
 
+    private int getChildWidth(GuiImmediateContext context) {
+        if (child.expandsHorizontally()) return context.getWidth();
+        return Math.min(child.getWidth(), context.getWidth());
+    }
+
     GuiImmediateContext getChildContext(GuiImmediateContext context) {
         return context.translated(
             getChildOffsetX(context),
             getChildOffsetY(context),
-            Math.min(child.getWidth(), context.getWidth()),
+            getChildWidth(context),
             Math.min(child.getHeight(), context.getHeight())
         );
     }
 
     public int getChildOffsetX(GuiImmediateContext context) {
+        if (child.expandsHorizontally()) return 0;
         if (child.getWidth() > context.getWidth()) return 0;
         return context.getWidth() / 2 - child.getWidth() / 2;
     }

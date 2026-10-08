@@ -14,15 +14,20 @@ open class SliderComponent(
     val minValue: Float,
     val maxValue: Float,
     val minStep: Float,
-    private val width: Int,
+    protected val minWidth: Int,
 ) : GuiComponent() {
     var clicked: Boolean = false
+
     override fun getWidth(): Int {
-        return width
+        return minWidth
     }
 
     override fun getHeight(): Int {
         return 16
+    }
+
+    override fun expandsHorizontally(): Boolean {
+        return true
     }
 
     override fun render(context: GuiImmediateContext) {
@@ -31,7 +36,7 @@ open class SliderComponent(
         }
         val value: Float = value.get()
         context.renderContext.drawTexturedRect(GuiTextures.SLIDER_ON_CAP, 0F, 0F, 4F, context.height.toFloat())
-        context.renderContext.drawTexturedRect(GuiTextures.SLIDER_OFF_CAP, (width - 4).toFloat(), 0F, 4F, context.height.toFloat())
+        context.renderContext.drawTexturedRect(GuiTextures.SLIDER_OFF_CAP, (context.width - 4).toFloat(), 0F, 4F, context.height.toFloat())
         val sliderPosition = ((value.coerceIn(minValue..maxValue) - minValue) / (maxValue - minValue) * context.width).toInt()
         if (sliderPosition > 5) {
             context.renderContext.drawTexturedRect(GuiTextures.SLIDER_ON_SEGMENT, 4F, 0F, (sliderPosition - 4).toFloat(), context.height.toFloat())

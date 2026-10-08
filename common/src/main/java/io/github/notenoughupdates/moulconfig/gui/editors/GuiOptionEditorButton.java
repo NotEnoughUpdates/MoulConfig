@@ -44,6 +44,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class GuiOptionEditorButton extends ComponentEditor {
+    private static final int MIN_WIDTH = 48;
+    private static final int LABEL_PADDING = 12;
     private final int runnableId;
     private StructuredText buttonText;
     private final Config config;
@@ -109,12 +111,18 @@ public class GuiOptionEditorButton extends ComponentEditor {
     private final GuiComponent delegate = wrapComponent(new GuiComponent() {
         @Override
         public int getWidth() {
-            return 48;
+            int labelWidth = IMinecraft.INSTANCE.getDefaultFontRenderer().getStringWidth(buttonText);
+            return Math.max(MIN_WIDTH, labelWidth + LABEL_PADDING);
         }
 
         @Override
         public int getHeight() {
             return 16;
+        }
+
+        @Override
+        public boolean expandsHorizontally() {
+            return true;
         }
 
         @Override

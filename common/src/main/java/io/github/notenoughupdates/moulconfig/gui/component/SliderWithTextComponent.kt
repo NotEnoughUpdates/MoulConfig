@@ -8,7 +8,6 @@ import io.github.notenoughupdates.moulconfig.gui.MouseEvent
 import io.github.notenoughupdates.moulconfig.observer.GetSetter
 import java.util.function.BiFunction
 import kotlin.math.max
-import kotlin.math.min
 
 open class SliderWithTextComponent(
     value: GetSetter<Float>,
@@ -18,46 +17,57 @@ open class SliderWithTextComponent(
     width: Int,
 ) : SliderComponent(value, minValue, maxValue, minStep, width) {
 
-
     override fun render(context: GuiImmediateContext) {
-        context.renderContext.translate(-(width/3).toFloat(), 0f)
-        super.render(context)
-        context.renderContext.translate(60f, -5f)
-        componentNumberInput.width
-        componentNumberInput.render(context.translated(60, -5, componentNumberInput.width, 18))
-    }
-
-    // I made this because I couldn't get isHovered to work with the translation
-    private fun GuiImmediateContext.isHovered(): Boolean {
-        return mouseX in 0 - width/3 until width - 13 && mouseY in 0 until height
+        super.render(sliderContext(context))
+        // translated() does not touch the render matrix, so the number box is positioned by hand
+        context.renderContext.pushMatrix()
+        context.renderContext.translate(numberX(context).toFloat(), numberY(context).toFloat())
+        numberInput.render(numberContext(context))
+        context.renderContext.popMatrix()
     }
 
     override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
-        if (!context.renderContext.isMouseButtonDown(IMinecraft.INSTANCE.getMouseConstants().left())) clicked = false
-        if (context.isHovered() && mouseEvent is MouseEvent.Click && mouseEvent.mouseState && mouseEvent.mouseButton == IMinecraft.INSTANCE.getMouseConstants().left()) {
-            clicked = true
-        }
-        if (clicked) {
-            setValueFromContext(context)
-            return true
-        }
-        return componentNumberInput.mouseEvent(mouseEvent, context.translated(45, -5, componentNumberInput.width, 18))
+        if (!context.renderContext.isMouseButtonDown(IMinecraft.INSTANCE.mouseConstants.left())) clicked = false
+        if (numberInput.mouseEvent(mouseEvent, numberContext(context))) return true
+        return super.mouseEvent(mouseEvent, sliderContext(context))
     }
 
     override fun keyboardEvent(event: KeyboardEvent, context: GuiImmediateContext): Boolean {
-        componentNumberInput.setShouldExpandToFit(true)
-        return componentNumberInput.keyboardEvent(event, context)
+        numberInput.setShouldExpandToFit(true)
+        return numberInput.keyboardEvent(event, numberContext(context))
     }
 
-    override fun setValueFromContext(context: GuiImmediateContext) {
-        var v: Float = (context.mouseX + width/3) * (maxValue - minValue) / context.width + minValue
-        v = min(v.toDouble(), maxValue.toDouble()).toFloat()
-        v = max(v.toDouble(), minValue.toDouble()).toFloat()
-        v = Math.round(v / minStep) * minStep
-        value.set(v)
+    private fun trackWidth(context: GuiImmediateContext): Int {
+        return max(minWidth, context.width - numberWidth(context) - NUMBER_GAP)
     }
 
-    private val componentNumberInput by lazy {
+    private fun numberWidth(context: GuiImmediateContext): Int {
+        val slack = context.width - minWidth - NUMBER_GAP
+        return NUMBER_WIDTH.coerceIn(MIN_NUMBER_WIDTH, max(MIN_NUMBER_WIDTH, slack))
+    }
+
+    private fun numberX(context: GuiImmediateContext): Int {
+        return trackWidth(context) + NUMBER_GAP
+    }
+
+    private fun numberY(context: GuiImmediateContext): Int {
+        return (context.height - numberInput.getHeight()) / 2
+    }
+
+    private fun sliderContext(context: GuiImmediateContext): GuiImmediateContext {
+        return context.translated(0, 0, trackWidth(context), context.height)
+    }
+
+    private fun numberContext(context: GuiImmediateContext): GuiImmediateContext {
+        return context.translated(
+            numberX(context),
+            numberY(context),
+            numberWidth(context),
+            numberInput.getHeight()
+        )
+    }
+
+    private val numberInput by lazy {
         TextFieldComponent(
             object : GetSetter<String> {
 
@@ -86,7 +96,7 @@ open class SliderWithTextComponent(
                     value.set(num).also { editingBuffer = num.toString() }
                 }
             },
-            20,
+            NUMBER_WIDTH,
             GetSetter.constant(true),
             "",
             IMinecraft.INSTANCE.defaultFontRenderer
@@ -94,6 +104,12 @@ open class SliderWithTextComponent(
     }
 
     override fun <T : Any?> foldChildren(initial: T, visitor: BiFunction<GuiComponent, T, T>): T {
-        return visitor.apply(componentNumberInput, initial)
+        return visitor.apply(numberInput, initial)
+    }
+
+    companion object {
+        private const val NUMBER_WIDTH = 30
+        private const val MIN_NUMBER_WIDTH = 20
+        private const val NUMBER_GAP = 4
     }
 }
