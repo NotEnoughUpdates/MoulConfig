@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 public class GuiOptionEditorText extends ComponentEditor {
 
+    private static final int MIN_WIDTH = 80;
+
     GuiComponent component;
     private final Set<Character> forbiddenChars;
 
@@ -35,12 +37,17 @@ public class GuiOptionEditorText extends ComponentEditor {
         if (component == null) {
             component = wrapComponent(new TextFieldComponent(
                 (GetSetter<String>) option.intoProperty(),
-                80,
+                MIN_WIDTH,
                 GetSetter.constant(true),
                 "",
                 IMinecraft.INSTANCE.getDefaultFontRenderer(),
                 forbiddenChars
-            ));
+            ) {
+                @Override
+                public boolean expandsHorizontally() {
+                    return true;
+                }
+            });
         }
         return component;
     }

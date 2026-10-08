@@ -170,6 +170,11 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
         }
 
         @Override
+        public boolean expandsHorizontally() {
+            return true;
+        }
+
+        @Override
         public boolean mouseEvent(@NotNull MouseEvent mouseEvent, @NotNull GuiImmediateContext context) {
             if (mouseEvent instanceof MouseEvent.Click && ((MouseEvent.Click) mouseEvent).getMouseState() && context.isHovered()) {
                 if (!isOverlayOpen()) {

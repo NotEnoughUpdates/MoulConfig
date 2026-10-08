@@ -18,6 +18,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 
 public class GuiOptionEditorKeybind extends ComponentEditor {
+    private static final int BUTTON_MIN_WIDTH = 48;
+    private static final int BUTTON_HEIGHT = 16;
+    private static final int LABEL_PADDING = 12;
+    private static final int EDIT_DECORATION_WIDTH = 8;
+    private static final int RESET_GAP = 3;
+    private static final int RESET_WIDTH = 10;
+    private static final int RESET_HEIGHT = 11;
+    private static final int RESET_Y_OFFSET = 3;
     private boolean editingKeycode = false;
     GuiComponent component;
 
@@ -27,9 +35,19 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
             Warnings.warn(ConfigEditorKeybind.class + " can only be applied to int properties.");
 
         component = wrapComponent(new GuiComponent() {
+            private int buttonWidth() {
+                int labelWidth = IMinecraft.INSTANCE.getDefaultFontRenderer()
+                    .getStringWidth(IMinecraft.INSTANCE.getKeyName((int) option.get()));
+                return Math.max(BUTTON_MIN_WIDTH, labelWidth + LABEL_PADDING + EDIT_DECORATION_WIDTH);
+            }
+
+            private int buttonY(int contextHeight) {
+                return (contextHeight - BUTTON_HEIGHT) / 2;
+            }
+
             @Override
             public int getWidth() {
-                return 0;
+                return buttonWidth() + RESET_GAP + RESET_WIDTH;
             }
 
             @Override
@@ -39,29 +57,30 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
 
             @Override
             public void render(@NotNull GuiImmediateContext context) {
-                int height = getHeight();
+                int height = context.getHeight();
                 RenderContext renderContext = context.getRenderContext();
-                int width = getWidth();
+                int buttonWidth = buttonWidth();
+                int buttonY = buttonY(height);
 
-                renderContext.drawTexturedRect(GuiTextures.BUTTON, width / 6 - 24, height - 7 - 14, 48, 16);
+                renderContext.drawTexturedRect(GuiTextures.BUTTON, 0, buttonY, buttonWidth, BUTTON_HEIGHT);
 
 
                 StructuredText keyName = IMinecraft.INSTANCE.getKeyName((int) option.get());
                 StructuredText text = editingKeycode ? StructuredText.of("> ").append(keyName).append(" <") : keyName;
                 renderContext.drawStringCenteredScaledMaxWidth(text,
                     IMinecraft.INSTANCE.getDefaultFontRenderer(),
-                    width / 6, height - 7 - 6,
-                    false, 38, 0xFF303030
+                    buttonWidth / 2f, buttonY + BUTTON_HEIGHT / 2f,
+                    false, buttonWidth - 4, 0xFF303030
                 );
 
-                int resetX = width / 6 - 24 + 48 + 3;
-                int resetY = height - 7 - 14 + 3;
+                int resetX = buttonWidth + RESET_GAP;
+                int resetY = buttonY + RESET_Y_OFFSET;
 
-                renderContext.drawTexturedRect(GuiTextures.RESET, resetX, resetY, 10, 11);
+                renderContext.drawTexturedRect(GuiTextures.RESET, resetX, resetY, RESET_WIDTH, RESET_HEIGHT);
                 int mouseX = context.getMouseX();
                 int mouseY = context.getMouseY();
-                if (mouseX >= resetX && mouseX < resetX + 10 &&
-                    mouseY >= resetY && mouseY < resetY + 11) {
+                if (mouseX >= resetX && mouseX < resetX + RESET_WIDTH &&
+                    mouseY >= resetY && mouseY < resetY + RESET_HEIGHT) {
                     renderContext.scheduleDrawTooltip(
                         context.getMouseX(), context.getMouseY(),
                         Collections.singletonList(StructuredText.of("Reset to Default").red()));
@@ -80,17 +99,19 @@ public class GuiOptionEditorKeybind extends ComponentEditor {
                 }
 
                 if (click.getMouseState() && click.getMouseButton() == IMinecraft.INSTANCE.getMouseConstants().left()) {
-                    int height = getHeight();
-                    int width = getHeight();
+                    int buttonWidth = buttonWidth();
+                    int buttonY = buttonY(context.getHeight());
                     int mouseX = context.getMouseX();
                     int mouseY = context.getMouseY();
-                    if (mouseX > width / 6 - 24 && mouseX < width / 6 + 16 &&
-                        mouseY > height - 7 - 14 && mouseY < height - 7 + 2) {
+                    if (mouseX >= 0 && mouseX < buttonWidth &&
+                        mouseY >= buttonY && mouseY < buttonY + BUTTON_HEIGHT) {
                         editingKeycode = true;
                         return true;
                     }
-                    if (mouseX > width / 6 - 24 + 48 - 3 && mouseX < width / 6 - 24 + 48 + 13 - 5 &&
-                        mouseY > height - 7 - 14 + 3 && mouseY < height - 7 - 14 + 3 + 11) {
+                    int resetX = buttonWidth + RESET_GAP;
+                    int resetY = buttonY + RESET_Y_OFFSET;
+                    if (mouseX >= resetX && mouseX < resetX + RESET_WIDTH &&
+                        mouseY >= resetY && mouseY < resetY + RESET_HEIGHT) {
                         option.set(defaultKeyCode);
                         return true;
                     }
