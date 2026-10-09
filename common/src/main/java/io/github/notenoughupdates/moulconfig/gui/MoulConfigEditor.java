@@ -29,6 +29,7 @@ import io.github.notenoughupdates.moulconfig.common.Layer;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.gui.component.MetaComponent;
+import io.github.notenoughupdates.moulconfig.gui.editors.ComponentEditor;
 import io.github.notenoughupdates.moulconfig.gui.editors.GuiOptionEditorAccordion;
 import io.github.notenoughupdates.moulconfig.internal.ContextAware;
 import io.github.notenoughupdates.moulconfig.internal.InitUtil;
@@ -622,7 +623,6 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
             }
         }
 
-        context.popScissor(); // Options rect scissors
         /// </editor-fold>
 
         /// <editor-fold name="Render overlays for options on the right">
@@ -668,7 +668,10 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
                     int finalY = innerTop + 5 + optionYOverlay;
                     int finalOptionWidth = optionWidth;
                     // TODO: move overlay to a Layer :)
-                    context.drawOnTop(Layer.OVERLAY, RenderContext.ScissorBehaviour.ESCAPE, ctx -> ContextAware.wrapErrorWithContext(editor, () -> {
+                    RenderContext.ScissorBehaviour scissor = editor.overlayClipsToPanel()
+                        ? RenderContext.ScissorBehaviour.INHERIT
+                        : RenderContext.ScissorBehaviour.ESCAPE;
+                    context.drawOnTop(Layer.OVERLAY, scissor, ctx -> ContextAware.wrapErrorWithContext(editor, () -> {
                         editor.renderOverlay(
                             ctx,
                             finalX,
@@ -683,6 +686,7 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
             // TODO: why was this ever needed:  context.disableDepth();
             context.popMatrix();
         }
+        context.popScissor(); // Options rect scissors
 // TODO: why was this ever needed:         context.refreshScissor();
         /// </editor-fold>
 
@@ -1202,6 +1206,13 @@ public class MoulConfigEditor<T extends Config> extends GuiElement implements Cl
 
     @Override
     public void onAfterClose() {
+        for (ProcessedCategory category : allCategories.values()) {
+            for (ProcessedOption option : category.getOptions()) {
+                if (option.getEditor() instanceof ComponentEditor) {
+                    ((ComponentEditor) option.getEditor()).closeOverlay();
+                }
+            }
+        }
         getConfigObject().saveNow();
     }
 

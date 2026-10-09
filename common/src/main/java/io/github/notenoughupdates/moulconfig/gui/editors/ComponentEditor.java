@@ -9,7 +9,6 @@ import io.github.notenoughupdates.moulconfig.gui.*;
 import io.github.notenoughupdates.moulconfig.gui.component.CenterComponent;
 import io.github.notenoughupdates.moulconfig.gui.component.PanelComponent;
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption;
-import lombok.Getter;
 import lombok.val;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
@@ -28,8 +27,7 @@ public abstract class ComponentEditor extends GuiOptionEditor {
     public abstract @NotNull GuiComponent getDelegate();
 
     private @Nullable GuiComponent overlay;
-    @Getter
-    private int overlayX, overlayY;
+    private int overlayRelX, overlayRelY;
 
     public void closeOverlay() {
         this.overlay = null;
@@ -39,12 +37,10 @@ public abstract class ComponentEditor extends GuiOptionEditor {
         return overlay != null;
     }
 
-    // TODO: close overlay on scroll
-
     public void openOverlay(GuiComponent overlay, int overlayX, int overlayY) {
         this.overlay = overlay;
-        this.overlayX = overlayX;
-        this.overlayY = overlayY;
+        this.overlayRelX = overlayX - lastRenderX;
+        this.overlayRelY = overlayY - lastRenderY;
     }
 
     public @Nullable GuiComponent getOverlayDelegate() {
@@ -291,7 +287,9 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             comp.setContext(getDelegate().getContext());
             return _void;
         });
-        return overlay.mouseEvent(event, getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), IMinecraft.INSTANCE.provideTopLevelRenderContext()));
+        return overlay.mouseEvent(event, getImmContext(
+            x + overlayRelX, y + overlayRelY, overlay.getWidth(), overlay.getHeight(),
+            IMinecraft.INSTANCE.provideTopLevelRenderContext()));
     }
 
     @Override
@@ -301,8 +299,10 @@ public abstract class ComponentEditor extends GuiOptionEditor {
             comp.setContext(getDelegate().getContext());
             return _void;
         });
-        val ctx = getImmContext(overlayX, overlayY, overlay.getWidth(), overlay.getHeight(), context);
-        ctx.getRenderContext().translate(overlayX, overlayY);
+        int absX = x + overlayRelX;
+        int absY = y + overlayRelY;
+        val ctx = getImmContext(absX, absY, overlay.getWidth(), overlay.getHeight(), context);
+        ctx.getRenderContext().translate(absX, absY);
         overlay.render(ctx);
     }
 }

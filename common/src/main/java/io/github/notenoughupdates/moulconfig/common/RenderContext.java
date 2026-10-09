@@ -239,7 +239,8 @@ public interface RenderContext {
     void pushScissor(int left, int top, int right, int bottom);
 
     /**
-     * push a raw scissor rectangle. this can be used to widen the current scissor view, and is relative to the screen.
+     * push a raw scissor rectangle, given as absolute screen edges. Unlike {@link #pushScissor}, the rectangle is
+     * neither intersected with the enclosing scissor nor transformed by the current pose.
      */
     void pushRawScissor(int left, int top, int right, int bottom);
 
