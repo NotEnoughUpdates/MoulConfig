@@ -132,6 +132,13 @@ public abstract class GuiOptionEditor implements HasDebugLocation {
         return keyboardInput();
     }
 
+    /**
+     * Whether this option's overlay is clipped to the options panel instead of escaping it.
+     */
+    public boolean overlayClipsToPanel() {
+        return false;
+    }
+
     public boolean mouseInputOverlay(int x, int y, int width, int mouseX, int mouseY, MouseEvent mouseEvent) {
         return false;
     }

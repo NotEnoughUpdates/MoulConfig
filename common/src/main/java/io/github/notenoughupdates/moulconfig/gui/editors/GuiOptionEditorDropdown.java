@@ -64,6 +64,11 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
         }
         this.useOrdinal = clazz == int.class || clazz == Integer.class;
     }
+    @Override
+    public boolean overlayClipsToPanel() {
+        return true;
+    }
+
     int componentWidth = 0;
     private GuiComponent dropdownOverlay = new GuiComponent() {
         @Override
@@ -153,7 +158,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
                 dropdownWidth - 16, 0xffa0a0a0
             );
             context.getRenderContext().drawOpenCloseTriangle(
-                false, context.getWidth() - 10, 4, 6, 6, -1
+                true, context.getWidth() - 10, 4, 6, 6, -1
             );
             context.getRenderContext().popMatrix();
         }
@@ -205,7 +210,7 @@ public class GuiOptionEditorDropdown extends ComponentEditor {
                 0, 0, dropdownWidth, context.getHeight(), false
             );
             context.getRenderContext().drawOpenCloseTriangle(
-                true, context.getWidth() - 10, 4, 6, 6, -1
+                false, context.getWidth() - 10, 4, 6, 6, -1
             );
             context.getRenderContext().drawStringScaledMaxWidth(
                 selectedString, IMinecraft.INSTANCE.getDefaultFontRenderer(),

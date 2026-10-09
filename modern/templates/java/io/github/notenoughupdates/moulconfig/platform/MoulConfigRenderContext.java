@@ -304,7 +304,7 @@ public class MoulConfigRenderContext implements RenderContext {
 
     @Override
     public void pushRawScissor(int left, int top, int right, int bottom) {
-        drawContext.scissorStack.stack.addLast(new ScreenRectangle(left, top, right, bottom));
+        drawContext.scissorStack.stack.addLast(new ScreenRectangle(left, top, right - left, bottom - top));
     }
 
     @Override
@@ -396,7 +396,9 @@ public class MoulConfigRenderContext implements RenderContext {
                 }
 
                 if (draw.scissorTop != null) {
-                    pushRawScissor(draw.scissorTop.left(), draw.scissorTop.top(), draw.scissorTop.right(), draw.scissorTop.bottom());
+                    pushRawScissor(
+                        draw.scissorTop.left(), draw.scissorTop.top(),
+                        draw.scissorTop.right(), draw.scissorTop.bottom());
                 }
 
                 pushMatrix();
@@ -405,6 +407,10 @@ public class MoulConfigRenderContext implements RenderContext {
                 draw.action.accept(this);
 
                 popMatrix();
+
+                if (draw.scissorTop != null) {
+                    popScissor();
+                }
 
                 if (!drawContext.scissorStack.stack.isEmpty()) {
                     Warnings.warn("Scissors found despite no scissor assertion after execution of ${draw.action}", 4);

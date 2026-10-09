@@ -10,8 +10,23 @@ import org.jetbrains.annotations.NotNull;
  */
 @EqualsAndHashCode(callSuper = true)
 @Value
-public class GuiElementComponent extends GuiComponent {
+public class GuiElementComponent extends GuiComponent implements CloseEventListener {
     GuiElement element;
+
+    @Override
+    public CloseAction onBeforeClose() {
+        if (element instanceof CloseEventListener) {
+            return ((CloseEventListener) element).onBeforeClose();
+        }
+        return CloseAction.NO_OBJECTIONS_TO_CLOSE;
+    }
+
+    @Override
+    public void onAfterClose() {
+        if (element instanceof CloseEventListener) {
+            ((CloseEventListener) element).onAfterClose();
+        }
+    }
 
     @Override
     public void setContext(GuiContext context) {
